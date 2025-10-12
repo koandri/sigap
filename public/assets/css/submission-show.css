@@ -1,0 +1,128 @@
+/* Submission Show Page Styles */
+.submission-code {
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submission-code:hover {
+    background: #e9ecef;
+}
+
+.floating-actions {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+}
+
+.floating-actions .btn {
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.formatted-content {
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.formatted-content p {
+    margin-bottom: 1rem;
+}
+
+.formatted-content ul, .formatted-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.formatted-content h1, .formatted-content h2, .formatted-content h3, 
+.formatted-content h4, .formatted-content h5, .formatted-content h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.formatted-content blockquote {
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 4px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.formatted-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.formatted-content table th,
+.formatted-content table td {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+}
+
+.formatted-content table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* File preview enhancements */
+.file-preview-container {
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.file-preview-container .card {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.file-preview-container .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.single-file-preview img {
+    cursor: zoom-in;
+    transition: transform 0.2s;
+}
+
+.single-file-preview img:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive iframe for PDF */
+.ratio-16x9 iframe {
+    border: none;
+    width: 100%;
+    height: 100%;
+}
+
+/* Search functionality */
+.search-highlight {
+    background-color: #fff3cd;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .floating-actions {
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .floating-actions .btn {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}

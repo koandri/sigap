@@ -1,0 +1,49 @@
+@media print {
+  body {
+      display: none;
+      visibility: hidden;
+  }
+}
+
+:root {
+  font-family: 'Montserrat', 'Lato', 'Noto Sans', sans-serif;
+  --tblr-primary: #00396f;
+}
+
+.avatar {
+  --tblr-avatar-size: 2.5rem;
+  --tblr-avatar-bg: var(--tblr-bg-surface-secondary);
+  --tblr-avatar-shadow: inset var(--tblr-border-color-translucent) 0 0 0 1px;
+  position: relative;
+  width: var(--tblr-avatar-size);
+  height: var(--tblr-avatar-size);
+  font-size: calc(var(--tblr-avatar-size)/ 2.8571428572);
+  font-weight: var(--tblr-font-weight-medium);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tblr-muted);
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: bottom;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background: var(--tblr-avatar-bg) no-repeat center/cover;
+  border-radius: var(--tblr-border-radius);
+  box-shadow: var(--tblr-avatar-shadow);
+}
+
+.avatar-sm {
+  --tblr-avatar-size: 2rem;
+}
+
+code {
+  color: #d63939;
+}
+
+.auth-page {
+  background-color: #00396f;
+}
+

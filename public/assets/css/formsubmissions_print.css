@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.header {
+    text-align: center;
+    border-bottom: 3px solid #333;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+.header h1 {
+    margin: 0;
+    color: #2c3e50;
+}
+.header p {
+    margin: 5px 0;
+    color: #666;
+}
+.info-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+}
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.info-item {
+    margin-bottom: 10px;
+}
+.info-label {
+    font-weight: bold;
+    color: #555;
+}
+.info-value {
+    color: #000;
+}
+.answers-section {
+    margin-top: 30px;
+}
+.answer-item {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px 0;
+}
+.answer-item:last-child {
+    border-bottom: none;
+}
+.answer-label {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+.answer-value {
+    color: #333;
+    margin-left: 20px;
+}
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.status-approved { background: #d4edda; color: #155724; }
+.status-pending { background: #fff3cd; color: #856404; }
+.status-rejected { background: #f8d7da; color: #721c24; }
+.footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+}
+.signature-section {
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+}
+.signature-box {
+    text-align: center;
+}
+.signature-line {
+    border-bottom: 1px solid #333;
+    margin-bottom: 5px;
+    height: 40px;
+}
+@media print {
+    body { margin: 0; padding: 10px; }
+    .no-print { display: none; }
+    .page-break { page-break-after: always; }
+}
