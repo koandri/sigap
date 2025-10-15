@@ -113,8 +113,20 @@
                                             </td>
                                             <td>{{ $workOrder->asset->name }}</td>
                                             <td>
-                                                <span class="badge bg-{{ $workOrder->status === 'completed' ? 'success' : ($workOrder->status === 'in-progress' ? 'warning' : 'secondary') }}">
-                                                    {{ ucfirst($workOrder->status) }}
+                                                @php
+                                                    $statusColors = [
+                                                        'submitted' => 'secondary',
+                                                        'assigned' => 'info',
+                                                        'in-progress' => 'warning',
+                                                        'pending-verification' => 'primary',
+                                                        'verified' => 'success',
+                                                        'completed' => 'success',
+                                                        'rework' => 'danger',
+                                                        'cancelled' => 'danger'
+                                                    ];
+                                                @endphp
+                                                <span class="badge bg-{{ $statusColors[$workOrder->status] ?? 'secondary' }}">
+                                                    {{ ucfirst(str_replace('-', ' ', $workOrder->status)) }}
                                                 </span>
                                             </td>
                                             <td>

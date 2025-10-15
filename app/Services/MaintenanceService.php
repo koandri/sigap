@@ -28,22 +28,25 @@ final readonly class MaintenanceService
         $generatedCount = 0;
 
         foreach ($overdueSchedules as $schedule) {
-            // Check if there's already a pending work order for this schedule
+            // Check if there's already an open work order for this schedule
             $existingWO = WorkOrder::where('asset_id', $schedule->asset_id)
                 ->where('maintenance_type_id', $schedule->maintenance_type_id)
-                ->whereIn('status', ['pending', 'in-progress'])
+                ->whereIn('status', ['submitted', 'assigned', 'in-progress', 'pending-verification'])
                 ->first();
 
             if (!$existingWO) {
+                // Create work order with auto-assignment for scheduled maintenance
                 $workOrder = WorkOrder::create([
                     'wo_number' => $this->generateWONumber(),
                     'asset_id' => $schedule->asset_id,
                     'maintenance_type_id' => $schedule->maintenance_type_id,
                     'priority' => 'medium',
-                    'status' => 'pending',
-                    'scheduled_date' => now(),
+                    'status' => 'assigned', // Auto-assign scheduled maintenance
+                    'scheduled_date' => $schedule->next_due_date,
                     'assigned_to' => $schedule->assigned_to,
-                    'requested_by' => auth()->user()?->id,
+                    'assigned_by' => $schedule->assigned_to, // Self-assigned from schedule
+                    'assigned_at' => now(),
+                    'requested_by' => 1, // System user (ID 1) for scheduled maintenance
                     'description' => $schedule->description,
                 ]);
 
@@ -188,5 +191,112 @@ final readonly class MaintenanceService
             ->get();
 
         return $workOrders->sum('actual_hours') ?? 0;
+    }
+
+    /**
+     * Calculate total hours worked on a work order.
+     */
+    public function calculateTotalHours(WorkOrder $workOrder): float
+    {
+        return $workOrder->progressLogs()->sum('hours_worked');
+    }
+
+    /**
+     * Get work order timeline with all activities.
+     */
+    public function getWorkOrderTimeline(WorkOrder $workOrder): Collection
+    {
+        $timeline = collect();
+
+        // Add work order creation
+        $timeline->push([
+            'type' => 'work_order_created',
+            'date' => $workOrder->created_at,
+            'user' => $workOrder->requestedBy,
+            'description' => 'Work order created',
+            'details' => $workOrder->description,
+        ]);
+
+        // Add assignment
+        if ($workOrder->assigned_at) {
+            $timeline->push([
+                'type' => 'work_order_assigned',
+                'date' => $workOrder->assigned_at,
+                'user' => $workOrder->assignedBy,
+                'description' => 'Work order assigned',
+                'details' => "Assigned to {$workOrder->assignedUser?->name}",
+            ]);
+        }
+
+        // Add work started
+        if ($workOrder->work_started_at) {
+            $timeline->push([
+                'type' => 'work_started',
+                'date' => $workOrder->work_started_at,
+                'user' => $workOrder->assignedUser,
+                'description' => 'Work started',
+                'details' => 'Operator began work on the task',
+            ]);
+        }
+
+        // Add progress logs
+        foreach ($workOrder->progressLogs as $log) {
+            $timeline->push([
+                'type' => 'progress_log',
+                'date' => $log->logged_at,
+                'user' => $log->loggedBy,
+                'description' => 'Progress logged',
+                'details' => "{$log->hours_worked}h - {$log->completion_percentage}% complete",
+                'notes' => $log->progress_notes,
+            ]);
+        }
+
+        // Add actions
+        foreach ($workOrder->actions as $action) {
+            $timeline->push([
+                'type' => 'action_performed',
+                'date' => $action->performed_at,
+                'user' => $action->performedBy,
+                'description' => 'Action performed',
+                'details' => ucfirst(str_replace('-', ' ', $action->action_type)),
+                'notes' => $action->action_description,
+            ]);
+        }
+
+        // Add work finished
+        if ($workOrder->work_finished_at) {
+            $timeline->push([
+                'type' => 'work_finished',
+                'date' => $workOrder->work_finished_at,
+                'user' => $workOrder->assignedUser,
+                'description' => 'Work finished',
+                'details' => 'Operator completed work and submitted for verification',
+            ]);
+        }
+
+        // Add verification
+        if ($workOrder->verified_at) {
+            $timeline->push([
+                'type' => 'work_verified',
+                'date' => $workOrder->verified_at,
+                'user' => $workOrder->verifiedBy,
+                'description' => 'Work verified',
+                'details' => 'Engineering staff approved the work',
+                'notes' => $workOrder->verification_notes,
+            ]);
+        }
+
+        // Add completion
+        if ($workOrder->completed_date) {
+            $timeline->push([
+                'type' => 'work_completed',
+                'date' => $workOrder->completed_date,
+                'user' => $workOrder->requestedBy,
+                'description' => 'Work order closed',
+                'details' => 'Requester closed the work order',
+            ]);
+        }
+
+        return $timeline->sortBy('date');
     }
 }

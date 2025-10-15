@@ -46,9 +46,13 @@
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select">
                             <option value="">All Status</option>
-                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="submitted" {{ request('status') === 'submitted' ? 'selected' : '' }}>Submitted</option>
+                            <option value="assigned" {{ request('status') === 'assigned' ? 'selected' : '' }}>Assigned</option>
                             <option value="in-progress" {{ request('status') === 'in-progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="pending-verification" {{ request('status') === 'pending-verification' ? 'selected' : '' }}>Pending Verification</option>
+                            <option value="verified" {{ request('status') === 'verified' ? 'selected' : '' }}>Verified</option>
                             <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
+                            <option value="rework" {{ request('status') === 'rework' ? 'selected' : '' }}>Rework</option>
                             <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                         </select>
                     </div>
@@ -130,8 +134,20 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $workOrder->status === 'completed' ? 'success' : ($workOrder->status === 'in-progress' ? 'warning' : ($workOrder->status === 'cancelled' ? 'danger' : 'secondary')) }}">
-                                            {{ ucfirst($workOrder->status) }}
+                                        @php
+                                            $statusColors = [
+                                                'submitted' => 'secondary',
+                                                'assigned' => 'info',
+                                                'in-progress' => 'warning',
+                                                'pending-verification' => 'primary',
+                                                'verified' => 'success',
+                                                'completed' => 'success',
+                                                'rework' => 'danger',
+                                                'cancelled' => 'danger'
+                                            ];
+                                        @endphp
+                                        <span class="badge bg-{{ $statusColors[$workOrder->status] ?? 'secondary' }}">
+                                            {{ ucfirst(str_replace('-', ' ', $workOrder->status)) }}
                                         </span>
                                     </td>
                                     <td>{{ $workOrder->assignedUser?->name ?? 'Unassigned' }}</td>

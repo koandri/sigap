@@ -22,7 +22,7 @@
     <div class="container-xl">
         <div class="row">
             <div class="col-md-8">
-                <form action="{{ route('maintenance.work-orders.store') }}" method="POST">
+                <form action="{{ route('maintenance.work-orders.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
                     <div class="card">
@@ -126,6 +126,20 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Initial Photos</label>
+                                <input type="file" name="photos[]" class="form-control @error('photos.*') is-invalid @enderror" multiple accept="image/*">
+                                <div class="form-text">Upload photos to document the initial condition or issue. You can select multiple files.</div>
+                                @error('photos.*')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div id="photo-captions" class="mb-3" style="display: none;">
+                                <label class="form-label">Photo Captions</label>
+                                <div id="caption-inputs"></div>
+                            </div>
                         </div>
                         <div class="card-footer">
                             <div class="row">
@@ -144,4 +158,34 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const photoInput = document.querySelector('input[name="photos[]"]');
+    const photoCaptions = document.getElementById('photo-captions');
+    const captionInputs = document.getElementById('caption-inputs');
+
+    photoInput.addEventListener('change', function() {
+        const files = this.files;
+        if (files.length > 0) {
+            photoCaptions.style.display = 'block';
+            captionInputs.innerHTML = '';
+            
+            for (let i = 0; i < files.length; i++) {
+                const div = document.createElement('div');
+                div.className = 'mb-2';
+                div.innerHTML = `
+                    <label class="form-label">Caption for ${files[i].name}</label>
+                    <input type="text" name="photo_captions[]" class="form-control" placeholder="Enter caption for this photo">
+                `;
+                captionInputs.appendChild(div);
+            }
+        } else {
+            photoCaptions.style.display = 'none';
+        }
+    });
+});
+</script>
+@endpush
 

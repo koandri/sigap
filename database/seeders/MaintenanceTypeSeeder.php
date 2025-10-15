@@ -49,10 +49,17 @@ class MaintenanceTypeSeeder extends Seeder
                 'color' => '#6f42c1',
                 'is_active' => true,
             ],
+            [
+                'name' => 'Enhancement',
+                'code' => 'ENH',
+                'description' => 'Equipment modifications and improvements',
+                'color' => '#17a2b8',
+                'is_active' => true,
+            ],
         ];
 
         foreach ($maintenanceTypes as $type) {
-            MaintenanceType::create($type);
+            MaintenanceType::firstOrCreate(['code' => $type['code']], $type);
         }
     }
 }

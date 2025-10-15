@@ -212,6 +212,14 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::resource('work-orders', WorkOrderController::class);
     Route::put('work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status');
     Route::post('work-orders/{workOrder}/complete', [WorkOrderController::class, 'complete'])->name('work-orders.complete');
+    Route::put('work-orders/{workOrder}/assign', [WorkOrderController::class, 'assign'])->name('work-orders.assign');
+    Route::post('work-orders/{workOrder}/start', [WorkOrderController::class, 'startWork'])->name('work-orders.start');
+    Route::post('work-orders/{workOrder}/log-progress', [WorkOrderController::class, 'logProgress'])->name('work-orders.log-progress');
+    Route::post('work-orders/{workOrder}/add-action', [WorkOrderController::class, 'addAction'])->name('work-orders.add-action');
+    Route::post('work-orders/{workOrder}/upload-photo', [WorkOrderController::class, 'uploadPhoto'])->name('work-orders.upload-photo');
+    Route::post('work-orders/{workOrder}/submit-verification', [WorkOrderController::class, 'submitForVerification'])->name('work-orders.submit-verification');
+    Route::post('work-orders/{workOrder}/verify', [WorkOrderController::class, 'verify'])->name('work-orders.verify');
+    Route::post('work-orders/{workOrder}/close', [WorkOrderController::class, 'close'])->name('work-orders.close');
     Route::get('logs', [MaintenanceLogController::class, 'index'])->name('logs.index');
     Route::get('logs/asset/{asset}', [MaintenanceLogController::class, 'assetHistory'])->name('logs.asset');
     Route::get('reports', [MaintenanceReportController::class, 'index'])->name('reports.index');

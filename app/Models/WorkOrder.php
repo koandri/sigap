@@ -25,6 +25,13 @@ final class WorkOrder extends Model
         'completed_date',
         'assigned_to',
         'requested_by',
+        'assigned_by',
+        'assigned_at',
+        'work_started_at',
+        'work_finished_at',
+        'verified_at',
+        'verified_by',
+        'verification_notes',
         'estimated_hours',
         'actual_hours',
         'description',
@@ -39,6 +46,10 @@ final class WorkOrder extends Model
     protected $casts = [
         'scheduled_date' => 'datetime',
         'completed_date' => 'datetime',
+        'assigned_at' => 'datetime',
+        'work_started_at' => 'datetime',
+        'work_finished_at' => 'datetime',
+        'verified_at' => 'datetime',
         'estimated_hours' => 'decimal:2',
         'actual_hours' => 'decimal:2',
     ];
@@ -76,6 +87,22 @@ final class WorkOrder extends Model
     }
 
     /**
+     * Get the user who assigned this work order.
+     */
+    public function assignedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_by');
+    }
+
+    /**
+     * Get the user who verified this work order.
+     */
+    public function verifiedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
      * Get all parts used in this work order.
      */
     public function parts(): HasMany
@@ -89,6 +116,30 @@ final class WorkOrder extends Model
     public function maintenanceLogs(): HasMany
     {
         return $this->hasMany(MaintenanceLog::class);
+    }
+
+    /**
+     * Get all progress logs for this work order.
+     */
+    public function progressLogs(): HasMany
+    {
+        return $this->hasMany(WorkOrderProgressLog::class);
+    }
+
+    /**
+     * Get all actions for this work order.
+     */
+    public function actions(): HasMany
+    {
+        return $this->hasMany(WorkOrderAction::class);
+    }
+
+    /**
+     * Get all photos for this work order.
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(WorkOrderPhoto::class);
     }
 
     /**
@@ -108,11 +159,43 @@ final class WorkOrder extends Model
     }
 
     /**
+     * Scope to get submitted work orders.
+     */
+    public function scopeSubmitted($query)
+    {
+        return $query->where('status', 'submitted');
+    }
+
+    /**
+     * Scope to get assigned work orders.
+     */
+    public function scopeAssigned($query)
+    {
+        return $query->where('status', 'assigned');
+    }
+
+    /**
+     * Scope to get work orders pending verification.
+     */
+    public function scopePendingVerification($query)
+    {
+        return $query->where('status', 'pending-verification');
+    }
+
+    /**
+     * Scope to get verified work orders.
+     */
+    public function scopeVerified($query)
+    {
+        return $query->where('status', 'verified');
+    }
+
+    /**
      * Scope to get open work orders.
      */
     public function scopeOpen($query)
     {
-        return $query->whereIn('status', ['pending', 'in-progress']);
+        return $query->whereIn('status', ['submitted', 'assigned', 'in-progress', 'pending-verification']);
     }
 
     /**

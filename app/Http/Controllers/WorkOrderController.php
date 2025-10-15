@@ -87,12 +87,29 @@ final class WorkOrderController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
             'estimated_hours' => 'nullable|numeric|min:0',
             'description' => 'required|string|max:1000',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'photo_captions.*' => 'nullable|string|max:255',
         ]);
 
         $validated['wo_number'] = $this->generateWONumber();
-        $validated['requested_by'] = auth()->user()?->id;
+        $validated['requested_by'] = auth()->id();
 
         $workOrder = WorkOrder::create($validated);
+
+        // Handle photo uploads if provided
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                if ($photo) {
+                    $photoPath = $photo->store('work-order-photos', 'public');
+                    $workOrder->photos()->create([
+                        'uploaded_by' => auth()->id(),
+                        'photo_path' => $photoPath,
+                        'photo_type' => 'initial',
+                        'caption' => $validated['photo_captions'][$index] ?? null,
+                    ]);
+                }
+            }
+        }
 
         return redirect()
             ->route('maintenance.work-orders.show', $workOrder)
@@ -109,10 +126,15 @@ final class WorkOrderController extends Controller
             'maintenanceType',
             'assignedUser',
             'requestedBy',
+            'assignedBy',
+            'verifiedBy',
             'parts.item',
             'parts.warehouse',
             'parts.positionItem',
-            'maintenanceLogs.performedBy'
+            'maintenanceLogs.performedBy',
+            'progressLogs.loggedBy',
+            'actions.performedBy',
+            'photos.uploadedBy'
         ]);
 
         // Get available parts for this work order
@@ -265,5 +287,211 @@ final class WorkOrderController extends Controller
         }
 
         return "WO-{$date}-{$newNumber}";
+    }
+
+    /**
+     * Assign work order to operator (Engineering Staff).
+     */
+    public function assign(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'assigned_to' => 'required|exists:users,id',
+            'scheduled_date' => 'required|date|after_or_equal:today',
+            'estimated_hours' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $workOrder->update([
+            'assigned_to' => $validated['assigned_to'],
+            'assigned_by' => auth()->id(),
+            'assigned_at' => now(),
+            'scheduled_date' => $validated['scheduled_date'],
+            'estimated_hours' => $validated['estimated_hours'],
+            'notes' => $validated['notes'],
+            'status' => 'assigned',
+        ]);
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', 'Work order assigned successfully.');
+    }
+
+    /**
+     * Start work on work order (Operator).
+     */
+    public function startWork(WorkOrder $workOrder): RedirectResponse
+    {
+        $workOrder->update([
+            'work_started_at' => now(),
+            'status' => 'in-progress',
+        ]);
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', 'Work started successfully.');
+    }
+
+    /**
+     * Log progress on work order (Operator).
+     */
+    public function logProgress(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'hours_worked' => 'required|numeric|min:0.1',
+            'progress_notes' => 'required|string|max:1000',
+            'completion_percentage' => 'required|integer|min:0|max:100',
+            'logged_at' => 'nullable|date',
+        ]);
+
+        $workOrder->progressLogs()->create([
+            'logged_by' => auth()->id(),
+            'logged_at' => $validated['logged_at'] ?? now(),
+            'hours_worked' => $validated['hours_worked'],
+            'progress_notes' => $validated['progress_notes'],
+            'completion_percentage' => $validated['completion_percentage'],
+        ]);
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', 'Progress logged successfully.');
+    }
+
+    /**
+     * Add action to work order (Operator).
+     */
+    public function addAction(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'action_type' => 'required|in:spare-part-replacement,send-for-repair,retire-equipment,cleaning,adjustment,calibration,enhancement,other',
+            'action_description' => 'required|string|max:1000',
+            'notes' => 'nullable|string|max:1000',
+            'performed_at' => 'nullable|date',
+        ]);
+
+        $workOrder->actions()->create([
+            'performed_by' => auth()->id(),
+            'action_type' => $validated['action_type'],
+            'action_description' => $validated['action_description'],
+            'notes' => $validated['notes'],
+            'performed_at' => $validated['performed_at'] ?? now(),
+        ]);
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', 'Action added successfully.');
+    }
+
+    /**
+     * Upload photo to work order (Operator).
+     */
+    public function uploadPhoto(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'photo_type' => 'required|in:progress,before,after,issue',
+            'caption' => 'nullable|string|max:255',
+        ]);
+
+        $photoPath = $request->file('photo')->store('work-order-photos', 'public');
+
+        $workOrder->photos()->create([
+            'uploaded_by' => auth()->id(),
+            'photo_path' => $photoPath,
+            'photo_type' => $validated['photo_type'],
+            'caption' => $validated['caption'],
+        ]);
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', 'Photo uploaded successfully.');
+    }
+
+    /**
+     * Submit work order for verification (Operator).
+     */
+    public function submitForVerification(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'completion_notes' => 'nullable|string|max:1000',
+        ]);
+
+        // Calculate total hours from progress logs
+        $totalHours = $workOrder->progressLogs()->sum('hours_worked');
+
+        $workOrder->update([
+            'work_finished_at' => now(),
+            'actual_hours' => $totalHours,
+            'notes' => $validated['completion_notes'],
+            'status' => 'pending-verification',
+        ]);
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', 'Work order submitted for verification.');
+    }
+
+    /**
+     * Verify work order (Engineering Staff).
+     */
+    public function verify(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:approve,rework',
+            'verification_notes' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validated['action'] === 'approve') {
+            $workOrder->update([
+                'status' => 'verified',
+                'verified_at' => now(),
+                'verified_by' => auth()->id(),
+                'verification_notes' => $validated['verification_notes'],
+            ]);
+
+            $message = 'Work order approved successfully.';
+        } else {
+            $workOrder->update([
+                'status' => 'rework',
+                'verification_notes' => $validated['verification_notes'],
+            ]);
+
+            $message = 'Work order sent back for rework.';
+        }
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', $message);
+    }
+
+    /**
+     * Close work order (Requester).
+     */
+    public function close(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:close,rework',
+            'closing_notes' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validated['action'] === 'close') {
+            $workOrder->update([
+                'status' => 'completed',
+                'completed_date' => now(),
+                'notes' => $validated['closing_notes'],
+            ]);
+
+            $message = 'Work order closed successfully.';
+        } else {
+            $workOrder->update([
+                'status' => 'rework',
+                'notes' => $validated['closing_notes'],
+            ]);
+
+            $message = 'Work order sent back for rework.';
+        }
+
+        return redirect()
+            ->route('maintenance.work-orders.show', $workOrder)
+            ->with('success', $message);
     }
 }

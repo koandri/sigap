@@ -22,6 +22,10 @@ class MaintenancePermissionSeeder extends Seeder
             'maintenance.work-orders.view',
             'maintenance.work-orders.create',
             'maintenance.work-orders.complete',
+            'maintenance.work-orders.assign',
+            'maintenance.work-orders.work',
+            'maintenance.work-orders.verify',
+            'maintenance.work-orders.close',
             'maintenance.reports.view',
         ];
 

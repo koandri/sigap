@@ -183,15 +183,17 @@ final class MaintenanceScheduleController extends Controller
                 ->with('error', 'Cannot trigger inactive schedule.');
         }
 
-        // Generate work order
+        // Generate work order with auto-assignment for scheduled maintenance
         $workOrder = $schedule->asset->workOrders()->create([
             'wo_number' => $this->generateWONumber(),
             'maintenance_type_id' => $schedule->maintenance_type_id,
             'priority' => 'medium',
-            'status' => 'pending',
-            'scheduled_date' => now(),
+            'status' => 'assigned', // Auto-assign scheduled maintenance
+            'scheduled_date' => $schedule->next_due_date,
             'assigned_to' => $schedule->assigned_to,
-            'requested_by' => auth()->user()?->id,
+            'assigned_by' => $schedule->assigned_to, // Self-assigned from schedule
+            'assigned_at' => now(),
+            'requested_by' => auth()->id(),
             'description' => $schedule->description,
         ]);
 
