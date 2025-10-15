@@ -81,6 +81,45 @@
                         </div>
                     </div>
                 </li>
+                <li class="nav-item dropdown {{ areActiveRoutes(['maintenance.*']) }}">
+                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fa-regular fa-wrench"></i>
+                        </span>
+                        <span class="nav-link-title">Maintenance</span>
+                    </a>
+                    <div class="dropdown-menu {{ areOpenRoutes(['maintenance.*']) }}">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.dashboard') }}" href="{{ route('maintenance.dashboard') }}">
+                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.assets.*') }}" href="{{ route('maintenance.assets.index') }}">
+                                    <i class="fa-regular fa-boxes-stacked"></i> &nbsp;Assets
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.asset-categories.*') }}" href="{{ route('maintenance.asset-categories.index') }}">
+                                    <i class="fa-regular fa-layer-group"></i> &nbsp;Asset Categories
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.work-orders.*') }}" href="{{ route('maintenance.work-orders.index') }}">
+                                    <i class="fa-regular fa-clipboard-list"></i> &nbsp;Work Orders
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.schedules.*') }}" href="{{ route('maintenance.schedules.index') }}">
+                                    <i class="fa-regular fa-calendar-check"></i> &nbsp;Maintenance Schedules
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.logs.*') }}" href="{{ route('maintenance.logs.index') }}">
+                                    <i class="fa-regular fa-file-lines"></i> &nbsp;Maintenance Logs
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.reports.*') }}" href="{{ route('maintenance.reports.index') }}">
+                                    <i class="fa-regular fa-chart-bar"></i> &nbsp;Reports
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.calendar') }}" href="{{ route('maintenance.calendar') }}">
+                                    <i class="fa-regular fa-calendar"></i> &nbsp;Calendar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
                 <li class="nav-item dropdown {{ areActiveRoutes(['users.*', 'roles.*', 'permissions.*', 'departments.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">

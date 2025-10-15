@@ -30,6 +30,16 @@ use App\Http\Controllers\BulkInventoryController;
 use App\Http\Controllers\PicklistController;
 use App\Http\Controllers\WarehouseOverviewController;
 
+// Maintenance Controllers
+use App\Http\Controllers\MaintenanceDashboardController;
+use App\Http\Controllers\AssetCategoryController;
+use App\Http\Controllers\AssetController;
+use App\Http\Controllers\MaintenanceScheduleController;
+use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\MaintenanceLogController;
+use App\Http\Controllers\MaintenanceReportController;
+use App\Http\Controllers\MaintenanceCalendarController;
+
 use App\Models\FormSubmission;
 
 //Basic
@@ -189,6 +199,24 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::post('bom/{bomTemplate}/approve', [BomController::class, 'approve'])->name('bom.approve');
     Route::post('bom/{bomTemplate}/reject', [BomController::class, 'reject'])->name('bom.reject');
     Route::get('bom/{bomTemplate}/copy', [BomController::class, 'copy'])->name('bom.copy');
+});
+
+// Maintenance Routes
+Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(function () {
+    Route::get('/', [MaintenanceDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('asset-categories', AssetCategoryController::class);
+    Route::resource('assets', AssetController::class);
+    Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr');
+    Route::resource('schedules', MaintenanceScheduleController::class);
+    Route::post('schedules/{schedule}/trigger', [MaintenanceScheduleController::class, 'trigger'])->name('schedules.trigger');
+    Route::resource('work-orders', WorkOrderController::class);
+    Route::put('work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status');
+    Route::post('work-orders/{workOrder}/complete', [WorkOrderController::class, 'complete'])->name('work-orders.complete');
+    Route::get('logs', [MaintenanceLogController::class, 'index'])->name('logs.index');
+    Route::get('logs/asset/{asset}', [MaintenanceLogController::class, 'assetHistory'])->name('logs.asset');
+    Route::get('reports', [MaintenanceReportController::class, 'index'])->name('reports.index');
+    Route::get('calendar', [MaintenanceCalendarController::class, 'index'])->name('calendar');
+    Route::get('calendar/events', [MaintenanceCalendarController::class, 'events'])->name('calendar.events');
 });
 
 // API Routes for Form Field Options
