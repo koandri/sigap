@@ -629,16 +629,102 @@ All documentation is located in the `guides/` directory:
 3. **For Quick Help**: Check [Common Tasks](guides/COMMON_TASKS.md) for frequently performed actions
 4. **For Developers**: See project structure above and review code documentation
 
+## Development Guidelines
+
+### Code Standards
+
+**PHP Standards:**
+- Follow PSR-12 coding standards
+- Use strict typing: `declare(strict_types=1);`
+- All classes should be final unless designed for inheritance
+- Use explicit return type declarations
+- Follow SOLID principles
+
+**Laravel Best Practices:**
+- Controllers should be final and read-only (no property mutations)
+- Use dependency injection in methods, not constructors
+- Keep controllers thin, use services for business logic
+- Use Form Requests for validation
+- Use Eloquent ORM and Query Builder over raw SQL
+- Implement proper error handling and logging
+
+**Frontend Standards:**
+- Server-side validation is primary
+- JavaScript only for UI enhancement
+- Use Bootstrap 5 classes for styling
+- Follow Tabler template conventions
+- Minimize JavaScript dependencies
+
+### File Organization
+
+**Naming Conventions:**
+- Models: Singular, PascalCase (e.g., `User.php`, `WorkOrder.php`)
+- Controllers: Plural, PascalCase with Controller suffix (e.g., `UsersController.php`)
+- Views: snake_case (e.g., `work_orders/show.blade.php`)
+- Database columns: snake_case
+- Methods: camelCase
+- Constants: UPPER_SNAKE_CASE
+
+**Directory Structure:**
+- Models in `app/Models/`
+- Controllers in `app/Http/Controllers/`
+- Services in `app/Services/`
+- Helpers in `app/Helpers/`
+- Views in `resources/views/`
+- Migrations in `database/migrations/`
+
+### Testing
+
+Run tests using Pest PHP:
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test file
+php artisan test tests/Feature/FormTest.php
+
+# Run with coverage
+php artisan test --coverage
+```
+
+### Contributing
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/your-feature-name`
+3. **Make your changes** following the code standards
+4. **Write tests** for new functionality
+5. **Run tests** to ensure nothing breaks
+6. **Commit your changes**: `git commit -m "feat: add your feature"`
+7. **Push to your fork**: `git push origin feature/your-feature-name`
+8. **Create a Pull Request**
+
+**Commit Message Format:**
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `style:` - Code style changes (formatting, etc.)
+- `refactor:` - Code refactoring
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks
+
 ## Support
 
 For technical support or questions:
 - Create an issue in the repository
 - Contact the development team
 - Review the comprehensive documentation in the `guides/` folder
+- Check the troubleshooting sections in each guide
 
 ## Author
 
 **Andri Halim Gunawan**
+
+## Acknowledgments
+
+- **PT. Surya Inti Aneka Pangan** for project sponsorship
+- Laravel community for excellent documentation and packages
+- Tabler.io for the beautiful admin template
+- All contributors and testers
 
 ---
 
