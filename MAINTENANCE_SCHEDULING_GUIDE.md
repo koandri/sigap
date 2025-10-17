@@ -47,9 +47,9 @@ php artisan maintenance:generate-work-orders
 
 ---
 
-### 2. **Upcoming Maintenance Visibility** ⭐ NEW
+### 2. **Upcoming Maintenance Visibility**
 
-The Work Orders page now displays upcoming maintenance schedules at the top.
+The Work Orders page displays upcoming maintenance schedules at the top - showing what's coming in the next 14 days.
 
 **What it shows:**
 - Schedules due in the next **14 days**

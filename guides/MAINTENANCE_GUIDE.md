@@ -306,6 +306,21 @@ Submitted → Assigned → In Progress → Pending Verification → Verified →
 
 ### Creating a Work Order
 
+#### From Upcoming Schedules (Recommended)
+
+1. Navigate to **Maintenance > Work Orders**
+2. View **"Upcoming Maintenance Schedules"** section at the top
+3. See schedules due in the next 14 days
+4. Click **"Create WO"** button for desired schedule
+5. Work order is created automatically with schedule details
+6. Schedule's next due date updates automatically
+
+**Benefits:**
+- Pre-populated with schedule information
+- Faster than manual creation
+- Ensures consistency
+- Plan ahead for parts and resources
+
 #### Manual Creation
 
 1. Navigate to **Maintenance > Work Orders**
@@ -386,7 +401,6 @@ Work orders are automatically generated:
    - **Action Taken**: What was done (required)
    - **Findings**: What was found
    - **Recommendations**: Future recommendations
-   - **Cost**: Labor or external costs
    - **Parts Used**: Select from inventory
 3. Click **"Submit"**
 
@@ -483,13 +497,12 @@ View all maintenance for specific asset:
    - All work orders
    - All maintenance logs
    - Parts used
-   - Costs
-   - Downtime
-   - Trends
+   - Downtime tracking
+   - Trends and patterns
 
 **Use Cases:**
 - Asset reliability analysis
-- Cost tracking
+- Parts usage tracking
 - Maintenance planning
 - Audit compliance
 - Warranty claims
@@ -503,7 +516,6 @@ Each log contains:
 - **Action Taken**: What was done
 - **Findings**: What was discovered
 - **Recommendations**: Future actions
-- **Cost**: Financial cost
 - **Parts Used**: Items consumed
 - **Photos**: Documentation
 
@@ -517,7 +529,7 @@ Main dashboard shows:
 - **Total Assets**: All active assets
 - **Active Work Orders**: Open work orders
 - **Overdue Schedules**: Past due maintenance
-- **Upcoming Schedules**: Next 7 days
+- **Upcoming Maintenance**: Next 14 days forecast (visible on Work Orders page)
 
 **Charts:**
 - Asset status distribution
@@ -536,12 +548,11 @@ Main dashboard shows:
 
 **Report Metrics:**
 - Total work orders completed
-- Total cost
-- Total hours
+- Total hours worked
 - Average completion time
 - Maintenance type breakdown
 - Asset with most work
-- Cost per asset
+- Parts usage summary
 - Technician performance
 
 **Export Options:**
@@ -580,11 +591,11 @@ Visual calendar view:
 - Average response time
 - Average completion time
 
-**Cost Analysis:**
-- Maintenance cost per asset
-- Parts cost trends
-- Labor cost tracking
-- Budget vs. actual
+**Parts Analysis:**
+- Parts usage per asset
+- Parts consumption trends
+- Inventory impact
+- Frequently used parts
 
 ---
 

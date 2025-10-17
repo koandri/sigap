@@ -137,7 +137,9 @@ Computerized Maintenance Management System for asset tracking.
 - Asset management with QR codes
 - Flexible maintenance scheduling (hourly, daily, weekly, monthly, yearly)
 - Complete work order lifecycle
-- Automatic work order generation
+- 14-day upcoming maintenance forecast
+- Automatic work order generation (optional)
+- Manual work order creation from upcoming schedules
 - Parts inventory integration
 - Maintenance calendar and reports
 

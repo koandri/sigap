@@ -71,12 +71,13 @@ This isn't just a form builder - it's a sophisticated workflow management system
 
 ### 📁 Advanced Document Management
 - **File Processing**: Complete upload/download system with security controls
-- **Image Optimization**: Automatic image compression and thumbnail generation
+- **Image Optimization**: Automatic image compression and thumbnail generation (Intervention Image 3.11+)
 - **Digital Signatures**: Built-in signature capture and verification
 - **Live Photo Capture**: Real-time camera integration for field documentation
 - **File Watermarking**: Document security with custom watermarks
 - **Print-ready Reports**: PDF-optimized submission views
 - **Download Controls**: Secure file access with permission checks
+- **Multiple File Upload**: Support for multiple files per field
 
 ### 📊 Business Intelligence & Analytics
 - **Calculation Engine**: Built-in formula processor for complex calculations
@@ -179,9 +180,10 @@ This isn't just a form builder - it's a sophisticated workflow management system
   - Overdue schedules alerts
   - Recent work order activity
   - Asset status distribution charts
+  - Upcoming maintenance (14-day forecast)
 - **Maintenance Calendar**: Visual calendar view of all scheduled maintenance
 - **Maintenance Logs**: Complete history of all maintenance activities
-- **Reports & Analytics**: Performance metrics and cost tracking
+- **Reports & Analytics**: Performance metrics and parts usage tracking
 - **Integration**: Parts inventory integrated with manufacturing module
 
 ## Future Modules (Planned)
