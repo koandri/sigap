@@ -2,7 +2,7 @@
 
 @section('title', 'Submit Cleaning/Repair Request')
 
-@push('styles')
+@push('css')
 <link href="{{ asset('assets/tabler/dist/libs/tom-select/dist/css/tom-select.bootstrap5.css') }}" rel="stylesheet"/>
 @endpush
 
