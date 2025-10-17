@@ -2,6 +2,29 @@
 
 @section('title', 'Assets by Category and Location Report')
 
+@push('css')
+<link href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}" rel="stylesheet"/>
+<style>
+    .ts-dropdown {
+        background-color: #ffffff !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+    .ts-dropdown .option {
+        background-color: #ffffff;
+    }
+    .ts-dropdown .option:hover,
+    .ts-dropdown .option.active {
+        background-color: #f8f9fa !important;
+        color: #000 !important;
+    }
+    .ts-dropdown .option.selected {
+        background-color: #0d6efd !important;
+        color: #fff !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="page-header">
     <div class="container-xl">
@@ -184,7 +207,7 @@
                 @if($data['active']->isNotEmpty())
                 <h4 class="mt-3 mb-2">Active Assets</h4>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-sm">
+                    <table class="table card-table table-vcenter">
                         <thead>
                             <tr>
                                 <th>Code</th>
@@ -198,7 +221,7 @@
                         <tbody>
                             @foreach($data['active'] as $asset)
                             <tr>
-                                <td><span class="badge text-white">{{ $asset->code }}</span></td>
+                                <td><span class="badge">{{ $asset->code }}</span></td>
                                 <td>{{ $asset->name }}</td>
                                 <td>
                                     @if($asset->status === 'operational')
@@ -226,7 +249,7 @@
                 @if($data['inactive']->isNotEmpty())
                 <h4 class="mt-3 mb-2">Inactive Assets</h4>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-sm">
+                    <table class="table card-table table-vcenter">
                         <thead>
                             <tr>
                                 <th>Code</th>
@@ -285,27 +308,7 @@
 @endsection
 
 @push('scripts')
-<link href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}" rel="stylesheet"/>
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
-<style>
-    .ts-dropdown {
-        background-color: #ffffff !important;
-        border: 1px solid #e0e0e0 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-    }
-    .ts-dropdown .option {
-        background-color: #ffffff;
-    }
-    .ts-dropdown .option:hover,
-    .ts-dropdown .option.active {
-        background-color: #f8f9fa !important;
-        color: #000 !important;
-    }
-    .ts-dropdown .option.selected {
-        background-color: #0d6efd !important;
-        color: #fff !important;
-    }
-</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     new TomSelect('#category-select', {

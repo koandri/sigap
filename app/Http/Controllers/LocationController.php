@@ -28,13 +28,12 @@ final class LocationController extends Controller
             $query->where('is_active', $request->status === 'active');
         }
 
-        // Search by name, code, or city
+        // Search by name or code
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhere('city', 'like', "%{$search}%");
+                  ->orWhere('code', 'like', "%{$search}%");
             });
         }
 
@@ -59,10 +58,6 @@ final class LocationController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:locations,code',
-            'address' => 'nullable|string|max:500',
-            'city' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
-            'phone' => 'nullable|string|max:50',
             'is_active' => 'boolean',
         ]);
 
@@ -99,10 +94,6 @@ final class LocationController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:locations,code,' . $location->id,
-            'address' => 'nullable|string|max:500',
-            'city' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
-            'phone' => 'nullable|string|max:50',
             'is_active' => 'boolean',
         ]);
 

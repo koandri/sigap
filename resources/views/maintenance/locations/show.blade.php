@@ -40,45 +40,14 @@
                         <h3 class="card-title">Location Information</h3>
                     </div>
                     <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Name</label>
-                                <div class="form-control-plaintext">{{ $location->name }}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Code</label>
-                                <div class="form-control-plaintext">{{ $location->code }}</div>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <div class="form-control-plaintext">{{ $location->name }}</div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <div class="form-control-plaintext">{{ $location->address ?? 'No address provided' }}</div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label">City</label>
-                                <div class="form-control-plaintext">{{ $location->city ?? '-' }}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label">Postal Code</label>
-                                <div class="form-control-plaintext">{{ $location->postal_code ?? '-' }}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label">Phone</label>
-                                <div class="form-control-plaintext">{{ $location->phone ?? '-' }}</div>
-                            </div>
-                        </div>
+                        <label class="form-label">Code</label>
+                        <div class="form-control-plaintext">{{ $location->code }}</div>
                     </div>
 
                     <div class="mb-3">

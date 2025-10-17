@@ -17,10 +17,6 @@ final class Location extends Model
     protected $fillable = [
         'name',
         'code',
-        'address',
-        'city',
-        'postal_code',
-        'phone',
         'is_active',
     ];
 

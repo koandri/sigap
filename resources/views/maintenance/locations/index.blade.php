@@ -40,7 +40,7 @@
                 <form method="GET" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Search</label>
-                        <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="Name, code, or city">
+                        <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="Name or code">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Status</label>
@@ -72,13 +72,10 @@
                         <table class="table table-vcenter">
                             <thead>
                                 <tr>
-                                    <th width="80">Code</th>
-                                    <th width="200">Name</th>
-                                    <th>Address</th>
-                                    <th width="120">City</th>
-                                    <th width="100">Phone</th>
-                                    <th width="100">Assets Count</th>
-                                    <th width="100">Status</th>
+                                    <th width="100">Code</th>
+                                    <th>Name</th>
+                                    <th width="150">Assets Count</th>
+                                    <th width="120">Status</th>
                                     <th width="150">Actions</th>
                                 </tr>
                             </thead>
@@ -91,9 +88,6 @@
                                     <td>
                                         <div class="fw-bold">{{ $location->name }}</div>
                                     </td>
-                                    <td>{{ $location->address ?? '-' }}</td>
-                                    <td>{{ $location->city ?? '-' }}</td>
-                                    <td>{{ $location->phone ?? '-' }}</td>
                                     <td class="text-center">
                                         <span class="badge bg-secondary text-white">{{ $location->assets_count ?? 0 }}</span>
                                     </td>
