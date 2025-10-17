@@ -283,4 +283,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('styles')
 <link href="{{ asset('assets/tabler/libs/fullcalendar/index.global.css') }}" rel="stylesheet">
+<style>
+    #upcoming-maintenance-calendar .fc-event {
+        font-size: 0.75rem;
+        padding: 1px 2px;
+        margin-bottom: 1px;
+    }
+    #upcoming-maintenance-calendar .fc-event-title {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+    #upcoming-maintenance-calendar .fc-daygrid-event-dot {
+        display: none;
+    }
+</style>
 @endpush

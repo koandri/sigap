@@ -43,7 +43,7 @@ final class MaintenanceCalendarController extends Controller
         foreach ($schedules as $schedule) {
             $events->push([
                 'id' => 'schedule_' . $schedule->id,
-                'title' => $schedule->asset->name . ' - ' . $schedule->maintenanceType->name,
+                'title' => $schedule->asset->name,
                 'start' => $schedule->next_due_date->format('Y-m-d'),
                 'color' => '#206bc4', // Primary color
                 'extendedProps' => [
@@ -77,7 +77,7 @@ final class MaintenanceCalendarController extends Controller
 
             $events->push([
                 'id' => 'workorder_' . $workOrder->id,
-                'title' => $workOrder->wo_number . ' - ' . $workOrder->asset->name,
+                'title' => $workOrder->wo_number,
                 'start' => $workOrder->scheduled_date->format('Y-m-d'),
                 'color' => $color,
                 'extendedProps' => [
