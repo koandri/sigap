@@ -43,12 +43,31 @@ This isn't just a form builder - it's a sophisticated workflow management system
 - **Complete Audit Trail**: Full logging with metadata and timestamps
 
 ### 👥 Enterprise User & Permission Management
-- **Role-based Access Control**: Granular permissions using Spatie Laravel Permission
+- **Role-based Access Control (RBAC)**: Granular permissions using Spatie Laravel Permission 6.20+
+  - Custom roles with specific permissions
+  - Role inheritance and composition
+  - Permission caching for performance
 - **Department Organization**: Hierarchical department structure with inheritance
-- **User Impersonation**: Admin capability for user experience testing
-- **Multi-factor Authentication**: Enhanced security with Laravel Fortify
-- **External Authentication**: Asana integration for SSO
+  - Department-based form access
+  - Cost center tracking
+  - Organizational reporting
+- **User Impersonation**: Admin capability for user experience testing (Lab404 Impersonate)
+  - Full audit logging
+  - Secure session management
+  - One-click impersonation from user management
+- **Authentication**: Enhanced security with Laravel Fortify via Fortify-UI
+  - Email/password authentication
+  - Password reset functionality
+  - Email verification
+  - Session management
+- **External Authentication**: Laravel Socialite with Asana provider
+  - Single Sign-On (SSO) capability
+  - OAuth2 integration
+  - Automatic user provisioning
 - **Permission Matrix**: Comprehensive role and permission management
+  - Module-specific permissions (forms, manufacturing, maintenance)
+  - Action-based permissions (view, create, edit, delete, approve)
+  - Department-level access controls
 
 ### 📁 Advanced Document Management
 - **File Processing**: Complete upload/download system with security controls
@@ -88,14 +107,55 @@ This isn't just a form builder - it's a sophisticated workflow management system
 
 ### 🏭 Manufacturing & Inventory Management
 - **Multi-Warehouse Management**: Manage multiple warehouses with shelf-based organization
+  - Warehouse categories and locations
+  - Shelf and position hierarchy (Warehouse → Shelf → Position)
+  - Aisle-based organization
+  - Visual warehouse layouts
 - **Shelf-Based Inventory**: Organize inventory by warehouse, shelf, and position
+  - Three-level hierarchy for precise location tracking
+  - Position-level quantity management
+  - Batch number tracking per position
+  - Expiry date management per batch
+  - Movement history and audit trail
 - **Item Management**: Comprehensive item catalog with categories and units
+  - Item categories for organization
+  - Multiple unit types supported
+  - Minimum stock level alerts
+  - Price tracking (optional)
+  - Active/inactive status management
 - **Bill of Materials (BoM)**: Recipe and ingredient management with approval workflows
+  - Multiple BoM types (Raw Material, Finished Goods, Semi-Finished, Packaging)
+  - Base quantity configuration
+  - Ingredient list with quantities
+  - BoM approval workflow
+  - Production requirement calculation
+  - Cost estimation
 - **Picklist Generation**: FIFO-based picking lists across warehouses
+  - Automatic FIFO logic (oldest first, expiry date priority)
+  - Cross-warehouse picking
+  - BoM-based picklist generation
+  - Manual picklist creation
+  - Print-friendly format
 - **Expiry Tracking**: Monitor and manage items approaching expiration
+  - Dashboard alerts for expiring items
+  - Configurable warning thresholds
+  - Expiry date filtering in reports
 - **Inventory Reports**: Overview reports with filtering and export capabilities
+  - Warehouse overview report
+  - Shelf-level reports
+  - Item location reports
+  - Expiry reports
+  - Excel and PDF export
 - **Bulk Operations**: Bulk inventory updates and movements
-- **Excel Import**: Import items from Excel spreadsheets
+  - Bulk quantity adjustments
+  - Mass item movements
+  - Aisle-based bulk operations
+  - Excel-based bulk updates
+- **Excel Import/Export**: Import items from Excel spreadsheets
+  - Template-based import
+  - Item master data import
+  - Validation and error reporting
+  - Inventory data export
 
 ### 🔧 Maintenance Management (CMMS)
 - **Asset Management**: Track all equipment with categories, locations, and QR codes
@@ -156,20 +216,41 @@ This isn't just a form builder - it's a sophisticated workflow management system
 
 ## Technology Stack
 
-- **Backend**: Laravel 12.x with PHP 8.2+
-- **Frontend**: Blade templates with Bootstrap 5 and Tabler Admin Template
+**Backend:**
+- **Framework**: Laravel 12.x with PHP 8.2+
 - **Database**: MySQL/PostgreSQL with Eloquent ORM
-- **Authentication**: Laravel Fortify with enhanced UI components (via zacksmash/fortify-ui)
-- **Permissions**: Spatie Laravel Permission 6.20+ for RBAC
+- **Authentication**: Laravel Fortify with enhanced UI components (zacksmash/fortify-ui 2.0+)
+- **Authorization**: Spatie Laravel Permission 6.20+ for RBAC
 - **Image Processing**: Intervention Image 3.11+ for file handling
 - **Excel Processing**: Maatwebsite Excel 3.1+ for imports/exports
-- **User Impersonation**: Lab404 Laravel Impersonate for admin support
-- **Testing**: Pest PHP with comprehensive test coverage
-- **Build Tools**: Vite for modern asset compilation and hot reloading
+- **User Impersonation**: Lab404 Laravel Impersonate 1.7+ for admin support
+- **Options Management**: Spatie Laravel Options 1.2+ for configuration
+- **Testing**: Pest PHP 3.8+ with comprehensive test coverage
 - **Queue System**: Redis/Database queues for background processing
 - **Caching**: Redis/Memcached for performance optimization
-- **Task Scheduling**: Laravel scheduler for automated maintenance tasks
-- **External Auth**: Laravel Socialite with Asana provider support
+- **Task Scheduling**: Laravel scheduler for automated tasks
+- **External Auth**: Laravel Socialite 5.21+ with Asana provider support
+
+**Frontend:**
+- **Template Engine**: Laravel Blade
+- **CSS Framework**: Bootstrap 5
+- **Admin Template**: Tabler.io Admin Template (tabler/tabler)
+- **JavaScript Framework**: Minimal vanilla JavaScript/jQuery
+- **Build Tools**: Vite for modern asset compilation and hot reloading
+- **Icon Library**: Font Awesome for web icons
+- **Enhanced Selects**: Tom Select (tom-select.base.min.js) for dropdowns
+- **Date Picker**: Flatpickr or Bootstrap datepicker
+- **Image Handling**: Lightbox for image viewing
+- **File Uploads**: Native HTML5 with drag-and-drop support
+- **Signature Capture**: Canvas-based signature pad
+- **Photo Capture**: HTML5 Media API for camera access
+
+**Frontend Philosophy:**
+- Server-side form validation (Laravel)
+- Client-side JavaScript only for UI enhancement
+- Progressive enhancement approach
+- Mobile-responsive design
+- Minimal JavaScript dependencies
 
 ## System Requirements
 
@@ -313,19 +394,21 @@ app/
 │   ├── Item.php            # Inventory items
 │   └── BomTemplate.php     # Bill of materials
 ├── Services/            # Business logic services
-│   ├── ApprovalService.php    # Workflow processing
-│   ├── CalculationService.php # Formula engine
-│   ├── FormPrefillService.php # Auto-population
-│   ├── MaintenanceService.php # Maintenance logic
-│   └── ApiOptionsService.php  # API integration
+│   ├── ApprovalService.php    # Workflow processing and SLA management
+│   ├── CalculationService.php # Formula engine for calculated fields
+│   ├── FormPrefillService.php # Auto-population based on user context
+│   ├── HiddenFieldService.php # Hidden field value resolution
+│   ├── MaintenanceService.php # Maintenance scheduling and work orders
+│   └── ApiOptionsService.php  # External API integration and caching
 ├── Http/Controllers/    # Web controllers
 │   ├── FormController.php     # Forms
 │   ├── WorkOrderController.php # Maintenance
 │   ├── WarehouseController.php # Inventory
 │   └── ... (39 controllers)
 ├── Helpers/            # Utility classes
-│   ├── AuthHelper.php        # Authentication helpers
-│   └── FormPrefillHelper.php # Form auto-population
+│   ├── AuthHelper.php        # Authentication helpers and user context
+│   ├── FormPrefillHelper.php # Form auto-population logic
+│   └── helpers.php           # Global helper functions
 ├── Enums/             # Application enums
 │   ├── FrequencyType.php  # Maintenance schedule frequencies
 │   └── Location.php       # Asset location options
@@ -391,6 +474,47 @@ All models follow Laravel best practices:
 - Eloquent relationships properly defined
 - Mass assignment protection
 - Proper timestamp handling
+
+### Service Layer Architecture
+
+The application follows a service-oriented architecture with business logic separated from controllers:
+
+**ApprovalService**: Manages workflow processing
+- Step execution and routing
+- SLA tracking and escalation
+- Approval/rejection handling
+- Audit trail logging
+
+**CalculationService**: Handles field calculations
+- Formula parsing and evaluation
+- Support for SUM, MULTIPLY, DIVIDE, SUBTRACT, AVERAGE, IF
+- Real-time field dependency resolution
+- Error handling and validation
+
+**FormPrefillService**: Auto-populates form fields
+- User context-based prefilling
+- Historical data retrieval
+- Department-based defaults
+- Custom prefill rules
+
+**MaintenanceService**: Manages maintenance operations
+- Next due date calculation for all frequency types
+- Work order generation from schedules
+- Duplicate prevention logic
+- Parts inventory integration
+
+**ApiOptionsService**: External API integration
+- HTTP client configuration
+- Authentication handling (Bearer, Basic, API Key)
+- Response caching with TTL
+- Error handling and fallback
+- Support for combined label templates
+
+**HiddenFieldService**: Resolves hidden field values
+- Dynamic value calculation
+- System metadata injection
+- User context data
+- Timestamp and tracking information
 
 ## Security Considerations
 
