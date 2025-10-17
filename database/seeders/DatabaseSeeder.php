@@ -15,8 +15,14 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             ManufacturingPermissionSeeder::class,
+            MaintenancePermissionSeeder::class,
+            FacilityPermissionSeeder::class,
+            LocationSeeder::class,
+            AssetCategorySeeder::class,
+            MaintenanceTypeSeeder::class,
             BomTypeSeeder::class,
             WarehouseShelfSeeder::class,
+            ShelfPositionSeeder::class,
         ]);
     }
 }

@@ -240,6 +240,54 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::get('calendar/events', [MaintenanceCalendarController::class, 'events'])->name('calendar.events');
 });
 
+// Facility Management Routes
+use App\Http\Controllers\FacilityDashboardController;
+use App\Http\Controllers\CleaningScheduleController;
+use App\Http\Controllers\CleaningTaskController;
+use App\Http\Controllers\CleaningApprovalController;
+use App\Http\Controllers\CleaningRequestController;
+use App\Http\Controllers\CleaningReportController;
+
+// Guest request form (public)
+Route::get('facility/request', [CleaningRequestController::class, 'guestForm'])->name('facility.requests.guest-form');
+Route::post('facility/request', [CleaningRequestController::class, 'store'])->name('facility.requests.store');
+
+Route::prefix('facility')->name('facility.')->middleware(['auth'])->group(function () {
+    // Dashboard
+    Route::get('/', [FacilityDashboardController::class, 'index'])->name('dashboard');
+    
+    // Cleaning Schedules
+    Route::resource('schedules', CleaningScheduleController::class);
+    
+    // Cleaning Tasks
+    Route::get('tasks', [CleaningTaskController::class, 'index'])->name('tasks.index');
+    Route::get('tasks/my-tasks', [CleaningTaskController::class, 'myTasks'])->name('tasks.my-tasks');
+    Route::get('tasks/{task}', [CleaningTaskController::class, 'show'])->name('tasks.show');
+    Route::post('tasks/{task}/start', [CleaningTaskController::class, 'startTask'])->name('tasks.start');
+    Route::get('tasks/{task}/submit', [CleaningTaskController::class, 'submitForm'])->name('tasks.submit');
+    Route::post('tasks/{task}/submit', [CleaningTaskController::class, 'submitTask'])->name('tasks.submit.post');
+    Route::post('tasks/bulk-assign', [CleaningTaskController::class, 'bulkAssign'])->name('tasks.bulk-assign');
+    
+    // Approvals
+    Route::get('approvals', [CleaningApprovalController::class, 'index'])->name('approvals.index');
+    Route::get('approvals/{approval}/review', [CleaningApprovalController::class, 'review'])->name('approvals.review');
+    Route::post('approvals/{approval}/approve', [CleaningApprovalController::class, 'approve'])->name('approvals.approve');
+    Route::post('approvals/{approval}/reject', [CleaningApprovalController::class, 'reject'])->name('approvals.reject');
+    Route::post('approvals/mass-approve', [CleaningApprovalController::class, 'massApprove'])->name('approvals.mass-approve');
+    
+    // Requests (staff view)
+    Route::get('requests', [CleaningRequestController::class, 'index'])->name('requests.index');
+    Route::get('requests/{cleaningRequest}/handle', [CleaningRequestController::class, 'handleForm'])->name('requests.handle-form');
+    Route::post('requests/{cleaningRequest}/handle', [CleaningRequestController::class, 'handle'])->name('requests.handle');
+    
+    // Reports
+    Route::get('reports/daily', [CleaningReportController::class, 'dailyReport'])->name('reports.daily');
+    Route::get('reports/daily/pdf', [CleaningReportController::class, 'dailyReportPdf'])->name('reports.daily-pdf');
+    Route::get('reports/weekly', [CleaningReportController::class, 'weeklyReport'])->name('reports.weekly');
+    Route::get('reports/weekly/pdf', [CleaningReportController::class, 'weeklyReportPdf'])->name('reports.weekly-pdf');
+    Route::get('reports/cell-details', [CleaningReportController::class, 'cellDetails'])->name('reports.cell-details');
+});
+
 // API Routes for Form Field Options
 Route::prefix('api')->name('api.')->middleware('auth')->group(function () {
     Route::prefix('forms/{form}/versions/{version}/fields/{field}')->group(function () {

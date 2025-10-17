@@ -26,3 +26,25 @@ Artisan::command('inspire', function () {
 //     ->onFailure(function () {
 //         Log::error('Maintenance work order generation failed');
 //     });
+
+/**
+ * Schedule automatic cleaning task generation from cleaning schedules.
+ * Runs daily at 00:00 Asia/Jakarta timezone to:
+ * - Generate cleaning tasks for today
+ * - Mark yesterday's uncompleted tasks as missed
+ * - Flag random submissions for review
+ * - Release inactive locked tasks
+ * 
+ * NOTE: Currently disabled. Uncomment the lines below to enable automatic task generation.
+ */
+// Schedule::command('cleaning:generate-tasks')
+//     ->dailyAt('00:00')
+//     ->timezone('Asia/Jakarta')
+//     ->withoutOverlapping()
+//     ->runInBackground()
+//     ->onSuccess(function () {
+//         Log::info('Cleaning task generation completed successfully');
+//     })
+//     ->onFailure(function () {
+//         Log::error('Cleaning task generation failed');
+//     });
