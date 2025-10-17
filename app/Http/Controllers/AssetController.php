@@ -62,7 +62,7 @@ final class AssetController extends Controller
         $assets = $query->orderBy('name')->paginate(20);
         $categories = AssetCategory::active()->orderBy('name')->get();
 
-        return view('maintenance.assets.index', compact('assets', 'categories'));
+        return view('options.assets.index', compact('assets', 'categories'));
     }
 
     /**
@@ -75,7 +75,7 @@ final class AssetController extends Controller
         $users = User::where('active', true)->orderBy('name')->get();
         $locations = Location::active()->orderBy('name')->get();
 
-        return view('maintenance.assets.create', compact('categories', 'departments', 'users', 'locations'));
+        return view('options.assets.create', compact('categories', 'departments', 'users', 'locations'));
     }
 
     /**
@@ -123,7 +123,7 @@ final class AssetController extends Controller
         $this->generateAndStoreQRCode($asset);
 
         return redirect()
-            ->route('maintenance.assets.index')
+            ->route('options.assets.index')
             ->with('success', 'Asset created successfully.');
     }
 
@@ -143,7 +143,7 @@ final class AssetController extends Controller
             'documents'
         ]);
 
-        return view('maintenance.assets.show', compact('asset'));
+        return view('options.assets.show', compact('asset'));
     }
 
     /**
@@ -156,7 +156,7 @@ final class AssetController extends Controller
         $users = User::where('active', true)->orderBy('name')->get();
         $locations = Location::active()->orderBy('name')->get();
 
-        return view('maintenance.assets.edit', compact('asset', 'categories', 'departments', 'users', 'locations'));
+        return view('options.assets.edit', compact('asset', 'categories', 'departments', 'users', 'locations'));
     }
 
     /**
@@ -214,7 +214,7 @@ final class AssetController extends Controller
         }
 
         return redirect()
-            ->route('maintenance.assets.show', $asset)
+            ->route('options.assets.show', $asset)
             ->with('success', 'Asset updated successfully.');
     }
 
@@ -225,7 +225,7 @@ final class AssetController extends Controller
     {
         if ($asset->workOrders()->count() > 0) {
             return redirect()
-                ->route('maintenance.assets.index')
+                ->route('options.assets.index')
                 ->with('error', 'Cannot delete asset with existing work orders.');
         }
 
@@ -242,7 +242,7 @@ final class AssetController extends Controller
         $asset->delete();
 
         return redirect()
-            ->route('maintenance.assets.index')
+            ->route('options.assets.index')
             ->with('success', 'Asset deleted successfully.');
     }
 
@@ -259,7 +259,7 @@ final class AssetController extends Controller
 
         $hasLogo = file_exists(public_path('imgs/qr_logo.png'));
 
-        return view('maintenance.assets.qr-code', compact('asset', 'hasLogo'));
+        return view('options.assets.qr-code', compact('asset', 'hasLogo'));
     }
 
     /**
@@ -292,7 +292,7 @@ final class AssetController extends Controller
         $assets = $query->orderBy('code')->paginate(24);
         $categories = AssetCategory::active()->orderBy('name')->get();
 
-        return view('maintenance.assets.qr-index', compact('assets', 'categories'));
+        return view('options.assets.qr-index', compact('assets', 'categories'));
     }
 
     /**
@@ -306,7 +306,7 @@ final class AssetController extends Controller
         }
 
         // Generate QR code data
-        $qrData = route('maintenance.assets.show', $asset);
+        $qrData = route('options.assets.show', $asset);
 
         // Check if logo exists
         $logoPath = public_path('imgs/qr_logo.png');

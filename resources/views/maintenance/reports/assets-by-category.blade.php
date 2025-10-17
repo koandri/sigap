@@ -167,7 +167,7 @@
                             <td>{{ $asset->department->name ?? '-' }}</td>
                             <td>{{ $asset->user->name ?? '-' }}</td>
                             <td class="d-print-none">
-                                <a href="{{ route('maintenance.assets.show', $asset) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-eye"></i>
                                 </a>
                             </td>
@@ -228,7 +228,7 @@
                             <td>{{ $asset->department->name ?? '-' }}</td>
                             <td>{{ $asset->user->name ?? '-' }}</td>
                             <td class="d-print-none">
-                                <a href="{{ route('maintenance.assets.show', $asset) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-eye"></i>
                                 </a>
                             </td>

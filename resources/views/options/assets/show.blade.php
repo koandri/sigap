@@ -23,11 +23,11 @@
                     </a>
                     @endcan
                     @can('maintenance.assets.manage')
-                    <a href="{{ route('maintenance.assets.edit', $asset) }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-outline-secondary">
                         <i class="fa-regular fa-pen"></i>
                         Edit
                     </a>
-                    <a href="{{ route('maintenance.assets.qr-code', $asset) }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('options.assets.qr-code', $asset) }}" class="btn btn-outline-secondary">
                         <i class="fa-regular fa-qrcode"></i>
                         QR Code
                     </a>
@@ -145,7 +145,7 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Category</label>
                                     <div>
-                                        <a href="{{ route('maintenance.asset-categories.show', $asset->assetCategory) }}">
+                                        <a href="{{ route('options.asset-categories.show', $asset->assetCategory) }}">
                                             {{ $asset->assetCategory->name }}
                                         </a>
                                     </div>

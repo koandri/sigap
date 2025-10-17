@@ -16,12 +16,12 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('maintenance.assets.qr-index') }}" class="btn btn-outline-primary d-none d-sm-inline-block">
+                    <a href="{{ route('options.assets.qr-index') }}" class="btn btn-outline-primary d-none d-sm-inline-block">
                         <i class="fa-regular fa-qrcode"></i>
                         View QR Codes
                     </a>
                     @can('maintenance.assets.manage')
-                    <a href="{{ route('maintenance.assets.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('options.assets.create') }}" class="btn btn-primary d-none d-sm-inline-block">
                         <i class="fa-regular fa-plus"></i>
                         Add Asset
                     </a>
@@ -74,7 +74,7 @@
                         <label class="form-label">&nbsp;</label>
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">Filter</button>
-                            <a href="{{ route('maintenance.assets.index') }}" class="btn btn-outline-secondary">Clear</a>
+                            <a href="{{ route('options.assets.index') }}" class="btn btn-outline-secondary">Clear</a>
                         </div>
                     </div>
                 </form>
@@ -136,11 +136,11 @@
                                     <td>{{ $asset->user?->name ?? 'Unassigned' }}</td>
                                     <td>
                                         <div class="btn-list">
-                                            <a href="{{ route('maintenance.assets.show', $asset) }}" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-sm btn-outline-primary">
                                                 View
                                             </a>
                                             @can('maintenance.assets.manage')
-                                            <a href="{{ route('maintenance.assets.edit', $asset) }}" class="btn btn-sm btn-outline-secondary">
+                                            <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-sm btn-outline-secondary">
                                                 Edit
                                             </a>
                                             @endcan
@@ -167,7 +167,7 @@
                         </p>
                         @can('maintenance.assets.manage')
                         <div class="empty-action">
-                            <a href="{{ route('maintenance.assets.create') }}" class="btn btn-primary">
+                            <a href="{{ route('options.assets.create') }}" class="btn btn-primary">
                                 <i class="fa-regular fa-plus"></i>
                                 Add Asset
                             </a>

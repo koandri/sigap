@@ -16,7 +16,7 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('maintenance.assets.index') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('options.assets.index') }}" class="btn btn-outline-secondary">
                         Back to Assets
                     </a>
                 </div>
@@ -30,7 +30,7 @@
         <!-- Filters -->
         <div class="card mb-3">
             <div class="card-body">
-                <form method="GET" action="{{ route('maintenance.assets.qr-index') }}">
+                <form method="GET" action="{{ route('options.assets.qr-index') }}">
                     <div class="row g-2">
                         <div class="col-md-4">
                             <label class="form-label">Search</label>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary me-2">Filter</button>
-                            <a href="{{ route('maintenance.assets.qr-index') }}" class="btn btn-outline-secondary">Clear</a>
+                            <a href="{{ route('options.assets.qr-index') }}" class="btn btn-outline-secondary">Clear</a>
                         </div>
                     </div>
                 </form>
@@ -85,7 +85,7 @@
                                         
                                         <!-- Asset Info -->
                                         <h4 class="card-title mb-2">
-                                            <a href="{{ route('maintenance.assets.show', $asset) }}">
+                                            <a href="{{ route('options.assets.show', $asset) }}">
                                                 {{ $asset->code }}
                                             </a>
                                         </h4>
@@ -109,7 +109,7 @@
                                         
                                         <!-- Actions -->
                                         <div class="btn-list justify-content-center">
-                                            <a href="{{ route('maintenance.assets.qr-code', $asset) }}" 
+                                            <a href="{{ route('options.assets.qr-code', $asset) }}" 
                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-eye"></i> View
                                             </a>

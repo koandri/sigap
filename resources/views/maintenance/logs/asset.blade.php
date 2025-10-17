@@ -16,7 +16,7 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('maintenance.assets.show', $asset) }}" class="btn btn-secondary">
+                    <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Back to Asset
                     </a>
                 </div>
@@ -50,7 +50,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label text-muted">Location</label>
-                        <div>{{ $asset->location ?? 'N/A' }}</div>
+                        <div>{{ $asset->location?->name ?? 'N/A' }}</div>
                     </div>
                 </div>
             </div>

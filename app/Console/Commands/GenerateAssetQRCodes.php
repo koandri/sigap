@@ -76,7 +76,7 @@ final class GenerateAssetQRCodes extends Command
         }
 
         // Generate QR code data
-        $qrData = route('maintenance.assets.show', $asset);
+        $qrData = route('options.assets.show', $asset);
 
         // Check if logo exists
         $logoPath = public_path('imgs/qr_logo.png');

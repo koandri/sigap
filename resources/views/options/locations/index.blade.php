@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Asset Categories')
+@section('title', 'Locations')
 
 @section('content')
 <div class="page-header">
@@ -11,15 +11,15 @@
                     Maintenance Management
                 </div>
                 <h2 class="page-title">
-                    Asset Categories
+                    Locations
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
                 @can('maintenance.assets.manage')
                 <div class="btn-list">
-                    <a href="{{ route('maintenance.asset-categories.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('options.locations.create') }}" class="btn btn-primary d-none d-sm-inline-block">
                         <i class="fa-regular fa-plus"></i>
-                        Add Category
+                        Add Location
                     </a>
                 </div>
                 @endcan
@@ -50,57 +50,55 @@
                         <label class="form-label">&nbsp;</label>
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">Filter</button>
-                            <a href="{{ route('maintenance.asset-categories.index') }}" class="btn btn-outline-secondary">Clear</a>
+                            <a href="{{ route('options.locations.index') }}" class="btn btn-outline-secondary">Clear</a>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Categories Table -->
+        <!-- Locations Table -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Asset Categories ({{ $categories->total() }})</h3>
+                <h3 class="card-title">Locations ({{ $locations->total() }})</h3>
             </div>
             <div class="card-body">
-                @if($categories->count() > 0)
+                @if($locations->count() > 0)
                     <div class="table-responsive">
                         <table class="table table-vcenter">
                             <thead>
                                 <tr>
-                                    <th width="80">Code</th>
-                                    <th width="200">Name</th>
-                                    <th>Description</th>
-                                    <th width="100">Assets Count</th>
-                                    <th width="100">Status</th>
+                                    <th width="100">Code</th>
+                                    <th>Name</th>
+                                    <th width="150">Assets Count</th>
+                                    <th width="120">Status</th>
                                     <th width="150">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($categories as $category)
+                                @foreach($locations as $location)
                                 <tr>
                                     <td>
-                                        <span class="text-muted">{{ $category->code }}</span>
+                                        <span class="text-muted">{{ $location->code }}</span>
                                     </td>
                                     <td>
-                                        <div class="fw-bold">{{ $category->name }}</div>
+                                        <div class="fw-bold">{{ $location->name }}</div>
                                     </td>
-                                    <td>{{ $category->description ?? '-' }}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-secondary text-white">{{ $category->assets_count ?? 0 }}</span>
+                                        <span class="badge bg-secondary text-white">{{ $location->assets_count ?? 0 }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $category->is_active ? 'success' : 'secondary' }} text-white">
-                                            {{ $category->is_active ? 'Active' : 'Inactive' }}
+                                        <span class="badge bg-{{ $location->is_active ? 'success' : 'secondary' }} text-white">
+                                            {{ $location->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>
                                     <td>
                                         <div class="btn-list">
-                                            <a href="{{ route('maintenance.asset-categories.show', $category) }}" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ route('options.locations.show', $location) }}" class="btn btn-sm btn-outline-primary">
                                                 View
                                             </a>
                                             @can('maintenance.assets.manage')
-                                            <a href="{{ route('maintenance.asset-categories.edit', $category) }}" class="btn btn-sm btn-outline-secondary">
+                                            <a href="{{ route('options.locations.edit', $location) }}" class="btn btn-sm btn-outline-secondary">
                                                 Edit
                                             </a>
                                             @endcan
@@ -114,22 +112,22 @@
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center">
-                        {{ $categories->links() }}
+                        {{ $locations->links() }}
                     </div>
                 @else
                     <div class="empty">
                         <div class="empty-icon">
-                            <i class="fa-regular fa-folder-open icon"></i>
+                            <i class="fa-regular fa-location-dot icon"></i>
                         </div>
-                        <p class="empty-title">No asset categories found</p>
+                        <p class="empty-title">No locations found</p>
                         <p class="empty-subtitle text-muted">
-                            Get started by creating your first asset category.
+                            Get started by creating your first location.
                         </p>
                         @can('maintenance.assets.manage')
                         <div class="empty-action">
-                            <a href="{{ route('maintenance.asset-categories.create') }}" class="btn btn-primary">
+                            <a href="{{ route('options.locations.create') }}" class="btn btn-primary">
                                 <i class="fa-regular fa-plus"></i>
-                                Add Category
+                                Add Location
                             </a>
                         </div>
                         @endcan
@@ -140,7 +138,4 @@
     </div>
 </div>
 @endsection
-
-
-
 

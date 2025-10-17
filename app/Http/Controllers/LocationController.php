@@ -39,7 +39,7 @@ final class LocationController extends Controller
 
         $locations = $query->orderBy('name')->paginate(20);
 
-        return view('maintenance.locations.index', compact('locations'));
+        return view('options.locations.index', compact('locations'));
     }
 
     /**
@@ -47,7 +47,7 @@ final class LocationController extends Controller
      */
     public function create(): View
     {
-        return view('maintenance.locations.create');
+        return view('options.locations.create');
     }
 
     /**
@@ -64,7 +64,7 @@ final class LocationController extends Controller
         Location::create($validated);
 
         return redirect()
-            ->route('maintenance.locations.index')
+            ->route('options.locations.index')
             ->with('success', 'Location created successfully.');
     }
 
@@ -75,7 +75,7 @@ final class LocationController extends Controller
     {
         $location->load(['assets.assetCategory', 'assets.department', 'assets.user']);
         
-        return view('maintenance.locations.show', compact('location'));
+        return view('options.locations.show', compact('location'));
     }
 
     /**
@@ -83,7 +83,7 @@ final class LocationController extends Controller
      */
     public function edit(Location $location): View
     {
-        return view('maintenance.locations.edit', compact('location'));
+        return view('options.locations.edit', compact('location'));
     }
 
     /**
@@ -100,7 +100,7 @@ final class LocationController extends Controller
         $location->update($validated);
 
         return redirect()
-            ->route('maintenance.locations.index')
+            ->route('options.locations.index')
             ->with('success', 'Location updated successfully.');
     }
 
@@ -111,14 +111,14 @@ final class LocationController extends Controller
     {
         if ($location->assets()->count() > 0) {
             return redirect()
-                ->route('maintenance.locations.index')
+                ->route('options.locations.index')
                 ->with('error', 'Cannot delete location with existing assets.');
         }
 
         $location->delete();
 
         return redirect()
-            ->route('maintenance.locations.index')
+            ->route('options.locations.index')
             ->with('success', 'Location deleted successfully.');
     }
 }

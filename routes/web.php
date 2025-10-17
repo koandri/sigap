@@ -203,14 +203,18 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::get('bom/{bomTemplate}/copy', [BomController::class, 'copy'])->name('bom.copy');
 });
 
-// Maintenance Routes
-Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(function () {
-    Route::get('/', [MaintenanceDashboardController::class, 'index'])->name('dashboard');
+// Options Routes
+Route::prefix('options')->name('options.')->middleware(['auth'])->group(function () {
     Route::resource('asset-categories', AssetCategoryController::class);
     Route::resource('assets', AssetController::class);
     Route::get('assets/qr-codes/all', [AssetController::class, 'qrIndex'])->name('assets.qr-index');
     Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr-code');
     Route::resource('locations', LocationController::class);
+});
+
+// Maintenance Routes
+Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(function () {
+    Route::get('/', [MaintenanceDashboardController::class, 'index'])->name('dashboard');
     Route::resource('schedules', MaintenanceScheduleController::class);
     Route::post('schedules/{schedule}/trigger', [MaintenanceScheduleController::class, 'trigger'])->name('schedules.trigger');
     Route::resource('work-orders', WorkOrderController::class);

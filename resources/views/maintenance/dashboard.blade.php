@@ -31,7 +31,7 @@
                         <div class="h1 mb-3">{{ $totalAssets }}</div>
                         <div class="d-flex mb-2">
                             <div class="text-muted">
-                                <a href="{{ route('maintenance.assets.index') }}" class="text-reset">View all assets</a>
+                                <a href="{{ route('options.assets.index') }}" class="text-reset">View all assets</a>
                             </div>
                         </div>
                     </div>

@@ -20,7 +20,7 @@
                         <i class="fa-regular fa-download"></i>
                         Download QR (PNG)
                     </button>
-                    <a href="{{ route('maintenance.assets.show', $asset) }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-outline-secondary">
                         Back to Asset
                     </a>
                 </div>

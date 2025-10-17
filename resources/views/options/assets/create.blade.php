@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Asset')
+@section('title', 'Create Asset')
 
 @section('content')
 <div class="page-header">
@@ -11,7 +11,7 @@
                     Maintenance Management
                 </div>
                 <h2 class="page-title">
-                    Edit Asset
+                    Create Asset
                 </h2>
             </div>
         </div>
@@ -20,11 +20,12 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <form action="{{ route('maintenance.assets.update', $asset) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            
-            <div class="card">
+        <div class="row">
+            <div class="col-md-8">
+                <form action="{{ route('options.assets.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    
+                    <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Asset Information</h3>
                         </div>
@@ -34,7 +35,7 @@
                                     <div class="mb-3">
                                         <label class="form-label required">Name</label>
                                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
-                                               value="{{ old('name', $asset->name) }}" required>
+                                               value="{{ old('name') }}" required>
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -44,7 +45,7 @@
                                     <div class="mb-3">
                                         <label class="form-label required">Code</label>
                                         <input type="text" name="code" class="form-control @error('code') is-invalid @enderror" 
-                                               value="{{ old('code', $asset->code) }}" required>
+                                               value="{{ old('code') }}" required>
                                         @error('code')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -59,7 +60,7 @@
                                         <select name="asset_category_id" class="form-select @error('asset_category_id') is-invalid @enderror" required>
                                             <option value="">Select Category</option>
                                             @foreach($categories as $category)
-                                                <option value="{{ $category->id }}" {{ old('asset_category_id', $asset->asset_category_id) == $category->id ? 'selected' : '' }}>
+                                                <option value="{{ $category->id }}" {{ old('asset_category_id') == $category->id ? 'selected' : '' }}>
                                                     {{ $category->name }}
                                                 </option>
                                             @endforeach
@@ -73,10 +74,10 @@
                                     <div class="mb-3">
                                         <label class="form-label required">Status</label>
                                         <select name="status" class="form-select @error('status') is-invalid @enderror" required>
-                                            <option value="operational" {{ old('status', $asset->status) === 'operational' ? 'selected' : '' }}>Operational</option>
-                                            <option value="down" {{ old('status', $asset->status) === 'down' ? 'selected' : '' }}>Down</option>
-                                            <option value="maintenance" {{ old('status', $asset->status) === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                                            <option value="disposed" {{ old('status', $asset->status) === 'disposed' ? 'selected' : '' }}>Disposed</option>
+                                            <option value="operational" {{ old('status') === 'operational' ? 'selected' : '' }}>Operational</option>
+                                            <option value="down" {{ old('status') === 'down' ? 'selected' : '' }}>Down</option>
+                                            <option value="maintenance" {{ old('status') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                                            <option value="disposed" {{ old('status') === 'disposed' ? 'selected' : '' }}>Disposed</option>
                                         </select>
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -92,7 +93,7 @@
                                         <select name="location_id" class="form-select @error('location_id') is-invalid @enderror" id="location-select">
                                             <option value="">-- Select Location --</option>
                                             @foreach($locations as $location)
-                                                <option value="{{ $location->id }}" {{ old('location_id', $asset->location_id) == $location->id ? 'selected' : '' }}>
+                                                <option value="{{ $location->id }}" {{ old('location_id') == $location->id ? 'selected' : '' }}>
                                                     {{ $location->name }} ({{ $location->code }})
                                                 </option>
                                             @endforeach
@@ -106,7 +107,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Serial Number</label>
                                         <input type="text" name="serial_number" class="form-control @error('serial_number') is-invalid @enderror" 
-                                               value="{{ old('serial_number', $asset->serial_number) }}">
+                                               value="{{ old('serial_number') }}">
                                         @error('serial_number')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -119,7 +120,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Manufacturer</label>
                                         <input type="text" name="manufacturer" class="form-control @error('manufacturer') is-invalid @enderror" 
-                                               value="{{ old('manufacturer', $asset->manufacturer) }}">
+                                               value="{{ old('manufacturer') }}">
                                         @error('manufacturer')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -129,7 +130,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Model</label>
                                         <input type="text" name="model" class="form-control @error('model') is-invalid @enderror" 
-                                               value="{{ old('model', $asset->model) }}">
+                                               value="{{ old('model') }}">
                                         @error('model')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -142,7 +143,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Purchase Date</label>
                                         <input type="date" name="purchase_date" class="form-control @error('purchase_date') is-invalid @enderror" 
-                                               value="{{ old('purchase_date', $asset->purchase_date?->format('Y-m-d')) }}">
+                                               value="{{ old('purchase_date') }}">
                                         @error('purchase_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -152,7 +153,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Warranty Expiry</label>
                                         <input type="date" name="warranty_expiry" class="form-control @error('warranty_expiry') is-invalid @enderror" 
-                                               value="{{ old('warranty_expiry', $asset->warranty_expiry?->format('Y-m-d')) }}">
+                                               value="{{ old('warranty_expiry') }}">
                                         @error('warranty_expiry')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -167,7 +168,7 @@
                                         <select name="department_id" class="form-select @error('department_id') is-invalid @enderror">
                                             <option value="">Select Department</option>
                                             @foreach($departments as $department)
-                                                <option value="{{ $department->id }}" {{ old('department_id', $asset->department_id) == $department->id ? 'selected' : '' }}>
+                                                <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
                                                     {{ $department->name }}
                                                 </option>
                                             @endforeach
@@ -183,7 +184,7 @@
                                         <select name="user_id" class="form-select @error('user_id') is-invalid @enderror">
                                             <option value="">Select User</option>
                                             @foreach($users as $user)
-                                                <option value="{{ $user->id }}" {{ old('user_id', $asset->user_id) == $user->id ? 'selected' : '' }}>
+                                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
                                                     {{ $user->name }}
                                                 </option>
                                             @endforeach
@@ -195,17 +196,8 @@
                                 </div>
                             </div>
 
-                            @if($asset->image_path)
                             <div class="mb-3">
-                                <label class="form-label">Current Image</label>
-                                <div>
-                                    <img src="{{ Storage::url($asset->image_path) }}" alt="{{ $asset->name }}" class="img-thumbnail" style="max-width: 200px;">
-                                </div>
-                            </div>
-                            @endif
-
-                            <div class="mb-3">
-                                <label class="form-label">{{ $asset->image_path ? 'Replace Image' : 'Asset Image' }}</label>
+                                <label class="form-label">Asset Image</label>
                                 <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" 
                                        accept="image/*">
                                 @error('image')
@@ -216,19 +208,21 @@
                             <div class="mb-3">
                                 <label class="form-check">
                                     <input type="checkbox" name="is_active" class="form-check-input" value="1" 
-                                           {{ old('is_active', $asset->is_active) ? 'checked' : '' }}>
+                                           {{ old('is_active', true) ? 'checked' : '' }}>
                                     <span class="form-check-label">Active</span>
                                 </label>
                             </div>
                         </div>
                         <div class="card-footer">
                             <div class="btn-list justify-content-end">
-                                <a href="{{ route('maintenance.assets.show', $asset) }}" class="btn">Cancel</a>
-                                <button type="submit" class="btn btn-primary">Update Asset</button>
+                                <a href="{{ route('options.assets.index') }}" class="btn">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Create Asset</button>
                             </div>
-                </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 @endsection
@@ -245,4 +239,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
-

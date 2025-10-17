@@ -152,7 +152,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Asset</label>
                                     <div class="form-control-plaintext">
-                                        <a href="{{ route('maintenance.assets.show', $workOrder->asset) }}" class="text-decoration-none">
+                                        <a href="{{ route('options.assets.show', $workOrder->asset) }}" class="text-decoration-none">
                                             {{ $workOrder->asset->name }} ({{ $workOrder->asset->code }})
                                         </a>
                                     </div>

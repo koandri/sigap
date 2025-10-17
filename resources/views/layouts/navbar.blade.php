@@ -86,22 +86,13 @@
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                             <i class="fa-regular fa-wrench"></i>
                         </span>
-                        <span class="nav-link-title">Maintenance</span>
+                        <span class="nav-link-title">Assets Maintenance</span>
                     </a>
                     <div class="dropdown-menu {{ areOpenRoutes(['maintenance.*']) }}">
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.dashboard') }}" href="{{ route('maintenance.dashboard') }}">
                                     <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
-                                </a>
-                                <a class="dropdown-item {{ areActiveRoutes('maintenance.assets.*') }}" href="{{ route('maintenance.assets.index') }}">
-                                    <i class="fa-regular fa-boxes-stacked"></i> &nbsp;Assets
-                                </a>
-                                <a class="dropdown-item {{ areActiveRoutes('maintenance.asset-categories.*') }}" href="{{ route('maintenance.asset-categories.index') }}">
-                                    <i class="fa-regular fa-layer-group"></i> &nbsp;Asset Categories
-                                </a>
-                                <a class="dropdown-item {{ areActiveRoutes('maintenance.locations.*') }}" href="{{ route('maintenance.locations.index') }}">
-                                    <i class="fa-regular fa-map-marker-alt"></i> &nbsp;Locations
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.work-orders.*') }}" href="{{ route('maintenance.work-orders.index') }}">
                                     <i class="fa-regular fa-clipboard-list"></i> &nbsp;Work Orders
@@ -115,6 +106,29 @@
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.reports.*') }}" href="{{ route('maintenance.reports.index') }}">
                                     <i class="fa-regular fa-chart-bar"></i> &nbsp;Reports
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown {{ areActiveRoutes(['options.*']) }}">
+                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fa-regular fa-sliders"></i>
+                        </span>
+                        <span class="nav-link-title">Options</span>
+                    </a>
+                    <div class="dropdown-menu {{ areOpenRoutes(['options.*']) }}">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                <a class="dropdown-item {{ areActiveRoutes('options.assets.*') }}" href="{{ route('options.assets.index') }}">
+                                    <i class="fa-regular fa-boxes-stacked"></i> &nbsp;Assets
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('options.asset-categories.*') }}" href="{{ route('options.asset-categories.index') }}">
+                                    <i class="fa-regular fa-layer-group"></i> &nbsp;Asset Categories
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('options.locations.*') }}" href="{{ route('options.locations.index') }}">
+                                    <i class="fa-regular fa-map-marker-alt"></i> &nbsp;Locations
                                 </a>
                             </div>
                         </div>

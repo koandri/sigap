@@ -104,7 +104,7 @@
                                 @foreach($schedules as $schedule)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('maintenance.assets.show', $schedule->asset) }}">
+                                        <a href="{{ route('options.assets.show', $schedule->asset) }}">
                                             {{ $schedule->asset->name }}
                                         </a>
                                     </td>

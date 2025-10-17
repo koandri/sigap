@@ -213,8 +213,8 @@ SIGaP uses Role-Based Access Control (RBAC):
 **Maintenance:**
 - `maintenance.dashboard.view` - View dashboard
 - `maintenance.assets.view` - View assets
-- `maintenance.assets.create` - Create assets
-- `maintenance.assets.edit` - Edit assets
+- `options.assets.create` - Create assets
+- `options.assets.edit` - Edit assets
 - `maintenance.schedules.manage` - Manage schedules
 - `maintenance.workorders.view` - View work orders
 - `maintenance.workorders.create` - Create work orders

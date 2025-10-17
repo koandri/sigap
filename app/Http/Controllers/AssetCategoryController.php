@@ -39,7 +39,7 @@ final class AssetCategoryController extends Controller
 
         $categories = $query->orderBy('name')->paginate(20);
 
-        return view('maintenance.asset-categories.index', compact('categories'));
+        return view('options.asset-categories.index', compact('categories'));
     }
 
     /**
@@ -47,7 +47,7 @@ final class AssetCategoryController extends Controller
      */
     public function create(): View
     {
-        return view('maintenance.asset-categories.create');
+        return view('options.asset-categories.create');
     }
 
     /**
@@ -65,7 +65,7 @@ final class AssetCategoryController extends Controller
         AssetCategory::create($validated);
 
         return redirect()
-            ->route('maintenance.asset-categories.index')
+            ->route('options.asset-categories.index')
             ->with('success', 'Asset category created successfully.');
     }
 
@@ -74,9 +74,9 @@ final class AssetCategoryController extends Controller
      */
     public function show(AssetCategory $assetCategory): View
     {
-        $assetCategory->load(['assets.assetCategory', 'assets.department', 'assets.user']);
+        $assetCategory->load(['assets.assetCategory', 'assets.department', 'assets.user', 'assets.location']);
         
-        return view('maintenance.asset-categories.show', compact('assetCategory'));
+        return view('options.asset-categories.show', compact('assetCategory'));
     }
 
     /**
@@ -84,7 +84,7 @@ final class AssetCategoryController extends Controller
      */
     public function edit(AssetCategory $assetCategory): View
     {
-        return view('maintenance.asset-categories.edit', compact('assetCategory'));
+        return view('options.asset-categories.edit', compact('assetCategory'));
     }
 
     /**
@@ -102,7 +102,7 @@ final class AssetCategoryController extends Controller
         $assetCategory->update($validated);
 
         return redirect()
-            ->route('maintenance.asset-categories.index')
+            ->route('options.asset-categories.index')
             ->with('success', 'Asset category updated successfully.');
     }
 
@@ -113,14 +113,14 @@ final class AssetCategoryController extends Controller
     {
         if ($assetCategory->assets()->count() > 0) {
             return redirect()
-                ->route('maintenance.asset-categories.index')
+                ->route('options.asset-categories.index')
                 ->with('error', 'Cannot delete category with existing assets.');
         }
 
         $assetCategory->delete();
 
         return redirect()
-            ->route('maintenance.asset-categories.index')
+            ->route('options.asset-categories.index')
             ->with('success', 'Asset category deleted successfully.');
     }
 }

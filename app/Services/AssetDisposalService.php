@@ -121,7 +121,7 @@ final class AssetDisposalService
                 $message .= "⚠️ {$deactivatedSchedulesCount} maintenance schedule(s) have been automatically deactivated.\n\n";
             }
             
-            $message .= "Please review: " . route('maintenance.assets.show', $asset);
+            $message .= "Please review: " . route('options.assets.show', $asset);
             
             $groupId = env('ENGINEERING_WHATSAPP_GROUP');
             
