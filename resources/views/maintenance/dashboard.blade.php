@@ -261,24 +261,17 @@ document.addEventListener('DOMContentLoaded', function() {
             url: '{{ route("maintenance.calendar.events") }}',
             method: 'GET'
         },
-        eventClick: function(info) {
-            // Only work orders are clickable (they have URL in extendedProps)
-            if (info.event.extendedProps.type === 'workorder' && info.event.extendedProps.url) {
-                window.location.href = info.event.extendedProps.url;
-            }
-        },
-        eventDidMount: function(info) {
-            // Add cursor pointer only for work orders
-            if (info.event.extendedProps.type === 'workorder') {
-                info.el.style.cursor = 'pointer';
-            } else {
-                info.el.style.cursor = 'default';
-            }
-        },
         eventContent: function(arg) {
-            return {
-                html: '<div class="fc-event-title">' + arg.event.title + '</div>'
-            };
+            // Render work orders as clickable links, schedules as plain text
+            if (arg.event.extendedProps.type === 'workorder' && arg.event.extendedProps.url) {
+                return {
+                    html: '<a href="' + arg.event.extendedProps.url + '" class="fc-event-title text-white text-decoration-none">' + arg.event.title + '</a>'
+                };
+            } else {
+                return {
+                    html: '<div class="fc-event-title">' + arg.event.title + '</div>'
+                };
+            }
         },
         dayMaxEvents: 3,
         moreLinkClick: 'popover'
