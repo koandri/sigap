@@ -5,14 +5,38 @@
 </p>
 
 <p align="center">
-  <strong>Enterprise-grade form management and approval workflow system for PT. Surya Inti Aneka Pangan</strong>
+  <strong>Enterprise ERP & Business Process Management Platform for Food Manufacturing</strong>
 </p>
 
 ## About SIGaP
 
-SIGaP (Sistem Informasi Gabungan Pelaporan) is a comprehensive enterprise business process automation platform designed to serve as the central system for all reports and document control at **PT. Surya Inti Aneka Pangan**, one of Indonesia's largest fish and prawn manufacturing companies.
+SIGaP (Sistem Informasi Gabungan Pelaporan) is a comprehensive **Enterprise Resource Planning (ERP) and Business Process Management** platform designed specifically for **PT. Surya Inti Aneka Pangan**, one of Indonesia's largest fish and prawn manufacturing companies.
 
-This isn't just a form builder - it's a sophisticated workflow management system that rivals commercial enterprise solutions, providing dynamic form creation, multi-level approval workflows, department-based access control, and comprehensive audit trails.
+Built on Laravel 12 with modern best practices, SIGaP integrates three critical business modules into one unified system:
+
+### 🎯 Three-Pillar Architecture
+
+**1. Forms & Approval Workflows** - Digital transformation of paper-based processes
+- Dynamic form builder with 16 field types
+- Multi-level approval workflows with SLA management
+- Department-based access control and routing
+- Complete audit trails and compliance tracking
+
+**2. Manufacturing & Inventory Management** - Smart warehouse operations
+- Multi-warehouse management with shelf-based organization
+- Bill of Materials (BoM) with approval workflows
+- FIFO-based picklist generation
+- Real-time inventory tracking and expiry management
+- Excel import/export capabilities
+
+**3. Computerized Maintenance Management System (CMMS)** - Equipment lifecycle management
+- Complete asset tracking with automatic QR code generation
+- Preventive and corrective maintenance scheduling
+- Work order management with parts integration
+- Maintenance calendar and performance analytics
+- Mobile-friendly QR code scanning for field technicians
+
+This isn't just another business application - it's a **sophisticated enterprise platform** that rivals commercial ERP solutions like SAP, Oracle, or Microsoft Dynamics, but purpose-built for the food manufacturing industry with Indonesian business practices in mind.
 
 ## Core Features
 
