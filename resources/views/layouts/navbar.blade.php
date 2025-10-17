@@ -111,6 +111,52 @@
                         </div>
                     </div>
                 </li>
+                @canany(['facility.dashboard.view', 'facility.tasks.view', 'facility.schedules.view', 'facility.submissions.review'])
+                <li class="nav-item dropdown {{ areActiveRoutes(['facility.*']) }}">
+                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fa-regular fa-broom"></i>
+                        </span>
+                        <span class="nav-link-title">Facility Management</span>
+                    </a>
+                    <div class="dropdown-menu {{ areOpenRoutes(['facility.*']) }}">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                @can('facility.dashboard.view')
+                                <a class="dropdown-item {{ areActiveRoutes('facility.dashboard') }}" href="{{ route('facility.dashboard') }}">
+                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
+                                </a>
+                                @endcan
+                                @can('facility.tasks.view')
+                                <a class="dropdown-item {{ areActiveRoutes('facility.tasks.my-tasks') }}" href="{{ route('facility.tasks.my-tasks') }}">
+                                    <i class="fa-regular fa-clipboard-check"></i> &nbsp;My Tasks
+                                </a>
+                                @endcan
+                                @can('facility.schedules.view')
+                                <a class="dropdown-item {{ areActiveRoutes('facility.schedules.*') }}" href="{{ route('facility.schedules.index') }}">
+                                    <i class="fa-regular fa-calendar-days"></i> &nbsp;Cleaning Schedules
+                                </a>
+                                @endcan
+                                @can('facility.submissions.review')
+                                <a class="dropdown-item {{ areActiveRoutes('facility.approvals.*') }}" href="{{ route('facility.approvals.index') }}">
+                                    <i class="fa-regular fa-check-double"></i> &nbsp;Approvals
+                                </a>
+                                @php
+                                    $pendingApprovals = \App\Models\CleaningApproval::where('status', 'pending')->count();
+                                @endphp
+                                @if($pendingApprovals > 0)
+                                    <span class="badge badge-outline text-danger ms-1">{{ $pendingApprovals }}</span>
+                                @endif
+                                @endcan
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ route('facility.requests.guest-form') }}" target="_blank">
+                                    <i class="fa-regular fa-paper-plane"></i> &nbsp;Submit Request
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                @endcanany
                 <li class="nav-item dropdown {{ areActiveRoutes(['options.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
