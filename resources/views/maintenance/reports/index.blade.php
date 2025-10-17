@@ -238,19 +238,54 @@ document.addEventListener('DOMContentLoaded', function() {
     new ApexCharts(document.querySelector("#monthlyTrendChart"), {
         series: [{
             name: 'Work Orders',
-            type: 'column',
             data: monthlyCounts
         }],
         chart: {
             height: 350,
-            type: 'column'
+            type: 'bar'
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                borderRadius: 4,
+                dataLabels: {
+                    position: 'top'
+                }
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            offsetY: -20,
+            style: {
+                fontSize: '12px',
+                colors: ["#304758"]
+            }
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
         },
         xaxis: {
-            categories: monthlyLabels
+            categories: monthlyLabels,
+            title: {
+                text: 'Month'
+            }
         },
         yaxis: {
             title: {
-                text: 'Count'
+                text: 'Work Orders Count'
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " work orders"
+                }
             }
         }
     }).render();
