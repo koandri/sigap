@@ -1,9 +1,27 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('title', 'Submit Cleaning/Repair Request')
 
 @push('css')
-<link href="{{ asset('assets/tabler/dist/libs/tom-select/dist/css/tom-select.bootstrap5.css') }}" rel="stylesheet"/>
+<link href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.css') }}" rel="stylesheet"/>
+<style>
+    .ts-dropdown {
+        background: #fff !important;
+        border: 1px solid #d1d5db !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        z-index: 1000 !important;
+    }
+    
+    .ts-dropdown .option {
+        background: #fff !important;
+    }
+    
+    .ts-dropdown .option:hover,
+    .ts-dropdown .option.active {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -161,7 +179,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets/tabler/dist/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize TomSelect for location dropdown
