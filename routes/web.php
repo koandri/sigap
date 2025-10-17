@@ -219,6 +219,7 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::post('work-orders/{workOrder}/start', [WorkOrderController::class, 'startWork'])->name('work-orders.start');
     Route::post('work-orders/{workOrder}/log-progress', [WorkOrderController::class, 'logProgress'])->name('work-orders.log-progress');
     Route::post('work-orders/{workOrder}/add-action', [WorkOrderController::class, 'addAction'])->name('work-orders.add-action');
+    Route::post('work-orders/{workOrder}/dispose-asset', [WorkOrderController::class, 'handleDisposal'])->name('work-orders.dispose-asset');
     Route::post('work-orders/{workOrder}/upload-photo', [WorkOrderController::class, 'uploadPhoto'])->name('work-orders.upload-photo');
     Route::post('work-orders/{workOrder}/submit-verification', [WorkOrderController::class, 'submitForVerification'])->name('work-orders.submit-verification');
     Route::post('work-orders/{workOrder}/verify', [WorkOrderController::class, 'verify'])->name('work-orders.verify');

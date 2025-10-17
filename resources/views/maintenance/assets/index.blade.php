@@ -132,7 +132,7 @@
                                         <span class="badge bg-secondary text-white">{{ $asset->assetCategory->name }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }} text-white">
+                                        <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : ($asset->status === 'disposed' ? 'dark' : 'warning')) }} text-white">
                                             {{ ucfirst($asset->status) }}
                                         </span>
                                     </td>

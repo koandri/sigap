@@ -65,6 +65,11 @@
                             <button type="button" class="btn btn-outline-secondary me-2 mb-2" data-bs-toggle="modal" data-bs-target="#photoModal">
                                 Upload Photo
                             </button>
+                            @if($workOrder->asset->status !== 'disposed')
+                            <button type="button" class="btn btn-danger me-2 mb-2" data-bs-toggle="modal" data-bs-target="#disposalModal">
+                                <i class="fa fa-trash"></i> Mark Asset for Disposal
+                            </button>
+                            @endif
                             <form action="{{ route('maintenance.work-orders.submit-verification', $workOrder) }}" method="POST" class="d-inline me-2 mb-2">
                                 @csrf
                                 <button type="submit" class="btn btn-warning">Submit for Verification</button>
@@ -468,5 +473,6 @@
 @include('maintenance.work-orders.partials.photo-modal')
 @include('maintenance.work-orders.partials.verify-modal')
 @include('maintenance.work-orders.partials.close-modal')
+@include('maintenance.work-orders.partials.disposal-modal')
 
 @endsection

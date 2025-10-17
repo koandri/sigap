@@ -13,6 +13,7 @@ use App\Models\Item;
 use App\Models\Warehouse;
 use App\Models\PositionItem;
 use App\Services\MaintenanceService;
+use App\Services\AssetDisposalService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -21,7 +22,8 @@ use Illuminate\Support\Facades\Auth;
 final class WorkOrderController extends Controller
 {
     public function __construct(
-        private readonly MaintenanceService $maintenanceService
+        private readonly MaintenanceService $maintenanceService,
+        private readonly AssetDisposalService $assetDisposalService
     ) {
         $this->authorizeResource(WorkOrder::class, 'workOrder');
     }
@@ -433,6 +435,53 @@ final class WorkOrderController extends Controller
         return redirect()
             ->route('maintenance.work-orders.show', $workOrder)
             ->with('success', 'Action added successfully.');
+    }
+
+    /**
+     * Handle asset disposal from work order action.
+     */
+    public function handleDisposal(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $this->authorize('work', $workOrder);
+        
+        $validated = $request->validate([
+            'disposal_reason' => 'required|string|max:1000',
+            'confirm_disposal' => 'required|accepted',
+        ]);
+        
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+        
+        // First add the retire equipment action
+        $workOrder->actions()->create([
+            'performed_by' => $user->id,
+            'action_type' => 'retire-equipment',
+            'action_description' => 'Asset marked for disposal: ' . $validated['disposal_reason'],
+            'performed_at' => now(),
+        ]);
+        
+        // Then dispose the asset
+        $result = $this->assetDisposalService->disposeAsset(
+            $workOrder->asset,
+            $validated['disposal_reason'],
+            $user,
+            $workOrder
+        );
+        
+        if ($result['success']) {
+            $message = 'Asset marked as disposed successfully.';
+            if ($result['deactivated_schedules'] > 0) {
+                $message .= " {$result['deactivated_schedules']} maintenance schedule(s) have been deactivated and Engineering Staff has been notified.";
+            }
+            
+            return redirect()
+                ->route('maintenance.work-orders.show', $workOrder)
+                ->with('success', $message);
+        }
+        
+        return redirect()
+            ->back()
+            ->with('error', 'Failed to dispose asset: ' . ($result['error'] ?? 'Unknown error'));
     }
 
     /**

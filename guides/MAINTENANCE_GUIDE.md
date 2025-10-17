@@ -143,7 +143,7 @@ Asset details page shows:
 
 ### Overview
 
-Schedule regular maintenance with flexible frequency options. For information about automatic work order generation from schedules, see the **[Maintenance Scheduling Guide](../MAINTENANCE_SCHEDULING_GUIDE.md)**.
+Schedule regular maintenance with flexible frequency options. For information about automatic work order generation from schedules, see the **[Maintenance Scheduling Guide](./MAINTENANCE_SCHEDULING_GUIDE.md)**.
 
 ### Creating a Schedule
 
@@ -744,7 +744,7 @@ CMMS integrates with manufacturing inventory:
 ## Related Documentation
 
 - **[User Guide](./USER_GUIDE.md)** - Main system guide
-- **[Maintenance Scheduling Guide](../MAINTENANCE_SCHEDULING_GUIDE.md)** - Automatic work order generation
+- **[Maintenance Scheduling Guide](./MAINTENANCE_SCHEDULING_GUIDE.md)** - Automatic work order generation
 - **[Manufacturing Guide](./MANUFACTURING_GUIDE.md)** - Parts inventory management
 
 ---

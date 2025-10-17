@@ -126,13 +126,34 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Status</label>
                                     <div>
-                                        <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }} text-white">
+                                        <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : ($asset->status === 'disposed' ? 'dark' : 'warning')) }} text-white">
                                             {{ ucfirst($asset->status) }}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        @if($asset->status === 'disposed')
+                        <div class="alert alert-danger mb-3">
+                            <h4 class="alert-title">🚫 Asset Disposed</h4>
+                            <div class="text-secondary">
+                                <strong>Disposal Date:</strong> {{ $asset->disposed_date?->format('M d, Y') }}<br>
+                                @if($asset->disposedBy)
+                                <strong>Disposed By:</strong> {{ $asset->disposedBy->name }}<br>
+                                @endif
+                                @if($asset->disposalWorkOrder)
+                                <strong>Related Work Order:</strong> 
+                                <a href="{{ route('maintenance.work-orders.show', $asset->disposalWorkOrder) }}" class="alert-link">
+                                    {{ $asset->disposalWorkOrder->wo_number }}
+                                </a><br>
+                                @endif
+                                @if($asset->disposal_reason)
+                                <strong>Reason:</strong> {{ $asset->disposal_reason }}
+                                @endif
+                            </div>
+                        </div>
+                        @endif
 
                         <div class="row mb-3">
                             <div class="col-md-6">

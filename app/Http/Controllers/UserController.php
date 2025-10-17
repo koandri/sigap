@@ -9,11 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Spatie\LaravelOptions\Options;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Mail;
 
-use App\Mail\UserRegistration;
+use App\Services\WhatsAppService;
+use App\Services\PushoverService;
 
 use App\Enums\Location;
 
@@ -22,8 +21,12 @@ use App\Models\Department;
 use App\Models\Role;
 use App\Models\Permission;
 
-class UserController extends Controller
+final class UserController extends Controller
 {
+    public function __construct(
+        private readonly WhatsAppService $whatsAppService,
+        private readonly PushoverService $pushoverService
+    ) {}
     public function index()
     {
         $users = User::orderBy('name')->paginate(25);
@@ -103,20 +106,15 @@ class UserController extends Controller
                             'plain_password' => $plain_password,
                         ])->render();
 
-        $response = Http::acceptJson()
-                            ->withHeaders([
-                                'X-Api-Key' => env('WHATSAPP_API_KEY')
-                            ])
-                            ->post(env('WHATSAPP_WAHA_ENDPOINT') . "/api/sendText", [
-                                'session' => 'ptsiap',
-                                'chatId' => $chatId,
-                                'linkPreview' => false,
-                                'text' => $message
-                            ]);
+        $waSuccess = $this->whatsAppService->sendMessage($chatId, $message);
 
-        if ($response->failed()) {
-            //notify by email
-            Mail::to($user->email)->send(new UserRegistration($user, $plain_password));
+        if (!$waSuccess) {
+            // Fallback to Pushover notification
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                'User Registration Notification',
+                $chatId,
+                $message
+            );
         }
 
         return redirect()->route('roles.index')->with(['success' => 'A new user created!']);

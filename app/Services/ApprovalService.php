@@ -10,8 +10,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ApprovalService
+final class ApprovalService
 {
+    public function __construct(
+        private readonly WhatsAppService $whatsAppService,
+        private readonly PushoverService $pushoverService
+    ) {}
     /**
      * Start approval workflow for a submission
      */
@@ -558,45 +562,175 @@ class ApprovalService
     }
     
     /**
-     * Notification methods (placeholders)
+     * Notification methods
      */
-    private function notifyPendingApprovers(FormSubmission $submission)
+    private function notifyPendingApprovers(FormSubmission $submission): void
     {
         $pendingApprovals = $submission->getPendingApprovals();
         
         foreach ($pendingApprovals as $approval) {
-            // TODO: Send email/notification
-            // Mail::to($approval->assignedUser->email)->send(new ApprovalRequestNotification($approval));
+            try {
+                $user = $approval->assignedUser;
+                if (!$user) {
+                    continue;
+                }
+                
+                $message = "📝 *New Approval Request*\n\n";
+                $message .= "Form: *{$submission->formVersion->form->name}*\n";
+                $message .= "Submission: {$submission->submission_code}\n";
+                $message .= "Submitted by: {$submission->submitter->name}\n";
+                $message .= "Step: {$approval->step->name}\n\n";
+                $message .= "Please review: " . route('forms.submissions.show', $submission);
+                
+                // Send WhatsApp if user has mobile number
+                if ($user->mobilephone_no) {
+                    $chatId = validateMobileNumber($user->mobilephone_no);
+                    $success = $this->whatsAppService->sendMessage($chatId, $message);
+                    
+                    if (!$success) {
+                        $this->pushoverService->sendWhatsAppFailureNotification(
+                            'Approval Request to ' . $user->name,
+                            $chatId,
+                            $message
+                        );
+                    }
+                }
+                
+            } catch (\Exception $e) {
+                Log::error("Failed to notify approver: " . $e->getMessage());
+            }
         }
     }
     
-    private function notifyStepApprovers(FormSubmission $submission, ApprovalFlowStep $step)
+    private function notifyStepApprovers(FormSubmission $submission, ApprovalFlowStep $step): void
     {
         $approvers = $step->getApprovers();
         
         foreach ($approvers as $approver) {
-            // TODO: Send notification
+            try {
+                $message = "📝 *New Approval Request*\n\n";
+                $message .= "Form: *{$submission->formVersion->form->name}*\n";
+                $message .= "Submission: {$submission->submission_code}\n";
+                $message .= "Submitted by: {$submission->submitter->name}\n";
+                $message .= "Step: {$step->name}\n\n";
+                $message .= "Please review: " . route('forms.submissions.show', $submission);
+                
+                // Send WhatsApp if user has mobile number
+                if ($approver->mobilephone_no) {
+                    $chatId = validateMobileNumber($approver->mobilephone_no);
+                    $success = $this->whatsAppService->sendMessage($chatId, $message);
+                    
+                    if (!$success) {
+                        $this->pushoverService->sendWhatsAppFailureNotification(
+                            'Approval Request to ' . $approver->name,
+                            $chatId,
+                            $message
+                        );
+                    }
+                }
+                
+            } catch (\Exception $e) {
+                Log::error("Failed to notify approver: " . $e->getMessage());
+            }
         }
     }
     
-    private function notifyWorkflowCompletion(FormSubmission $submission)
+    private function notifyWorkflowCompletion(FormSubmission $submission): void
     {
-        // Notify submitter
-        $submitter = $submission->submitter;
-        // TODO: Send completion notification
+        try {
+            $submitter = $submission->submitter;
+            
+            $message = "✅ *Approval Completed*\n\n";
+            $message .= "Form: *{$submission->formVersion->form->name}*\n";
+            $message .= "Submission: {$submission->submission_code}\n";
+            $message .= "Status: *APPROVED*\n\n";
+            $message .= "Your submission has been fully approved!\n\n";
+            $message .= "View: " . route('forms.submissions.show', $submission);
+            
+            // Send WhatsApp if user has mobile number
+            if ($submitter->mobilephone_no) {
+                $chatId = validateMobileNumber($submitter->mobilephone_no);
+                $success = $this->whatsAppService->sendMessage($chatId, $message);
+                
+                if (!$success) {
+                    $this->pushoverService->sendWhatsAppFailureNotification(
+                        'Approval Completion to ' . $submitter->name,
+                        $chatId,
+                        $message
+                    );
+                }
+            }
+            
+        } catch (\Exception $e) {
+            Log::error("Failed to notify workflow completion: " . $e->getMessage());
+        }
     }
     
-    private function notifyWorkflowRejection(FormSubmission $submission, ApprovalLog $rejectionLog)
+    private function notifyWorkflowRejection(FormSubmission $submission, ApprovalLog $rejectionLog): void
     {
-        // Notify submitter
-        $submitter = $submission->submitter;
-        // TODO: Send rejection notification
+        try {
+            $submitter = $submission->submitter;
+            
+            $message = "❌ *Approval Rejected*\n\n";
+            $message .= "Form: *{$submission->formVersion->form->name}*\n";
+            $message .= "Submission: {$submission->submission_code}\n";
+            $message .= "Rejected by: {$rejectionLog->approver->name}\n";
+            
+            if ($rejectionLog->remarks) {
+                $message .= "Reason: {$rejectionLog->remarks}\n";
+            }
+            
+            $message .= "\nView: " . route('forms.submissions.show', $submission);
+            
+            // Send WhatsApp if user has mobile number
+            if ($submitter->mobilephone_no) {
+                $chatId = validateMobileNumber($submitter->mobilephone_no);
+                $success = $this->whatsAppService->sendMessage($chatId, $message);
+                
+                if (!$success) {
+                    $this->pushoverService->sendWhatsAppFailureNotification(
+                        'Approval Rejection to ' . $submitter->name,
+                        $chatId,
+                        $message
+                    );
+                }
+            }
+            
+        } catch (\Exception $e) {
+            Log::error("Failed to notify workflow rejection: " . $e->getMessage());
+        }
     }
     
-    private function notifyEscalation(ApprovalLog $originalApproval, $escalationTargets)
+    private function notifyEscalation(ApprovalLog $originalApproval, $escalationTargets): void
     {
         foreach ($escalationTargets as $target) {
-            // TODO: Send escalation notification
+            try {
+                $submission = $originalApproval->submission;
+                
+                $message = "⚠️ *Approval Escalated*\n\n";
+                $message .= "Form: *{$submission->formVersion->form->name}*\n";
+                $message .= "Submission: {$submission->submission_code}\n";
+                $message .= "Original Approver: {$originalApproval->assignedUser->name}\n";
+                $message .= "Overdue since: " . $originalApproval->created_at->diffForHumans() . "\n\n";
+                $message .= "Please review urgently: " . route('forms.submissions.show', $submission);
+                
+                // Send WhatsApp if target has mobile number
+                if ($target->mobilephone_no) {
+                    $chatId = validateMobileNumber($target->mobilephone_no);
+                    $success = $this->whatsAppService->sendMessage($chatId, $message);
+                    
+                    if (!$success) {
+                        $this->pushoverService->sendWhatsAppFailureNotification(
+                            'Approval Escalation to ' . $target->name,
+                            $chatId,
+                            $message
+                        );
+                    }
+                }
+                
+            } catch (\Exception $e) {
+                Log::error("Failed to notify escalation: " . $e->getMessage());
+            }
         }
     }
     

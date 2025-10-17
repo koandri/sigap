@@ -76,6 +76,7 @@
                                             <option value="operational" {{ old('status', $asset->status) === 'operational' ? 'selected' : '' }}>Operational</option>
                                             <option value="down" {{ old('status', $asset->status) === 'down' ? 'selected' : '' }}>Down</option>
                                             <option value="maintenance" {{ old('status', $asset->status) === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                                            <option value="disposed" {{ old('status', $asset->status) === 'disposed' ? 'selected' : '' }}>Disposed</option>
                                         </select>
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>

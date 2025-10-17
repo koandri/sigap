@@ -31,6 +31,10 @@ final class Asset extends Model
         'department_id',
         'user_id',
         'is_active',
+        'disposed_date',
+        'disposal_reason',
+        'disposed_by',
+        'disposal_work_order_id',
     ];
 
     /**
@@ -41,6 +45,7 @@ final class Asset extends Model
     protected $casts = [
         'purchase_date' => 'date',
         'warranty_expiry' => 'date',
+        'disposed_date' => 'date',
         'specifications' => 'array',
         'is_active' => 'boolean',
     ];
@@ -110,11 +115,35 @@ final class Asset extends Model
     }
 
     /**
+     * Get the user who disposed this asset.
+     */
+    public function disposedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'disposed_by');
+    }
+
+    /**
+     * Get the work order that led to disposal.
+     */
+    public function disposalWorkOrder(): BelongsTo
+    {
+        return $this->belongsTo(WorkOrder::class, 'disposal_work_order_id');
+    }
+
+    /**
      * Scope to get only active assets.
      */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope to get disposed assets.
+     */
+    public function scopeDisposed($query)
+    {
+        return $query->where('status', 'disposed')->orWhere('is_active', false);
     }
 
     /**

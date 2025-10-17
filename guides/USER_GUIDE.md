@@ -148,7 +148,7 @@ Computerized Maintenance Management System for asset tracking.
 
 **Learn More:**
 - **[Maintenance Guide](./MAINTENANCE_GUIDE.md)** - Complete CMMS guide
-- **[Maintenance Scheduling Guide](../MAINTENANCE_SCHEDULING_GUIDE.md)** - Automatic work order generation
+- **[Maintenance Scheduling Guide](./MAINTENANCE_SCHEDULING_GUIDE.md)** - Automatic work order generation
 
 **Quick Start:**
 - **Technicians**: [Complete Work Orders](./MAINTENANCE_GUIDE.md#for-technicians-completing-work)
@@ -214,7 +214,7 @@ Need help with day-to-day operations? Check our quick reference:
 | **[Admin Guide](./ADMIN_GUIDE.md)** | System administration | Administrators |
 | **[Common Tasks](./COMMON_TASKS.md)** | Quick reference | Everyone |
 | **[API Options Guide](./API_OPTIONS_GUIDE.md)** | API integration | Admins (Technical) |
-| **[Maintenance Scheduling Guide](../MAINTENANCE_SCHEDULING_GUIDE.md)** | Automatic work order generation | Maintenance Managers |
+| **[Maintenance Scheduling Guide](./MAINTENANCE_SCHEDULING_GUIDE.md)** | Automatic work order generation | Maintenance Managers |
 
 ---
 

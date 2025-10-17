@@ -9,18 +9,21 @@ use App\Models\WarehouseShelf;
 use App\Models\ShelfPosition;
 use App\Models\PositionItem;
 use App\Models\Item;
+use App\Services\WhatsAppService;
+use App\Services\PushoverService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 final class ShelfInventoryController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct(
+        private readonly WhatsAppService $whatsAppService,
+        private readonly PushoverService $pushoverService
+    ) {
         $this->middleware('can:manufacturing.inventory.view')->only(['index', 'showShelf']);
         $this->middleware('can:manufacturing.inventory.create')->only(['addItemToPosition']);
         $this->middleware('can:manufacturing.inventory.edit')->only(['updatePositionItem']);
@@ -356,27 +359,26 @@ final class ShelfInventoryController extends Controller
         try {
             $message = "Item '{$item->name}' (Qty: {$positionItem->quantity} {$item->unit}) has been added to position {$position->full_location_code} in warehouse '{$warehouse->name}' by " . Auth::user()->name;
             
-            // Try HTTP notification first
-            $response = Http::timeout(10)->post('https://waha.suryagroup.app/api/sendText', [
-                'session' => 'ptsiap',
-                'chatId' => '12132132130@c.us', // This should be configurable
-                'text' => $message
-            ]);
+            $groupId = env('WAREHOUSE_WHATSAPP_GROUP');
+            
+            if (!$groupId) {
+                Log::warning('WAREHOUSE_WHATSAPP_GROUP not configured');
+                return;
+            }
+            
+            // Try WhatsApp notification first
+            $waSuccess = $this->whatsAppService->sendMessage($groupId, $message);
 
-            if (!$response->successful()) {
-                throw new \Exception('HTTP notification failed');
+            if (!$waSuccess) {
+                // Fallback to Pushover notification
+                $this->pushoverService->sendWhatsAppFailureNotification(
+                    'Warehouse Item Added',
+                    $groupId,
+                    $message
+                );
             }
         } catch (\Exception $e) {
-            // Fallback to email notification
-            try {
-                Mail::raw($message, function ($mail) use ($warehouse) {
-                    $mail->to(config('mail.admin_email', 'admin@example.com'))
-                         ->subject("Item Added to Warehouse - {$warehouse->name}");
-                });
-            } catch (\Exception $emailException) {
-                // Log the error but don't fail the main operation
-                \Log::error('Failed to send item added notification: ' . $emailException->getMessage());
-            }
+            Log::error('Failed to send item added notification: ' . $e->getMessage());
         }
     }
 }
