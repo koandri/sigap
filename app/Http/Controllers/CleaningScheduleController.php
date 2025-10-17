@@ -52,8 +52,11 @@ final class CleaningScheduleController extends Controller
             'location_id' => 'required|exists:locations,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'frequency_type' => 'required|in:daily,weekly,monthly',
+            'frequency_type' => 'required|in:hourly,daily,weekly,monthly,yearly',
             'frequency_config' => 'nullable|array',
+            'scheduled_time' => 'nullable|date_format:H:i',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
             'is_active' => 'boolean',
             'items' => 'required|array|min:1',
             'items.*.asset_id' => 'nullable|exists:assets,id',
@@ -67,6 +70,9 @@ final class CleaningScheduleController extends Controller
             'description' => $validated['description'] ?? null,
             'frequency_type' => $validated['frequency_type'],
             'frequency_config' => $validated['frequency_config'] ?? [],
+            'scheduled_time' => $validated['scheduled_time'] ?? null,
+            'start_time' => $validated['start_time'] ?? null,
+            'end_time' => $validated['end_time'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
@@ -131,14 +137,19 @@ final class CleaningScheduleController extends Controller
             'location_id' => 'required|exists:locations,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'frequency_type' => 'required|in:daily,weekly,monthly',
+            'frequency_type' => 'required|in:hourly,daily,weekly,monthly,yearly',
             'frequency_config' => 'nullable|array',
+            'scheduled_time' => 'nullable|date_format:H:i',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
             'is_active' => 'boolean',
             'items' => 'required|array|min:1',
             'items.*.id' => 'nullable|exists:cleaning_schedule_items,id',
             'items.*.asset_id' => 'nullable|exists:assets,id',
             'items.*.item_name' => 'required|string|max:255',
             'items.*.item_description' => 'nullable|string',
+            'existing_items' => 'nullable|array',
+            'existing_items.*._delete' => 'nullable|boolean',
         ]);
 
         $schedule->update([
@@ -147,6 +158,9 @@ final class CleaningScheduleController extends Controller
             'description' => $validated['description'] ?? null,
             'frequency_type' => $validated['frequency_type'],
             'frequency_config' => $validated['frequency_config'] ?? [],
+            'scheduled_time' => $validated['scheduled_time'] ?? null,
+            'start_time' => $validated['start_time'] ?? null,
+            'end_time' => $validated['end_time'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
         ]);
 

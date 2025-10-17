@@ -2,6 +2,10 @@
 
 @section('title', 'Submit Cleaning/Repair Request')
 
+@push('styles')
+<link href="{{ asset('assets/tabler/dist/libs/tom-select/dist/css/tom-select.bootstrap5.css') }}" rel="stylesheet"/>
+@endpush
+
 @section('content')
 <div class="page-header d-print-none">
     <div class="container-xl">
@@ -52,7 +56,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label required">Location</label>
-                                <select name="location_id" class="form-select @error('location_id') is-invalid @enderror" required>
+                                <select id="location-select" name="location_id" class="form-select @error('location_id') is-invalid @enderror" required>
                                     <option value="">Select location...</option>
                                     @foreach($locations as $location)
                                         <option value="{{ $location->id }}" {{ old('location_id') == $location->id ? 'selected' : '' }}>
@@ -155,4 +159,18 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('assets/tabler/dist/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize TomSelect for location dropdown
+        new TomSelect('#location-select', {
+            placeholder: 'Select location...',
+            allowEmptyOption: true,
+            create: false
+        });
+    });
+</script>
+@endpush
 
