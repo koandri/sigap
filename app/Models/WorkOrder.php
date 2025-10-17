@@ -205,4 +205,35 @@ final class WorkOrder extends Model
     {
         return $query->where('status', 'completed');
     }
+
+    /**
+     * Scope to filter work orders accessible by user.
+     */
+    public function scopeAccessibleBy($query, $user)
+    {
+        // Super Admin and Owner can see all
+        if ($user->hasRole(['Super Admin', 'Owner'])) {
+            return $query;
+        }
+
+        // Engineering Staff can see all work orders
+        if ($user->hasRole('Engineering')) {
+            return $query;
+        }
+
+        // Engineering Operator can only see work orders assigned to them
+        if ($user->hasRole('Engineering Operator')) {
+            return $query->where('assigned_to', $user->id);
+        }
+
+        // Other users can see:
+        // 1. WOs created by themselves
+        // 2. WOs created by their staff (if user is a manager)
+        return $query->where(function ($q) use ($user) {
+            $q->where('requested_by', $user->id)
+              ->orWhereHas('requestedBy', function ($subQ) use ($user) {
+                  $subQ->where('manager_id', $user->id);
+              });
+        });
+    }
 }

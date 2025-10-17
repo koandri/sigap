@@ -80,43 +80,11 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Assigned To</label>
-                                        <select name="assigned_to" class="form-select @error('assigned_to') is-invalid @enderror">
-                                            <option value="">Select User</option>
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->id }}" {{ old('assigned_to') == $user->id ? 'selected' : '' }}>
-                                                    {{ $user->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('assigned_to')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Scheduled Date</label>
-                                        <input type="datetime-local" name="scheduled_date" class="form-control @error('scheduled_date') is-invalid @enderror" value="{{ old('scheduled_date') }}">
-                                        @error('scheduled_date')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Estimated Hours</label>
-                                        <input type="number" name="estimated_hours" class="form-control @error('estimated_hours') is-invalid @enderror" value="{{ old('estimated_hours') }}" step="0.5" min="0">
-                                        @error('estimated_hours')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                            <div class="alert alert-info">
+                                <h4 class="alert-title">Work Order Assignment</h4>
+                                <p class="mb-0">This work order will be created in "Submitted" status. Engineering staff will assign it to an operator with scheduling details.</p>
                             </div>
 
                             <div class="mb-3">

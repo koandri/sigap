@@ -117,7 +117,7 @@
                                             {{ $schedule->maintenanceType->name }}
                                         </span>
                                     </td>
-                                    <td>{{ $schedule->frequency_days }} days</td>
+                                    <td>{{ $schedule->frequency_description }}</td>
                                     <td>
                                         <span class="text-{{ $schedule->next_due_date < now() ? 'danger' : ($schedule->next_due_date < now()->addDays(7) ? 'warning' : 'muted') }}">
                                             {{ $schedule->next_due_date->format('M d, Y') }}

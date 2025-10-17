@@ -87,7 +87,9 @@ final class MaintenanceScheduleController extends Controller
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'maintenance_type_id' => 'required|exists:maintenance_types,id',
-            'frequency_days' => 'required|integer|min:1|max:365',
+            'frequency_type' => 'required|in:hourly,daily,weekly,monthly,yearly',
+            'frequency_config' => 'required|array',
+            'frequency_days' => 'nullable|integer|min:1|max:365',
             'description' => 'required|string|max:1000',
             'checklist' => 'nullable|array',
             'checklist.*' => 'string|max:255',
@@ -95,10 +97,13 @@ final class MaintenanceScheduleController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        // Calculate next due date
-        $validated['next_due_date'] = now()->addDays($validated['frequency_days']);
+        // Create the schedule
+        $schedule = MaintenanceSchedule::create($validated);
 
-        MaintenanceSchedule::create($validated);
+        // Calculate next due date using the service
+        $schedule->update([
+            'next_due_date' => $this->maintenanceService->calculateNextDueDate($schedule)
+        ]);
 
         return redirect()
             ->route('maintenance.schedules.index')
@@ -139,7 +144,9 @@ final class MaintenanceScheduleController extends Controller
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'maintenance_type_id' => 'required|exists:maintenance_types,id',
-            'frequency_days' => 'required|integer|min:1|max:365',
+            'frequency_type' => 'required|in:hourly,daily,weekly,monthly,yearly',
+            'frequency_config' => 'required|array',
+            'frequency_days' => 'nullable|integer|min:1|max:365',
             'description' => 'required|string|max:1000',
             'checklist' => 'nullable|array',
             'checklist.*' => 'string|max:255',
@@ -147,13 +154,18 @@ final class MaintenanceScheduleController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        // Recalculate next due date if frequency changed
-        if ($schedule->frequency_days != $validated['frequency_days']) {
-            $baseDate = $schedule->last_performed_at ?? $schedule->created_at;
-            $validated['next_due_date'] = $baseDate->addDays($validated['frequency_days']);
-        }
+        // Check if frequency configuration changed
+        $frequencyChanged = $schedule->frequency_type->value != $validated['frequency_type'] 
+            || $schedule->frequency_config != $validated['frequency_config'];
 
         $schedule->update($validated);
+
+        // Recalculate next due date if frequency changed
+        if ($frequencyChanged) {
+            $schedule->update([
+                'next_due_date' => $this->maintenanceService->calculateNextDueDate($schedule)
+            ]);
+        }
 
         return redirect()
             ->route('maintenance.schedules.show', $schedule)

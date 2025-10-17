@@ -21,7 +21,7 @@
 <div class="page-body">
     <div class="container-xl">
         <!-- Statistics Cards -->
-        <div class="row row-deck row-cards">
+        <div class="row row-deck row-cards mb-3">
             <div class="col-sm-6 col-lg-3">
                 <div class="card">
                     <div class="card-body">
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <div class="row row-deck row-cards">
+        <div class="row row-deck row-cards mb-3">
             <!-- Recent Work Orders -->
             <div class="col-md-6">
                 <div class="card">

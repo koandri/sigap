@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\WorkOrder;
 use App\Models\Asset;
 use App\Models\MaintenanceType;
+use App\Models\MaintenanceSchedule;
 use App\Models\User;
 use App\Models\Item;
 use App\Models\Warehouse;
@@ -15,14 +16,14 @@ use App\Services\MaintenanceService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 final class WorkOrderController extends Controller
 {
     public function __construct(
         private readonly MaintenanceService $maintenanceService
     ) {
-        $this->middleware('can:maintenance.work-orders.create')->only(['create', 'store']);
-        $this->middleware('can:maintenance.work-orders.complete')->only(['updateStatus', 'complete']);
+        $this->authorizeResource(WorkOrder::class, 'workOrder');
     }
 
     /**
@@ -30,7 +31,11 @@ final class WorkOrderController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = WorkOrder::with(['asset', 'maintenanceType', 'assignedUser', 'requestedBy']);
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+        
+        $query = WorkOrder::with(['asset', 'maintenanceType', 'assignedUser', 'requestedBy'])
+            ->accessibleBy($user);
 
         // Filter by status
         if ($request->filled('status')) {
@@ -47,6 +52,11 @@ final class WorkOrderController extends Controller
             $query->where('assigned_to', $request->assigned_to);
         }
 
+        // Filter by requested user
+        if ($request->filled('requested_by')) {
+            $query->where('requested_by', $request->requested_by);
+        }
+
         // Search by WO number or description
         if ($request->filled('search')) {
             $search = $request->search;
@@ -57,9 +67,21 @@ final class WorkOrderController extends Controller
         }
 
         $workOrders = $query->latest()->paginate(20);
-        $users = User::where('active', true)->orderBy('name')->get();
+        
+        // Get Engineering Operators for the assigned filter dropdown
+        $assignedUsers = User::engineeringOperators()->orderBy('name')->get();
+        
+        // Get all active users for the requested by filter dropdown
+        $requestedUsers = User::where('active', true)->orderBy('name')->get();
 
-        return view('maintenance.work-orders.index', compact('workOrders', 'users'));
+        // Get upcoming maintenance schedules (next 14 days)
+        $upcomingSchedules = MaintenanceSchedule::active()
+            ->with(['asset', 'maintenanceType', 'assignedUser'])
+            ->whereBetween('next_due_date', [now(), now()->addDays(14)])
+            ->orderBy('next_due_date', 'asc')
+            ->get();
+
+        return view('maintenance.work-orders.index', compact('workOrders', 'assignedUsers', 'requestedUsers', 'upcomingSchedules'));
     }
 
     /**
@@ -69,9 +91,8 @@ final class WorkOrderController extends Controller
     {
         $assets = Asset::active()->with('assetCategory')->orderBy('name')->get();
         $maintenanceTypes = MaintenanceType::active()->orderBy('name')->get();
-        $users = User::where('active', true)->orderBy('name')->get();
 
-        return view('maintenance.work-orders.create', compact('assets', 'maintenanceTypes', 'users'));
+        return view('maintenance.work-orders.create', compact('assets', 'maintenanceTypes'));
     }
 
     /**
@@ -83,16 +104,17 @@ final class WorkOrderController extends Controller
             'asset_id' => 'required|exists:assets,id',
             'maintenance_type_id' => 'required|exists:maintenance_types,id',
             'priority' => 'required|in:low,medium,high,urgent',
-            'scheduled_date' => 'nullable|date|after_or_equal:today',
-            'assigned_to' => 'nullable|exists:users,id',
-            'estimated_hours' => 'nullable|numeric|min:0',
             'description' => 'required|string|max:1000',
             'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'photo_captions.*' => 'nullable|string|max:255',
         ]);
 
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+        
         $validated['wo_number'] = $this->generateWONumber();
-        $validated['requested_by'] = auth()->id();
+        $validated['requested_by'] = $user->id;
+        $validated['status'] = 'submitted';
 
         $workOrder = WorkOrder::create($validated);
 
@@ -102,7 +124,7 @@ final class WorkOrderController extends Controller
                 if ($photo) {
                     $photoPath = $photo->store('work-order-photos', 'public');
                     $workOrder->photos()->create([
-                        'uploaded_by' => auth()->id(),
+                        'uploaded_by' => $user->id,
                         'photo_path' => $photoPath,
                         'photo_type' => 'initial',
                         'caption' => $validated['photo_captions'][$index] ?? null,
@@ -146,7 +168,10 @@ final class WorkOrderController extends Controller
             ->get()
             ->groupBy('item.name');
 
-        return view('maintenance.work-orders.show', compact('workOrder', 'availableParts'));
+        // Get Engineering Operators for assignment modal
+        $users = User::engineeringOperators()->orderBy('name')->get();
+
+        return view('maintenance.work-orders.show', compact('workOrder', 'availableParts', 'users'));
     }
 
     /**
@@ -156,7 +181,9 @@ final class WorkOrderController extends Controller
     {
         $assets = Asset::active()->with('assetCategory')->orderBy('name')->get();
         $maintenanceTypes = MaintenanceType::active()->orderBy('name')->get();
-        $users = User::where('active', true)->orderBy('name')->get();
+        
+        // Get Engineering Operators for assignment
+        $users = User::engineeringOperators()->orderBy('name')->get();
 
         return view('maintenance.work-orders.edit', compact('workOrder', 'assets', 'maintenanceTypes', 'users'));
     }
@@ -236,9 +263,12 @@ final class WorkOrderController extends Controller
         }
 
         // Create maintenance log
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+        
         $workOrder->maintenanceLogs()->create([
             'asset_id' => $workOrder->asset_id,
-            'performed_by' => auth()->id(),
+            'performed_by' => $user->id,
             'performed_at' => now(),
             'action_taken' => $validated['action_taken'],
             'findings' => $validated['findings'],
@@ -290,10 +320,12 @@ final class WorkOrderController extends Controller
     }
 
     /**
-     * Assign work order to operator (Engineering Staff).
+     * Assign work order to operator (Engineering).
      */
     public function assign(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('assign', $workOrder);
+
         $validated = $request->validate([
             'assigned_to' => 'required|exists:users,id',
             'scheduled_date' => 'required|date|after_or_equal:today',
@@ -301,9 +333,21 @@ final class WorkOrderController extends Controller
             'notes' => 'nullable|string|max:1000',
         ]);
 
+        // Verify that the assigned user has Engineering Operator role
+        $assignedUser = User::find($validated['assigned_to']);
+        if (!$assignedUser || !$assignedUser->hasRole('Engineering Operator')) {
+            return redirect()
+                ->back()
+                ->withErrors(['assigned_to' => 'The selected user must have the Engineering Operator role.'])
+                ->withInput();
+        }
+
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+        
         $workOrder->update([
             'assigned_to' => $validated['assigned_to'],
-            'assigned_by' => auth()->id(),
+            'assigned_by' => $user->id,
             'assigned_at' => now(),
             'scheduled_date' => $validated['scheduled_date'],
             'estimated_hours' => $validated['estimated_hours'],
@@ -321,6 +365,8 @@ final class WorkOrderController extends Controller
      */
     public function startWork(WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('work', $workOrder);
+
         $workOrder->update([
             'work_started_at' => now(),
             'status' => 'in-progress',
@@ -336,6 +382,8 @@ final class WorkOrderController extends Controller
      */
     public function logProgress(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('work', $workOrder);
+
         $validated = $request->validate([
             'hours_worked' => 'required|numeric|min:0.1',
             'progress_notes' => 'required|string|max:1000',
@@ -343,8 +391,11 @@ final class WorkOrderController extends Controller
             'logged_at' => 'nullable|date',
         ]);
 
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+
         $workOrder->progressLogs()->create([
-            'logged_by' => auth()->id(),
+            'logged_by' => $user->id,
             'logged_at' => $validated['logged_at'] ?? now(),
             'hours_worked' => $validated['hours_worked'],
             'progress_notes' => $validated['progress_notes'],
@@ -361,6 +412,8 @@ final class WorkOrderController extends Controller
      */
     public function addAction(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('work', $workOrder);
+
         $validated = $request->validate([
             'action_type' => 'required|in:spare-part-replacement,send-for-repair,retire-equipment,cleaning,adjustment,calibration,enhancement,other',
             'action_description' => 'required|string|max:1000',
@@ -368,8 +421,11 @@ final class WorkOrderController extends Controller
             'performed_at' => 'nullable|date',
         ]);
 
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+
         $workOrder->actions()->create([
-            'performed_by' => auth()->id(),
+            'performed_by' => $user->id,
             'action_type' => $validated['action_type'],
             'action_description' => $validated['action_description'],
             'notes' => $validated['notes'],
@@ -386,16 +442,21 @@ final class WorkOrderController extends Controller
      */
     public function uploadPhoto(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('work', $workOrder);
+
         $validated = $request->validate([
             'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'photo_type' => 'required|in:progress,before,after,issue',
             'caption' => 'nullable|string|max:255',
         ]);
 
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+
         $photoPath = $request->file('photo')->store('work-order-photos', 'public');
 
         $workOrder->photos()->create([
-            'uploaded_by' => auth()->id(),
+            'uploaded_by' => $user->id,
             'photo_path' => $photoPath,
             'photo_type' => $validated['photo_type'],
             'caption' => $validated['caption'],
@@ -411,6 +472,8 @@ final class WorkOrderController extends Controller
      */
     public function submitForVerification(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('work', $workOrder);
+
         $validated = $request->validate([
             'completion_notes' => 'nullable|string|max:1000',
         ]);
@@ -421,7 +484,7 @@ final class WorkOrderController extends Controller
         $workOrder->update([
             'work_finished_at' => now(),
             'actual_hours' => $totalHours,
-            'notes' => $validated['completion_notes'],
+            'notes' => $validated['completion_notes'] ?? $workOrder->notes,
             'status' => 'pending-verification',
         ]);
 
@@ -431,20 +494,25 @@ final class WorkOrderController extends Controller
     }
 
     /**
-     * Verify work order (Engineering Staff).
+     * Verify work order (Engineering).
      */
     public function verify(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('verify', $workOrder);
+
         $validated = $request->validate([
             'action' => 'required|in:approve,rework',
             'verification_notes' => 'nullable|string|max:1000',
         ]);
 
+        $user = Auth::user();
+        assert($user instanceof \App\Models\User);
+
         if ($validated['action'] === 'approve') {
             $workOrder->update([
                 'status' => 'verified',
                 'verified_at' => now(),
-                'verified_by' => auth()->id(),
+                'verified_by' => $user->id,
                 'verification_notes' => $validated['verification_notes'],
             ]);
 
@@ -468,6 +536,8 @@ final class WorkOrderController extends Controller
      */
     public function close(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        $this->authorize('close', $workOrder);
+
         $validated = $request->validate([
             'action' => 'required|in:close,rework',
             'closing_notes' => 'nullable|string|max:1000',

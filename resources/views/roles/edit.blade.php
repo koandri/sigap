@@ -26,6 +26,7 @@
                             <form class="card" action="{{ route('roles.update', $role) }}" method="POST">
                                 @csrf
                                 @method('PUT')
+                                <input type="hidden" name="guard_name" value="web" />
                                 <div class="card-header">
                                     <h3 class="card-title">@yield('title')</h3>
                                 </div>

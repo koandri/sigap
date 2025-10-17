@@ -62,8 +62,132 @@ final readonly class MaintenanceService
      */
     public function calculateNextDueDate(MaintenanceSchedule $schedule): Carbon
     {
-        $baseDate = $schedule->last_performed_at ?? $schedule->created_at;
-        return $baseDate->addDays($schedule->frequency_days);
+        $baseDate = $schedule->last_performed_at ?? $schedule->created_at ?? now();
+        $config = $schedule->frequency_config ?? [];
+        
+        return match($schedule->frequency_type->value) {
+            'hourly' => $this->calculateHourlyNextDate($baseDate, $config),
+            'daily' => $this->calculateDailyNextDate($baseDate, $config, $schedule->frequency_days),
+            'weekly' => $this->calculateWeeklyNextDate($baseDate, $config),
+            'monthly' => $this->calculateMonthlyNextDate($baseDate, $config),
+            'yearly' => $this->calculateYearlyNextDate($baseDate, $config),
+            default => $baseDate->copy()->addDays($schedule->frequency_days ?? 1),
+        };
+    }
+
+    private function calculateHourlyNextDate(Carbon $baseDate, array $config): Carbon
+    {
+        $interval = $config['interval'] ?? 1;
+        return $baseDate->copy()->addHours($interval);
+    }
+
+    private function calculateDailyNextDate(Carbon $baseDate, array $config, ?int $fallbackDays): Carbon
+    {
+        $interval = $config['interval'] ?? $fallbackDays ?? 1;
+        return $baseDate->copy()->addDays($interval);
+    }
+
+    private function calculateWeeklyNextDate(Carbon $baseDate, array $config): Carbon
+    {
+        $interval = $config['interval'] ?? 1;
+        $days = $config['days'] ?? [];
+        
+        if (empty($days)) {
+            return $baseDate->copy()->addWeeks($interval);
+        }
+        
+        // Find next occurrence of specified day(s)
+        $nextDate = $baseDate->copy()->addDay();
+        $weeksAdded = 0;
+        
+        while (true) {
+            $currentDayOfWeek = $nextDate->dayOfWeekIso; // 1=Monday, 7=Sunday
+            
+            if (in_array($currentDayOfWeek, $days)) {
+                // Check if we're in the right week interval
+                $weeksDiff = $nextDate->diffInWeeks($baseDate);
+                if ($weeksDiff % $interval === 0) {
+                    return $nextDate;
+                }
+            }
+            
+            $nextDate->addDay();
+            
+            // Safety check to prevent infinite loop
+            if ($nextDate->diffInDays($baseDate) > 365) {
+                return $baseDate->copy()->addWeeks($interval);
+            }
+        }
+    }
+
+    private function calculateMonthlyNextDate(Carbon $baseDate, array $config): Carbon
+    {
+        $interval = $config['interval'] ?? 1;
+        $type = $config['type'] ?? 'date';
+        
+        $nextDate = $baseDate->copy()->addMonths($interval);
+        
+        if ($type === 'last_day') {
+            return $nextDate->endOfMonth()->startOfDay();
+        }
+        
+        if ($type === 'weekday') {
+            $week = $config['week'] ?? 1; // 1=first, 2=second, 3=third, 4=fourth, 5=last
+            $day = $config['day'] ?? 1; // 1=Monday, 7=Sunday
+            
+            return $this->getNthWeekdayOfMonth($nextDate, $week, $day);
+        }
+        
+        // Default: specific date
+        $date = $config['date'] ?? 1;
+        $nextDate->day = min($date, $nextDate->daysInMonth);
+        
+        return $nextDate;
+    }
+
+    private function calculateYearlyNextDate(Carbon $baseDate, array $config): Carbon
+    {
+        $month = $config['month'] ?? 1;
+        $date = $config['date'] ?? 1;
+        
+        $nextDate = $baseDate->copy()->addYear();
+        $nextDate->month = $month;
+        $nextDate->day = min($date, $nextDate->daysInMonth);
+        
+        return $nextDate;
+    }
+
+    private function getNthWeekdayOfMonth(Carbon $date, int $week, int $dayOfWeek): Carbon
+    {
+        $result = $date->copy()->startOfMonth();
+        
+        if ($week === 5) {
+            // Last occurrence
+            $result->endOfMonth();
+            while ($result->dayOfWeekIso !== $dayOfWeek) {
+                $result->subDay();
+            }
+            return $result;
+        }
+        
+        // First occurrence of the day in the month
+        while ($result->dayOfWeekIso !== $dayOfWeek) {
+            $result->addDay();
+        }
+        
+        // Add weeks to get to the nth occurrence
+        $result->addWeeks($week - 1);
+        
+        // Make sure we didn't overflow to next month
+        if ($result->month !== $date->month) {
+            // Return the last occurrence in the current month
+            $result = $date->copy()->endOfMonth();
+            while ($result->dayOfWeekIso !== $dayOfWeek) {
+                $result->subDay();
+            }
+        }
+        
+        return $result;
     }
 
     /**

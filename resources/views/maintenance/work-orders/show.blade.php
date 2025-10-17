@@ -19,7 +19,7 @@
                     <a href="{{ route('maintenance.work-orders.index') }}" class="btn btn-secondary">
                         Back to List
                     </a>
-                    @can('maintenance.work-orders.create')
+                    @can('update', $workOrder)
                     <a href="{{ route('maintenance.work-orders.edit', $workOrder) }}" class="btn btn-outline-primary">
                         Edit
                     </a>
@@ -32,8 +32,79 @@
 
 <div class="page-body">
     <div class="container-xl">
+        <!-- Actions Section - Full Width at Top (only show if not completed) -->
+        @if($workOrder->status !== 'completed')
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Actions</h3>
+                    </div>
+                    <div class="card-body">
+                        @if($workOrder->status === 'submitted')
+                            @can('assign', $workOrder)
+                            <button type="button" class="btn btn-primary me-2 mb-2" data-bs-toggle="modal" data-bs-target="#assignModal">
+                                Assign Work Order
+                            </button>
+                            @endcan
+                        @elseif($workOrder->status === 'assigned')
+                            @can('work', $workOrder)
+                            <form action="{{ route('maintenance.work-orders.start', $workOrder) }}" method="POST" class="d-inline me-2 mb-2">
+                                @csrf
+                                <button type="submit" class="btn btn-success">Start Work</button>
+                            </form>
+                            @endcan
+                        @elseif($workOrder->status === 'in-progress')
+                            @can('work', $workOrder)
+                            <button type="button" class="btn btn-info me-2 mb-2" data-bs-toggle="modal" data-bs-target="#progressModal">
+                                Log Progress
+                            </button>
+                            <button type="button" class="btn btn-outline-primary me-2 mb-2" data-bs-toggle="modal" data-bs-target="#actionModal">
+                                Add Action
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary me-2 mb-2" data-bs-toggle="modal" data-bs-target="#photoModal">
+                                Upload Photo
+                            </button>
+                            <form action="{{ route('maintenance.work-orders.submit-verification', $workOrder) }}" method="POST" class="d-inline me-2 mb-2">
+                                @csrf
+                                <button type="submit" class="btn btn-warning">Submit for Verification</button>
+                            </form>
+                            @endcan
+                        @elseif($workOrder->status === 'pending-verification')
+                            @can('verify', $workOrder)
+                            <button type="button" class="btn btn-primary me-2 mb-2" data-bs-toggle="modal" data-bs-target="#verifyModal">
+                                Verify Work Order
+                            </button>
+                            @endcan
+                        @elseif($workOrder->status === 'verified')
+                            @can('close', $workOrder)
+                            <button type="button" class="btn btn-success me-2 mb-2" data-bs-toggle="modal" data-bs-target="#closeModal">
+                                Close Work Order
+                            </button>
+                            @endcan
+                        @elseif($workOrder->status === 'rework')
+                            @can('work', $workOrder)
+                            <form action="{{ route('maintenance.work-orders.start', $workOrder) }}" method="POST" class="d-inline me-2 mb-2">
+                                @csrf
+                                <button type="submit" class="btn btn-warning">Resume Work</button>
+                            </form>
+                            @endcan
+                            @cannot('work', $workOrder)
+                                <div class="alert alert-warning">
+                                    <strong>Rework Required</strong><br>
+                                    This work order has been sent back for rework.
+                                </div>
+                            @endcannot
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Main Content - Full Width -->
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-12">
                 <!-- Work Order Details -->
                 <div class="card mb-3">
                     <div class="card-header">
@@ -63,7 +134,7 @@
                                                 'cancelled' => 'danger'
                                             ];
                                         @endphp
-                                        <span class="badge bg-{{ $statusColors[$workOrder->status] ?? 'secondary' }}">
+                                        <span class="badge bg-{{ $statusColors[$workOrder->status] ?? 'secondary' }} text-white">
                                             {{ ucfirst(str_replace('-', ' ', $workOrder->status)) }}
                                         </span>
                                     </div>
@@ -95,7 +166,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Priority</label>
                                     <div>
-                                        <span class="badge bg-{{ $workOrder->priority === 'urgent' ? 'danger' : ($workOrder->priority === 'high' ? 'warning' : ($workOrder->priority === 'medium' ? 'info' : 'secondary')) }}">
+                                        <span class="badge bg-{{ $workOrder->priority === 'urgent' ? 'danger' : ($workOrder->priority === 'high' ? 'warning' : ($workOrder->priority === 'medium' ? 'info' : 'secondary')) }} text-white">
                                             {{ ucfirst($workOrder->priority) }}
                                         </span>
                                     </div>
@@ -181,6 +252,37 @@
                             <div class="form-control-plaintext">{{ $workOrder->verification_notes }}</div>
                         </div>
                         @endif
+
+                        <!-- Status Information -->
+                        <div class="mt-4 pt-3 border-top">
+                            <h6>Status Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Created:</strong> {{ $workOrder->created_at->format('M d, Y H:i') }}</li>
+                                        @if($workOrder->assigned_at)
+                                            <li><strong>Assigned:</strong> {{ $workOrder->assigned_at->format('M d, Y H:i') }}</li>
+                                        @endif
+                                        @if($workOrder->work_started_at)
+                                            <li><strong>Work Started:</strong> {{ $workOrder->work_started_at->format('M d, Y H:i') }}</li>
+                                        @endif
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        @if($workOrder->work_finished_at)
+                                            <li><strong>Work Finished:</strong> {{ $workOrder->work_finished_at->format('M d, Y H:i') }}</li>
+                                        @endif
+                                        @if($workOrder->verified_at)
+                                            <li><strong>Verified:</strong> {{ $workOrder->verified_at->format('M d, Y H:i') }}</li>
+                                        @endif
+                                        @if($workOrder->completed_date)
+                                            <li><strong>Completed:</strong> {{ $workOrder->completed_date->format('M d, Y H:i') }}</li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -246,7 +348,7 @@
                                     <tr>
                                         <td>{{ $action->performed_at->format('M d, Y H:i') }}</td>
                                         <td>
-                                            <span class="badge bg-primary">
+                                            <span class="badge bg-primary text-white">
                                                 {{ ucfirst(str_replace('-', ' ', $action->action_type)) }}
                                             </span>
                                         </td>
@@ -357,94 +459,6 @@
                     </div>
                 </div>
                 @endif
-            </div>
-
-            <!-- Action Panel -->
-            <div class="col-md-4">
-                <!-- Status-based Actions -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Actions</h3>
-                    </div>
-                    <div class="card-body">
-                        @if($workOrder->status === 'submitted')
-                            @can('maintenance.work-orders.assign')
-                            <button type="button" class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#assignModal">
-                                Assign Work Order
-                            </button>
-                            @endcan
-                        @elseif($workOrder->status === 'assigned' && $workOrder->assigned_to === auth()->id())
-                            @can('maintenance.work-orders.work')
-                            <form action="{{ route('maintenance.work-orders.start', $workOrder) }}" method="POST" class="mb-2">
-                                @csrf
-                                <button type="submit" class="btn btn-success w-100">Start Work</button>
-                            </form>
-                            @endcan
-                        @elseif($workOrder->status === 'in-progress' && $workOrder->assigned_to === auth()->id())
-                            @can('maintenance.work-orders.work')
-                            <button type="button" class="btn btn-info w-100 mb-2" data-bs-toggle="modal" data-bs-target="#progressModal">
-                                Log Progress
-                            </button>
-                            <button type="button" class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#actionModal">
-                                Add Action
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                Upload Photo
-                            </button>
-                            <form action="{{ route('maintenance.work-orders.submit-verification', $workOrder) }}" method="POST" class="mb-2">
-                                @csrf
-                                <button type="submit" class="btn btn-warning w-100">Submit for Verification</button>
-                            </form>
-                            @endcan
-                        @elseif($workOrder->status === 'pending-verification')
-                            @can('maintenance.work-orders.verify')
-                            <button type="button" class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#verifyModal">
-                                Verify Work Order
-                            </button>
-                            @endcan
-                        @elseif($workOrder->status === 'verified')
-                            @can('maintenance.work-orders.close')
-                            <button type="button" class="btn btn-success w-100 mb-2" data-bs-toggle="modal" data-bs-target="#closeModal">
-                                Close Work Order
-                            </button>
-                            @endcan
-                        @elseif($workOrder->status === 'rework')
-                            @if($workOrder->assigned_to === auth()->id())
-                                @can('maintenance.work-orders.work')
-                                <form action="{{ route('maintenance.work-orders.start', $workOrder) }}" method="POST" class="mb-2">
-                                    @csrf
-                                    <button type="submit" class="btn btn-warning w-100">Resume Work</button>
-                                </form>
-                                @endcan
-                            @else
-                                <div class="alert alert-warning">
-                                    <strong>Rework Required</strong><br>
-                                    This work order has been sent back for rework.
-                                </div>
-                            @endif
-                        @endif
-
-                        <!-- Status Information -->
-                        <div class="mt-3">
-                            <h6>Status Information</h6>
-                            <ul class="list-unstyled">
-                                <li><strong>Created:</strong> {{ $workOrder->created_at->format('M d, Y H:i') }}</li>
-                                @if($workOrder->assigned_at)
-                                    <li><strong>Assigned:</strong> {{ $workOrder->assigned_at->format('M d, Y H:i') }}</li>
-                                @endif
-                                @if($workOrder->work_started_at)
-                                    <li><strong>Work Started:</strong> {{ $workOrder->work_started_at->format('M d, Y H:i') }}</li>
-                                @endif
-                                @if($workOrder->work_finished_at)
-                                    <li><strong>Work Finished:</strong> {{ $workOrder->work_finished_at->format('M d, Y H:i') }}</li>
-                                @endif
-                                @if($workOrder->verified_at)
-                                    <li><strong>Verified:</strong> {{ $workOrder->verified_at->format('M d, Y H:i') }}</li>
-                                @endif
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

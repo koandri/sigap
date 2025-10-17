@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Pagination\Paginator;
+use App\Models\WorkOrder;
+use App\Policies\WorkOrderPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
         //Paginator
         //Paginator::useBootstrapFive();
         Paginator::defaultView('layouts.pagination');
+
+        // Register policies
+        Gate::policy(WorkOrder::class, WorkOrderPolicy::class);
 
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Super Admin') ? true : null;

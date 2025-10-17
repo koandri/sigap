@@ -127,4 +127,30 @@ class User extends Authenticatable
     {
         return $this->hasMany(FormSubmission::class, 'submitted_by');
     }
+
+    /**
+     * Get users who report to this user (staff members).
+     */
+    public function staff()
+    {
+        return $this->hasMany(User::class, 'manager_id');
+    }
+
+    /**
+     * Check if user is a manager (has staff reporting to them).
+     */
+    public function isManager(): bool
+    {
+        return $this->staff()->exists();
+    }
+
+    /**
+     * Scope to get users with Engineering Operator role.
+     */
+    public function scopeEngineeringOperators($query)
+    {
+        return $query->whereHas('roles', function ($q) {
+            $q->where('name', 'Engineering Operator');
+        })->where('active', true);
+    }
 }

@@ -42,7 +42,8 @@ class RoleController extends Controller
     public function update(Request $request, Role $role): RedirectResponse
     {
         $validated = Validator::make($request->all(), [
-            'name' => 'required|string|max:50|unique:roles,name,' . $role->id
+            'name' => 'required|string|max:50|unique:roles,name,' . $role->id,
+            'guard_name' => 'required|string',
         ])->validate();
 
         $role->update($validated);

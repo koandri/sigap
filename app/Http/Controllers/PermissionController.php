@@ -25,7 +25,7 @@ class PermissionController extends Controller
     public function store(Request $request): RedirectResponse
     {   
         $validated = Validator::make($request->all(), [
-            'name' => 'required|string|max:50|unique:roles',
+            'name' => 'required|string|max:50|unique:permissions',
             'guard_name' => 'required|string',
         ])->validate();
 
