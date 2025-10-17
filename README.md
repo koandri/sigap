@@ -17,14 +17,17 @@ This isn't just a form builder - it's a sophisticated workflow management system
 ## Core Features
 
 ### 📋 Advanced Form Management
-- **Dynamic Form Builder**: Create custom forms with 10+ field types including:
-  - Text, number, email, and date inputs
-  - Single/multiple select with API integration
-  - File uploads with image processing
-  - Digital signature capture
-  - Live photo capture with camera integration
-  - Calculated fields with formula engine
-  - Hidden fields with conditional logic
+- **Dynamic Form Builder**: Create custom forms with 16 field types including:
+  - Text fields: Short text and long text (WYSIWYG)
+  - Numeric fields: Number and decimal with validation
+  - Date/time fields: Date and datetime pickers
+  - Selection fields: Single select, multiple select, radio buttons, checkboxes
+  - Boolean fields: Yes/No toggle switches
+  - File uploads with image processing and watermarking
+  - Digital signature capture with canvas-based pad
+  - Live photo capture with HTML5 camera integration
+  - Calculated fields with formula engine (SUM, MULTIPLY, DIVIDE, etc.)
+  - Hidden fields for system metadata and tracking
 - **Form Versioning**: Complete version control with activation management
 - **Department-based Access**: Granular form access control by organizational units
 - **Form Templates**: Reusable templates for standardized processes
@@ -159,32 +162,79 @@ This isn't just a form builder - it's a sophisticated workflow management system
   - Inventory data export
 
 ### 🔧 Maintenance Management (CMMS)
-- **Asset Management**: Track all equipment with categories, locations, and QR codes
-- **Preventive Maintenance**: Schedule regular maintenance with multiple frequency types:
-  - Hourly, Daily, Weekly, Monthly, Yearly schedules
-  - Flexible configuration for complex patterns
-- **Work Order Management**: Complete lifecycle from creation to verification
+- **Asset Management**: Track all equipment with comprehensive features
+  - Asset categories with custom codes
+  - Custom locations (database-driven, not hardcoded)
+  - QR code generation for mobile access
+  - Asset specifications in JSON format
+  - Department and user assignment
+  - Purchase information and warranty tracking
+- **Maintenance Types**: Six pre-configured types (customizable)
+  - Preventive Maintenance (scheduled prevention)
+  - Corrective Maintenance (repairs and fixes)
+  - Emergency Repair (critical failures)
+  - Inspection (condition assessment)
+  - Calibration (instrument calibration)
+  - Enhancement (modifications and improvements)
+- **Preventive Maintenance Scheduling**: Flexible frequency options
+  - Hourly: Every X hours
+  - Daily: Every X days
+  - Weekly: Specific days of the week
+  - Monthly: Specific dates, last day, or weekday patterns
+  - Yearly: Annual maintenance on specific dates
+- **Work Order Management**: Complete lifecycle tracking
   - Status workflow: Submitted → Assigned → In Progress → Pending Verification → Verified → Completed
-  - Time tracking and estimated hours
-  - Parts consumption from inventory
-  - Photo documentation with upload support
-  - Progress logging and action tracking
+  - Priority levels: Low, Medium, High, Critical
+  - Time tracking: Estimated vs. actual hours
+  - Parts consumption tracking from inventory
+  - Photo documentation with multiple uploads
+  - Progress logging with timestamps
+  - Action tracking for all work performed
   - Work order policies for authorization
-- **Upcoming Maintenance Visibility**: 14-day forecast of scheduled maintenance
+- **Upcoming Maintenance**: 14-day forecast visibility
   - See upcoming schedules before they're overdue
-  - Manual work order generation from upcoming schedules
-  - Status indicators (Scheduled, WO Exists, Overdue)
-- **Automatic Work Order Generation**: Auto-generate from overdue schedules (disabled by default)
-- **Maintenance Dashboard**: Real-time overview
-  - Total assets and active work orders
-  - Overdue schedules alerts
+  - One-click work order generation from upcoming schedules
+  - Status indicators: Scheduled, WO Exists, Overdue
+  - Prevents duplicate work orders
+- **Automatic Work Order Generation**: Optional automation (disabled by default)
+  - Runs daily via Laravel scheduler
+  - Auto-creates work orders from overdue schedules
+  - See MAINTENANCE_SCHEDULING_GUIDE.md for setup
+- **Maintenance Dashboard**: Real-time KPI overview
+  - Total assets by status
+  - Active and pending work orders
+  - Overdue schedules with alerts
   - Recent work order activity
-  - Asset status distribution charts
-  - Upcoming maintenance (14-day forecast)
-- **Maintenance Calendar**: Visual calendar view of all scheduled maintenance
-- **Maintenance Logs**: Complete history of all maintenance activities
-- **Reports & Analytics**: Performance metrics and parts usage tracking
-- **Integration**: Parts inventory integrated with manufacturing module
+  - Asset status distribution (pie charts)
+  - Upcoming maintenance grid (14-day forecast)
+- **Asset Reports**: Comprehensive reporting suite
+  - Assets by Location (with active/inactive filter)
+  - Assets by Category (grouped statistics)
+  - Assets by Category and Location (cross-matrix view)
+  - Assets by Department (organizational view)
+  - Assets by Assigned User (responsibility tracking)
+- **Work Order Reports**: Performance analytics
+  - Work order completion metrics
+  - Total and average hours worked
+  - Maintenance type breakdown
+  - Asset-level work order history
+  - Monthly trend analysis
+  - Technician performance tracking
+- **Maintenance Calendar**: Visual scheduling interface
+  - Calendar view of all maintenance schedules
+  - Color-coded by maintenance type
+  - Interactive event details
+  - Export and print capabilities
+- **Maintenance Logs**: Complete audit trail
+  - Asset-level maintenance history
+  - Parts usage tracking
+  - Technician activity logs
+  - Before/after photo comparison
+- **Parts Integration**: Seamless inventory connection
+  - Direct parts consumption from warehouse positions
+  - Automatic inventory deduction
+  - Parts usage history per asset
+  - Cost tracking per maintenance activity
 
 ## Future Modules (Planned)
 
@@ -257,19 +307,21 @@ This isn't just a form builder - it's a sophisticated workflow management system
 ## System Requirements
 
 ### Server Requirements
-- **PHP**: 8.2 or higher
-- **Database**: MySQL 8.0+ or PostgreSQL 13+
+- **PHP**: 8.2 or higher (PHP 8.3+ recommended for latest features)
+- **Database**: MySQL 8.0+ or PostgreSQL 13+ (with JSON support)
 - **Web Server**: Apache 2.4+ or Nginx 1.18+
-- **Memory**: Minimum 2GB RAM (4GB+ recommended for production)
-- **Storage**: 10GB+ available space (more for file uploads and backups)
-- **Redis**: For caching and queue management (highly recommended)
+- **Memory**: Minimum 2GB RAM (4GB+ recommended for production with multiple modules)
+- **Storage**: 20GB+ available space (more for file uploads, images, and backups)
+- **Redis**: For caching and queue management (highly recommended for production)
+- **Node.js**: 18+ and NPM for asset compilation
 
 ### PHP Extensions
 Required:
 - BCMath, Ctype, Fileinfo, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML
-- GD or ImageMagick for image processing with Intervention Image
-- Redis extension for caching (optional but highly recommended)
-- Zip extension for Excel imports/exports
+- GD or ImageMagick for image processing with Intervention Image 3.11+
+- Redis extension for caching and queue management (optional but highly recommended)
+- Zip extension for Excel imports/exports (PHPSpreadsheet)
+- cURL for external API integrations (API-sourced form fields)
 
 ## Installation & Setup
 
@@ -429,46 +481,73 @@ resources/views/
 └── layouts/           # Application layouts
 
 database/
-├── migrations/        # Database schema (50 migrations)
-├── seeders/           # Database seeders
+├── migrations/        # Database schema (54 migrations)
+├── seeders/           # Database seeders (10 seeders)
+│   ├── DatabaseSeeder.php
 │   ├── UserSeeder.php
+│   ├── LocationSeeder.php
 │   ├── AssetCategorySeeder.php
 │   ├── MaintenanceTypeSeeder.php
+│   ├── MaintenancePermissionSeeder.php
+│   ├── ManufacturingPermissionSeeder.php
 │   ├── BomTypeSeeder.php
-│   └── ... (8 seeders)
+│   ├── ShelfPositionSeeder.php
+│   └── WarehouseShelfSeeder.php
 └── factories/         # Model factories for testing
 
-config/                # Application configuration
-├── fortify.php        # Authentication config
-├── permission.php     # RBAC settings
-├── options.php        # Spatie options
-├── watermark.php      # Image watermark settings
-└── ... (12 config files)
+config/                # Application configuration (13 files)
+├── app.php            # Core application settings
+├── auth.php           # Authentication configuration
+├── cache.php          # Cache driver configuration
+├── database.php       # Database connections
+├── filesystems.php    # Storage configuration
+├── fortify.php        # Laravel Fortify authentication
+├── image.php          # Intervention Image settings
+├── logging.php        # Log configuration
+├── mail.php           # Email settings
+├── options.php        # Spatie Laravel Options
+├── permission.php     # Spatie Permission RBAC
+├── queue.php          # Queue driver settings
+├── services.php       # Third-party service credentials
+├── session.php        # Session configuration
+└── watermark.php      # Custom watermark settings
 
-guides/                # User documentation (8 guides)
+guides/                # User documentation (8 comprehensive guides)
+├── USER_GUIDE.md              # System overview and quick start
+├── FORMS_GUIDE.md             # Form management (admins and users)
+├── WORKFLOWS_GUIDE.md         # Approval workflow configuration
+├── MANUFACTURING_GUIDE.md     # Warehouse and inventory management
+├── MAINTENANCE_GUIDE.md       # CMMS operations and asset management
+├── ADMIN_GUIDE.md             # User management and permissions
+├── COMMON_TASKS.md            # Quick reference and troubleshooting
+└── API_OPTIONS_GUIDE.md       # API integration for form fields
+
+MAINTENANCE_SCHEDULING_GUIDE.md # Automatic work order generation (root level)
 ```
 
 ## Database Schema
 
 ### Core Models (33 models)
 
-**Form Management:**
+**Form Management (9 models):**
 - `Form`, `FormVersion`, `FormField`, `FormFieldOption`
 - `FormSubmission`, `FormAnswer`
 - `ApprovalWorkflow`, `ApprovalFlowStep`, `ApprovalLog`
 
-**Manufacturing & Inventory:**
+**Manufacturing & Inventory (9 models):**
 - `Warehouse`, `WarehouseShelf`, `ShelfPosition`, `PositionItem`
 - `Item`, `ItemCategory`
 - `BomTemplate`, `BomIngredient`, `BomType`
 
-**Maintenance (CMMS):**
-- `Asset`, `AssetCategory`, `AssetDocument`
+**Maintenance (CMMS - 12 models):**
+- `Asset`, `AssetCategory`, `AssetDocument`, `Location`
 - `MaintenanceSchedule`, `MaintenanceType`, `MaintenanceLog`
 - `WorkOrder`, `WorkOrderAction`, `WorkOrderPart`, `WorkOrderPhoto`, `WorkOrderProgressLog`
 
-**User Management:**
+**User Management (4 models):**
 - `User`, `Role`, `Permission`, `Department`
+
+**Total: 34 Eloquent models**
 
 All models follow Laravel best practices:
 - Final classes to prevent inheritance

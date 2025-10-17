@@ -71,11 +71,12 @@ SIGaP consists of four main modules. Click on the guide links below for detailed
 Create and manage dynamic forms with approval workflows.
 
 **Key Features:**
-- 10+ field types (text, number, date, file, signature, photo, etc.)
-- API-integrated dropdowns
-- Calculated fields with formulas
-- Form versioning
-- Department-based access
+- 16 field types (text, number, date, file, signature, live photo, calculated, hidden, etc.)
+- API-integrated dropdowns with caching
+- Calculated fields with formula engine
+- Hidden fields for system metadata
+- Form versioning with activation control
+- Department-based access control
 
 **Learn More:**
 - **[Forms Guide](./FORMS_GUIDE.md)** - Complete form management guide
@@ -134,14 +135,16 @@ Comprehensive warehouse and inventory management system.
 Computerized Maintenance Management System for asset tracking.
 
 **Key Features:**
-- Asset management with QR codes
+- Asset management with QR codes and custom locations
 - Flexible maintenance scheduling (hourly, daily, weekly, monthly, yearly)
-- Complete work order lifecycle
+- Complete work order lifecycle with status tracking
 - 14-day upcoming maintenance forecast
-- Automatic work order generation (optional)
+- Automatic work order generation (optional, disabled by default)
 - Manual work order creation from upcoming schedules
-- Parts inventory integration
-- Maintenance calendar and reports
+- Parts inventory integration with manufacturing module
+- Comprehensive asset reports (by location, category, department, user)
+- Maintenance calendar with visual scheduling
+- Work order reports with performance metrics
 
 **Learn More:**
 - **[Maintenance Guide](./MAINTENANCE_GUIDE.md)** - Complete CMMS guide
@@ -413,8 +416,9 @@ Contact your supervisor or IT department with feedback.
 
 **Version**: 1.0  
 **Last Updated**: October 17, 2025  
-**System Version**: SIGaP Laravel 12 (PHP 8.2+)  
-**Platform**: Web-based application
+**System Version**: SIGaP Laravel 12.x (PHP 8.2+)  
+**Platform**: Web-based application  
+**Database**: MySQL 8.0+ / PostgreSQL 13+
 
 ---
 
