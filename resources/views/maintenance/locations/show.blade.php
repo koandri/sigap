@@ -35,41 +35,45 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="card">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-3">
                     <div class="card-header">
                         <h3 class="card-title">Location Information</h3>
                     </div>
                     <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <div class="form-control-plaintext">{{ $location->name }}</div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <div class="form-control-plaintext">{{ $location->name }}</div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Code</label>
-                        <div class="form-control-plaintext">{{ $location->code }}</div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Code</label>
+                            <div class="form-control-plaintext">{{ $location->code }}</div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <div class="form-control-plaintext">
-                            <span class="badge bg-{{ $location->is_active ? 'success' : 'secondary' }} text-white">
-                                {{ $location->is_active ? 'Active' : 'Inactive' }}
-                            </span>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <div class="form-control-plaintext">
+                                <span class="badge bg-{{ $location->is_active ? 'success' : 'secondary' }} text-white">
+                                    {{ $location->is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Assets Count</label>
+                            <div class="form-control-plaintext">
+                                <span class="badge bg-secondary text-white">{{ $location->assets->count() }} assets</span>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Assets Count</label>
-                        <div class="form-control-plaintext">
-                            <span class="badge bg-secondary text-white">{{ $location->assets->count() }} assets</span>
-                        </div>
-                    </div>
-                    </div>
-        </div>
-
-        <!-- Assets in this location -->
-        <div class="card">
+            <div class="col-12">
+                <!-- Assets in this location -->
+                <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Assets at this Location</h3>
                     </div>
@@ -122,6 +126,8 @@
                                 </p>
                             </div>
                         @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

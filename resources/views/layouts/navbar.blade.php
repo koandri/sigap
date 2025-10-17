@@ -116,9 +116,6 @@
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.reports.*') }}" href="{{ route('maintenance.reports.index') }}">
                                     <i class="fa-regular fa-chart-bar"></i> &nbsp;Reports
                                 </a>
-                                <a class="dropdown-item {{ areActiveRoutes('maintenance.calendar') }}" href="{{ route('maintenance.calendar') }}">
-                                    <i class="fa-regular fa-calendar"></i> &nbsp;Calendar
-                                </a>
                             </div>
                         </div>
                     </div>

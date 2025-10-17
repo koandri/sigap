@@ -76,7 +76,7 @@
                         <div class="h1 mb-3 text-warning">{{ $upcomingSchedules }}</div>
                         <div class="d-flex mb-2">
                             <div class="text-muted">
-                                <a href="{{ route('maintenance.calendar') }}" class="text-reset">View calendar</a>
+                                <a href="{{ route('maintenance.schedules.index') }}" class="text-reset">View schedules</a>
                             </div>
                         </div>
                     </div>
@@ -165,48 +165,7 @@
                         <h3 class="card-title">Upcoming Maintenance</h3>
                     </div>
                     <div class="card-body">
-                        @if($upcomingMaintenance->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-vcenter">
-                                    <thead>
-                                        <tr>
-                                            <th>Asset</th>
-                                            <th>Type</th>
-                                            <th>Due Date</th>
-                                            <th>Assigned To</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($upcomingMaintenance as $schedule)
-                                        <tr>
-                                            <td>{{ $schedule->asset->name }}</td>
-                                            <td>{{ $schedule->maintenanceType->name }}</td>
-                                            <td>
-                                                <span class="text-{{ $schedule->next_due_date < now() ? 'danger' : 'muted' }}">
-                                                    {{ $schedule->next_due_date->format('M d, Y') }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $schedule->assignedUser?->name ?? 'Unassigned' }}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="empty">
-                                <div class="empty-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
-                                        <rect x="9" y="3" width="6" height="4" rx="2"/>
-                                    </svg>
-                                </div>
-                                <p class="empty-title">No upcoming maintenance</p>
-                                <p class="empty-subtitle text-muted">
-                                    All maintenance schedules are up to date.
-                                </p>
-                            </div>
-                        @endif
+                        <div id="upcoming-maintenance-calendar" style="min-height: 400px;"></div>
                     </div>
                 </div>
             </div>
@@ -285,3 +244,41 @@
 </div>
 @endsection
 
+@push('scripts')
+<script src="{{ asset('assets/tabler/libs/fullcalendar/index.global.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('upcoming-maintenance-calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next',
+            center: 'title',
+            right: 'today'
+        },
+        height: 'auto',
+        events: {
+            url: '{{ route("maintenance.calendar.events") }}',
+            method: 'GET'
+        },
+        eventClick: function(info) {
+            if (info.event.extendedProps.url) {
+                window.location.href = info.event.extendedProps.url;
+            }
+        },
+        eventContent: function(arg) {
+            return {
+                html: '<div class="fc-event-title">' + arg.event.title + '</div>'
+            };
+        },
+        dayMaxEvents: 3,
+        moreLinkClick: 'popover'
+    });
+    calendar.render();
+});
+</script>
+@endpush
+
+@push('styles')
+<link href="{{ asset('assets/tabler/libs/fullcalendar/index.global.css') }}" rel="stylesheet">
+@endpush
