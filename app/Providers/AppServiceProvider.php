@@ -27,7 +27,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //force https
-        // URL::forceHttps(); // Commented out for local development
+        if (env('APP_FORCE_HTTPS')) {
+            URL::forceHttps();
+        }
         
         //Paginator
         //Paginator::useBootstrapFive();
