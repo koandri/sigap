@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\FrequencyType;
 use App\Models\Asset;
 use App\Models\CleaningSchedule;
 use App\Models\CleaningScheduleAlert;
@@ -32,10 +33,41 @@ final readonly class CleaningService
 
         foreach ($schedules as $schedule) {
             if ($this->shouldGenerateForDate($schedule, $date)) {
-                foreach ($schedule->items as $item) {
-                    $generatedCount += $this->generateTaskForItem($schedule, $item, $date);
+                // For hourly schedules, generate multiple tasks per day
+                if ($schedule->frequency_type === FrequencyType::HOURLY) {
+                    $generatedCount += $this->generateHourlyTasks($schedule, $date);
+                } else {
+                    // For other frequencies, generate one task per item
+                    foreach ($schedule->items as $item) {
+                        $generatedCount += $this->generateTaskForItem($schedule, $item, $date);
+                    }
                 }
             }
+        }
+
+        return $generatedCount;
+    }
+
+    /**
+     * Generate multiple hourly tasks for a schedule.
+     */
+    private function generateHourlyTasks(CleaningSchedule $schedule, Carbon $date): int
+    {
+        $config = $schedule->frequency_config ?? [];
+        $interval = $config['interval'] ?? 1; // Hours between tasks
+        $generatedCount = 0;
+
+        // Get start and end times
+        $startTime = $schedule->start_time ? Carbon::parse($schedule->start_time) : Carbon::parse('00:00');
+        $endTime = $schedule->end_time ? Carbon::parse($schedule->end_time) : Carbon::parse('23:59');
+
+        $currentTime = $startTime->copy();
+
+        while ($currentTime->lessThanOrEqualTo($endTime)) {
+            foreach ($schedule->items as $item) {
+                $generatedCount += $this->generateTaskForItem($schedule, $item, $date, $currentTime);
+            }
+            $currentTime->addHours($interval);
         }
 
         return $generatedCount;
@@ -49,9 +81,11 @@ final readonly class CleaningService
         $config = $schedule->frequency_config ?? [];
 
         return match($schedule->frequency_type) {
-            'daily' => $this->shouldGenerateDaily($date, $config),
-            'weekly' => $this->shouldGenerateWeekly($date, $config),
-            'monthly' => $this->shouldGenerateMonthly($date, $config),
+            FrequencyType::HOURLY => true, // Always generate for current day
+            FrequencyType::DAILY => $this->shouldGenerateDaily($date, $config),
+            FrequencyType::WEEKLY => $this->shouldGenerateWeekly($date, $config),
+            FrequencyType::MONTHLY => $this->shouldGenerateMonthly($date, $config),
+            FrequencyType::YEARLY => $this->shouldGenerateYearly($date, $config),
             default => false,
         };
     }
@@ -77,8 +111,8 @@ final readonly class CleaningService
             return false;
         }
 
-        // Check if current day of week is in configured days
-        $dayOfWeek = $date->dayOfWeekIso; // 1=Monday, 7=Sunday
+        // Check if current day of week is in configured days (0=Sunday, 1=Monday, etc.)
+        $dayOfWeek = $date->dayOfWeek;
         return in_array($dayOfWeek, $days);
     }
 
@@ -94,18 +128,42 @@ final readonly class CleaningService
         return in_array($date->day, $dates);
     }
 
+    private function shouldGenerateYearly(Carbon $date, array $config): bool
+    {
+        $month = $config['month'] ?? null;
+        $day = $config['date'] ?? null;
+
+        if (!$month || !$day) {
+            return false;
+        }
+
+        return $date->month == $month && $date->day == $day;
+    }
+
     /**
      * Generate a cleaning task for a schedule item.
      */
     private function generateTaskForItem(
         CleaningSchedule $schedule, 
         CleaningScheduleItem $item, 
-        Carbon $date
+        Carbon $date,
+        ?Carbon $time = null
     ): int {
-        // Check if task already exists for this date
+        // Combine date and time for scheduled_date
+        $scheduledDateTime = $date->copy();
+        
+        if ($time) {
+            // For hourly tasks, use the specific time
+            $scheduledDateTime->setTimeFrom($time);
+        } elseif ($schedule->scheduled_time) {
+            // For daily/weekly/monthly with specific time
+            $scheduledDateTime->setTimeFrom($schedule->scheduled_time);
+        }
+
+        // Check if task already exists for this exact date+time
         $exists = CleaningTask::where('cleaning_schedule_id', $schedule->id)
             ->where('cleaning_schedule_item_id', $item->id)
-            ->whereDate('scheduled_date', $date)
+            ->where('scheduled_date', $scheduledDateTime)
             ->exists();
 
         if ($exists) {
@@ -125,6 +183,7 @@ final readonly class CleaningService
                     'item_id' => $item->id,
                     'asset_id' => $item->asset_id,
                     'date' => $date->toDateString(),
+                    'time' => $time?->format('H:i'),
                 ]);
                 
                 return 0;
@@ -144,14 +203,14 @@ final readonly class CleaningService
 
         // Create task
         CleaningTask::create([
-            'task_number' => $this->generateTaskNumber($date),
+            'task_number' => $this->generateTaskNumber($scheduledDateTime),
             'cleaning_schedule_id' => $schedule->id,
             'cleaning_schedule_item_id' => $item->id,
             'location_id' => $schedule->location_id,
             'asset_id' => $item->asset_id,
             'item_name' => $item->item_name,
             'item_description' => $item->item_description,
-            'scheduled_date' => $date,
+            'scheduled_date' => $scheduledDateTime,
             'assigned_to' => $assignedTo,
             'status' => 'pending',
         ]);
