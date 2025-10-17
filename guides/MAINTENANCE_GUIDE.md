@@ -109,23 +109,103 @@ The Computerized Maintenance Management System (CMMS) module manages assets, sch
 
 ### QR Code Generation
 
-Generate QR codes for quick asset access:
+Every asset automatically gets a QR code for quick mobile access. QR codes are generated automatically when:
+- A new asset is created
+- An asset code is changed (QR regenerates)
+- Manual regeneration is requested
 
-1. Open asset details
-2. Click **"Generate QR Code"**
-3. QR code image appears
-4. Options:
-   - Print QR code
-   - Download image
-   - Attach to asset
-5. Users can scan to view asset details
+#### Accessing QR Codes
+
+**Individual Asset QR Code:**
+1. Navigate to **Maintenance > Assets**
+2. Click on an asset to view details
+3. Click **"QR Code"** button
+4. View full-size QR code with asset information
+5. Options available:
+   - **Download QR (PNG)**: Save high-quality image for printing
+   - **Print**: Direct print for asset labels
+   - **Share**: Display on mobile devices
+
+**QR Codes Gallery:**
+1. Navigate to **Maintenance > Assets**
+2. Click **"QR Codes"** button in header
+3. View all asset QR codes in grid layout
+4. Filter by:
+   - Search (asset name or code)
+   - Category
+   - Status
+5. Each card shows:
+   - QR code image
+   - Asset code and name
+   - Status badge
+   - Location
+   - Quick actions (View, Download)
+
+#### QR Code Features
+
+**Automatic Generation:**
+- 400x400 pixel PNG images
+- High error correction level (works even if partially damaged)
+- Optional company logo embedded in center
+- Stored in `public/storage/assets_qr/` directory
+- Filename format: `qr-{ASSET_CODE}.png`
+
+**Logo Support:**
+- Place logo image at `public/imgs/qr_logo.png`
+- Logo automatically embedded in QR code center
+- 80px width logo size
+- Background punched out for better scanning
 
 **QR Code Benefits:**
-- Quick asset identification
-- Mobile-friendly access
-- View maintenance history
-- Create work orders on-site
-- Check maintenance schedules
+- **Quick Identification**: Scan to instantly access asset details
+- **Mobile-Friendly**: Direct link to asset page
+- **Maintenance History**: View complete work order history
+- **Create Work Orders**: Technicians can create WOs on-site
+- **Schedule Viewing**: Check upcoming maintenance
+- **No App Required**: Works with any QR scanner or phone camera
+- **Offline Labels**: Print and attach to physical assets
+
+#### Printing QR Codes
+
+**Best Practices for Printing:**
+1. Use high-quality printer (300 DPI minimum)
+2. Print on durable material (laminated labels recommended)
+3. Size recommendations:
+   - Small equipment: 2x2 inches (5x5 cm)
+   - Large equipment: 4x4 inches (10x10 cm)
+4. Placement:
+   - Visible and accessible location
+   - Protected from weather/damage
+   - Easy to scan with mobile device
+5. Test scan before final installation
+
+**Bulk Printing:**
+1. Go to QR Codes Gallery
+2. Filter assets as needed
+3. Use browser print function (Ctrl/Cmd + P)
+4. Set multiple QR codes per page
+5. Print batch labels for deployment
+
+#### Using QR Codes
+
+**For Technicians:**
+1. Open camera or QR scanner app on mobile
+2. Point at asset QR code
+3. Tap notification to open asset page
+4. View asset details, history, and schedules
+5. Create work orders directly from mobile
+
+**For Managers:**
+1. Scan QR code during inspections
+2. Review asset status and maintenance
+3. Check compliance and schedules
+4. Verify asset location and assignment
+
+**QR Code Regeneration:**
+- Automatic when asset code changes
+- Old QR code file deleted
+- New QR code generated with updated link
+- No manual intervention needed
 
 ### Asset Details View
 

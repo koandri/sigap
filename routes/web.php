@@ -208,6 +208,7 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::get('/', [MaintenanceDashboardController::class, 'index'])->name('dashboard');
     Route::resource('asset-categories', AssetCategoryController::class);
     Route::resource('assets', AssetController::class);
+    Route::get('assets/qr-codes/all', [AssetController::class, 'qrIndex'])->name('assets.qr-index');
     Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr-code');
     Route::resource('locations', LocationController::class);
     Route::resource('schedules', MaintenanceScheduleController::class);

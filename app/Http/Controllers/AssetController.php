@@ -14,10 +14,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 
 final class AssetController extends Controller
 {
@@ -116,7 +117,10 @@ final class AssetController extends Controller
             $validated['image_path'] = $path;
         }
 
-        Asset::create($validated);
+        $asset = Asset::create($validated);
+
+        // Generate and store QR code
+        $this->generateAndStoreQRCode($asset);
 
         return redirect()
             ->route('maintenance.assets.index')
@@ -199,7 +203,15 @@ final class AssetController extends Controller
             $validated['image_path'] = $path;
         }
 
+        // Check if code changed to regenerate QR
+        $codeChanged = $asset->code !== $validated['code'];
+        
         $asset->update($validated);
+
+        // Regenerate QR code if code changed
+        if ($codeChanged) {
+            $this->generateAndStoreQRCode($asset);
+        }
 
         return redirect()
             ->route('maintenance.assets.show', $asset)
@@ -222,6 +234,11 @@ final class AssetController extends Controller
             Storage::disk('public')->delete($asset->image_path);
         }
 
+        // Delete QR code
+        if ($asset->qr_code_path && file_exists(public_path($asset->qr_code_path))) {
+            unlink(public_path($asset->qr_code_path));
+        }
+
         $asset->delete();
 
         return redirect()
@@ -230,25 +247,95 @@ final class AssetController extends Controller
     }
 
     /**
-     * Generate QR code for asset.
+     * Display QR code for asset.
      */
     public function generateQR(Asset $asset): View
     {
-        // Generate QR code data (just the URL for easier scanning)
+        // Generate QR if it doesn't exist
+        if (!$asset->qr_code_path || !file_exists(public_path($asset->qr_code_path))) {
+            $this->generateAndStoreQRCode($asset);
+            $asset->refresh();
+        }
+
+        $hasLogo = file_exists(public_path('imgs/qr_logo.png'));
+
+        return view('maintenance.assets.qr-code', compact('asset', 'hasLogo'));
+    }
+
+    /**
+     * Display all QR codes.
+     */
+    public function qrIndex(Request $request): View
+    {
+        $query = Asset::with(['assetCategory', 'location'])
+            ->whereNotNull('qr_code_path');
+
+        // Filter by category
+        if ($request->filled('category')) {
+            $query->where('asset_category_id', $request->category);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Search by name, code
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+
+        $assets = $query->orderBy('code')->paginate(24);
+        $categories = AssetCategory::active()->orderBy('name')->get();
+
+        return view('maintenance.assets.qr-index', compact('assets', 'categories'));
+    }
+
+    /**
+     * Generate and store QR code for an asset.
+     */
+    private function generateAndStoreQRCode(Asset $asset): void
+    {
+        // Delete old QR code if exists
+        if ($asset->qr_code_path && file_exists(public_path($asset->qr_code_path))) {
+            unlink(public_path($asset->qr_code_path));
+        }
+
+        // Generate QR code data
         $qrData = route('maintenance.assets.show', $asset);
 
-        // Create QR code with higher error correction to support logo
-        $renderer = new ImageRenderer(
-            new RendererStyle(400, 0),
-            new SvgImageBackEnd()
+        // Check if logo exists
+        $logoPath = public_path('imgs/qr_logo.png');
+        $hasLogo = file_exists($logoPath);
+
+        // Build QR code
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $qrData,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 400,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            logoPath: $hasLogo ? $logoPath : null,
+            logoResizeToWidth: $hasLogo ? 80 : null,
+            logoPunchoutBackground: $hasLogo
         );
-        $writer = new Writer($renderer);
-        $qrCode = $writer->writeString($qrData);
 
-        // Check if icon exists
-        $iconPath = public_path('imgs/qr_icon.png');
-        $hasIcon = file_exists($iconPath);
+        $result = $builder->build();
 
-        return view('maintenance.assets.qr-code', compact('asset', 'qrCode', 'hasIcon'));
+        // Save to file
+        $filename = 'qr-' . $asset->code . '.png';
+        $filePath = 'storage/assets_qr/' . $filename;
+        $fullPath = public_path($filePath);
+
+        file_put_contents($fullPath, $result->getString());
+
+        // Update asset with QR path
+        $asset->update(['qr_code_path' => $filePath]);
     }
 }

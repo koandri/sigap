@@ -180,11 +180,7 @@
                             <h3 class="card-title">Ingredients</h3>
                             <div class="card-actions">
                                 <button type="button" class="btn btn-primary btn-sm" id="addIngredient">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <line x1="12" y1="5" x2="12" y2="19"/>
-                                        <line x1="5" y1="12" x2="19" y2="12"/>
-                                    </svg>
+                        <i class="fa-regular fa-plus"></i>
                                     Add Ingredient
                                 </button>
                             </div>
@@ -227,11 +223,7 @@
                                                 <div class="col-md-1">
                                                     <label class="form-label">&nbsp;</label>
                                                     <button type="button" class="btn btn-outline-danger btn-sm w-100 remove-ingredient">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                            <line x1="18" y1="6" x2="6" y2="18"/>
-                                                            <line x1="6" y1="6" x2="18" y2="18"/>
-                                                        </svg>
+                        <i class="fa-regular fa-xmark"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -254,12 +246,7 @@
                             <div class="d-flex">
                                 <a href="{{ route('manufacturing.bom.show', $bom) }}" class="btn btn-outline-secondary me-auto">Cancel</a>
                                 <button type="submit" class="btn btn-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
-                                        <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
-                                        <path d="M16 5l3 3"/>
-                                    </svg>
+                        <i class="fa-regular fa-pen"></i>
                                     Update BoM Template
                                 </button>
                             </div>
@@ -303,11 +290,7 @@
             <div class="col-md-1">
                 <label class="form-label">&nbsp;</label>
                 <button type="button" class="btn btn-outline-danger btn-sm w-100 remove-ingredient">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
+                        <i class="fa-regular fa-xmark"></i>
                 </button>
             </div>
         </div>

@@ -144,12 +144,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title text-warning">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <path d="M12 9v2l0 4"/>
-                                <path d="M12 17l.01 0"/>
-                                <path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10 -10 10s-10 -4.477 -10 -10s4.477 -10 10 -10z"/>
-                            </svg>
+                            <i class="fa-regular fa-circle-exclamation"></i>
                             Items Expiring Soon (Next 30 Days)
                         </h3>
                     </div>
@@ -200,50 +195,25 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-primary w-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3"/>
-                                        <line x1="12" y1="12" x2="20" y2="7.5"/>
-                                        <line x1="12" y1="12" x2="12" y2="21"/>
-                                        <line x1="12" y1="12" x2="4" y2="7.5"/>
-                                    </svg>
+                                    <i class="fa-regular fa-box icon mb-2"></i>
                                     <br>Manage Items
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.item-categories.index') }}" class="btn btn-outline-primary w-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <rect x="4" y="4" width="6" height="6" rx="1"/>
-                                        <rect x="14" y="4" width="6" height="6" rx="1"/>
-                                        <rect x="4" y="14" width="6" height="6" rx="1"/>
-                                        <rect x="14" y="14" width="6" height="6" rx="1"/>
-                                    </svg>
+                                    <i class="fa-regular fa-grid-2 icon mb-2"></i>
                                     <br>Item Categories
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.index') }}" class="btn btn-outline-primary w-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M3 21v-13l9 -4l9 4v13"/>
-                                        <path d="M13 13h4v8h-10v-6h6"/>
-                                        <path d="M13 21v-9a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v3"/>
-                                    </svg>
+                                    <i class="fa-regular fa-warehouse icon mb-2"></i>
                                     <br>Warehouses
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.overview-report') }}" class="btn btn-outline-info w-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M3 3v18h18"/>
-                                        <path d="M18 7v10"/>
-                                        <path d="M15 10v4"/>
-                                        <path d="M12 8v8"/>
-                                        <path d="M9 12v4"/>
-                                        <path d="M6 10v4"/>
-                                    </svg>
+                                    <i class="fa-regular fa-chart-column icon mb-2"></i>
                                     <br>Overview Report
                                 </a>
                             </div>
@@ -253,12 +223,7 @@
                                 @else
                                 <div class="btn btn-outline-secondary w-100 disabled">
                                 @endcan
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
-                                        <rectangle x="9" y="3" width="6" height="4" rx="2"/>
-                                        <path d="M9 12l2 2l4 -4"/>
-                                    </svg>
+                                    <i class="fa-regular fa-clipboard-list icon mb-2"></i>
                                     <br>Bill of Materials
                                 @can('manufacturing.bom.view')
                                 </a>
@@ -268,12 +233,7 @@
                             </div>
                             <div class="col-md-3 mb-3">
                                 <div class="btn btn-outline-secondary w-100 disabled">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M8 9l3 3l-3 3"/>
-                                        <line x1="13" y1="15" x2="16" y2="15"/>
-                                        <rect x="3" y="4" width="18" height="16" rx="2"/>
-                                    </svg>
+                                    <i class="fa-regular fa-terminal icon mb-2"></i>
                                     <br>Production (Coming Soon)
                                 </div>
                             </div>

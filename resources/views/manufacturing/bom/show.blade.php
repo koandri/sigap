@@ -48,11 +48,7 @@
                     @can('manufacturing.bom.create')
                     @if($bom && $bom->id)
                     <a href="{{ route('manufacturing.bom.copy', $bom) }}" class="btn btn-outline-info">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <rect x="8" y="8" width="12" height="12" rx="2"/>
-                            <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"/>
-                        </svg>
+                        <i class="fa-regular fa-copy"></i>
                         Copy Template
                     </a>
                     @else
@@ -63,12 +59,7 @@
                     @can('manufacturing.bom.edit')
                     @if($bom && $bom->id)
                     <a href="{{ route('manufacturing.bom.edit', $bom) }}" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
-                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
-                            <path d="M16 5l3 3"/>
-                        </svg>
+                        <i class="fa-regular fa-pen"></i>
                         Edit Template
                     </a>
                     @else
@@ -261,12 +252,7 @@
                         <div class="text-center py-4 text-muted">
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                        <path d="M12 1v6m0 6v6"/>
-                                        <path d="M21 12h-6m-6 0h-6"/>
-                                    </svg>
+                                    <i class="fa-regular fa-crosshairs icon"></i>
                                 </div>
                                 <p class="empty-title">No ingredients defined</p>
                                 <p class="empty-subtitle text-muted">This BoM template doesn't have any ingredients yet.</p>
@@ -298,20 +284,12 @@
                             <div class="col-md-4 mb-4">
                                 @if($bom && $bom->id)
                                 <a href="{{ route('manufacturing.bom.copy', $bom) }}" class="btn btn-outline-info w-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <rect x="8" y="8" width="12" height="12" rx="2"/>
-                                        <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"/>
-                                    </svg>
+                                    <i class="fa-regular fa-copy icon mb-2"></i>
                                     <br>Copy Template
                                 </a>
                                 @else
                                 <span class="btn btn-outline-info w-100 disabled">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <rect x="8" y="8" width="12" height="12" rx="2"/>
-                                        <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"/>
-                                    </svg>
+                                    <i class="fa-regular fa-copy icon mb-2"></i>
                                     <br>Copy Template
                                 </span>
                                 @endif
@@ -322,22 +300,12 @@
                             <div class="col-md-4 mb-4">
                                 @if($bom && $bom->id)
                                 <a href="{{ route('manufacturing.bom.edit', $bom) }}" class="btn btn-outline-primary w-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
-                                        <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
-                                        <path d="M16 5l3 3"/>
-                                    </svg>
+                                    <i class="fa-regular fa-pen icon mb-2"></i>
                                     <br>Edit Template
                                 </a>
                                 @else
                                 <span class="btn btn-outline-primary w-100 disabled">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
-                                        <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
-                                        <path d="M16 5l3 3"/>
-                                    </svg>
+                                    <i class="fa-regular fa-pen icon mb-2"></i>
                                     <br>Edit Template
                                 </span>
                                 @endif
@@ -347,11 +315,7 @@
                             
                             <div class="col-md-4 mb-4">
                                 <a href="{{ route('manufacturing.bom.index') }}" class="btn btn-outline-secondary w-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <line x1="9" y1="14" x2="20" y2="3"/>
-                                        <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/>
-                                    </svg>
+                                    <i class="fa-regular fa-arrow-left icon mb-2"></i>
                                     <br>Back to List
                                 </a>
                             </div>

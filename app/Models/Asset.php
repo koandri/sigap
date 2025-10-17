@@ -28,6 +28,7 @@ final class Asset extends Model
         'status',
         'specifications',
         'image_path',
+        'qr_code_path',
         'department_id',
         'user_id',
         'is_active',

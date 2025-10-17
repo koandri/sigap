@@ -18,32 +18,17 @@
                 <div class="btn-list">
                     @can('maintenance.work-orders.create')
                     <a href="{{ route('maintenance.work-orders.create', ['asset_id' => $asset->id]) }}" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M12 5l0 14"/>
-                            <path d="M5 12l14 0"/>
-                        </svg>
+                        <i class="fa-regular fa-plus"></i>
                         Create Work Order
                     </a>
                     @endcan
                     @can('maintenance.assets.manage')
                     <a href="{{ route('maintenance.assets.edit', $asset) }}" class="btn btn-outline-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
-                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
-                            <path d="M16 5l3 3"/>
-                        </svg>
+                        <i class="fa-regular fa-pen"></i>
                         Edit
                     </a>
                     <a href="{{ route('maintenance.assets.qr-code', $asset) }}" class="btn btn-outline-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <rect x="4" y="4" width="6" height="6" rx="1"/>
-                            <rect x="14" y="4" width="6" height="6" rx="1"/>
-                            <rect x="4" y="14" width="6" height="6" rx="1"/>
-                            <rect x="14" y="14" width="6" height="6" rx="1"/>
-                        </svg>
+                        <i class="fa-regular fa-qrcode"></i>
                         QR Code
                     </a>
                     @endcan
@@ -322,11 +307,7 @@
                                 @else
                                     <div class="empty">
                                         <div class="empty-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
-                                                <rect x="9" y="3" width="6" height="4" rx="2"/>
-                                            </svg>
+                                            <i class="fa-regular fa-clipboard icon"></i>
                                         </div>
                                         <p class="empty-title">No pending work orders</p>
                                         <p class="empty-subtitle text-muted">
@@ -390,11 +371,7 @@
                                 @else
                                     <div class="empty">
                                         <div class="empty-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
-                                                <rect x="9" y="3" width="6" height="4" rx="2"/>
-                                            </svg>
+                                            <i class="fa-regular fa-clipboard icon"></i>
                                         </div>
                                         <p class="empty-title">No completed work orders</p>
                                         <p class="empty-subtitle text-muted">
@@ -445,11 +422,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
-                                        <path d="M12 7v5l3 3"/>
-                                    </svg>
+                                    <i class="fa-regular fa-clock icon"></i>
                                 </div>
                                 <p class="empty-title">No maintenance schedules</p>
                                 <p class="empty-subtitle text-muted">
@@ -492,11 +465,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
-                                        <rect x="9" y="3" width="6" height="4" rx="2"/>
-                                    </svg>
+                                    <i class="fa-regular fa-clipboard icon"></i>
                                 </div>
                                 <p class="empty-title">No maintenance history</p>
                                 <p class="empty-subtitle text-muted">

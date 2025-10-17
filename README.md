@@ -184,7 +184,9 @@ This isn't just a form builder - it's a sophisticated workflow management system
 - **Asset Management**: Track all equipment with comprehensive features
   - Asset categories with custom codes
   - Custom locations (database-driven, not hardcoded)
-  - QR code generation for mobile access
+  - **Automatic QR code generation** for mobile access (Endroid QR Code 6.0+)
+  - QR codes with optional embedded company logo
+  - QR codes gallery with filtering and bulk download
   - Asset specifications in JSON format
   - Department and user assignment
   - Purchase information and warranty tracking
@@ -293,6 +295,7 @@ This isn't just a form builder - it's a sophisticated workflow management system
 - **Authentication**: Laravel Fortify with enhanced UI components (zacksmash/fortify-ui 2.0+)
 - **Authorization**: Spatie Laravel Permission 6.20+ for RBAC
 - **Image Processing**: Intervention Image 3.11+ for file handling
+- **QR Code Generation**: Endroid QR Code 6.0+ for asset QR codes with logo support
 - **Excel Processing**: Maatwebsite Excel 3.1+ for imports/exports
 - **User Impersonation**: Lab404 Laravel Impersonate 1.7+ for admin support
 - **Options Management**: Spatie Laravel Options 1.2+ for configuration
@@ -338,6 +341,7 @@ This isn't just a form builder - it's a sophisticated workflow management system
 Required:
 - BCMath, Ctype, Fileinfo, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML
 - GD or ImageMagick for image processing with Intervention Image 3.11+
+- GD extension for QR code generation (Endroid QR Code 6.0+)
 - Redis extension for caching and queue management (optional but highly recommended)
 - Zip extension for Excel imports/exports (PHPSpreadsheet)
 - cURL for external API integrations (API-sourced form fields)
@@ -394,6 +398,9 @@ Required:
 7. **Configure file storage**
    ```bash
    php artisan storage:link
+   
+   # Create QR code directory
+   mkdir -p public/storage/assets_qr
    ```
 
 8. **Build assets**
