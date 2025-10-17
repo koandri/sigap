@@ -108,7 +108,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Total Assets</div>
                             <div class="ms-auto lh-1">
-                                <span class="badge bg-primary">{{ $totalAssets }}</span>
+                                <span class="badge bg-primary text-white">{{ $totalAssets }}</span>
                             </div>
                         </div>
                         <div class="h1 mb-0 mt-2">{{ $totalAssets }}</div>
@@ -121,7 +121,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Active Assets</div>
                             <div class="ms-auto lh-1">
-                                <span class="badge bg-success">{{ $totalActive }}</span>
+                                <span class="badge bg-success text-white">{{ $totalActive }}</span>
                             </div>
                         </div>
                         <div class="h1 mb-0 mt-2">{{ $totalActive }}</div>
@@ -134,7 +134,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Inactive Assets</div>
                             <div class="ms-auto lh-1">
-                                <span class="badge bg-secondary">{{ $totalInactive }}</span>
+                                <span class="badge bg-secondary text-white">{{ $totalInactive }}</span>
                             </div>
                         </div>
                         <div class="h1 mb-0 mt-2">{{ $totalInactive }}</div>
@@ -162,20 +162,20 @@
                 <h3 class="card-title">
                     <i class="fa fa-map-marker-alt me-2"></i>
                     {{ $locationName }}
-                    <span class="badge bg-primary ms-2">{{ $data['total'] }} assets</span>
+                    <span class="badge bg-primary text-white ms-2">{{ $data['total'] }} assets</span>
                 </h3>
             </div>
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="d-flex align-items-center">
-                            <span class="badge bg-success me-2">Active</span>
+                            <span class="badge bg-success text-white me-2">Active</span>
                             <strong>{{ $data['active']->count() }} assets</strong>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="d-flex align-items-center">
-                            <span class="badge bg-secondary me-2">Inactive</span>
+                            <span class="badge bg-secondary text-white me-2">Inactive</span>
                             <strong>{{ $data['inactive']->count() }} assets</strong>
                         </div>
                     </div>
@@ -198,15 +198,15 @@
                         <tbody>
                             @foreach($data['active'] as $asset)
                             <tr>
-                                <td><span class="badge">{{ $asset->code }}</span></td>
+                                <td><span class="badge text-white">{{ $asset->code }}</span></td>
                                 <td>{{ $asset->name }}</td>
                                 <td>
                                     @if($asset->status === 'operational')
-                                        <span class="badge bg-success">Operational</span>
+                                        <span class="badge bg-success text-white">Operational</span>
                                     @elseif($asset->status === 'maintenance')
-                                        <span class="badge bg-warning">Maintenance</span>
+                                        <span class="badge bg-warning text-white">Maintenance</span>
                                     @else
-                                        <span class="badge bg-danger">Down</span>
+                                        <span class="badge bg-danger text-white">Down</span>
                                     @endif
                                 </td>
                                 <td>{{ $asset->department->name ?? '-' }}</td>
@@ -240,15 +240,15 @@
                         <tbody>
                             @foreach($data['inactive'] as $asset)
                             <tr>
-                                <td><span class="badge">{{ $asset->code }}</span></td>
+                                <td><span class="badge text-white">{{ $asset->code }}</span></td>
                                 <td>{{ $asset->name }}</td>
                                 <td>
                                     @if($asset->status === 'operational')
-                                        <span class="badge bg-success">Operational</span>
+                                        <span class="badge bg-success text-white">Operational</span>
                                     @elseif($asset->status === 'maintenance')
-                                        <span class="badge bg-warning">Maintenance</span>
+                                        <span class="badge bg-warning text-white">Maintenance</span>
                                     @else
-                                        <span class="badge bg-danger">Down</span>
+                                        <span class="badge bg-danger text-white">Down</span>
                                     @endif
                                 </td>
                                 <td>{{ $asset->department->name ?? '-' }}</td>
@@ -295,9 +295,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     new TomSelect('#location-select', {
-        plugins: ['remove_button'],
+        plugins: {
+            remove_button: {
+                title: 'Remove this location'
+            }
+        },
         placeholder: 'Select one or more locations',
-        maxOptions: null
+        maxOptions: null,
+        hideSelected: true,
+        closeAfterSelect: false
     });
 });
 </script>

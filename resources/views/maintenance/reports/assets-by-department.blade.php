@@ -76,7 +76,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Total Assets</div>
                             <div class="ms-auto lh-1">
-                                <span class="badge bg-primary">{{ $activeAssets->count() + $inactiveAssets->count() }}</span>
+                                <span class="badge bg-primary text-white">{{ $activeAssets->count() + $inactiveAssets->count() }}</span>
                             </div>
                         </div>
                         <div class="h1 mb-0 mt-2">{{ $activeAssets->count() + $inactiveAssets->count() }}</div>
@@ -89,7 +89,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Active Assets</div>
                             <div class="ms-auto lh-1">
-                                <span class="badge bg-success">{{ $activeAssets->count() }}</span>
+                                <span class="badge bg-success text-white">{{ $activeAssets->count() }}</span>
                             </div>
                         </div>
                         <div class="h1 mb-0 mt-2">{{ $activeAssets->count() }}</div>
@@ -102,7 +102,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Inactive Assets</div>
                             <div class="ms-auto lh-1">
-                                <span class="badge bg-secondary">{{ $inactiveAssets->count() }}</span>
+                                <span class="badge bg-secondary text-white">{{ $inactiveAssets->count() }}</span>
                             </div>
                         </div>
                         <div class="h1 mb-0 mt-2">{{ $inactiveAssets->count() }}</div>
@@ -115,7 +115,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">
-                    <span class="badge bg-success me-2">Active</span>
+                    <span class="badge bg-success me-2 text-white">Active</span>
                     Active Assets ({{ $activeAssets->count() }})
                 </h3>
             </div>
@@ -148,11 +148,11 @@
                             <td>{{ $asset->location->name ?? '-' }}</td>
                             <td>
                                 @if($asset->status === 'operational')
-                                    <span class="badge bg-success">Operational</span>
+                                    <span class="badge bg-success text-white">Operational</span>
                                 @elseif($asset->status === 'maintenance')
-                                    <span class="badge bg-warning">Maintenance</span>
+                                    <span class="badge bg-warning text-white">Maintenance</span>
                                 @else
-                                    <span class="badge bg-danger">Down</span>
+                                    <span class="badge bg-danger text-white">Down</span>
                                 @endif
                             </td>
                             <td>{{ $asset->user->name ?? '-' }}</td>
@@ -173,7 +173,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
-                    <span class="badge bg-secondary me-2">Inactive</span>
+                    <span class="badge bg-secondary text-white me-2">Inactive</span>
                     Inactive Assets ({{ $inactiveAssets->count() }})
                 </h3>
             </div>

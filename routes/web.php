@@ -34,6 +34,7 @@ use App\Http\Controllers\WarehouseOverviewController;
 use App\Http\Controllers\MaintenanceDashboardController;
 use App\Http\Controllers\AssetCategoryController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MaintenanceScheduleController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\MaintenanceLogController;
@@ -208,6 +209,7 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::resource('asset-categories', AssetCategoryController::class);
     Route::resource('assets', AssetController::class);
     Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr-code');
+    Route::resource('locations', LocationController::class);
     Route::resource('schedules', MaintenanceScheduleController::class);
     Route::post('schedules/{schedule}/trigger', [MaintenanceScheduleController::class, 'trigger'])->name('schedules.trigger');
     Route::resource('work-orders', WorkOrderController::class);
