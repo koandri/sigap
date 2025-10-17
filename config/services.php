@@ -41,4 +41,9 @@ return [
         'redirect' => env('ASANA_REDIRECT_URI') 
     ],
 
+    'turnstile' => [
+        'key' => env('TURNSTILE_SITE_KEY'),
+        'secret' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
 ];

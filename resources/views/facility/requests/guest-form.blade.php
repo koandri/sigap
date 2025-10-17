@@ -148,6 +148,13 @@
                                 <small class="form-hint">Upload a photo to help us understand the issue better.</small>
                             </div>
 
+                            <div class="mb-3">
+                                <x-turnstile data-theme="light" />
+                                @error('cf-turnstile-response')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="alert alert-info">
                                 <div class="d-flex">
                                     <div>

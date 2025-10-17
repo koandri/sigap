@@ -11,6 +11,7 @@ use App\Models\WorkOrder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 final class CleaningRequestController extends Controller
@@ -37,6 +38,7 @@ final class CleaningRequestController extends Controller
             'request_type' => 'required|in:cleaning,repair',
             'description' => 'required|string|max:1000',
             'photo' => 'nullable|image|max:5120', // 5MB max
+            'cf-turnstile-response' => ['required', Rule::turnstile()],
         ]);
 
         // Handle photo upload
