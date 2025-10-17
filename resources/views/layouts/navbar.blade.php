@@ -100,6 +100,9 @@
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.asset-categories.*') }}" href="{{ route('maintenance.asset-categories.index') }}">
                                     <i class="fa-regular fa-layer-group"></i> &nbsp;Asset Categories
                                 </a>
+                                <a class="dropdown-item {{ areActiveRoutes('maintenance.locations.*') }}" href="{{ route('maintenance.locations.index') }}">
+                                    <i class="fa-regular fa-map-marker-alt"></i> &nbsp;Locations
+                                </a>
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.work-orders.*') }}" href="{{ route('maintenance.work-orders.index') }}">
                                     <i class="fa-regular fa-clipboard-list"></i> &nbsp;Work Orders
                                 </a>

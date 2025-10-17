@@ -284,9 +284,9 @@
 </div>
 @endsection
 
-@section('scripts')
-<link href="{{ asset('assets/tabler/dist/libs/tom-select/dist/css/tom-select.bootstrap5.css') }}" rel="stylesheet"/>
-<script src="{{ asset('assets/tabler/dist/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+@push('scripts')
+<link href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}" rel="stylesheet"/>
+<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     new TomSelect('#category-select', {
@@ -295,17 +295,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     new TomSelect('#location-select', {
-        plugins: {
-            remove_button: {
-                title: 'Remove this location'
-            }
-        },
         placeholder: 'Select one or more locations',
-        maxOptions: null,
+        maxItems: null,
         hideSelected: true,
         closeAfterSelect: false
     });
 });
 </script>
-@endsection
+@endpush
 
