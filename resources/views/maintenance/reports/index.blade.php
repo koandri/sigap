@@ -66,7 +66,7 @@
 
         <!-- Report Summary -->
         <div class="row row-deck row-cards mb-3">
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -76,17 +76,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="subheader">Total Cost</div>
-                        </div>
-                        <div class="h1 mb-3">${{ number_format($totalCost, 2) }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -96,7 +86,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -162,7 +152,6 @@
                                     <th>Type</th>
                                     <th>Completed Date</th>
                                     <th>Hours</th>
-                                    <th>Cost</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -177,7 +166,6 @@
                                     <td>{{ $workOrder->maintenanceType->name }}</td>
                                     <td>{{ $workOrder->completed_date?->format('M d, Y') ?? '-' }}</td>
                                     <td>{{ $workOrder->actual_hours ?? '-' }}</td>
-                                    <td>${{ number_format($workOrder->parts->sum(function($part) { return $part->quantity_used * ($part->item->price ?? 0); }), 2) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -246,38 +234,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const monthlyTrendData = @json($monthlyTrend);
     const monthlyLabels = Object.keys(monthlyTrendData);
     const monthlyCounts = Object.values(monthlyTrendData).map(item => item.count);
-    const monthlyCosts = Object.values(monthlyTrendData).map(item => item.cost);
 
     new ApexCharts(document.querySelector("#monthlyTrendChart"), {
         series: [{
             name: 'Work Orders',
             type: 'column',
             data: monthlyCounts
-        }, {
-            name: 'Cost ($)',
-            type: 'line',
-            data: monthlyCosts
         }],
         chart: {
             height: 350,
-            type: 'line'
-        },
-        stroke: {
-            width: [0, 4]
+            type: 'column'
         },
         xaxis: {
             categories: monthlyLabels
         },
-        yaxis: [{
+        yaxis: {
             title: {
                 text: 'Count'
             }
-        }, {
-            opposite: true,
-            title: {
-                text: 'Cost ($)'
-            }
-        }]
+        }
     }).render();
 });
 </script>

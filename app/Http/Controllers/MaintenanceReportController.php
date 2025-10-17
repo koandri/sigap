@@ -54,11 +54,6 @@ final class MaintenanceReportController extends Controller
 
         // Calculate statistics
         $totalWorkOrders = $workOrders->count();
-        $totalCost = $workOrders->sum(function ($wo) {
-            return $wo->parts->sum(function ($part) {
-                return $part->quantity_used * ($part->item->price ?? 0);
-            });
-        });
         $totalHours = $workOrders->sum('actual_hours');
         $avgHours = $workOrders->avg('actual_hours');
 
@@ -67,11 +62,6 @@ final class MaintenanceReportController extends Controller
             ->map(function ($group) {
                 return [
                     'count' => $group->count(),
-                    'cost' => $group->sum(function ($wo) {
-                        return $wo->parts->sum(function ($part) {
-                            return $part->quantity_used * ($part->item->price ?? 0);
-                        });
-                    }),
                     'hours' => $group->sum('actual_hours')
                 ];
             });
@@ -81,11 +71,6 @@ final class MaintenanceReportController extends Controller
             ->map(function ($group) {
                 return [
                     'count' => $group->count(),
-                    'cost' => $group->sum(function ($wo) {
-                        return $wo->parts->sum(function ($part) {
-                            return $part->quantity_used * ($part->item->price ?? 0);
-                        });
-                    }),
                     'hours' => $group->sum('actual_hours')
                 ];
             });
@@ -95,12 +80,7 @@ final class MaintenanceReportController extends Controller
             return $wo->completed_date->format('Y-m');
         })->map(function ($group) {
             return [
-                'count' => $group->count(),
-                'cost' => $group->sum(function ($wo) {
-                    return $wo->parts->sum(function ($part) {
-                        return $part->quantity_used * ($part->item->price ?? 0);
-                    });
-                })
+                'count' => $group->count()
             ];
         });
 
@@ -110,7 +90,6 @@ final class MaintenanceReportController extends Controller
         return view('maintenance.reports.index', compact(
             'workOrders',
             'totalWorkOrders',
-            'totalCost',
             'totalHours',
             'avgHours',
             'maintenanceTypeBreakdown',

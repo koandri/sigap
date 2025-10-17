@@ -20,13 +20,11 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row">
-            <div class="col-md-8">
-                <form action="{{ route('maintenance.asset-categories.update', $assetCategory) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    
-                    <div class="card">
+        <form action="{{ route('maintenance.asset-categories.update', $assetCategory) }}" method="POST">
+            @csrf
+            @method('PUT')
+            
+            <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Category Information</h3>
                         </div>
@@ -76,11 +74,9 @@
                                 <a href="{{ route('maintenance.asset-categories.index') }}" class="btn">Cancel</a>
                                 <button type="submit" class="btn btn-primary">Update Category</button>
                             </div>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 @endsection

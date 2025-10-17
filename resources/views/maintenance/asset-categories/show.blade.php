@@ -35,9 +35,7 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card">
+        <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Category Information</h3>
                     </div>
@@ -78,10 +76,10 @@
                         </div>
                     </div>
                     </div>
-                </div>
+        </div>
 
-                <!-- Assets in this category -->
-                <div class="card">
+        <!-- Assets in this category -->
+        <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Assets in this Category</h3>
                     </div>
@@ -134,8 +132,6 @@
                                 </p>
                             </div>
                         @endif
-                    </div>
-                </div>
             </div>
         </div>
     </div>

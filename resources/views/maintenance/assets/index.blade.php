@@ -129,10 +129,10 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary">{{ $asset->assetCategory->name }}</span>
+                                        <span class="badge bg-secondary text-white">{{ $asset->assetCategory->name }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }}">
+                                        <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }} text-white">
                                             {{ ucfirst($asset->status) }}
                                         </span>
                                     </td>

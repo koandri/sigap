@@ -20,12 +20,10 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row">
-            <div class="col-md-8">
-                <form action="{{ route('maintenance.schedules.store') }}" method="POST">
-                    @csrf
-                    
-                    <div class="card">
+        <form action="{{ route('maintenance.schedules.store') }}" method="POST">
+            @csrf
+            
+            <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Schedule Information</h3>
                         </div>
@@ -34,10 +32,12 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label required">Asset</label>
-                                        <select name="asset_id" class="form-select @error('asset_id') is-invalid @enderror" required>
+                                        <select name="asset_id" id="asset-select" class="form-select @error('asset_id') is-invalid @enderror" required>
                                             <option value="">Select Asset</option>
                                             @foreach($assets as $asset)
-                                                <option value="{{ $asset->id }}" {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
+                                                <option value="{{ $asset->id }}" 
+                                                        data-category="{{ $asset->assetCategory->name ?? '' }}"
+                                                        {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
                                                     {{ $asset->name }} ({{ $asset->code }})
                                                 </option>
                                             @endforeach
@@ -277,7 +277,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Checklist Items</label>
+                                <label class="form-label required">Checklist Items</label>
                                 <div id="checklist-container">
                                     <div class="input-group mb-2">
                                         <input type="text" name="checklist[]" class="form-control" placeholder="Checklist item">
@@ -298,6 +298,9 @@
                                     </svg>
                                     Add Checklist Item
                                 </button>
+                                @error('checklist')
+                                    <div class="text-danger small mt-2">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">
@@ -313,17 +316,36 @@
                                 <a href="{{ route('maintenance.schedules.index') }}" class="btn">Cancel</a>
                                 <button type="submit" class="btn btn-primary">Create Schedule</button>
                             </div>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 @endsection
 
+@push('styles')
+<link href="/assets/js/tom-select/tom-select.bootstrap5.min.css" rel="stylesheet">
+@endpush
+
 @push('scripts')
+<script src="/assets/js/tom-select/tom-select.base.min.js"></script>
 <script>
+// Initialize TomSelect for asset dropdown
+document.addEventListener('DOMContentLoaded', function() {
+    new TomSelect('#asset-select', {
+        maxOptions: null,
+        placeholder: 'Select Asset',
+        render: {
+            option: function(data, escape) {
+                return '<div>' +
+                    '<strong>' + escape(data.text) + '</strong>' +
+                    (data.category ? '<div class="text-muted small">' + escape(data.category) + '</div>' : '') +
+                    '</div>';
+            }
+        }
+    });
+});
+
 function addChecklistItem() {
     const container = document.getElementById('checklist-container');
     const newItem = document.createElement('div');

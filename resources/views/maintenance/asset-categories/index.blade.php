@@ -72,12 +72,12 @@
                         <table class="table table-vcenter">
                             <thead>
                                 <tr>
-                                    <th>Code</th>
-                                    <th>Name</th>
+                                    <th width="80">Code</th>
+                                    <th width="200">Name</th>
                                     <th>Description</th>
-                                    <th>Assets Count</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th width="100">Assets Count</th>
+                                    <th width="100">Status</th>
+                                    <th width="150">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,11 +90,11 @@
                                         <div class="fw-bold">{{ $category->name }}</div>
                                     </td>
                                     <td>{{ $category->description ?? '-' }}</td>
-                                    <td>
-                                        <span class="badge bg-secondary">{{ $category->assets_count ?? 0 }}</span>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary text-white">{{ $category->assets_count ?? 0 }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $category->is_active ? 'success' : 'secondary' }}">
+                                        <span class="badge bg-{{ $category->is_active ? 'success' : 'secondary' }} text-white">
                                             {{ $category->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>

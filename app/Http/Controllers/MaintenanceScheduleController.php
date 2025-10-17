@@ -91,10 +91,14 @@ final class MaintenanceScheduleController extends Controller
             'frequency_config' => 'required|array',
             'frequency_days' => 'nullable|integer|min:1|max:365',
             'description' => 'required|string|max:1000',
-            'checklist' => 'nullable|array',
-            'checklist.*' => 'string|max:255',
+            'checklist' => 'required|array|min:1',
+            'checklist.*' => 'required|string|max:255',
             'assigned_to' => 'nullable|exists:users,id',
             'is_active' => 'boolean',
+        ], [
+            'checklist.required' => 'At least one checklist item is required.',
+            'checklist.min' => 'At least one checklist item is required.',
+            'checklist.*.required' => 'Checklist item cannot be empty.',
         ]);
 
         // Create the schedule
@@ -148,10 +152,14 @@ final class MaintenanceScheduleController extends Controller
             'frequency_config' => 'required|array',
             'frequency_days' => 'nullable|integer|min:1|max:365',
             'description' => 'required|string|max:1000',
-            'checklist' => 'nullable|array',
-            'checklist.*' => 'string|max:255',
+            'checklist' => 'required|array|min:1',
+            'checklist.*' => 'required|string|max:255',
             'assigned_to' => 'nullable|exists:users,id',
             'is_active' => 'boolean',
+        ], [
+            'checklist.required' => 'At least one checklist item is required.',
+            'checklist.min' => 'At least one checklist item is required.',
+            'checklist.*.required' => 'Checklist item cannot be empty.',
         ]);
 
         // Check if frequency configuration changed
