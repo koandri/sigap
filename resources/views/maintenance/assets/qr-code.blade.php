@@ -45,8 +45,13 @@
                     </div>
                     <div class="card-body text-center">
                         <!-- QR Code -->
-                        <div class="mb-4">
+                        <div class="mb-4 position-relative d-inline-block">
                             {!! $qrCode !!}
+                            @if($hasIcon ?? false)
+                            <div class="qr-icon-overlay">
+                                <img src="{{ asset('imgs/qr_icon.png') }}" alt="Icon" class="qr-center-icon">
+                            </div>
+                            @endif
                         </div>
 
                         <!-- Asset Information -->
@@ -123,6 +128,24 @@
 
 @push('styles')
 <style>
+.qr-icon-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.qr-center-icon {
+    width: 60px;
+    height: 60px;
+    display: block;
+    object-fit: contain;
+}
+
 @media print {
     .page-header,
     .btn-list,
@@ -137,6 +160,15 @@
     
     .container-xl {
         max-width: none !important;
+    }
+    
+    .qr-icon-overlay {
+        padding: 4px;
+    }
+    
+    .qr-center-icon {
+        width: 50px;
+        height: 50px;
     }
 }
 </style>

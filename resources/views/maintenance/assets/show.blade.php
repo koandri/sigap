@@ -15,18 +15,28 @@
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
-                @can('maintenance.assets.manage')
                 <div class="btn-list">
-                    <a href="{{ route('maintenance.assets.edit', $asset) }}" class="btn btn-primary">
+                    @can('maintenance.work-orders.create')
+                    <a href="{{ route('maintenance.work-orders.create', ['asset_id' => $asset->id]) }}" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M12 5l0 14"/>
+                            <path d="M5 12l14 0"/>
+                        </svg>
+                        Create Work Order
+                    </a>
+                    @endcan
+                    @can('maintenance.assets.manage')
+                    <a href="{{ route('maintenance.assets.edit', $asset) }}" class="btn btn-outline-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
                             <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
                             <path d="M16 5l3 3"/>
                         </svg>
-                        Edit Asset
+                        Edit
                     </a>
-                    <a href="{{ route('maintenance.assets.qr-code', $asset) }}" class="btn btn-outline-primary">
+                    <a href="{{ route('maintenance.assets.qr-code', $asset) }}" class="btn btn-outline-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <rect x="4" y="4" width="6" height="6" rx="1"/>
@@ -36,8 +46,8 @@
                         </svg>
                         QR Code
                     </a>
+                    @endcan
                 </div>
-                @endcan
             </div>
         </div>
     </div>
@@ -45,44 +55,77 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row row-deck row-cards">
-            <!-- Asset Information -->
-            <div class="col-md-8">
+        <!-- Quick Stats Row -->
+        <div class="row row-cards mb-3">
+            <div class="col-sm-6 col-lg-3">
                 <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Pending Work Orders</div>
+                        </div>
+                        <div class="h1 mb-0 text-warning">
+                            {{ $asset->workOrders()->whereNotIn('status', ['completed', 'cancelled', 'closed'])->count() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Completed Work Orders</div>
+                        </div>
+                        <div class="h1 mb-0 text-success">
+                            {{ $asset->workOrders()->whereIn('status', ['completed', 'closed'])->count() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Maintenance Schedules</div>
+                        </div>
+                        <div class="h1 mb-0">{{ $asset->maintenanceSchedules->count() }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Maintenance Logs</div>
+                        </div>
+                        <div class="h1 mb-0">{{ $asset->maintenanceLogs->count() }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset Information -->
+        <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Asset Information</h3>
                     </div>
                     <div class="card-body">
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Name</label>
-                                    <div class="form-control-plaintext">{{ $asset->name }}</div>
+                                    <label class="form-label fw-bold">Name</label>
+                                    <div>{{ $asset->name }}</div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Code</label>
-                                    <div class="form-control-plaintext">{{ $asset->code }}</div>
+                                    <label class="form-label fw-bold">Code</label>
+                                    <div>{{ $asset->code }}</div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Category</label>
-                                    <div class="form-control-plaintext">
-                                        <a href="{{ route('maintenance.asset-categories.show', $asset->assetCategory) }}">
-                                            {{ $asset->assetCategory->name }}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Status</label>
-                                    <div class="form-control-plaintext">
+                                    <label class="form-label fw-bold">Status</label>
+                                    <div>
                                         <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }} text-white">
                                             {{ ucfirst($asset->status) }}
                                         </span>
@@ -91,17 +134,66 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Location</label>
-                                    <div class="form-control-plaintext">{{ $asset->location ?? '-' }}</div>
+                                    <label class="form-label fw-bold">Category</label>
+                                    <div>
+                                        <a href="{{ route('maintenance.asset-categories.show', $asset->assetCategory) }}">
+                                            {{ $asset->assetCategory->name }}
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Serial Number</label>
-                                    <div class="form-control-plaintext">{{ $asset->serial_number ?? '-' }}</div>
+                                    <label class="form-label fw-bold">Location</label>
+                                    <div>{{ $asset->location->name ?? '-' }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Serial Number</label>
+                                    <div>{{ $asset->serial_number ?? '-' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Manufacturer</label>
+                                    <div>{{ $asset->manufacturer ?? '-' }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Model</label>
+                                    <div>{{ $asset->model ?? '-' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Department</label>
+                                    <div>{{ $asset->department?->name ?? '-' }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Purchase Date</label>
+                                    <div>{{ $asset->purchase_date ? $asset->purchase_date->format('d M Y') : '-' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Warranty Expiry</label>
+                                    <div>{{ $asset->warranty_expiry ? $asset->warranty_expiry->format('d M Y') : '-' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -109,61 +201,193 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Manufacturer</label>
-                                    <div class="form-control-plaintext">{{ $asset->manufacturer ?? '-' }}</div>
+                                    <label class="form-label fw-bold">Assigned To</label>
+                                    <div>{{ $asset->user?->name ?? 'Unassigned' }}</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Model</label>
-                                    <div class="form-control-plaintext">{{ $asset->model ?? '-' }}</div>
+                                    <label class="form-label fw-bold">Active Status</label>
+                                    <div>
+                                        <span class="badge bg-{{ $asset->is_active ? 'success' : 'secondary' }} text-white">
+                                            {{ $asset->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+            </div>
+        </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Purchase Date</label>
-                                    <div class="form-control-plaintext">{{ $asset->purchase_date ? $asset->purchase_date->format('d M Y') : '-' }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Warranty Expiry</label>
-                                    <div class="form-control-plaintext">{{ $asset->warranty_expiry ? $asset->warranty_expiry->format('d M Y') : '-' }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Department</label>
-                                    <div class="form-control-plaintext">{{ $asset->department?->name ?? '-' }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Assigned To</label>
-                                    <div class="form-control-plaintext">{{ $asset->user?->name ?? 'Unassigned' }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <div class="form-control-plaintext">
-                                <span class="badge bg-{{ $asset->is_active ? 'success' : 'secondary' }} text-white">
-                                    {{ $asset->is_active ? 'Active' : 'Inactive' }}
-                                </span>
-                            </div>
-                        </div>
+        <!-- Work Orders Section with Tabs -->
+        <div class="card mt-3">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#pending-wo" data-bs-toggle="tab">
+                                    Pending Work Orders
+                                    @php
+                                        $pendingCount = $asset->workOrders()->whereNotIn('status', ['completed', 'cancelled', 'closed'])->count();
+                                    @endphp
+                                    @if($pendingCount > 0)
+                                        <span class="badge bg-warning text-dark ms-1">{{ $pendingCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#completed-wo" data-bs-toggle="tab">
+                                    Completed Work Orders
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <!-- Pending Work Orders Tab -->
+                            <div class="tab-pane active show" id="pending-wo">
+                                @php
+                                    $pendingWorkOrders = $asset->workOrders()
+                                        ->whereNotIn('status', ['completed', 'cancelled', 'closed'])
+                                        ->with(['maintenanceType', 'assignedUser', 'requestedBy'])
+                                        ->orderByRaw("FIELD(priority, 'urgent', 'high', 'medium', 'low')")
+                                        ->orderBy('created_at', 'desc')
+                                        ->get();
+                                @endphp
+                                @if($pendingWorkOrders->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-vcenter">
+                                            <thead>
+                                                <tr>
+                                                    <th>WO Number</th>
+                                                    <th>Type</th>
+                                                    <th>Priority</th>
+                                                    <th>Status</th>
+                                                    <th>Assigned To</th>
+                                                    <th>Created</th>
+                                                    <th class="w-1"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($pendingWorkOrders as $workOrder)
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ route('maintenance.work-orders.show', $workOrder) }}" class="text-reset fw-bold">
+                                                            {{ $workOrder->wo_number }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ $workOrder->maintenanceType->name }}</td>
+                                                    <td>
+                                                        <span class="badge bg-{{ $workOrder->priority === 'urgent' ? 'danger' : ($workOrder->priority === 'high' ? 'warning' : ($workOrder->priority === 'medium' ? 'info' : 'secondary')) }} text-white">
+                                                            {{ ucfirst($workOrder->priority) }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-{{ $workOrder->status === 'open' ? 'warning' : ($workOrder->status === 'assigned' ? 'info' : ($workOrder->status === 'in_progress' ? 'primary' : 'secondary')) }} text-white">
+                                                            {{ ucfirst(str_replace('_', ' ', $workOrder->status)) }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ $workOrder->assignedUser?->name ?? 'Unassigned' }}</td>
+                                                    <td>{{ $workOrder->created_at->format('d M Y') }}</td>
+                                                    <td>
+                                                        <a href="{{ route('maintenance.work-orders.show', $workOrder) }}" class="btn btn-sm btn-outline-primary">
+                                                            View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="empty">
+                                        <div class="empty-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
+                                                <rect x="9" y="3" width="6" height="4" rx="2"/>
+                                            </svg>
+                                        </div>
+                                        <p class="empty-title">No pending work orders</p>
+                                        <p class="empty-subtitle text-muted">
+                                            There are no pending work orders for this asset.
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
 
-                <!-- Maintenance Schedules -->
-                <div class="card mt-3">
+                            <!-- Completed Work Orders Tab -->
+                            <div class="tab-pane" id="completed-wo">
+                                @php
+                                    $completedWorkOrders = $asset->workOrders()
+                                        ->whereIn('status', ['completed', 'closed'])
+                                        ->with(['maintenanceType', 'assignedUser', 'verifiedBy'])
+                                        ->orderBy('completed_date', 'desc')
+                                        ->take(10)
+                                        ->get();
+                                @endphp
+                                @if($completedWorkOrders->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-vcenter">
+                                            <thead>
+                                                <tr>
+                                                    <th>WO Number</th>
+                                                    <th>Type</th>
+                                                    <th>Completed Date</th>
+                                                    <th>Completed By</th>
+                                                    <th>Duration</th>
+                                                    <th class="w-1"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($completedWorkOrders as $workOrder)
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ route('maintenance.work-orders.show', $workOrder) }}" class="text-reset fw-bold">
+                                                            {{ $workOrder->wo_number }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ $workOrder->maintenanceType->name }}</td>
+                                                    <td>{{ $workOrder->completed_date?->format('d M Y H:i') ?? '-' }}</td>
+                                                    <td>{{ $workOrder->verifiedBy?->name ?? $workOrder->assignedUser?->name ?? '-' }}</td>
+                                                    <td>
+                                                        @if($workOrder->work_started_at && $workOrder->work_finished_at)
+                                                            {{ $workOrder->work_started_at->diffForHumans($workOrder->work_finished_at, true) }}
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ route('maintenance.work-orders.show', $workOrder) }}" class="btn btn-sm btn-outline-primary">
+                                                            View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="empty">
+                                        <div class="empty-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
+                                                <rect x="9" y="3" width="6" height="4" rx="2"/>
+                                            </svg>
+                                        </div>
+                                        <p class="empty-title">No completed work orders</p>
+                                        <p class="empty-subtitle text-muted">
+                                            No work orders have been completed for this asset yet.
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maintenance Schedules -->
+        <div class="card mt-3">
                     <div class="card-header">
                         <h3 class="card-title">Maintenance Schedules</h3>
                     </div>
@@ -211,12 +435,12 @@
                                     No maintenance schedules have been set up for this asset.
                                 </p>
                             </div>
-                        @endif
-                    </div>
-                </div>
+                @endif
+            </div>
+        </div>
 
-                <!-- Maintenance History -->
-                <div class="card mt-3">
+        <!-- Maintenance History -->
+        <div class="card mt-3">
                     <div class="card-header">
                         <h3 class="card-title">Recent Maintenance History</h3>
                     </div>
@@ -235,10 +459,10 @@
                                     <tbody>
                                         @foreach($asset->maintenanceLogs->take(10) as $log)
                                         <tr>
-                                            <td>{{ $log->maintenance_date->format('d M Y') }}</td>
-                                            <td>{{ $log->maintenanceType->name }}</td>
-                                            <td>{{ Str::limit($log->description, 50) }}</td>
-                                            <td>{{ $log->performedByUser->name }}</td>
+                                            <td>{{ $log->maintenance_date?->format('d M Y') ?? '-' }}</td>
+                                            <td>{{ $log->maintenanceType?->name ?? '-' }}</td>
+                                            <td>{{ Str::limit($log->description ?? '-', 50) }}</td>
+                                            <td>{{ $log->performedByUser?->name ?? '-' }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -258,54 +482,9 @@
                                     No maintenance has been performed on this asset yet.
                                 </p>
                             </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="col-md-4">
-                <!-- Asset Image -->
-                @if($asset->image_path)
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Asset Image</h3>
-                    </div>
-                    <div class="card-body text-center">
-                        <img src="{{ Storage::url($asset->image_path) }}" alt="{{ $asset->name }}" class="img-fluid rounded">
-                    </div>
-                </div>
                 @endif
-
-                <!-- Quick Stats -->
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h3 class="card-title">Quick Stats</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="text-muted small">Maintenance Schedules</div>
-                            <div class="h3 mb-0">{{ $asset->maintenanceSchedules->count() }}</div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="text-muted small">Total Maintenance Logs</div>
-                            <div class="h3 mb-0">{{ $asset->maintenanceLogs->count() }}</div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="text-muted small">Work Orders</div>
-                            <div class="h3 mb-0">{{ $asset->workOrders->count() }}</div>
-                        </div>
-                        @if($asset->purchase_date)
-                        <div class="mb-3">
-                            <div class="text-muted small">Age</div>
-                            <div class="h3 mb-0">{{ $asset->purchase_date->diffForHumans(null, true) }}</div>
-                        </div>
-                        @endif
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
-

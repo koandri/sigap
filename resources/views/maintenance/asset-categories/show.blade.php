@@ -63,7 +63,7 @@
                     <div class="mb-3">
                         <label class="form-label">Status</label>
                         <div class="form-control-plaintext">
-                            <span class="badge bg-{{ $assetCategory->is_active ? 'success' : 'secondary' }}">
+                            <span class="badge bg-{{ $assetCategory->is_active ? 'success' : 'secondary' }} text-white">
                                 {{ $assetCategory->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </div>
@@ -72,7 +72,7 @@
                     <div class="mb-3">
                         <label class="form-label">Assets Count</label>
                         <div class="form-control-plaintext">
-                            <span class="badge bg-secondary">{{ $assetCategory->assets->count() }} assets</span>
+                            <span class="badge bg-secondary text-white">{{ $assetCategory->assets->count() }} assets</span>
                         </div>
                     </div>
                     </div>
@@ -106,7 +106,7 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }}">
+                                                <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }} text-white">
                                                     {{ ucfirst($asset->status) }}
                                                 </span>
                                             </td>

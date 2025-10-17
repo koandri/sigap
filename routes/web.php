@@ -39,6 +39,7 @@ use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\MaintenanceLogController;
 use App\Http\Controllers\MaintenanceReportController;
 use App\Http\Controllers\MaintenanceCalendarController;
+use App\Http\Controllers\Reports\AssetReportController;
 
 use App\Models\FormSubmission;
 
@@ -206,7 +207,7 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::get('/', [MaintenanceDashboardController::class, 'index'])->name('dashboard');
     Route::resource('asset-categories', AssetCategoryController::class);
     Route::resource('assets', AssetController::class);
-    Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr');
+    Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr-code');
     Route::resource('schedules', MaintenanceScheduleController::class);
     Route::post('schedules/{schedule}/trigger', [MaintenanceScheduleController::class, 'trigger'])->name('schedules.trigger');
     Route::resource('work-orders', WorkOrderController::class);
@@ -223,6 +224,9 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::get('logs', [MaintenanceLogController::class, 'index'])->name('logs.index');
     Route::get('logs/asset/{asset}', [MaintenanceLogController::class, 'assetHistory'])->name('logs.asset');
     Route::get('reports', [MaintenanceReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/assets-by-location', [AssetReportController::class, 'assetsByLocation'])->name('reports.assets-by-location');
+    Route::get('reports/assets-by-category', [AssetReportController::class, 'assetsByCategory'])->name('reports.assets-by-category');
+    Route::get('reports/assets-by-category-location', [AssetReportController::class, 'assetsByCategoryAndLocation'])->name('reports.assets-by-category-location');
     Route::get('calendar', [MaintenanceCalendarController::class, 'index'])->name('calendar');
     Route::get('calendar/events', [MaintenanceCalendarController::class, 'events'])->name('calendar.events');
 });

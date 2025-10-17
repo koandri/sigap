@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Asset;
 use App\Models\AssetCategory;
 use App\Models\Department;
+use App\Models\Location;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -30,7 +31,7 @@ final class AssetController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Asset::with(['assetCategory', 'department', 'user']);
+        $query = Asset::with(['assetCategory', 'location', 'department', 'user']);
 
         // Filter by category
         if ($request->filled('category')) {
@@ -71,8 +72,9 @@ final class AssetController extends Controller
         $categories = AssetCategory::active()->orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $users = User::where('active', true)->orderBy('name')->get();
+        $locations = Location::active()->orderBy('name')->get();
 
-        return view('maintenance.assets.create', compact('categories', 'departments', 'users'));
+        return view('maintenance.assets.create', compact('categories', 'departments', 'users', 'locations'));
     }
 
     /**
@@ -84,7 +86,7 @@ final class AssetController extends Controller
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:assets,code',
             'asset_category_id' => 'required|exists:asset_categories,id',
-            'location' => 'nullable|string|max:255',
+            'location_id' => 'nullable|exists:locations,id',
             'purchase_date' => 'nullable|date',
             'warranty_expiry' => 'nullable|date|after:purchase_date',
             'serial_number' => 'nullable|string|max:255',
@@ -128,6 +130,7 @@ final class AssetController extends Controller
     {
         $asset->load([
             'assetCategory',
+            'location',
             'department',
             'user',
             'maintenanceSchedules.maintenanceType',
@@ -147,8 +150,9 @@ final class AssetController extends Controller
         $categories = AssetCategory::active()->orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $users = User::where('active', true)->orderBy('name')->get();
+        $locations = Location::active()->orderBy('name')->get();
 
-        return view('maintenance.assets.edit', compact('asset', 'categories', 'departments', 'users'));
+        return view('maintenance.assets.edit', compact('asset', 'categories', 'departments', 'users', 'locations'));
     }
 
     /**
@@ -160,7 +164,7 @@ final class AssetController extends Controller
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:assets,code,' . $asset->id,
             'asset_category_id' => 'required|exists:asset_categories,id',
-            'location' => 'nullable|string|max:255',
+            'location_id' => 'nullable|exists:locations,id',
             'purchase_date' => 'nullable|date',
             'warranty_expiry' => 'nullable|date|after:purchase_date',
             'serial_number' => 'nullable|string|max:255',
@@ -230,22 +234,21 @@ final class AssetController extends Controller
      */
     public function generateQR(Asset $asset): View
     {
-        // Generate QR code data
-        $qrData = [
-            'asset_id' => $asset->id,
-            'asset_code' => $asset->code,
-            'asset_name' => $asset->name,
-            'url' => route('maintenance.assets.show', $asset)
-        ];
+        // Generate QR code data (just the URL for easier scanning)
+        $qrData = route('maintenance.assets.show', $asset);
 
-        // Create QR code
+        // Create QR code with higher error correction to support logo
         $renderer = new ImageRenderer(
-            new RendererStyle(400),
+            new RendererStyle(400, 0, null, null, \BaconQrCode\Renderer\RendererStyle\EyeFill::inherit()),
             new SvgImageBackEnd()
         );
         $writer = new Writer($renderer);
-        $qrCode = $writer->writeString(json_encode($qrData));
+        $qrCode = $writer->writeString($qrData);
 
-        return view('maintenance.assets.qr-code', compact('asset', 'qrCode'));
+        // Check if icon exists
+        $iconPath = public_path('imgs/qr_icon.png');
+        $hasIcon = file_exists($iconPath);
+
+        return view('maintenance.assets.qr-code', compact('asset', 'qrCode', 'hasIcon'));
     }
 }

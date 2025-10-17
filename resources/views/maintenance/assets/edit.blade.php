@@ -20,13 +20,11 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row">
-            <div class="col-md-8">
-                <form action="{{ route('maintenance.assets.update', $asset) }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    
-                    <div class="card">
+        <form action="{{ route('maintenance.assets.update', $asset) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            
+            <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Asset Information</h3>
                         </div>
@@ -90,9 +88,15 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label">Location</label>
-                                        <input type="text" name="location" class="form-control @error('location') is-invalid @enderror" 
-                                               value="{{ old('location', $asset->location) }}">
-                                        @error('location')
+                                        <select name="location_id" class="form-select @error('location_id') is-invalid @enderror" id="location-select">
+                                            <option value="">-- Select Location --</option>
+                                            @foreach($locations as $location)
+                                                <option value="{{ $location->id }}" {{ old('location_id', $asset->location_id) == $location->id ? 'selected' : '' }}>
+                                                    {{ $location->name }} ({{ $location->code }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('location_id')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -221,12 +225,23 @@
                                 <a href="{{ route('maintenance.assets.show', $asset) }}" class="btn">Cancel</a>
                                 <button type="submit" class="btn btn-primary">Update Asset</button>
                             </div>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<link href="{{ asset('assets/tabler/dist/libs/tom-select/dist/css/tom-select.bootstrap5.css') }}" rel="stylesheet"/>
+<script src="{{ asset('assets/tabler/dist/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    new TomSelect('#location-select', {
+        placeholder: '-- Select Location --',
+        allowEmptyOption: true
+    });
+});
+</script>
 @endsection
 

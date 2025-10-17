@@ -19,7 +19,7 @@ final class Asset extends Model
         'name',
         'code',
         'asset_category_id',
-        'location',
+        'location_id',
         'purchase_date',
         'warranty_expiry',
         'serial_number',
@@ -51,6 +51,14 @@ final class Asset extends Model
     public function assetCategory(): BelongsTo
     {
         return $this->belongsTo(AssetCategory::class);
+    }
+
+    /**
+     * Get the location that owns the asset.
+     */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
     }
 
     /**

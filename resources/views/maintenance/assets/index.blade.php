@@ -136,7 +136,7 @@
                                             {{ ucfirst($asset->status) }}
                                         </span>
                                     </td>
-                                    <td>{{ $asset->location ?? '-' }}</td>
+                                    <td>{{ $asset->location?->name ?? '-' }}</td>
                                     <td>{{ $asset->user?->name ?? 'Unassigned' }}</td>
                                     <td>
                                         <div class="btn-list">
