@@ -30,6 +30,7 @@ This isn't just a form builder - it's a sophisticated workflow management system
 - **Form Templates**: Reusable templates for standardized processes
 - **API Integration**: Dynamic dropdown options from external data sources
 - **Form Prefilling**: Auto-populate forms based on user context and historical data
+- **TomSelect Enhancement**: Modern dropdown interface with search and better UX (uses tom-select.base.min.js)
 
 ### 🔄 Sophisticated Approval Workflow Engine
 - **Sequential Workflows**: Step-by-step approval chains with conditional routing
@@ -69,10 +70,21 @@ This isn't just a form builder - it's a sophisticated workflow management system
 ### 🔧 Advanced Technical Features
 - **Queue Processing**: Background job processing for notifications and escalations
 - **Email Notifications**: Automated workflow notifications with customizable templates
-- **API Endpoints**: RESTful APIs for external system integration
+- **RESTful API**: Comprehensive API endpoints for:
+  - Form field options (API-sourced dropdowns)
+  - Field calculations
+  - Testing API configurations
+  - Cache management
 - **Caching System**: Optimized performance with Redis/Memcached support
+  - API response caching with configurable TTL
+  - Form field options caching
+  - Manual cache clearing endpoints
 - **Background Processing**: Asynchronous handling of heavy operations
 - **Error Handling**: Comprehensive logging and error tracking
+- **Route Organization**: Clean route structure with resource controllers
+  - 39 controllers handling different modules
+  - Middleware-protected routes with role-based access
+  - Route model binding for cleaner code
 
 ### 🏭 Manufacturing & Inventory Management
 - **Multi-Warehouse Management**: Manage multiple warehouses with shelf-based organization
@@ -94,9 +106,19 @@ This isn't just a form builder - it's a sophisticated workflow management system
   - Status workflow: Submitted → Assigned → In Progress → Pending Verification → Verified → Completed
   - Time tracking and estimated hours
   - Parts consumption from inventory
-  - Photo documentation
-  - Progress logging
-- **Automatic Work Order Generation**: Auto-generate from overdue schedules
+  - Photo documentation with upload support
+  - Progress logging and action tracking
+  - Work order policies for authorization
+- **Upcoming Maintenance Visibility**: 14-day forecast of scheduled maintenance
+  - See upcoming schedules before they're overdue
+  - Manual work order generation from upcoming schedules
+  - Status indicators (Scheduled, WO Exists, Overdue)
+- **Automatic Work Order Generation**: Auto-generate from overdue schedules (disabled by default)
+- **Maintenance Dashboard**: Real-time overview
+  - Total assets and active work orders
+  - Overdue schedules alerts
+  - Recent work order activity
+  - Asset status distribution charts
 - **Maintenance Calendar**: Visual calendar view of all scheduled maintenance
 - **Maintenance Logs**: Complete history of all maintenance activities
 - **Reports & Analytics**: Performance metrics and cost tracking
@@ -134,33 +156,117 @@ This isn't just a form builder - it's a sophisticated workflow management system
 
 ## Technology Stack
 
-- **Backend**: Laravel 12.x with PHP 8.3+
+- **Backend**: Laravel 12.x with PHP 8.2+
 - **Frontend**: Blade templates with Bootstrap 5 and Tabler Admin Template
 - **Database**: MySQL/PostgreSQL with Eloquent ORM
-- **Authentication**: Laravel Fortify with enhanced UI components
-- **Permissions**: Spatie Laravel Permission for RBAC
-- **Image Processing**: Intervention Image 3.11 for file handling
-- **Excel Processing**: Maatwebsite Excel 3.1 for imports/exports
+- **Authentication**: Laravel Fortify with enhanced UI components (via zacksmash/fortify-ui)
+- **Permissions**: Spatie Laravel Permission 6.20+ for RBAC
+- **Image Processing**: Intervention Image 3.11+ for file handling
+- **Excel Processing**: Maatwebsite Excel 3.1+ for imports/exports
+- **User Impersonation**: Lab404 Laravel Impersonate for admin support
 - **Testing**: Pest PHP with comprehensive test coverage
 - **Build Tools**: Vite for modern asset compilation and hot reloading
 - **Queue System**: Redis/Database queues for background processing
 - **Caching**: Redis/Memcached for performance optimization
 - **Task Scheduling**: Laravel scheduler for automated maintenance tasks
+- **External Auth**: Laravel Socialite with Asana provider support
 
 ## System Requirements
 
 ### Server Requirements
-- **PHP**: 8.3 or higher
+- **PHP**: 8.2 or higher
 - **Database**: MySQL 8.0+ or PostgreSQL 13+
 - **Web Server**: Apache 2.4+ or Nginx 1.18+
-- **Memory**: Minimum 2GB RAM (4GB+ recommended)
-- **Storage**: 10GB+ available space
-- **Redis**: For caching and queue management (recommended)
+- **Memory**: Minimum 2GB RAM (4GB+ recommended for production)
+- **Storage**: 10GB+ available space (more for file uploads and backups)
+- **Redis**: For caching and queue management (highly recommended)
 
 ### PHP Extensions
+Required:
 - BCMath, Ctype, Fileinfo, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML
-- GD or ImageMagick for image processing
-- Redis extension for caching (optional but recommended)
+- GD or ImageMagick for image processing with Intervention Image
+- Redis extension for caching (optional but highly recommended)
+- Zip extension for Excel imports/exports
+
+## Installation & Setup
+
+### Prerequisites
+- PHP 8.2 or higher
+- Composer
+- Node.js & NPM
+- MySQL 8.0+ or PostgreSQL 13+
+- Redis (recommended)
+
+### Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd sigap
+   ```
+
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install JavaScript dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Configure environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Configure database**
+   Edit `.env` file with your database credentials:
+   ```
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=sigap
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+6. **Run migrations and seeders**
+   ```bash
+   php artisan migrate --seed
+   ```
+
+7. **Configure file storage**
+   ```bash
+   php artisan storage:link
+   ```
+
+8. **Build assets**
+   ```bash
+   npm run build
+   # or for development
+   npm run dev
+   ```
+
+9. **Start the application**
+   ```bash
+   php artisan serve
+   ```
+
+### Development Environment
+For local development with hot module replacement:
+```bash
+composer dev
+# This runs: server, queue worker, logs (pail), and vite dev server concurrently
+```
+
+### Testing
+```bash
+composer test
+# or directly
+php artisan test
+```
 
 ## API Integration
 
@@ -174,7 +280,8 @@ Forms can integrate with external APIs for dynamic options:
     'method' => 'GET',
     'headers' => ['Authorization' => 'Bearer token'],
     'value_field' => 'id',
-    'label_field' => 'name'
+    'label_field' => 'name',
+    'cache_ttl' => 300
 ]
 ```
 
@@ -186,6 +293,9 @@ Use built-in formulas in calculated fields:
 SUM(field1, field2, field3)
 MULTIPLY(quantity, price)
 IF(field1 > 100, field1 * 0.1, 0)
+AVERAGE(field1, field2, field3)
+SUBTRACT(total, discount)
+DIVIDE(amount, quantity)
 ```
 
 ## Project Structure
@@ -214,11 +324,16 @@ app/
 │   ├── WarehouseController.php # Inventory
 │   └── ... (39 controllers)
 ├── Helpers/            # Utility classes
+│   ├── AuthHelper.php        # Authentication helpers
+│   └── FormPrefillHelper.php # Form auto-population
 ├── Enums/             # Application enums
-│   ├── FrequencyType.php  # Maintenance frequencies
-│   └── Location.php       # Asset locations
+│   ├── FrequencyType.php  # Maintenance schedule frequencies
+│   └── Location.php       # Asset location options
 ├── Policies/          # Authorization policies
+│   └── WorkOrderPolicy.php   # Work order authorization
 └── Console/Commands/  # Artisan commands
+    ├── GenerateMaintenanceWorkOrders.php
+    └── (other commands...)
 
 resources/views/
 ├── forms/              # Form management
@@ -228,10 +343,54 @@ resources/views/
 ├── maintenance/        # CMMS module
 └── layouts/           # Application layouts
 
-database/migrations/    # Database schema (50 migrations)
+database/
+├── migrations/        # Database schema (50 migrations)
+├── seeders/           # Database seeders
+│   ├── UserSeeder.php
+│   ├── AssetCategorySeeder.php
+│   ├── MaintenanceTypeSeeder.php
+│   ├── BomTypeSeeder.php
+│   └── ... (8 seeders)
+└── factories/         # Model factories for testing
+
 config/                # Application configuration
-guides/                # User documentation
+├── fortify.php        # Authentication config
+├── permission.php     # RBAC settings
+├── options.php        # Spatie options
+├── watermark.php      # Image watermark settings
+└── ... (12 config files)
+
+guides/                # User documentation (8 guides)
 ```
+
+## Database Schema
+
+### Core Models (33 models)
+
+**Form Management:**
+- `Form`, `FormVersion`, `FormField`, `FormFieldOption`
+- `FormSubmission`, `FormAnswer`
+- `ApprovalWorkflow`, `ApprovalFlowStep`, `ApprovalLog`
+
+**Manufacturing & Inventory:**
+- `Warehouse`, `WarehouseShelf`, `ShelfPosition`, `PositionItem`
+- `Item`, `ItemCategory`
+- `BomTemplate`, `BomIngredient`, `BomType`
+
+**Maintenance (CMMS):**
+- `Asset`, `AssetCategory`, `AssetDocument`
+- `MaintenanceSchedule`, `MaintenanceType`, `MaintenanceLog`
+- `WorkOrder`, `WorkOrderAction`, `WorkOrderPart`, `WorkOrderPhoto`, `WorkOrderProgressLog`
+
+**User Management:**
+- `User`, `Role`, `Permission`, `Department`
+
+All models follow Laravel best practices:
+- Final classes to prevent inheritance
+- Explicit type declarations
+- Eloquent relationships properly defined
+- Mass assignment protection
+- Proper timestamp handling
 
 ## Security Considerations
 
@@ -276,19 +435,41 @@ guides/                # User documentation
 - Configuration backups
 - Disaster recovery procedures
 
-### Scheduled Tasks
+### Scheduled Tasks & Artisan Commands
 
 The system uses Laravel's task scheduler for automated operations:
 
-1. **Automatic Work Order Generation**: Runs daily at midnight (Asia/Jakarta)
-   - Checks overdue maintenance schedules
-   - Creates work orders automatically
-   - Currently disabled by default (see `routes/console.php`)
+#### Available Artisan Commands
 
-To enable scheduled tasks, ensure this cron entry exists:
+**Maintenance Management:**
 ```bash
-* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+# Generate work orders from overdue maintenance schedules
+php artisan maintenance:generate-work-orders
 ```
+
+**System Management:**
+```bash
+# Inspiration quote (built-in Laravel command)
+php artisan inspire
+```
+
+#### Automatic Work Order Generation
+
+Runs daily at midnight (Asia/Jakarta) when enabled:
+- Checks overdue maintenance schedules
+- Creates work orders automatically
+- Prevents duplicate work orders
+- Logs all operations
+- Currently **disabled by default** for safety (see `routes/console.php`)
+
+**To enable automatic generation:**
+1. Uncomment the schedule block in `routes/console.php`
+2. Ensure this cron entry exists on your server:
+   ```bash
+   * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+   ```
+
+See [Maintenance Scheduling Guide](MAINTENANCE_SCHEDULING_GUIDE.md) for detailed information.
 
 ## Company Information
 
@@ -315,7 +496,7 @@ All documentation is located in the `guides/` directory:
 **Reference:**
 - **[Common Tasks](guides/COMMON_TASKS.md)** - Quick reference and troubleshooting guide
 - **[API Options Guide](guides/API_OPTIONS_GUIDE.md)** - Configure API-sourced dropdown fields
-- **[Enhanced Scheduling Guide](guides/ENHANCED_SCHEDULING_GUIDE.md)** - Detailed maintenance scheduling
+- **[Maintenance Scheduling Guide](MAINTENANCE_SCHEDULING_GUIDE.md)** - Automatic work order generation
 
 ### Quick Start
 

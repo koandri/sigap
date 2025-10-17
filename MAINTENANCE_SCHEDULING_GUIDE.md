@@ -15,11 +15,25 @@ Work orders are automatically generated from overdue maintenance schedules.
 **Configuration:**
 - Location: `routes/console.php`
 - Schedule: Daily at 00:00 Asia/Jakarta timezone
-- Status: **Disabled by default** (commented out)
+- Status: **Disabled by default** (commented out for safety)
 
 **To enable:**
-1. Uncomment the schedule block in `routes/console.php`
-2. Ensure your server crontab has:
+1. Edit `routes/console.php`
+2. Uncomment the schedule block (lines 18-28):
+   ```php
+   Schedule::command('maintenance:generate-work-orders')
+       ->dailyAt('00:00')
+       ->timezone('Asia/Jakarta')
+       ->withoutOverlapping()
+       ->runInBackground()
+       ->onSuccess(function () {
+           Log::info('Maintenance work order generation completed successfully');
+       })
+       ->onFailure(function () {
+           Log::error('Maintenance work order generation failed');
+       });
+   ```
+3. Ensure your server crontab has the Laravel scheduler running:
    ```bash
    * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
    ```
@@ -28,6 +42,8 @@ Work orders are automatically generated from overdue maintenance schedules.
 ```bash
 php artisan maintenance:generate-work-orders
 ```
+
+**Note:** The command is disabled by default to give you control over when automatic generation starts. This prevents unexpected work orders from being created before you're ready.
 
 ---
 

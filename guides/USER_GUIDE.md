@@ -143,7 +143,7 @@ Computerized Maintenance Management System for asset tracking.
 
 **Learn More:**
 - **[Maintenance Guide](./MAINTENANCE_GUIDE.md)** - Complete CMMS guide
-- **[Enhanced Scheduling Guide](./ENHANCED_SCHEDULING_GUIDE.md)** - Detailed scheduling information
+- **[Maintenance Scheduling Guide](../MAINTENANCE_SCHEDULING_GUIDE.md)** - Automatic work order generation
 
 **Quick Start:**
 - **Technicians**: [Complete Work Orders](./MAINTENANCE_GUIDE.md#for-technicians-completing-work)
@@ -209,7 +209,7 @@ Need help with day-to-day operations? Check our quick reference:
 | **[Admin Guide](./ADMIN_GUIDE.md)** | System administration | Administrators |
 | **[Common Tasks](./COMMON_TASKS.md)** | Quick reference | Everyone |
 | **[API Options Guide](./API_OPTIONS_GUIDE.md)** | API integration | Admins (Technical) |
-| **[Enhanced Scheduling Guide](./ENHANCED_SCHEDULING_GUIDE.md)** | Maintenance scheduling | Maintenance Managers |
+| **[Maintenance Scheduling Guide](../MAINTENANCE_SCHEDULING_GUIDE.md)** | Automatic work order generation | Maintenance Managers |
 
 ---
 
@@ -411,7 +411,7 @@ Contact your supervisor or IT department with feedback.
 
 **Version**: 1.0  
 **Last Updated**: October 17, 2025  
-**System Version**: SIGaP Laravel 12  
+**System Version**: SIGaP Laravel 12 (PHP 8.2+)  
 **Platform**: Web-based application
 
 ---
