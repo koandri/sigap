@@ -36,7 +36,7 @@ final class CleaningScheduleController extends Controller
         $this->authorize('facility.schedules.create');
 
         $locations = Location::active()->orderBy('name')->get();
-        $assets = Asset::where('is_active', true)->orderBy('asset_code')->get();
+        $assets = Asset::where('is_active', true)->orderBy('code')->get();
 
         return view('facility.schedules.create', compact('locations', 'assets'));
     }
@@ -115,7 +115,7 @@ final class CleaningScheduleController extends Controller
 
         $schedule->load('items.asset');
         $locations = Location::active()->orderBy('name')->get();
-        $assets = Asset::where('is_active', true)->orderBy('asset_code')->get();
+        $assets = Asset::where('is_active', true)->orderBy('code')->get();
 
         return view('facility.schedules.edit', compact('schedule', 'locations', 'assets'));
     }
