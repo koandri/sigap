@@ -7,7 +7,9 @@ namespace App\Http\Controllers\Reports;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\AssetCategory;
+use App\Models\Department;
 use App\Models\Location;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -123,6 +125,80 @@ final class AssetReportController extends Controller
             'selectedCategory',
             'selectedLocations',
             'assetsByLocation'
+        ));
+    }
+
+    /**
+     * Display assets by department report.
+     */
+    public function assetsByDepartment(Request $request): View
+    {
+        $departmentId = $request->get('department_id');
+        
+        $departments = Department::orderBy('name')->get();
+        
+        $selectedDepartment = null;
+        $activeAssets = collect();
+        $inactiveAssets = collect();
+        
+        if ($departmentId) {
+            $selectedDepartment = Department::findOrFail($departmentId);
+            
+            $activeAssets = Asset::with(['assetCategory', 'location', 'user'])
+                ->where('department_id', $departmentId)
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+            
+            $inactiveAssets = Asset::with(['assetCategory', 'location', 'user'])
+                ->where('department_id', $departmentId)
+                ->where('is_active', false)
+                ->orderBy('name')
+                ->get();
+        }
+        
+        return view('maintenance.reports.assets-by-department', compact(
+            'departments',
+            'selectedDepartment',
+            'activeAssets',
+            'inactiveAssets'
+        ));
+    }
+
+    /**
+     * Display assets by assigned user report.
+     */
+    public function assetsByUser(Request $request): View
+    {
+        $userId = $request->get('user_id');
+        
+        $users = User::where('active', true)->orderBy('name')->get();
+        
+        $selectedUser = null;
+        $activeAssets = collect();
+        $inactiveAssets = collect();
+        
+        if ($userId) {
+            $selectedUser = User::findOrFail($userId);
+            
+            $activeAssets = Asset::with(['assetCategory', 'location', 'department'])
+                ->where('user_id', $userId)
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+            
+            $inactiveAssets = Asset::with(['assetCategory', 'location', 'department'])
+                ->where('user_id', $userId)
+                ->where('is_active', false)
+                ->orderBy('name')
+                ->get();
+        }
+        
+        return view('maintenance.reports.assets-by-user', compact(
+            'users',
+            'selectedUser',
+            'activeAssets',
+            'inactiveAssets'
         ));
     }
 }

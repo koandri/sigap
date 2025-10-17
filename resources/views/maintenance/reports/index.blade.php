@@ -67,6 +67,34 @@
                         </div>
                     </div>
                 </div>
+                <div class="row g-3 mt-1">
+                    <div class="col-md-6">
+                        <div class="card card-link">
+                            <a href="{{ route('maintenance.reports.assets-by-department') }}" class="text-decoration-none text-reset">
+                                <div class="card-body text-center">
+                                    <div class="text-purple mb-3">
+                                        <i class="fa fa-building fa-3x"></i>
+                                    </div>
+                                    <h3 class="card-title mb-2">Assets by Department</h3>
+                                    <p class="text-secondary mb-0">View all assets grouped by department</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-link">
+                            <a href="{{ route('maintenance.reports.assets-by-user') }}" class="text-decoration-none text-reset">
+                                <div class="card-body text-center">
+                                    <div class="text-orange mb-3">
+                                        <i class="fa fa-user fa-3x"></i>
+                                    </div>
+                                    <h3 class="card-title mb-2">Assets by Assigned User</h3>
+                                    <p class="text-secondary mb-0">View assets assigned to specific users</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -227,6 +227,8 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::get('reports/assets-by-location', [AssetReportController::class, 'assetsByLocation'])->name('reports.assets-by-location');
     Route::get('reports/assets-by-category', [AssetReportController::class, 'assetsByCategory'])->name('reports.assets-by-category');
     Route::get('reports/assets-by-category-location', [AssetReportController::class, 'assetsByCategoryAndLocation'])->name('reports.assets-by-category-location');
+    Route::get('reports/assets-by-department', [AssetReportController::class, 'assetsByDepartment'])->name('reports.assets-by-department');
+    Route::get('reports/assets-by-user', [AssetReportController::class, 'assetsByUser'])->name('reports.assets-by-user');
     Route::get('calendar', [MaintenanceCalendarController::class, 'index'])->name('calendar');
     Route::get('calendar/events', [MaintenanceCalendarController::class, 'events'])->name('calendar.events');
 });
