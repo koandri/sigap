@@ -239,7 +239,7 @@ final class AssetController extends Controller
 
         // Create QR code with higher error correction to support logo
         $renderer = new ImageRenderer(
-            new RendererStyle(400, 0, null, null, \BaconQrCode\Renderer\RendererStyle\EyeFill::inherit()),
+            new RendererStyle(400, 0),
             new SvgImageBackEnd()
         );
         $writer = new Writer($renderer);

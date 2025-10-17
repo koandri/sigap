@@ -90,9 +90,28 @@ This isn't just a form builder - it's a sophisticated workflow management system
 - **Escalation Reports**: Overdue approval monitoring and alerting
 - **Department Analytics**: Performance metrics by organizational unit
 
+### 📱 Notification System
+- **WhatsApp Integration**: Primary notification channel via WAHA API
+  - Text messages with Markdown formatting support
+  - Image attachments with captions
+  - File attachments (PDFs, documents)
+  - Link previews for quick access
+  - Group and individual messaging
+- **Pushover Fallback**: Automatic high-priority alerts when WhatsApp fails
+  - HTML-formatted notifications
+  - Priority 2 (requires acknowledgment)
+  - Detailed failure information
+  - Multi-device delivery
+- **Notification Types**:
+  - Asset disposal alerts to Engineering team
+  - User registration credentials delivery
+  - Warehouse inventory updates
+  - Approval workflow notifications (requests, completions, rejections, escalations)
+- **Testing Tools**: Built-in test command for verification
+- **Dual-Channel Reliability**: Never miss critical notifications
+
 ### 🔧 Advanced Technical Features
 - **Queue Processing**: Background job processing for notifications and escalations
-- **Email Notifications**: Automated workflow notifications with customizable templates
 - **RESTful API**: Comprehensive API endpoints for:
   - Form field options (API-sourced dropdowns)
   - Field calculations
@@ -453,7 +472,10 @@ app/
 │   ├── FormPrefillService.php # Auto-population based on user context
 │   ├── HiddenFieldService.php # Hidden field value resolution
 │   ├── MaintenanceService.php # Maintenance scheduling and work orders
-│   └── ApiOptionsService.php  # External API integration and caching
+│   ├── ApiOptionsService.php  # External API integration and caching
+│   ├── WhatsAppService.php    # WhatsApp notification integration (WAHA API)
+│   ├── PushoverService.php    # Pushover fallback notifications
+│   └── AssetDisposalService.php # Asset disposal and deactivation
 ├── Http/Controllers/    # Web controllers
 │   ├── FormController.php     # Forms
 │   ├── WorkOrderController.php # Maintenance
@@ -470,6 +492,7 @@ app/
 │   └── WorkOrderPolicy.php   # Work order authorization
 └── Console/Commands/  # Artisan commands
     ├── GenerateMaintenanceWorkOrders.php
+    ├── TestWhatsAppNotification.php
     └── (other commands...)
 
 resources/views/
@@ -512,12 +535,13 @@ config/                # Application configuration (13 files)
 ├── session.php        # Session configuration
 └── watermark.php      # Custom watermark settings
 
-guides/                # User documentation (8 comprehensive guides)
+guides/                # User documentation (9 comprehensive guides)
 ├── USER_GUIDE.md              # System overview and quick start
 ├── FORMS_GUIDE.md             # Form management (admins and users)
 ├── WORKFLOWS_GUIDE.md         # Approval workflow configuration
 ├── MANUFACTURING_GUIDE.md     # Warehouse and inventory management
 ├── MAINTENANCE_GUIDE.md       # CMMS operations and asset management
+├── NOTIFICATIONS_GUIDE.md     # WhatsApp and Pushover notification system
 ├── ADMIN_GUIDE.md             # User management and permissions
 ├── COMMON_TASKS.md            # Quick reference and troubleshooting
 └── API_OPTIONS_GUIDE.md       # API integration for form fields
@@ -652,6 +676,15 @@ The system uses Laravel's task scheduler for automated operations:
 php artisan maintenance:generate-work-orders
 ```
 
+**Notification Testing:**
+```bash
+# Send test WhatsApp notification
+php artisan whatsapp:test [chatId]
+
+# Example: Test with specific chat ID
+php artisan whatsapp:test 62811337678@c.us
+```
+
 **System Management:**
 ```bash
 # Inspiration quote (built-in Laravel command)
@@ -694,6 +727,7 @@ All documentation is located in the `guides/` directory:
 - **[Workflows Guide](guides/WORKFLOWS_GUIDE.md)** - Approval workflow configuration and processing
 - **[Manufacturing Guide](guides/MANUFACTURING_GUIDE.md)** - Warehouse and inventory management
 - **[Maintenance Guide](guides/MAINTENANCE_GUIDE.md)** - CMMS operations and asset management
+- **[Notifications Guide](guides/NOTIFICATIONS_GUIDE.md)** - WhatsApp and Pushover notification system
 
 **Administration:**
 - **[Admin Guide](guides/ADMIN_GUIDE.md)** - User management, roles, and permissions
