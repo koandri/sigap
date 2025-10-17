@@ -287,6 +287,25 @@
 @push('scripts')
 <link href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}" rel="stylesheet"/>
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+<style>
+    .ts-dropdown {
+        background-color: #ffffff !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+    .ts-dropdown .option {
+        background-color: #ffffff;
+    }
+    .ts-dropdown .option:hover,
+    .ts-dropdown .option.active {
+        background-color: #f8f9fa !important;
+        color: #000 !important;
+    }
+    .ts-dropdown .option.selected {
+        background-color: #0d6efd !important;
+        color: #fff !important;
+    }
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     new TomSelect('#category-select', {
