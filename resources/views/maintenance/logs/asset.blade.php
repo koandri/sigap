@@ -78,7 +78,6 @@
                                 <th>Action Taken</th>
                                 <th>Findings</th>
                                 <th>Recommendations</th>
-                                <th>Cost</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -130,13 +129,6 @@
                                         <div class="text-truncate" style="max-width: 200px;" title="{{ $log->recommendations }}">
                                             {{ $log->recommendations }}
                                         </div>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($log->cost)
-                                        <span class="fw-bold">Rp {{ number_format($log->cost, 0, ',', '.') }}</span>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif

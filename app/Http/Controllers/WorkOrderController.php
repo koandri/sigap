@@ -243,7 +243,6 @@ final class WorkOrderController extends Controller
             'action_taken' => 'required|string|max:1000',
             'findings' => 'nullable|string|max:1000',
             'recommendations' => 'nullable|string|max:1000',
-            'cost' => 'nullable|numeric|min:0',
             'parts' => 'nullable|array',
             'parts.*.position_item_id' => 'required_with:parts|exists:position_items,id',
             'parts.*.quantity_used' => 'required_with:parts|numeric|min:0.001',
@@ -273,7 +272,6 @@ final class WorkOrderController extends Controller
             'action_taken' => $validated['action_taken'],
             'findings' => $validated['findings'],
             'recommendations' => $validated['recommendations'],
-            'cost' => $validated['cost'] ?? 0,
         ]);
 
         return redirect()
@@ -585,7 +583,6 @@ final class WorkOrderController extends Controller
                 'action_taken' => !empty($actionTaken) ? $actionTaken : 'Work order completed',
                 'findings' => $workOrder->verification_notes,
                 'recommendations' => null,
-                'cost' => 0,
             ]);
 
             $message = 'Work order closed successfully.';

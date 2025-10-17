@@ -448,9 +448,6 @@
                                         @if($log->recommendations)
                                             <p><strong>Recommendations:</strong> {{ $log->recommendations }}</p>
                                         @endif
-                                        @if($log->cost > 0)
-                                            <p><strong>Cost:</strong> ${{ number_format($log->cost, 2) }}</p>
-                                        @endif
                                     </div>
                                 </div>
                             </div>

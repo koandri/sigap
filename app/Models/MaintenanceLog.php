@@ -22,7 +22,6 @@ final class MaintenanceLog extends Model
         'action_taken',
         'findings',
         'recommendations',
-        'cost',
     ];
 
     /**
@@ -32,7 +31,6 @@ final class MaintenanceLog extends Model
      */
     protected $casts = [
         'performed_at' => 'datetime',
-        'cost' => 'decimal:2',
     ];
 
     /**

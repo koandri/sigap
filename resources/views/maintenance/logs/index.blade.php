@@ -87,7 +87,6 @@
                                 <th>Performed By</th>
                                 <th>Action Taken</th>
                                 <th>Findings</th>
-                                <th>Cost</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,7 +107,7 @@
                                 <td>
                                     @if($log->work_order_id)
                                         <a href="{{ route('maintenance.work-orders.show', $log->workOrder) }}" class="text-decoration-none">
-                                            <span class="badge bg-info">
+                                            <span class="badge bg-info text-white">
                                                 WO-{{ str_pad((string)$log->work_order_id, 4, '0', STR_PAD_LEFT) }}
                                             </span>
                                         </a>
@@ -119,7 +118,6 @@
                                 <td>
                                     @if($log->performedBy)
                                         <div class="d-flex align-items-center">
-                                            <span class="avatar avatar-sm me-2">{{ substr($log->performedBy->name, 0, 2) }}</span>
                                             <span>{{ $log->performedBy->name }}</span>
                                         </div>
                                     @else
@@ -136,13 +134,6 @@
                                         <div class="text-truncate" style="max-width: 200px;" title="{{ $log->findings }}">
                                             {{ $log->findings }}
                                         </div>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($log->cost)
-                                        <span class="fw-bold">Rp {{ number_format($log->cost, 0, ',', '.') }}</span>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
