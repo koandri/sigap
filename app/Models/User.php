@@ -153,4 +153,64 @@ class User extends Authenticatable
             $q->where('name', 'Engineering Operator');
         })->where('active', true);
     }
+
+    // ========================================
+    // Facility Management Relationships
+    // ========================================
+
+    /**
+     * Cleaning tasks assigned to this user.
+     */
+    public function cleaningTasks()
+    {
+        return $this->hasMany(CleaningTask::class, 'assigned_to');
+    }
+
+    /**
+     * Cleaning tasks started by this user.
+     */
+    public function startedCleaningTasks()
+    {
+        return $this->hasMany(CleaningTask::class, 'started_by');
+    }
+
+    /**
+     * Cleaning tasks completed by this user.
+     */
+    public function completedCleaningTasks()
+    {
+        return $this->hasMany(CleaningTask::class, 'completed_by');
+    }
+
+    /**
+     * Cleaning submissions made by this user.
+     */
+    public function cleaningSubmissions()
+    {
+        return $this->hasMany(CleaningSubmission::class, 'submitted_by');
+    }
+
+    /**
+     * Cleaning approvals done by this user.
+     */
+    public function cleaningApprovals()
+    {
+        return $this->hasMany(CleaningApproval::class, 'approved_by');
+    }
+
+    /**
+     * Cleaning requests handled by this user.
+     */
+    public function handledCleaningRequests()
+    {
+        return $this->hasMany(CleaningRequest::class, 'handled_by');
+    }
+
+    /**
+     * Cleaning schedule alerts resolved by this user.
+     */
+    public function resolvedCleaningAlerts()
+    {
+        return $this->hasMany(CleaningScheduleAlert::class, 'resolved_by');
+    }
 }
