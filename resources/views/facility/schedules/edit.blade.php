@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create Cleaning Schedule')
+@section('title', 'Edit Cleaning Schedule')
 
 @section('content')
 <div class="page-header d-print-none">
@@ -8,7 +8,7 @@
         <div class="row g-2 align-items-center">
             <div class="col">
                 <div class="page-pretitle">Facility Management</div>
-                <h2 class="page-title">Create Cleaning Schedule</h2>
+                <h2 class="page-title">Edit Cleaning Schedule</h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <a href="{{ route('facility.schedules.index') }}" class="btn btn-outline-primary">
@@ -24,8 +24,9 @@
         
         @include('layouts.alerts')
 
-        <form action="{{ route('facility.schedules.store') }}" method="POST">
+        <form action="{{ route('facility.schedules.update', $schedule) }}" method="POST">
             @csrf
+            @method('PUT')
 
             <div class="row">
                 <div class="col-lg-8">
@@ -38,7 +39,7 @@
                             <div class="mb-3">
                                 <label class="form-label required">Schedule Name</label>
                                 <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
-                                       value="{{ old('name') }}" placeholder="e.g., Daily Office Cleaning" required>
+                                       value="{{ old('name', $schedule->name) }}" placeholder="e.g., Daily Office Cleaning" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -49,7 +50,8 @@
                                 <select name="location_id" class="form-select @error('location_id') is-invalid @enderror" required>
                                     <option value="">Select location...</option>
                                     @foreach($locations as $location)
-                                        <option value="{{ $location->id }}" {{ old('location_id') == $location->id ? 'selected' : '' }}>
+                                        <option value="{{ $location->id }}" 
+                                                {{ old('location_id', $schedule->location_id) == $location->id ? 'selected' : '' }}>
                                             {{ $location->name }}
                                         </option>
                                     @endforeach
@@ -62,7 +64,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Description</label>
                                 <textarea name="description" class="form-control @error('description') is-invalid @enderror" 
-                                          rows="3" placeholder="Optional description...">{{ old('description') }}</textarea>
+                                          rows="3" placeholder="Optional description...">{{ old('description', $schedule->description) }}</textarea>
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -76,18 +78,27 @@
                             <h3 class="card-title">Frequency Settings</h3>
                         </div>
                         <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fa fa-info-circle"></i> 
+                                <strong>Note:</strong> Changing frequency settings will only affect new tasks generated after saving. Existing tasks will not be modified.
+                            </div>
+
                             <div class="mb-3">
                                 <label class="form-label required">Frequency Type</label>
                                 <select name="frequency_type" id="frequencyType" class="form-select @error('frequency_type') is-invalid @enderror" required>
                                     <option value="">Select frequency...</option>
-                                    <option value="daily" {{ old('frequency_type') === 'daily' ? 'selected' : '' }}>Daily</option>
-                                    <option value="weekly" {{ old('frequency_type') === 'weekly' ? 'selected' : '' }}>Weekly</option>
-                                    <option value="monthly" {{ old('frequency_type') === 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                    <option value="daily" {{ old('frequency_type', $schedule->frequency_type) === 'daily' ? 'selected' : '' }}>Daily</option>
+                                    <option value="weekly" {{ old('frequency_type', $schedule->frequency_type) === 'weekly' ? 'selected' : '' }}>Weekly</option>
+                                    <option value="monthly" {{ old('frequency_type', $schedule->frequency_type) === 'monthly' ? 'selected' : '' }}>Monthly</option>
                                 </select>
                                 @error('frequency_type')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            @php
+                                $config = old('frequency_config', $schedule->frequency_config ?? []);
+                            @endphp
 
                             <!-- Daily Config -->
                             <div id="dailyConfig" class="frequency-config" style="display: none;">
@@ -95,7 +106,7 @@
                                     <label class="form-label">Repeat Every</label>
                                     <div class="input-group">
                                         <input type="number" name="frequency_config[interval]" class="form-control" 
-                                               value="{{ old('frequency_config.interval', 1) }}" min="1" max="365">
+                                               value="{{ old('frequency_config.interval', $config['interval'] ?? 1) }}" min="1" max="365">
                                         <span class="input-group-text">day(s)</span>
                                     </div>
                                     <small class="form-hint">Leave as 1 for every day, or set to higher number (e.g., 3 = every 3 days)</small>
@@ -108,10 +119,14 @@
                                     <label class="form-label">Days of Week</label>
                                     <div class="form-selectgroup">
                                         @foreach(['1' => 'Mon', '2' => 'Tue', '3' => 'Wed', '4' => 'Thu', '5' => 'Fri', '6' => 'Sat', '0' => 'Sun'] as $day => $label)
+                                            @php
+                                                $days = old('frequency_config.days', $config['days'] ?? []);
+                                                $checked = is_array($days) && in_array($day, $days);
+                                            @endphp
                                             <label class="form-selectgroup-item">
                                                 <input type="checkbox" name="frequency_config[days][]" value="{{ $day }}" 
                                                        class="form-selectgroup-input"
-                                                       {{ is_array(old('frequency_config.days')) && in_array($day, old('frequency_config.days')) ? 'checked' : '' }}>
+                                                       {{ $checked ? 'checked' : '' }}>
                                                 <span class="form-selectgroup-label">{{ $label }}</span>
                                             </label>
                                         @endforeach
@@ -130,11 +145,15 @@
                                         <small class="text-muted d-block mb-1"><strong>Safe for all months:</strong></small>
                                         <div class="row g-2">
                                             @for($i = 1; $i <= 28; $i++)
+                                                @php
+                                                    $dates = old('frequency_config.dates', $config['dates'] ?? []);
+                                                    $checked = is_array($dates) && in_array($i, $dates);
+                                                @endphp
                                                 <div class="col-auto">
                                                     <label class="form-selectgroup-item">
                                                         <input type="checkbox" name="frequency_config[dates][]" value="{{ $i }}" 
                                                                class="form-selectgroup-input monthly-date-checkbox"
-                                                               {{ is_array(old('frequency_config.dates')) && in_array($i, old('frequency_config.dates')) ? 'checked' : '' }}>
+                                                               {{ $checked ? 'checked' : '' }}>
                                                         <span class="form-selectgroup-label">{{ $i }}</span>
                                                     </label>
                                                 </div>
@@ -149,36 +168,21 @@
                                             <span class="text-warning">(will be skipped in months without these dates)</span>
                                         </small>
                                         <div class="row g-2">
-                                            <div class="col-auto">
-                                                <label class="form-selectgroup-item">
-                                                    <input type="checkbox" name="frequency_config[dates][]" value="29" 
-                                                           class="form-selectgroup-input monthly-date-checkbox"
-                                                           {{ is_array(old('frequency_config.dates')) && in_array('29', old('frequency_config.dates')) ? 'checked' : '' }}
-                                                           title="Skipped in Feb (non-leap years)">
-                                                    <span class="form-selectgroup-label">29</span>
-                                                </label>
-                                                <small class="text-muted d-block text-center" style="font-size: 0.7rem;">Feb*</small>
-                                            </div>
-                                            <div class="col-auto">
-                                                <label class="form-selectgroup-item">
-                                                    <input type="checkbox" name="frequency_config[dates][]" value="30" 
-                                                           class="form-selectgroup-input monthly-date-checkbox"
-                                                           {{ is_array(old('frequency_config.dates')) && in_array('30', old('frequency_config.dates')) ? 'checked' : '' }}
-                                                           title="Skipped in Feb">
-                                                    <span class="form-selectgroup-label">30</span>
-                                                </label>
-                                                <small class="text-muted d-block text-center" style="font-size: 0.7rem;">Feb</small>
-                                            </div>
-                                            <div class="col-auto">
-                                                <label class="form-selectgroup-item">
-                                                    <input type="checkbox" name="frequency_config[dates][]" value="31" 
-                                                           class="form-selectgroup-input monthly-date-checkbox"
-                                                           {{ is_array(old('frequency_config.dates')) && in_array('31', old('frequency_config.dates')) ? 'checked' : '' }}
-                                                           title="Skipped in Feb, Apr, Jun, Sep, Nov">
-                                                    <span class="form-selectgroup-label">31</span>
-                                                </label>
-                                                <small class="text-muted d-block text-center" style="font-size: 0.7rem;">5 months</small>
-                                            </div>
+                                            @foreach([29 => 'Feb*', 30 => 'Feb', 31 => '5 months'] as $date => $hint)
+                                                @php
+                                                    $dates = old('frequency_config.dates', $config['dates'] ?? []);
+                                                    $checked = is_array($dates) && in_array($date, $dates);
+                                                @endphp
+                                                <div class="col-auto">
+                                                    <label class="form-selectgroup-item">
+                                                        <input type="checkbox" name="frequency_config[dates][]" value="{{ $date }}" 
+                                                               class="form-selectgroup-input monthly-date-checkbox"
+                                                               {{ $checked ? 'checked' : '' }}>
+                                                        <span class="form-selectgroup-label">{{ $date }}</span>
+                                                    </label>
+                                                    <small class="text-muted d-block text-center" style="font-size: 0.7rem;">{{ $hint }}</small>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                     
@@ -212,9 +216,51 @@
                         </div>
                         <div class="card-body">
                             <div id="scheduleItems">
-                                <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i> Click "Add Item" to add cleaning items to this schedule.
-                                </div>
+                                @forelse($schedule->items as $index => $item)
+                                    <div class="card mb-2" id="existing-item-{{ $item->id }}">
+                                        <div class="card-body">
+                                            <input type="hidden" name="existing_items[{{ $item->id }}][id]" value="{{ $item->id }}">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label required">Item Name</label>
+                                                    <input type="text" name="existing_items[{{ $item->id }}][item_name]" 
+                                                           class="form-control" 
+                                                           value="{{ old('existing_items.'.$item->id.'.item_name', $item->item_name) }}" 
+                                                           placeholder="e.g., Sweep floor" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Link to Asset (Optional)</label>
+                                                    <select name="existing_items[{{ $item->id }}][asset_id]" class="form-select">
+                                                        <option value="">General cleaning item</option>
+                                                        @foreach($assets as $asset)
+                                                            <option value="{{ $asset->id }}" 
+                                                                    {{ old('existing_items.'.$item->id.'.asset_id', $item->asset_id) == $asset->id ? 'selected' : '' }}>
+                                                                {{ $asset->code }} - {{ $asset->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12 mb-3">
+                                                    <label class="form-label">Description</label>
+                                                    <textarea name="existing_items[{{ $item->id }}][item_description]" 
+                                                              class="form-control" rows="2" 
+                                                              placeholder="Optional detailed instructions...">{{ old('existing_items.'.$item->id.'.item_description', $item->item_description) }}</textarea>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <input type="hidden" name="existing_items[{{ $item->id }}][_delete]" value="0" id="delete-{{ $item->id }}">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            onclick="markItemForDeletion({{ $item->id }})">
+                                                        <i class="fa fa-trash"></i> Remove Item
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="alert alert-info">
+                                        <i class="fa fa-info-circle"></i> Click "Add Item" to add cleaning items to this schedule.
+                                    </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -230,7 +276,7 @@
                             <div class="mb-3">
                                 <label class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" name="is_active" value="1" 
-                                           {{ old('is_active', true) ? 'checked' : '' }}>
+                                           {{ old('is_active', $schedule->is_active) ? 'checked' : '' }}>
                                     <span class="form-check-label">Schedule is Active</span>
                                 </label>
                                 <small class="form-hint d-block">
@@ -240,7 +286,7 @@
 
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-save"></i> Create Schedule
+                                    <i class="fa fa-save"></i> Update Schedule
                                 </button>
                                 <a href="{{ route('facility.schedules.index') }}" class="btn btn-outline-secondary">
                                     Cancel
@@ -258,13 +304,13 @@
                         </div>
                         <div class="card-body">
                             <p class="text-muted small mb-2">
-                                <strong>Cleaning Items:</strong> Add individual tasks that need to be done.
+                                <strong>Schedule Changes:</strong> Modifications only affect new tasks, not existing or already generated ones.
                             </p>
                             <p class="text-muted small mb-2">
-                                <strong>Asset Link:</strong> Optionally link items to specific assets for tracking.
+                                <strong>Removing Items:</strong> Existing tasks for removed items won't be deleted.
                             </p>
                             <p class="text-muted small mb-0">
-                                <strong>Frequency:</strong> Tasks will be auto-generated daily based on your frequency settings.
+                                <strong>Asset Links:</strong> If an asset becomes inactive, tasks will be skipped automatically.
                             </p>
                         </div>
                     </div>
@@ -277,7 +323,7 @@
 
 @push('scripts')
 <script>
-let itemCounter = 0;
+let itemCounter = {{ $schedule->items->count() }};
 
 // Show/hide frequency config based on type
 document.getElementById('frequencyType').addEventListener('change', function() {
@@ -293,7 +339,7 @@ document.getElementById('frequencyType').addEventListener('change', function() {
     }
 });
 
-// Trigger on page load if there's an old value
+// Trigger on page load
 document.addEventListener('DOMContentLoaded', function() {
     const frequencyType = document.getElementById('frequencyType');
     if (frequencyType.value) {
@@ -302,6 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set up monthly date warnings
     setupMonthlyWarnings();
+    updateMonthlyWarning(); // Show warnings for existing selection
 });
 
 // Handle monthly date selection warnings
@@ -336,6 +383,16 @@ function updateMonthlyWarning() {
         warningDiv.style.display = 'block';
     } else {
         warningDiv.style.display = 'none';
+    }
+}
+
+function markItemForDeletion(itemId) {
+    if (confirm('Are you sure you want to remove this item? Existing tasks for this item will not be deleted.')) {
+        document.getElementById('delete-' + itemId).value = '1';
+        const itemCard = document.getElementById('existing-item-' + itemId);
+        itemCard.style.opacity = '0.5';
+        itemCard.querySelector('button').textContent = 'Marked for Deletion';
+        itemCard.querySelector('button').disabled = true;
     }
 }
 
@@ -388,16 +445,6 @@ function removeScheduleItem(id) {
     const item = document.getElementById(`item-${id}`);
     if (item) {
         item.remove();
-    }
-    
-    // Show alert if no items left
-    const container = document.getElementById('scheduleItems');
-    if (!container.querySelector('.card')) {
-        container.innerHTML = `
-            <div class="alert alert-info">
-                <i class="fa fa-info-circle"></i> Click "Add Item" to add cleaning items to this schedule.
-            </div>
-        `;
     }
 }
 </script>
