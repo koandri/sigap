@@ -45,13 +45,12 @@ final class MaintenanceCalendarController extends Controller
                 'id' => 'schedule_' . $schedule->id,
                 'title' => $schedule->asset->name . ' - ' . $schedule->maintenanceType->name,
                 'start' => $schedule->next_due_date->format('Y-m-d'),
-                'color' => $schedule->next_due_date < now() ? '#dc3545' : '#28a745',
+                'color' => '#206bc4', // Primary color
                 'extendedProps' => [
                     'type' => 'schedule',
                     'asset' => $schedule->asset->name,
                     'maintenance_type' => $schedule->maintenanceType->name,
-                    'description' => $schedule->description,
-                    'url' => route('maintenance.schedules.show', $schedule)
+                    'description' => $schedule->description
                 ]
             ]);
         }
@@ -63,17 +62,22 @@ final class MaintenanceCalendarController extends Controller
             ->get();
 
         foreach ($workOrders as $workOrder) {
-            $color = match($workOrder->priority) {
-                'urgent' => '#dc3545',
-                'high' => '#fd7e14',
-                'medium' => '#ffc107',
-                'low' => '#6c757d',
+            // Color work orders by status
+            $color = match($workOrder->status) {
+                'submitted' => '#6c757d',      // Secondary (gray)
+                'assigned' => '#0d6efd',       // Info (blue)
+                'in-progress' => '#fd7e14',    // Warning (orange)
+                'pending-verification' => '#0054a6', // Primary (darker blue)
+                'verified' => '#28a745',       // Success (green)
+                'completed' => '#28a745',      // Success (green)
+                'rework' => '#dc3545',         // Danger (red)
+                'cancelled' => '#495057',      // Dark (muted gray)
                 default => '#6c757d'
             };
 
             $events->push([
                 'id' => 'workorder_' . $workOrder->id,
-                'title' => $workOrder->asset->name . ' - ' . $workOrder->maintenanceType->name,
+                'title' => $workOrder->wo_number . ' - ' . $workOrder->asset->name,
                 'start' => $workOrder->scheduled_date->format('Y-m-d'),
                 'color' => $color,
                 'extendedProps' => [

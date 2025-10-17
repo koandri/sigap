@@ -262,8 +262,17 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'GET'
         },
         eventClick: function(info) {
-            if (info.event.extendedProps.url) {
+            // Only work orders are clickable (they have URL in extendedProps)
+            if (info.event.extendedProps.type === 'workorder' && info.event.extendedProps.url) {
                 window.location.href = info.event.extendedProps.url;
+            }
+        },
+        eventDidMount: function(info) {
+            // Add cursor pointer only for work orders
+            if (info.event.extendedProps.type === 'workorder') {
+                info.el.style.cursor = 'pointer';
+            } else {
+                info.el.style.cursor = 'default';
             }
         },
         eventContent: function(arg) {
