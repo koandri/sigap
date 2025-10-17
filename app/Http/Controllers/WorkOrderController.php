@@ -550,6 +550,44 @@ final class WorkOrderController extends Controller
                 'notes' => $validated['closing_notes'],
             ]);
 
+            // Create maintenance log when closing
+            $user = Auth::user();
+            assert($user instanceof \App\Models\User);
+            
+            // Aggregate action descriptions from work order actions
+            $actionDescriptions = $workOrder->actions()
+                ->orderBy('performed_at')
+                ->get()
+                ->pluck('action_description')
+                ->filter()
+                ->join('; ');
+            
+            // Aggregate progress notes
+            $progressNotes = $workOrder->progressLogs()
+                ->orderBy('logged_at')
+                ->get()
+                ->pluck('progress_notes')
+                ->filter()
+                ->join('; ');
+            
+            // Combine action taken from various sources
+            $actionTaken = collect([
+                $workOrder->description,
+                $actionDescriptions,
+                $progressNotes,
+                $validated['closing_notes']
+            ])->filter()->join(' | ');
+            
+            $workOrder->maintenanceLogs()->create([
+                'asset_id' => $workOrder->asset_id,
+                'performed_by' => $workOrder->assigned_to ?? $user->id,
+                'performed_at' => $workOrder->work_finished_at ?? $workOrder->completed_date,
+                'action_taken' => !empty($actionTaken) ? $actionTaken : 'Work order completed',
+                'findings' => $workOrder->verification_notes,
+                'recommendations' => null,
+                'cost' => 0,
+            ]);
+
             $message = 'Work order closed successfully.';
         } else {
             $workOrder->update([

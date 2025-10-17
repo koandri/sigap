@@ -125,12 +125,12 @@
                                                         'cancelled' => 'danger'
                                                     ];
                                                 @endphp
-                                                <span class="badge bg-{{ $statusColors[$workOrder->status] ?? 'secondary' }}">
+                                                <span class="badge bg-{{ $statusColors[$workOrder->status] ?? 'secondary' }} text-white">
                                                     {{ ucfirst(str_replace('-', ' ', $workOrder->status)) }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $workOrder->priority === 'urgent' ? 'danger' : ($workOrder->priority === 'high' ? 'warning' : 'secondary') }}">
+                                                <span class="badge bg-{{ $workOrder->priority === 'urgent' ? 'danger' : ($workOrder->priority === 'high' ? 'warning' : 'secondary') }} text-white">
                                                     {{ ucfirst($workOrder->priority) }}
                                                 </span>
                                             </td>
