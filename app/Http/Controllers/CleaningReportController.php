@@ -14,45 +14,64 @@ use Barryvdh\DomPDF\Facade\Pdf;
 final class CleaningReportController extends Controller
 {
     /**
-     * Display daily report for a location.
+     * Display daily report for selected locations.
      */
     public function dailyReport(Request $request): View
     {
         $this->authorize('facility.reports.view');
 
         $date = $request->input('date', today()->toDateString());
-        $locationId = $request->input('location_id');
+        $locationIds = $request->input('location_id', []);
 
-        $locations = Location::active()->orderBy('name')->get();
+        $allLocations = Location::active()->orderBy('name')->get();
 
-        $location = null;
-        $tasks = collect();
-
-        if ($locationId) {
-            $location = Location::findOrFail($locationId);
-            
-            $tasks = CleaningTask::whereDate('scheduled_date', $date)
-                ->where('location_id', $locationId)
-                ->with([
-                    'cleaningSchedule',
-                    'asset',
-                    'assignedUser',
-                    'completedByUser',
-                    'submission'
-                ])
-                ->orderBy('item_name')
-                ->get();
-        }
-
-        // Statistics
-        $stats = [
-            'total' => $tasks->count(),
-            'completed' => $tasks->whereIn('status', ['completed', 'approved'])->count(),
-            'pending' => $tasks->where('status', 'pending')->count(),
-            'missed' => $tasks->where('status', 'missed')->count(),
+        $selectedLocations = collect();
+        $locationData = [];
+        $totalStats = [
+            'total' => 0,
+            'completed' => 0,
+            'pending' => 0,
+            'missed' => 0,
         ];
 
-        return view('facility.reports.daily', compact('locations', 'location', 'tasks', 'date', 'stats'));
+        if (!empty($locationIds)) {
+            $selectedLocations = Location::whereIn('id', $locationIds)->orderBy('name')->get();
+            
+            foreach ($selectedLocations as $location) {
+                $tasks = CleaningTask::whereDate('scheduled_date', $date)
+                    ->where('location_id', $location->id)
+                    ->with([
+                        'cleaningSchedule',
+                        'asset',
+                        'assignedUser',
+                        'completedByUser',
+                        'submission'
+                    ])
+                    ->orderBy('item_name')
+                    ->get();
+
+                $stats = [
+                    'total' => $tasks->count(),
+                    'completed' => $tasks->whereIn('status', ['completed', 'approved'])->count(),
+                    'pending' => $tasks->where('status', 'pending')->count(),
+                    'missed' => $tasks->where('status', 'missed')->count(),
+                ];
+
+                // Add to total stats
+                $totalStats['total'] += $stats['total'];
+                $totalStats['completed'] += $stats['completed'];
+                $totalStats['pending'] += $stats['pending'];
+                $totalStats['missed'] += $stats['missed'];
+
+                $locationData[] = [
+                    'location' => $location,
+                    'tasks' => $tasks,
+                    'stats' => $stats,
+                ];
+            }
+        }
+
+        return view('reports.facility.daily', compact('allLocations', 'selectedLocations', 'locationData', 'date', 'totalStats', 'locationIds'));
     }
 
     /**
@@ -86,7 +105,7 @@ final class CleaningReportController extends Controller
             'missed' => $tasks->where('status', 'missed')->count(),
         ];
 
-        $pdf = Pdf::loadView('facility.reports.daily-pdf', compact('location', 'tasks', 'date', 'stats'));
+        $pdf = Pdf::loadView('reports.facility.daily-pdf', compact('location', 'tasks', 'date', 'stats'));
         
         return $pdf->download("cleaning-report-{$location->name}-{$date}.pdf");
     }
@@ -98,13 +117,12 @@ final class CleaningReportController extends Controller
     {
         $this->authorize('facility.reports.view');
 
-        $year = $request->input('year', now()->year);
-        $week = $request->input('week', now()->week);
-        $locationIds = $request->input('locations', []);
-
-        // Calculate week start and end dates
-        $weekStart = \Carbon\Carbon::now()->setISODate($year, $week)->startOfWeek();
+        // Get date parameter and ensure it's a Monday
+        $date = $request->input('date', now()->startOfWeek()->toDateString());
+        $weekStart = \Carbon\Carbon::parse($date)->startOfWeek();
         $weekEnd = $weekStart->copy()->endOfWeek();
+        
+        $locationIds = $request->input('locations', []);
 
         // Get locations
         if (empty($locationIds)) {
@@ -134,13 +152,18 @@ final class CleaningReportController extends Controller
                 $completed = $tasks->whereIn('status', ['completed', 'approved'])->count();
                 
                 // Determine status indicator
-                $indicator = '✗'; // none done
-                if ($total > 0) {
-                    if ($completed === $total) {
-                        $indicator = '✓'; // all done
-                    } elseif ($completed > 0) {
-                        $indicator = '⚠'; // partial
-                    }
+                if ($total === 0) {
+                    // No tasks scheduled for this day/location
+                    $indicator = '-';
+                } elseif ($completed === $total) {
+                    // All tasks completed
+                    $indicator = '✓';
+                } elseif ($completed > 0) {
+                    // Some tasks completed
+                    $indicator = '⚠';
+                } else {
+                    // No tasks completed (but tasks exist)
+                    $indicator = '✗';
                 }
 
                 $row['days'][] = [
@@ -154,12 +177,10 @@ final class CleaningReportController extends Controller
             $gridData[] = $row;
         }
 
-        return view('facility.reports.weekly', compact(
+        return view('reports.facility.weekly', compact(
             'gridData',
             'weekStart',
             'weekEnd',
-            'year',
-            'week',
             'allLocations',
             'locationIds'
         ));
@@ -206,12 +227,11 @@ final class CleaningReportController extends Controller
     {
         $this->authorize('facility.reports.view');
 
-        $year = $request->input('year', now()->year);
-        $week = $request->input('week', now()->week);
-        $locationIds = $request->input('locations', []);
-
-        $weekStart = \Carbon\Carbon::now()->setISODate($year, $week)->startOfWeek();
+        $date = $request->input('date', now()->startOfWeek()->toDateString());
+        $weekStart = \Carbon\Carbon::parse($date)->startOfWeek();
         $weekEnd = $weekStart->copy()->endOfWeek();
+        
+        $locationIds = $request->input('locations', []);
 
         if (empty($locationIds)) {
             $locations = Location::active()->orderBy('name')->get();
@@ -237,13 +257,15 @@ final class CleaningReportController extends Controller
                 $total = $tasks->count();
                 $completed = $tasks->whereIn('status', ['completed', 'approved'])->count();
                 
-                $indicator = '✗';
-                if ($total > 0) {
-                    if ($completed === $total) {
-                        $indicator = '✓';
-                    } elseif ($completed > 0) {
-                        $indicator = '⚠';
-                    }
+                // Determine status indicator
+                if ($total === 0) {
+                    $indicator = '-';
+                } elseif ($completed === $total) {
+                    $indicator = '✓';
+                } elseif ($completed > 0) {
+                    $indicator = '⚠';
+                } else {
+                    $indicator = '✗';
                 }
 
                 $row['days'][] = [
@@ -257,9 +279,9 @@ final class CleaningReportController extends Controller
             $gridData[] = $row;
         }
 
-        $pdf = Pdf::loadView('facility.reports.weekly-pdf', compact('gridData', 'weekStart', 'weekEnd'))
+        $pdf = Pdf::loadView('reports.facility.weekly-pdf', compact('gridData', 'weekStart', 'weekEnd'))
             ->setPaper('a4', 'landscape');
         
-        return $pdf->download("cleaning-weekly-report-week{$week}-{$year}.pdf");
+        return $pdf->download("cleaning-weekly-report-{$weekStart->format('Y-m-d')}.pdf");
     }
 }
