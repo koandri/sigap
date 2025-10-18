@@ -87,9 +87,11 @@
                                 <label class="form-label required">Frequency Type</label>
                                 <select name="frequency_type" id="frequencyType" class="form-select @error('frequency_type') is-invalid @enderror" required>
                                     <option value="">Select frequency...</option>
-                                    <option value="daily" {{ old('frequency_type', $schedule->frequency_type) === 'daily' ? 'selected' : '' }}>Daily</option>
-                                    <option value="weekly" {{ old('frequency_type', $schedule->frequency_type) === 'weekly' ? 'selected' : '' }}>Weekly</option>
-                                    <option value="monthly" {{ old('frequency_type', $schedule->frequency_type) === 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                    <option value="hourly" {{ old('frequency_type', $schedule->frequency_type->value ?? $schedule->frequency_type) === 'hourly' ? 'selected' : '' }}>Hourly</option>
+                                    <option value="daily" {{ old('frequency_type', $schedule->frequency_type->value ?? $schedule->frequency_type) === 'daily' ? 'selected' : '' }}>Daily</option>
+                                    <option value="weekly" {{ old('frequency_type', $schedule->frequency_type->value ?? $schedule->frequency_type) === 'weekly' ? 'selected' : '' }}>Weekly</option>
+                                    <option value="monthly" {{ old('frequency_type', $schedule->frequency_type->value ?? $schedule->frequency_type) === 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                    <option value="yearly" {{ old('frequency_type', $schedule->frequency_type->value ?? $schedule->frequency_type) === 'yearly' ? 'selected' : '' }}>Yearly</option>
                                 </select>
                                 @error('frequency_type')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -98,7 +100,45 @@
 
                             @php
                                 $config = old('frequency_config', $schedule->frequency_config ?? []);
+                                $scheduledTime = old('scheduled_time', $schedule->scheduled_time ? $schedule->scheduled_time->format('H:i') : '');
+                                $startTime = old('start_time', $schedule->start_time ? $schedule->start_time->format('H:i') : '08:00');
+                                $endTime = old('end_time', $schedule->end_time ? $schedule->end_time->format('H:i') : '18:00');
                             @endphp
+
+                            <!-- Hourly Config -->
+                            <div id="hourlyConfig" class="frequency-config" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Repeat Every</label>
+                                    <div class="input-group">
+                                        <input type="number" name="frequency_config[interval]" class="form-control" 
+                                               value="{{ old('frequency_config.interval', $config['interval'] ?? 1) }}" min="1" max="24">
+                                        <span class="input-group-text">hour(s)</span>
+                                    </div>
+                                    <small class="form-hint">e.g., 1 = every hour, 2 = every 2 hours</small>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label required">Start Time</label>
+                                            <input type="time" name="start_time" class="form-control" 
+                                                   value="{{ $startTime }}" required>
+                                            <small class="form-hint">When to start generating tasks</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label required">End Time</label>
+                                            <input type="time" name="end_time" class="form-control" 
+                                                   value="{{ $endTime }}" required>
+                                            <small class="form-hint">Last task generation time</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i> 
+                                    Example: Every 2 hours from 8:00 AM to 6:00 PM will generate tasks at: 8am, 10am, 12pm, 2pm, 4pm, 6pm
+                                </div>
+                            </div>
 
                             <!-- Daily Config -->
                             <div id="dailyConfig" class="frequency-config" style="display: none;">
@@ -110,6 +150,12 @@
                                         <span class="input-group-text">day(s)</span>
                                     </div>
                                     <small class="form-hint">Leave as 1 for every day, or set to higher number (e.g., 3 = every 3 days)</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Scheduled Time (Optional)</label>
+                                    <input type="time" name="scheduled_time" class="form-control scheduled-time-input" 
+                                           value="{{ $scheduledTime }}">
+                                    <small class="form-hint">Specific time for daily task (e.g., 8:00 AM). Leave empty for any time.</small>
                                 </div>
                             </div>
 
@@ -132,6 +178,12 @@
                                         @endforeach
                                     </div>
                                     <small class="form-hint">Select one or more days</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Scheduled Time (Optional)</label>
+                                    <input type="time" name="scheduled_time" class="form-control scheduled-time-input" 
+                                           value="{{ $scheduledTime }}">
+                                    <small class="form-hint">Specific time for weekly tasks (e.g., 3:00 PM). Leave empty for any time.</small>
                                 </div>
                             </div>
 
@@ -199,6 +251,52 @@
                                     <small class="form-hint">
                                         Select one or more dates. Tasks will be generated only for months that have the selected dates.
                                     </small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Scheduled Time (Optional)</label>
+                                    <input type="time" name="scheduled_time" class="form-control scheduled-time-input" 
+                                           value="{{ $scheduledTime }}">
+                                    <small class="form-hint">Specific time for monthly tasks (e.g., 9:00 AM). Leave empty for any time.</small>
+                                </div>
+                            </div>
+
+                            <!-- Yearly Config -->
+                            <div id="yearlyConfig" class="frequency-config" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label required">Month</label>
+                                            <select name="frequency_config[month]" class="form-select">
+                                                @foreach(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] as $index => $month)
+                                                    <option value="{{ $index + 1 }}" {{ old('frequency_config.month', $config['month'] ?? 1) == ($index + 1) ? 'selected' : '' }}>
+                                                        {{ $month }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label required">Date</label>
+                                            <select name="frequency_config[date]" class="form-select">
+                                                @for($i = 1; $i <= 31; $i++)
+                                                    <option value="{{ $i }}" {{ old('frequency_config.date', $config['date'] ?? 1) == $i ? 'selected' : '' }}>
+                                                        {{ $i }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Scheduled Time (Optional)</label>
+                                    <input type="time" name="scheduled_time" class="form-control scheduled-time-input" 
+                                           value="{{ $scheduledTime }}">
+                                    <small class="form-hint">Specific time for yearly task (e.g., 10:00 AM). Leave empty for any time.</small>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i> 
+                                    Task will be generated once per year on the selected date.
                                 </div>
                             </div>
                         </div>
@@ -309,8 +407,11 @@
                             <p class="text-muted small mb-2">
                                 <strong>Removing Items:</strong> Existing tasks for removed items won't be deleted.
                             </p>
-                            <p class="text-muted small mb-0">
+                            <p class="text-muted small mb-2">
                                 <strong>Asset Links:</strong> If an asset becomes inactive, tasks will be skipped automatically.
+                            </p>
+                            <p class="text-muted small mb-0">
+                                <strong>Time-based:</strong> You can specify exact times for tasks (e.g., "Daily at 8am" or "Every 2 hours from 8am-6pm").
                             </p>
                         </div>
                     </div>
@@ -329,13 +430,24 @@ let itemCounter = {{ $schedule->items->count() }};
 document.getElementById('frequencyType').addEventListener('change', function() {
     document.querySelectorAll('.frequency-config').forEach(el => el.style.display = 'none');
     
+    // Clear all scheduled_time inputs that are not in the current frequency type
+    document.querySelectorAll('.scheduled-time-input').forEach(input => {
+        if (!input.closest('.frequency-config') || input.closest('.frequency-config').style.display === 'none') {
+            input.value = '';
+        }
+    });
+    
     const selected = this.value;
-    if (selected === 'daily') {
+    if (selected === 'hourly') {
+        document.getElementById('hourlyConfig').style.display = 'block';
+    } else if (selected === 'daily') {
         document.getElementById('dailyConfig').style.display = 'block';
     } else if (selected === 'weekly') {
         document.getElementById('weeklyConfig').style.display = 'block';
     } else if (selected === 'monthly') {
         document.getElementById('monthlyConfig').style.display = 'block';
+    } else if (selected === 'yearly') {
+        document.getElementById('yearlyConfig').style.display = 'block';
     }
 });
 
