@@ -122,57 +122,11 @@ final class CleaningReportController extends Controller
         $locationIds = $request->input('locations', []);
 
         // Get locations
-        if (empty($locationIds)) {
-            $locations = Location::active()->orderBy('name')->get();
-        } else {
-            $locations = Location::whereIn('id', $locationIds)->orderBy('name')->get();
-        }
-
+        $locations = $this->getFilteredLocations($locationIds);
         $allLocations = Location::active()->orderBy('name')->get(); // For filter
 
-        // Build grid data
-        $gridData = [];
-        foreach ($locations as $location) {
-            $row = [
-                'location' => $location,
-                'days' => [],
-            ];
-
-            for ($i = 0; $i < 7; $i++) {
-                $date = $weekStart->copy()->addDays($i);
-                
-                $tasks = CleaningTask::whereDate('scheduled_date', $date)
-                    ->where('location_id', $location->id)
-                    ->get();
-
-                $total = $tasks->count();
-                $completed = $tasks->whereIn('status', ['completed', 'approved'])->count();
-                
-                // Determine status indicator
-                if ($total === 0) {
-                    // No tasks scheduled for this day/location
-                    $indicator = '-';
-                } elseif ($completed === $total) {
-                    // All tasks completed
-                    $indicator = '✓';
-                } elseif ($completed > 0) {
-                    // Some tasks completed
-                    $indicator = '⚠';
-                } else {
-                    // No tasks completed (but tasks exist)
-                    $indicator = '✗';
-                }
-
-                $row['days'][] = [
-                    'date' => $date->toDateString(),
-                    'total' => $total,
-                    'completed' => $completed,
-                    'indicator' => $indicator,
-                ];
-            }
-
-            $gridData[] = $row;
-        }
+        // Build grid data using shared method
+        $gridData = $this->buildWeeklyGridData($locations, $weekStart);
 
         return view('reports.facility.weekly', compact(
             'gridData',
@@ -230,14 +184,35 @@ final class CleaningReportController extends Controller
         
         $locationIds = $request->input('locations', []);
 
-        if (empty($locationIds)) {
-            $locations = Location::active()->orderBy('name')->get();
-        } else {
-            $locations = Location::whereIn('id', $locationIds)->orderBy('name')->get();
-        }
+        // Get locations using shared method
+        $locations = $this->getFilteredLocations($locationIds);
 
-        // Build grid data
+        // Build grid data using shared method
+        $gridData = $this->buildWeeklyGridData($locations, $weekStart);
+
+        return view('reports.facility.weekly-pdf', compact('gridData', 'weekStart', 'weekEnd'));
+    }
+
+    /**
+     * Get filtered locations based on location IDs or return all active locations.
+     */
+    private function getFilteredLocations(array $locationIds)
+    {
+        if (empty($locationIds)) {
+            return Location::active()->orderBy('name')->get();
+        }
+        
+        return Location::whereIn('id', $locationIds)->orderBy('name')->get();
+    }
+
+    /**
+     * Build weekly grid data for locations and week period.
+     * This method is shared between display and print views to ensure consistency.
+     */
+    private function buildWeeklyGridData($locations, \Carbon\Carbon $weekStart): array
+    {
         $gridData = [];
+        
         foreach ($locations as $location) {
             $row = [
                 'location' => $location,
@@ -256,17 +231,21 @@ final class CleaningReportController extends Controller
                 
                 // Determine status indicator
                 if ($total === 0) {
+                    // No tasks scheduled for this day/location
                     $indicator = '-';
                 } elseif ($completed === $total) {
+                    // All tasks completed
                     $indicator = '✓';
                 } elseif ($completed > 0) {
+                    // Some tasks completed
                     $indicator = '⚠';
                 } else {
+                    // No tasks completed (but tasks exist)
                     $indicator = '✗';
                 }
 
                 $row['days'][] = [
-                    'date' => $date->format('m/d'),
+                    'date' => $date->toDateString(),
                     'total' => $total,
                     'completed' => $completed,
                     'indicator' => $indicator,
@@ -276,6 +255,6 @@ final class CleaningReportController extends Controller
             $gridData[] = $row;
         }
 
-        return view('reports.facility.weekly-pdf', compact('gridData', 'weekStart', 'weekEnd'));
+        return $gridData;
     }
 }
