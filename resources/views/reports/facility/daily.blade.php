@@ -76,7 +76,7 @@
                 <form method="GET" action="{{ route('reports.facility.daily') }}">
                     <div class="row g-2">
                         <div class="col-md-5">
-                            <label class="form-label required">Location</label>
+                            <label class="form-label required">Locations</label>
                             <select name="location_id[]" id="location-select" class="form-select" multiple required>
                                 @foreach($allLocations as $loc)
                                     <option value="{{ $loc->id }}" {{ in_array($loc->id, $locationIds) ? 'selected' : '' }}>
@@ -198,14 +198,14 @@
                             <td>
                                 <strong>{{ $task->item_name }}</strong>
                                 @if($task->asset)
-                                    <br><span class="badge bg-azure">{{ $task->asset->code }}</span>
+                                    <br><span class="badge bg-azure text-white">{{ $task->asset->code }}</span>
                                 @endif
                             </td>
                             <td>
                                 @if($task->cleaning_schedule_id > 0)
                                     {{ $task->cleaningSchedule->name }}
                                 @else
-                                    <span class="badge bg-purple">Ad-hoc</span>
+                                    <span class="badge bg-purple text-white">Ad-hoc</span>
                                 @endif
                             </td>
                             <td>

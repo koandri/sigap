@@ -9,7 +9,6 @@ use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 final class CleaningReportController extends Controller
 {
@@ -75,9 +74,9 @@ final class CleaningReportController extends Controller
     }
 
     /**
-     * Generate daily report PDF.
+     * Display daily report in print-friendly format (use browser print to save as PDF).
      */
-    public function dailyReportPdf(Request $request): Response
+    public function dailyReportPdf(Request $request): View
     {
         $this->authorize('facility.reports.view');
 
@@ -105,9 +104,7 @@ final class CleaningReportController extends Controller
             'missed' => $tasks->where('status', 'missed')->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.facility.daily-pdf', compact('location', 'tasks', 'date', 'stats'));
-        
-        return $pdf->download("cleaning-report-{$location->name}-{$date}.pdf");
+        return view('reports.facility.daily-pdf', compact('location', 'tasks', 'date', 'stats'));
     }
 
     /**
@@ -221,9 +218,9 @@ final class CleaningReportController extends Controller
     }
 
     /**
-     * Generate weekly report PDF (A4 landscape).
+     * Display weekly report in print-friendly format (use browser print to save as PDF).
      */
-    public function weeklyReportPdf(Request $request): Response
+    public function weeklyReportPdf(Request $request): View
     {
         $this->authorize('facility.reports.view');
 
@@ -279,9 +276,6 @@ final class CleaningReportController extends Controller
             $gridData[] = $row;
         }
 
-        $pdf = Pdf::loadView('reports.facility.weekly-pdf', compact('gridData', 'weekStart', 'weekEnd'))
-            ->setPaper('a4', 'landscape');
-        
-        return $pdf->download("cleaning-weekly-report-{$weekStart->format('Y-m-d')}.pdf");
+        return view('reports.facility.weekly-pdf', compact('gridData', 'weekStart', 'weekEnd'));
     }
 }

@@ -11,6 +11,29 @@
             line-height: 1.4;
             color: #333;
         }
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #206bc4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .print-button:hover {
+            background-color: #1a5aa8;
+        }
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
         .header {
             text-align: center;
             margin-bottom: 20px;
@@ -109,6 +132,10 @@
     </style>
 </head>
 <body>
+    <button onclick="window.print()" class="print-button">
+        🖨️ Print / Save as PDF
+    </button>
+
     <div class="header">
         <h1>Daily Cleaning Report</h1>
         <p><strong>Location:</strong> {{ $location->name }}</p>

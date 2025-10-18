@@ -15,6 +15,29 @@
             line-height: 1.3;
             color: #333;
         }
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #206bc4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .print-button:hover {
+            background-color: #1a5aa8;
+        }
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
         .header {
             text-align: center;
             margin-bottom: 15px;
@@ -80,6 +103,11 @@
             font-weight: bold;
             color: #721c24;
         }
+        .cell-no-tasks {
+            background-color: #f8f9fa;
+            font-size: 18px;
+            color: #999;
+        }
         .task-count {
             display: block;
             font-size: 8px;
@@ -97,6 +125,10 @@
     </style>
 </head>
 <body>
+    <button onclick="window.print()" class="print-button">
+        🖨️ Print / Save as PDF
+    </button>
+
     <div class="header">
         <h1>Weekly Cleaning Report</h1>
         <p><strong>Period:</strong> {{ $weekStart->format('F d, Y') }} - {{ $weekEnd->format('F d, Y') }}</p>
@@ -108,6 +140,7 @@
         <span class="legend-item"><strong style="color: #155724; font-size: 14px;">✓</strong> All tasks completed</span>
         <span class="legend-item"><strong style="color: #856404; font-size: 14px;">⚠</strong> Partially completed</span>
         <span class="legend-item"><strong style="color: #721c24; font-size: 14px;">✗</strong> No tasks completed</span>
+        <span class="legend-item"><strong style="color: #999; font-size: 14px;">-</strong> No tasks scheduled</span>
     </div>
 
     <table>
@@ -130,15 +163,19 @@
             <tr>
                 <td class="location-cell">{{ $row['location']->name }}</td>
                 @foreach($row['days'] as $day)
-                <td class="{{ $day['indicator'] === '✓' ? 'cell-completed' : ($day['indicator'] === '⚠' ? 'cell-partial' : 'cell-none') }}">
+                <td class="{{ $day['indicator'] === '✓' ? 'cell-completed' : ($day['indicator'] === '⚠' ? 'cell-partial' : ($day['indicator'] === '-' ? 'cell-no-tasks' : 'cell-none')) }}">
                     @if($day['indicator'] === '✓')
                         ✓
                     @elseif($day['indicator'] === '⚠')
                         ⚠
+                    @elseif($day['indicator'] === '-')
+                        -
                     @else
                         ✗
                     @endif
+                    @if($day['indicator'] !== '-')
                     <span class="task-count">{{ $day['completed'] }}/{{ $day['total'] }}</span>
+                    @endif
                 </td>
                 @endforeach
             </tr>
