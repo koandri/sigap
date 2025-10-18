@@ -12,9 +12,9 @@
 
 SIGaP (Sistem Informasi Gabungan Pelaporan) is a comprehensive **Enterprise Resource Planning (ERP) and Business Process Management** platform designed specifically for **PT. Surya Inti Aneka Pangan**, one of Indonesia's largest fish and prawn manufacturing companies.
 
-Built on Laravel 12 with modern best practices, SIGaP integrates three critical business modules into one unified system:
+Built on Laravel 12 with modern best practices, SIGaP integrates four critical business modules into one unified system:
 
-### 🎯 Three-Pillar Architecture
+### 🎯 Four-Pillar Architecture
 
 **1. Forms & Approval Workflows** - Digital transformation of paper-based processes
 - Dynamic form builder with 16 field types
@@ -35,6 +35,15 @@ Built on Laravel 12 with modern best practices, SIGaP integrates three critical 
 - Work order management with parts integration
 - Maintenance calendar and performance analytics
 - Mobile-friendly QR code scanning for field technicians
+
+**4. Facility Management & Cleaning System** - Comprehensive facility operations
+- Dynamic cleaning schedules with time-based configuration (hourly/daily/weekly/monthly/yearly)
+- Mobile-first cleaner workflow with GPS photo watermarking
+- Smart approval system with random quality sampling (10-20%)
+- SLA tracking with real-time overdue monitoring
+- Guest request handling (public form for cleaning/repair requests)
+- Daily and weekly reports with PDF export
+- Asset lifecycle management with automatic alerts
 
 This isn't just another business application - it's a **sophisticated enterprise platform** that rivals commercial ERP solutions like SAP, Oracle, or Microsoft Dynamics, but purpose-built for the food manufacturing industry with Indonesian business practices in mind.
 
@@ -204,6 +213,65 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Validation and error reporting
   - Inventory data export
 
+### 🧹 Facility Management & Cleaning System
+- **Cleaning Schedules**: Flexible scheduling system with 5 frequency types
+  - Hourly: Generate tasks every X hours within time range (e.g., every 2 hours from 8am-6pm)
+  - Daily: Tasks at specific time daily
+  - Weekly: Tasks on specific weekdays at specific time
+  - Monthly: Tasks on specific dates at specific time
+  - Yearly: Annual tasks on specific date/month
+  - Time-based configuration with duplicate prevention
+- **Mobile Cleaner Workflow**: Complete task management with mobile support
+  - Today's task view with assignment priority
+  - Task locking system (2-hour timeout)
+  - Before/after photo capture with GPS watermarking
+  - Automatic task status tracking
+  - Real-time progress monitoring
+- **Smart Approval System**: Intelligent quality control
+  - Random flagging (10-20% of tasks) for detailed review
+  - Enforcement: Must review flagged tasks before mass approval
+  - SLA tracking with 9am next-day deadline
+  - Color-coded status: green (on-time), yellow (<24hrs overdue), red (>24hrs)
+  - Hours overdue calculation and monitoring
+- **Guest Request System**: Public form for facility requests
+  - Anonymous submission (name + phone, no login required)
+  - Request types: cleaning or repair
+  - Photo upload support
+  - Turnstile CAPTCHA protection
+  - Staff handling: create cleaning task or maintenance work order
+  - Automatic assignment notifications
+- **Asset Lifecycle Management**: Proactive maintenance
+  - Detects inactive/disposed assets in schedules
+  - Creates alerts for schedule maintenance
+  - Resolution actions: replace asset, convert to general item, dismiss
+  - Dashboard widget for unresolved alerts
+- **Dashboard & Analytics**: Real-time performance monitoring
+  - Cleaner ranking by completion percentage
+  - Overall completion vs pending rates
+  - Average approval time tracking
+  - SLA compliance monitoring
+  - Tasks by location breakdown
+  - Unresolved alerts widget
+- **Reporting System**: Comprehensive reports with PDF export
+  - Daily Report: All tasks for location on specific date
+  - Weekly Report: 7-day grid with ✓/⚠/✗ indicators
+  - Cell details modal (click for task breakdown)
+  - PDF export (A4 landscape for weekly)
+  - Filter by location, date range, status
+- **Notifications**: Multi-channel notification system
+  - WhatsApp integration (primary channel)
+  - Pushover fallback for critical alerts
+  - Task assignment notifications
+  - Reminder notifications (configurable hours before)
+  - Flagged submission alerts
+  - Missed task notifications
+- **Automation Commands**: Optional automated operations
+  - Auto-generation: Daily task creation from schedules (disabled by default)
+  - Automatic reminders: Send notifications X hours before tasks
+  - Missed task marking: Auto-mark uncompleted tasks
+  - Lock release: Free tasks locked >2 hours
+  - Random flagging: Select tasks for quality review
+
 ### 🔧 Maintenance Management (CMMS)
 - **Asset Management**: Track all equipment with comprehensive features
   - Asset categories with custom codes
@@ -280,6 +348,15 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Automatic inventory deduction
   - Parts usage history per asset
   - Cost tracking per maintenance activity
+
+### 🗺️ System Integration
+- **Cross-Module Integration**: Seamless data flow between modules
+  - Facility requests create maintenance work orders
+  - Maintenance uses manufacturing inventory for parts
+  - Form workflows integrate with all modules
+  - Shared asset and location databases
+  - Unified notification system
+  - Consistent permission model across modules
 
 ## Future Modules (Planned)
 
@@ -594,6 +671,11 @@ MAINTENANCE_SCHEDULING_GUIDE.md # Automatic work order generation (root level)
 - `Item`, `ItemCategory`
 - `BomTemplate`, `BomIngredient`, `BomType`
 
+**Facility Management (7 models):**
+- `CleaningSchedule`, `CleaningScheduleItem`, `CleaningScheduleAlert`
+- `CleaningTask`, `CleaningSubmission`, `CleaningApproval`
+- `CleaningRequest`
+
 **Maintenance (CMMS - 12 models):**
 - `Asset`, `AssetCategory`, `AssetDocument`, `Location`
 - `MaintenanceSchedule`, `MaintenanceType`, `MaintenanceLog`
@@ -602,7 +684,7 @@ MAINTENANCE_SCHEDULING_GUIDE.md # Automatic work order generation (root level)
 **User Management (4 models):**
 - `User`, `Role`, `Permission`, `Department`
 
-**Total: 34 Eloquent models**
+**Total: 41 Eloquent models**
 
 All models follow Laravel best practices:
 - Final classes to prevent inheritance
@@ -638,6 +720,15 @@ The application follows a service-oriented architecture with business logic sepa
 - Work order generation from schedules
 - Duplicate prevention logic
 - Parts inventory integration
+
+**CleaningService**: Manages facility cleaning operations
+- Daily and hourly task generation with time-based scheduling
+- Due date calculation for 5 frequency types
+- Random task flagging for quality control (10-20%)
+- SLA tracking and overdue monitoring
+- Asset lifecycle detection and alert creation
+- Notification integration (WhatsApp/Pushover)
+- Missed task marking and lock release
 
 **ApiOptionsService**: External API integration
 - HTTP client configuration
@@ -707,6 +798,15 @@ The system uses Laravel's task scheduler for automated operations:
 php artisan maintenance:generate-work-orders
 ```
 
+**Facility Management:**
+```bash
+# Generate cleaning tasks from schedules (daily/hourly)
+php artisan cleaning:generate-tasks
+
+# Send task reminders (X hours before scheduled time)
+php artisan cleaning:send-reminders --hours=2
+```
+
 **Notification Testing:**
 ```bash
 # Send test WhatsApp notification
@@ -730,6 +830,26 @@ Runs daily at midnight (Asia/Jakarta) when enabled:
 - Prevents duplicate work orders
 - Logs all operations
 - Currently **disabled by default** for safety (see `routes/console.php`)
+
+#### Automatic Cleaning Task Generation
+
+Runs daily at midnight (Asia/Jakarta) when enabled:
+- Generates cleaning tasks from active schedules
+- Supports all frequency types (hourly/daily/weekly/monthly/yearly)
+- Marks yesterday's uncompleted tasks as missed
+- Flags random 10-20% of submissions for review
+- Releases inactive locked tasks (>2 hours)
+- Detects asset issues and creates alerts
+- Currently **disabled by default** for safety (see `routes/console.php`)
+
+#### Automatic Cleaning Reminders
+
+Runs twice daily (8am, 2pm Asia/Jakarta) when enabled:
+- Sends reminders for upcoming tasks (default: 2 hours before)
+- WhatsApp notifications with Pushover fallback
+- Only reminds assigned cleaners
+- Prevents duplicate reminders
+- Currently **disabled by default** (see `routes/console.php`)
 
 **To enable automatic generation:**
 1. Uncomment the schedule block in `routes/console.php`
@@ -758,6 +878,7 @@ All documentation is located in the `guides/` directory:
 - **[Workflows Guide](guides/WORKFLOWS_GUIDE.md)** - Approval workflow configuration and processing
 - **[Manufacturing Guide](guides/MANUFACTURING_GUIDE.md)** - Warehouse and inventory management
 - **[Maintenance Guide](guides/MAINTENANCE_GUIDE.md)** - CMMS operations and asset management
+- **[Facility Cleaning Guide](guides/CLEANING_NOTIFICATIONS_GUIDE.md)** - Facility management and cleaning operations
 - **[Notifications Guide](guides/NOTIFICATIONS_GUIDE.md)** - WhatsApp and Pushover notification system
 
 **Administration:**

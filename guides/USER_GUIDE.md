@@ -12,6 +12,7 @@ SIGaP (Sistem Informasi Gabungan Pelaporan) is an enterprise business process au
 - **Form Management & Submissions** - Dynamic forms with approval workflows
 - **Manufacturing & Inventory** - Warehouse and inventory management
 - **Maintenance Management (CMMS)** - Asset tracking and preventive maintenance
+- **Facility Management** - Cleaning schedules and facility operations
 
 ---
 
@@ -57,6 +58,9 @@ After logging in, the dashboard shows:
 - **Form Submissions** - Submit and view forms
 - **Manufacturing** - Inventory management
 - **Maintenance** - CMMS module
+- **Facility Management** - Cleaning schedules and operations
+- **Reports** - Asset and facility reports
+- **Options** - Assets, locations, categories
 - **Users & Roles** - User management (admin only)
 - **Departments** - Organization structure (admin only)
 
@@ -64,7 +68,7 @@ After logging in, the dashboard shows:
 
 ## System Modules
 
-SIGaP consists of four main modules. Click on the guide links below for detailed information:
+SIGaP consists of five main modules. Click on the guide links below for detailed information:
 
 ### 📋 Form Management
 
@@ -157,6 +161,38 @@ Computerized Maintenance Management System for asset tracking.
 
 ---
 
+### 🧹 Facility Management
+
+Comprehensive facility cleaning and operations management system.
+
+**Key Features:**
+- Dynamic cleaning schedules with 5 frequency types (hourly, daily, weekly, monthly, yearly)
+- Mobile-first cleaner workflow with GPS photo watermarking
+- Smart approval system with random quality sampling (10-20%)
+- SLA tracking with real-time overdue monitoring
+- Guest request system (public form for cleaning/repair requests)
+- Daily and weekly reports with PDF export
+- Asset lifecycle management with automatic alerts
+- Dashboard with cleaner performance ranking and statistics
+- Multi-channel notifications (WhatsApp/Pushover)
+- Optional automation (task generation, reminders)
+
+**Learn More:**
+- **[Cleaning Notifications Guide](./CLEANING_NOTIFICATIONS_GUIDE.md)** - Complete facility management guide
+
+**Quick Start:**
+- **Cleaners**: View assigned tasks → Start task → Submit before/after photos → Automatic watermarking
+- **GA Staff**: Review submissions → Approve/reject → Mass approve (after reviewing flagged tasks)
+- **Admins**: Create schedules → Configure frequency → Assign cleaners → Generate reports
+- **Guests**: Submit requests via public form → Staff creates tasks or work orders
+
+**Roles:**
+- **Cleaner** - Can view and complete assigned cleaning tasks
+- **General Affairs (GA)** - Can manage schedules, review submissions, approve tasks, handle requests
+- **Super Admin/Owner** - Full access to all facility features
+
+---
+
 ## Administration
 
 ### User & Permission Management
@@ -211,6 +247,7 @@ Need help with day-to-day operations? Check our quick reference:
 | **[Workflows Guide](./WORKFLOWS_GUIDE.md)** | Approval processes | Approvers & Admins |
 | **[Manufacturing Guide](./MANUFACTURING_GUIDE.md)** | Inventory management | Warehouse Staff & Managers |
 | **[Maintenance Guide](./MAINTENANCE_GUIDE.md)** | CMMS operations | Technicians & Supervisors |
+| **[Cleaning Notifications Guide](./CLEANING_NOTIFICATIONS_GUIDE.md)** | Facility management | Cleaners & GA Staff |
 | **[Admin Guide](./ADMIN_GUIDE.md)** | System administration | Administrators |
 | **[Common Tasks](./COMMON_TASKS.md)** | Quick reference | Everyone |
 | **[API Options Guide](./API_OPTIONS_GUIDE.md)** | API integration | Admins (Technical) |
@@ -396,6 +433,11 @@ SIGaP was built specifically to support our operations and streamline our busine
 - Understand work order flow
 - Learn scheduling system
 
+**Facility Staff:**
+- Read [Cleaning Notifications Guide](./CLEANING_NOTIFICATIONS_GUIDE.md)
+- Understand cleaner workflow
+- Learn approval and reporting system
+
 ---
 
 ## Feedback & Suggestions
@@ -414,8 +456,8 @@ Contact your supervisor or IT department with feedback.
 
 ## Document Information
 
-**Version**: 1.0  
-**Last Updated**: October 17, 2025  
+**Version**: 1.1  
+**Last Updated**: October 18, 2025  
 **System Version**: SIGaP Laravel 12.x (PHP 8.2+)  
 **Platform**: Web-based application  
 **Database**: MySQL 8.0+ / PostgreSQL 13+
