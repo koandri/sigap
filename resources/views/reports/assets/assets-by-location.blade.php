@@ -102,7 +102,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Active Assets</div>
                             <div class="ms-auto lh-1">
-                                <span class="badge bg-success">{{ $activeAssets->count() }}</span>
+                                <span class="badge bg-success text-white">{{ $activeAssets->count() }}</span>
                             </div>
                         </div>
                         <div class="h1 mb-0 mt-2">{{ $activeAssets->count() }}</div>

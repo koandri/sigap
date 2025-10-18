@@ -16,14 +16,6 @@ use Illuminate\View\View;
 final class AssetReportController extends Controller
 {
     /**
-     * Display asset reports index page.
-     */
-    public function index(): View
-    {
-        return view('reports.assets.index');
-    }
-
-    /**
      * Display assets by location report.
      */
     public function assetsByLocation(Request $request): View

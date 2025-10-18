@@ -165,8 +165,20 @@
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <h6 class="dropdown-header">Assets</h6>
-                                <a class="dropdown-item {{ areActiveRoutes('reports.assets.*') }}" href="{{ route('reports.assets.index') }}">
-                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Asset Reports
+                                <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-location') }}" href="{{ route('reports.assets.by-location') }}">
+                                    <i class="fa-regular fa-map-marker-alt"></i> &nbsp;by Location
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-category') }}" href="{{ route('reports.assets.by-category') }}">
+                                    <i class="fa-regular fa-tags"></i> &nbsp;by Category
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-category-location') }}" href="{{ route('reports.assets.by-category-location') }}">
+                                    <i class="fa-regular fa-layer-group"></i> &nbsp;by Category & Location
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-department') }}" href="{{ route('reports.assets.by-department') }}">
+                                    <i class="fa-regular fa-building"></i> &nbsp;by Department
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-user') }}" href="{{ route('reports.assets.by-user') }}">
+                                    <i class="fa-regular fa-user"></i> &nbsp;by Assigned User
                                 </a>
                             </div>
                         </div>

@@ -285,7 +285,6 @@ Route::prefix('facility')->name('facility.')->middleware(['auth'])->group(functi
 // Reports Routes
 Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function () {
     // Asset Reports
-    Route::get('assets', [AssetReportController::class, 'index'])->name('assets.index');
     Route::get('assets/by-location', [AssetReportController::class, 'assetsByLocation'])->name('assets.by-location');
     Route::get('assets/by-category', [AssetReportController::class, 'assetsByCategory'])->name('assets.by-category');
     Route::get('assets/by-category-location', [AssetReportController::class, 'assetsByCategoryAndLocation'])->name('assets.by-category-location');
