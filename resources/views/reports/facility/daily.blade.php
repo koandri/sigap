@@ -4,6 +4,42 @@
 
 @push('css')
 <link rel="stylesheet" href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}">
+<style>
+    .ts-control {
+        background-color: #ffffff !important;
+        border: 1px solid #dadce0 !important;
+        min-height: calc(1.5em + 0.75rem + 2px) !important;
+        padding: 0.375rem 0.75rem !important;
+    }
+    
+    .ts-dropdown {
+        background-color: #ffffff !important;
+        border: 1px solid #dadce0 !important;
+        border-radius: 4px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+    
+    .ts-dropdown .ts-dropdown-content {
+        background-color: #ffffff !important;
+    }
+    
+    .ts-dropdown .option {
+        background-color: #ffffff !important;
+        color: #212529 !important;
+        padding: 0.375rem 0.75rem !important;
+    }
+    
+    .ts-dropdown .option:hover,
+    .ts-dropdown .option.active {
+        background-color: #f8f9fa !important;
+        color: #000 !important;
+    }
+    
+    .ts-dropdown .option.selected {
+        background-color: #0d6efd !important;
+        color: #fff !important;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -289,15 +325,17 @@
 @push('scripts')
 <script src="{{ asset('assets/js/lightbox.min.js') }}"></script>
 <link rel="stylesheet" href="{{ asset('assets/css/lightbox.min.css') }}">
-<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize TomSelect for locations
     new TomSelect('#location-select', {
         plugins: ['remove_button'],
-        placeholder: 'Select one or more locations...',
-        maxItems: null,
-        hideSelected: true,
-        closeAfterSelect: false
+        placeholder: 'Select locations...',
+        maxOptions: null,
+        closeAfterSelect: true
     });
+});
 </script>
 @endpush
 @endsection
