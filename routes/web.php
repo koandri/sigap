@@ -231,12 +231,6 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::post('work-orders/{workOrder}/close', [WorkOrderController::class, 'close'])->name('work-orders.close');
     Route::get('logs', [MaintenanceLogController::class, 'index'])->name('logs.index');
     Route::get('logs/asset/{asset}', [MaintenanceLogController::class, 'assetHistory'])->name('logs.asset');
-    Route::get('reports', [MaintenanceReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/assets-by-location', [AssetReportController::class, 'assetsByLocation'])->name('reports.assets-by-location');
-    Route::get('reports/assets-by-category', [AssetReportController::class, 'assetsByCategory'])->name('reports.assets-by-category');
-    Route::get('reports/assets-by-category-location', [AssetReportController::class, 'assetsByCategoryAndLocation'])->name('reports.assets-by-category-location');
-    Route::get('reports/assets-by-department', [AssetReportController::class, 'assetsByDepartment'])->name('reports.assets-by-department');
-    Route::get('reports/assets-by-user', [AssetReportController::class, 'assetsByUser'])->name('reports.assets-by-user');
     Route::get('calendar/events', [MaintenanceCalendarController::class, 'events'])->name('calendar.events');
 });
 
@@ -286,6 +280,17 @@ Route::prefix('facility')->name('facility.')->middleware(['auth'])->group(functi
     Route::get('reports/weekly', [CleaningReportController::class, 'weeklyReport'])->name('reports.weekly');
     Route::get('reports/weekly/pdf', [CleaningReportController::class, 'weeklyReportPdf'])->name('reports.weekly-pdf');
     Route::get('reports/cell-details', [CleaningReportController::class, 'cellDetails'])->name('reports.cell-details');
+});
+
+// Reports Routes
+Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function () {
+    // Asset Reports
+    Route::get('assets', [AssetReportController::class, 'index'])->name('assets.index');
+    Route::get('assets/by-location', [AssetReportController::class, 'assetsByLocation'])->name('assets.by-location');
+    Route::get('assets/by-category', [AssetReportController::class, 'assetsByCategory'])->name('assets.by-category');
+    Route::get('assets/by-category-location', [AssetReportController::class, 'assetsByCategoryAndLocation'])->name('assets.by-category-location');
+    Route::get('assets/by-department', [AssetReportController::class, 'assetsByDepartment'])->name('assets.by-department');
+    Route::get('assets/by-user', [AssetReportController::class, 'assetsByUser'])->name('assets.by-user');
 });
 
 // API Routes for Form Field Options

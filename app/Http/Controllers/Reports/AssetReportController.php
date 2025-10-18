@@ -16,6 +16,14 @@ use Illuminate\View\View;
 final class AssetReportController extends Controller
 {
     /**
+     * Display asset reports index page.
+     */
+    public function index(): View
+    {
+        return view('reports.assets.index');
+    }
+
+    /**
      * Display assets by location report.
      */
     public function assetsByLocation(Request $request): View
@@ -44,7 +52,7 @@ final class AssetReportController extends Controller
                 ->get();
         }
         
-        return view('maintenance.reports.assets-by-location', compact(
+        return view('reports.assets.assets-by-location', compact(
             'locations',
             'selectedLocation',
             'activeAssets',
@@ -74,7 +82,7 @@ final class AssetReportController extends Controller
                 ->groupBy('is_active');
         }
         
-        return view('maintenance.reports.assets-by-category', compact(
+        return view('reports.assets.assets-by-category', compact(
             'categories',
             'selectedCategory',
             'assets'
@@ -119,7 +127,7 @@ final class AssetReportController extends Controller
             }
         }
         
-        return view('maintenance.reports.assets-by-category-location', compact(
+        return view('reports.assets.assets-by-category-location', compact(
             'categories',
             'locations',
             'selectedCategory',
@@ -157,7 +165,7 @@ final class AssetReportController extends Controller
                 ->get();
         }
         
-        return view('maintenance.reports.assets-by-department', compact(
+        return view('reports.assets.assets-by-department', compact(
             'departments',
             'selectedDepartment',
             'activeAssets',
@@ -194,7 +202,7 @@ final class AssetReportController extends Controller
                 ->get();
         }
         
-        return view('maintenance.reports.assets-by-user', compact(
+        return view('reports.assets.assets-by-user', compact(
             'users',
             'selectedUser',
             'activeAssets',

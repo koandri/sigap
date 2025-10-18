@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             BomTypeSeeder::class,
             WarehouseShelfSeeder::class,
             ShelfPositionSeeder::class,
+            AssetSeeder::class,
         ]);
     }
 }

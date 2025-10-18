@@ -104,9 +104,6 @@
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.logs.*') }}" href="{{ route('maintenance.logs.index') }}">
                                     <i class="fa-regular fa-file-lines"></i> &nbsp;Maintenance Logs
                                 </a>
-                                <a class="dropdown-item {{ areActiveRoutes('maintenance.reports.*') }}" href="{{ route('maintenance.reports.index') }}">
-                                    <i class="fa-regular fa-chart-bar"></i> &nbsp;Reports
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -157,6 +154,24 @@
                     </div>
                 </li>
                 @endcanany
+                <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*']) }}">
+                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fa-regular fa-chart-bar"></i>
+                        </span>
+                        <span class="nav-link-title">Reports</span>
+                    </a>
+                    <div class="dropdown-menu {{ areOpenRoutes(['reports.assets.*']) }}">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                <h6 class="dropdown-header">Assets</h6>
+                                <a class="dropdown-item {{ areActiveRoutes('reports.assets.*') }}" href="{{ route('reports.assets.index') }}">
+                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Asset Reports
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
                 <li class="nav-item dropdown {{ areActiveRoutes(['options.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
