@@ -48,3 +48,23 @@ Artisan::command('inspire', function () {
 //     ->onFailure(function () {
 //         Log::error('Cleaning task generation failed');
 //     });
+
+/**
+ * Schedule cleaning task reminders.
+ * Runs every 2 hours during working hours (08:00 to 18:00) to send reminders
+ * for tasks scheduled within the next 2 hours.
+ * Sends notifications via WhatsApp with Pushover fallback.
+ * 
+ * NOTE: Currently disabled. Uncomment the lines below to enable automatic reminders.
+ */
+// Schedule::command('cleaning:send-reminders --hours=2')
+//     ->twiceDaily(8, 14)
+//     ->timezone('Asia/Jakarta')
+//     ->withoutOverlapping()
+//     ->runInBackground()
+//     ->onSuccess(function () {
+//         Log::info('Cleaning task reminders sent successfully');
+//     })
+//     ->onFailure(function () {
+//         Log::error('Cleaning task reminder sending failed');
+//     });

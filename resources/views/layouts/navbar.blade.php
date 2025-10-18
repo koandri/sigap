@@ -100,7 +100,6 @@
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.schedules.*') }}" href="{{ route('maintenance.schedules.index') }}">
                                     <i class="fa-regular fa-calendar-check"></i> &nbsp;Maintenance Schedules
                                 </a>
-                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.logs.*') }}" href="{{ route('maintenance.logs.index') }}">
                                     <i class="fa-regular fa-file-lines"></i> &nbsp;Maintenance Logs
                                 </a>
@@ -145,7 +144,6 @@
                                     <span class="badge badge-outline text-danger ms-1">{{ $pendingApprovals }}</span>
                                 @endif
                                 @endcan
-                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('facility.requests.guest-form') }}" target="_blank">
                                     <i class="fa-regular fa-paper-plane"></i> &nbsp;Submit Request
                                 </a>

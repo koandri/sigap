@@ -12,6 +12,7 @@ use App\Models\CleaningScheduleItem;
 use App\Models\CleaningTask;
 use App\Models\CleaningSubmission;
 use App\Models\CleaningApproval;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Log;
 
 final readonly class CleaningService
 {
+    public function __construct(
+        private WhatsAppService $whatsAppService,
+        private PushoverService $pushoverService
+    ) {
+    }
     /**
      * Generate daily cleaning tasks from schedules.
      */
@@ -275,7 +281,7 @@ final readonly class CleaningService
 
         $alertType = $asset && !$asset->is_active ? 'asset_inactive' : 'asset_disposed';
 
-        CleaningScheduleAlert::create([
+        $alert = CleaningScheduleAlert::create([
             'cleaning_schedule_id' => $schedule->id,
             'cleaning_schedule_item_id' => $item->id,
             'asset_id' => $item->asset_id,
@@ -283,12 +289,14 @@ final readonly class CleaningService
             'detected_at' => now(),
         ]);
 
-        // TODO: Send notification to General Affairs staff
         Log::info("Created cleaning schedule alert", [
             'schedule_id' => $schedule->id,
             'item_id' => $item->id,
             'alert_type' => $alertType,
         ]);
+
+        // Send notification to General Affairs staff
+        $this->notifyScheduleAlert($alert);
     }
 
     /**
@@ -330,6 +338,9 @@ final readonly class CleaningService
                 $submission->approval->update([
                     'is_flagged_for_review' => true,
                 ]);
+
+                // Send notification for flagged submission
+                $this->notifyFlaggedForReview($submission->approval);
             }
         }
 
@@ -405,6 +416,9 @@ final readonly class CleaningService
             'count' => $missedCount,
         ]);
 
+        // Send notification about missed tasks
+        $this->notifyMissedTasks($missedCount, $date);
+
         return $missedCount;
     }
 
@@ -455,6 +469,215 @@ final readonly class CleaningService
         ]);
 
         return $count;
+    }
+
+    /**
+     * Send notification to user via WhatsApp, fallback to Pushover on failure.
+     */
+    private function sendNotificationToUser(User $user, string $message, string $notificationType): bool
+    {
+        // Check if user has mobile phone number
+        if (empty($user->mobilephone_no)) {
+            Log::warning("User has no mobile phone number for WhatsApp notification", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'notification_type' => $notificationType,
+            ]);
+            
+            // Send failure notification via Pushover
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                $notificationType,
+                $user->name . ' (No Phone)',
+                $message
+            );
+            
+            return false;
+        }
+
+        // Format WhatsApp chat ID (phone number + @c.us)
+        $chatId = $this->formatWhatsAppChatId($user->mobilephone_no);
+
+        // Try to send via WhatsApp
+        $whatsAppSuccess = $this->whatsAppService->sendMessage($chatId, $message);
+
+        if (!$whatsAppSuccess) {
+            // WhatsApp failed, send notification via Pushover
+            Log::warning("WhatsApp notification failed, sending Pushover fallback", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'chat_id' => $chatId,
+                'notification_type' => $notificationType,
+            ]);
+
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                $notificationType,
+                $user->name . ' (' . $user->mobilephone_no . ')',
+                $message
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Send notification to multiple users with a role.
+     */
+    private function sendNotificationToRole(string $roleName, string $message, string $notificationType): int
+    {
+        $users = User::role($roleName)->where('active', true)->get();
+        $successCount = 0;
+
+        foreach ($users as $user) {
+            if ($this->sendNotificationToUser($user, $message, $notificationType)) {
+                $successCount++;
+            }
+        }
+
+        return $successCount;
+    }
+
+    /**
+     * Format mobile phone number to WhatsApp chat ID format.
+     */
+    private function formatWhatsAppChatId(string $phoneNumber): string
+    {
+        // Remove any non-numeric characters
+        $cleaned = preg_replace('/[^0-9]/', '', $phoneNumber);
+        
+        // Ensure it starts with country code (assume Indonesia +62 if not present)
+        if (!str_starts_with($cleaned, '62')) {
+            // Remove leading 0 if present
+            $cleaned = ltrim($cleaned, '0');
+            $cleaned = '62' . $cleaned;
+        }
+
+        return $cleaned . '@c.us';
+    }
+
+    /**
+     * Send notification about schedule alert to General Affairs staff.
+     */
+    public function notifyScheduleAlert(CleaningScheduleAlert $alert): void
+    {
+        $schedule = $alert->cleaningSchedule;
+        $item = $alert->cleaningScheduleItem;
+        $asset = $alert->asset;
+
+        $alertTypeText = match($alert->alert_type) {
+            'asset_inactive' => 'Asset Inactive',
+            'asset_disposed' => 'Asset Disposed',
+            default => 'Unknown Issue',
+        };
+
+        $message = "🚨 *Cleaning Schedule Alert*\n\n";
+        $message .= "*Alert Type:* {$alertTypeText}\n";
+        $message .= "*Schedule:* {$schedule->schedule_name}\n";
+        $message .= "*Location:* {$schedule->location->name}\n";
+        
+        if ($asset) {
+            $message .= "*Asset:* {$asset->code} - {$asset->name}\n";
+        } else {
+            $message .= "*Item:* {$item->item_name}\n";
+        }
+        
+        $message .= "*Detected:* {$alert->detected_at->format('d M Y H:i')}\n\n";
+        $message .= "⚠️ Tasks will not be generated until this is resolved.";
+
+        $this->sendNotificationToRole('General Affairs', $message, 'Cleaning Schedule Alert');
+    }
+
+    /**
+     * Send notification to cleaner about assigned task.
+     */
+    public function notifyTaskAssigned(CleaningTask $task): void
+    {
+        $user = User::find($task->assigned_to);
+        
+        if (!$user) {
+            return;
+        }
+
+        $schedule = $task->cleaningSchedule;
+        $location = $task->location;
+
+        $message = "✅ *New Cleaning Task Assigned*\n\n";
+        $message .= "*Task Number:* {$task->task_number}\n";
+        $message .= "*Schedule:* {$schedule->schedule_name}\n";
+        $message .= "*Location:* {$location->name}\n";
+        
+        if ($task->asset) {
+            $message .= "*Asset:* {$task->asset->code} - {$task->asset->name}\n";
+        } else {
+            $message .= "*Item:* {$task->item_name}\n";
+        }
+        
+        $message .= "*Scheduled:* {$task->scheduled_date->format('d M Y H:i')}\n\n";
+        $message .= "📱 Please complete this task on time.";
+
+        $this->sendNotificationToUser($user, $message, 'Task Assignment');
+    }
+
+    /**
+     * Send reminder for pending tasks.
+     */
+    public function notifyPendingTaskReminder(CleaningTask $task): void
+    {
+        $user = User::find($task->assigned_to);
+        
+        if (!$user) {
+            return;
+        }
+
+        $message = "⏰ *Cleaning Task Reminder*\n\n";
+        $message .= "*Task Number:* {$task->task_number}\n";
+        $message .= "*Location:* {$task->location->name}\n";
+        
+        if ($task->asset) {
+            $message .= "*Asset:* {$task->asset->code}\n";
+        } else {
+            $message .= "*Item:* {$task->item_name}\n";
+        }
+        
+        $message .= "*Due:* {$task->scheduled_date->format('d M Y H:i')}\n\n";
+        $message .= "⚠️ Please complete this task soon!";
+
+        $this->sendNotificationToUser($user, $message, 'Task Reminder');
+    }
+
+    /**
+     * Send notification about flagged submission for review.
+     */
+    public function notifyFlaggedForReview(CleaningApproval $approval): void
+    {
+        $submission = $approval->cleaningSubmission;
+        $task = $submission->cleaningTask;
+
+        $message = "🔍 *Cleaning Task Flagged for Review*\n\n";
+        $message .= "*Task Number:* {$task->task_number}\n";
+        $message .= "*Location:* {$task->location->name}\n";
+        $message .= "*Submitted:* {$submission->submitted_at->format('d M Y H:i')}\n\n";
+        $message .= "📋 This task requires your review before batch approval.";
+
+        $this->sendNotificationToRole('General Affairs Supervisor', $message, 'Flagged for Review');
+    }
+
+    /**
+     * Send notification about missed tasks.
+     */
+    public function notifyMissedTasks(int $missedCount, Carbon $date): void
+    {
+        if ($missedCount === 0) {
+            return;
+        }
+
+        $message = "⚠️ *Missed Cleaning Tasks Alert*\n\n";
+        $message .= "*Date:* {$date->format('d M Y')}\n";
+        $message .= "*Missed Tasks:* {$missedCount}\n\n";
+        $message .= "🔔 Please review and take necessary action.";
+
+        $this->sendNotificationToRole('General Affairs Supervisor', $message, 'Missed Tasks Alert');
     }
 }
 

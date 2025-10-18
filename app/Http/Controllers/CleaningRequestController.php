@@ -8,6 +8,7 @@ use App\Models\CleaningRequest;
 use App\Models\CleaningTask;
 use App\Models\Location;
 use App\Models\WorkOrder;
+use App\Services\CleaningService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,10 @@ use Illuminate\View\View;
 
 final class CleaningRequestController extends Controller
 {
+    public function __construct(
+        private readonly CleaningService $cleaningService
+    ) {
+    }
     /**
      * Show guest request form (public).
      */
@@ -138,7 +143,7 @@ final class CleaningRequestController extends Controller
 
         $taskNumber = $this->generateTaskNumber();
 
-        CleaningTask::create([
+        $task = CleaningTask::create([
             'task_number' => $taskNumber,
             'cleaning_schedule_id' => 0, // Special ID for ad-hoc tasks
             'cleaning_schedule_item_id' => 0, // Special ID for ad-hoc tasks
@@ -157,6 +162,9 @@ final class CleaningRequestController extends Controller
             'handled_at' => now(),
             'handling_notes' => $validated['handling_notes'] ?? "Created cleaning task: {$taskNumber}",
         ]);
+
+        // Send notification to assigned cleaner
+        $this->cleaningService->notifyTaskAssigned($task);
 
         return redirect()
             ->route('facility.requests.index')
