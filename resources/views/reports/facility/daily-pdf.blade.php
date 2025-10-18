@@ -140,7 +140,8 @@
         <h1>Daily Cleaning Report</h1>
         <p><strong>Location:</strong> {{ $location->name }}</p>
         <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($date)->format('l, F d, Y') }}</p>
-        <p><strong>Generated:</strong> {{ now()->format('F d, Y H:i') }}</p>
+        <p><strong>Printed By:</strong> {{ auth()->user()->name }}</p>
+        <p><strong>Printed Date/Time:</strong> {{ now()->format('F d, Y H:i') }}</p>
     </div>
 
     <div class="stats">

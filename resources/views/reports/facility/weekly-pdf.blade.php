@@ -132,7 +132,8 @@
     <div class="header">
         <h1>Weekly Cleaning Report</h1>
         <p><strong>Period:</strong> {{ $weekStart->format('F d, Y') }} - {{ $weekEnd->format('F d, Y') }}</p>
-        <p><strong>Generated:</strong> {{ now()->format('F d, Y H:i') }}</p>
+        <p><strong>Printed By:</strong> {{ auth()->user()->name }}</p>
+        <p><strong>Printed Date/Time:</strong> {{ now()->format('F d, Y H:i') }}</p>
     </div>
 
     <div class="legend">

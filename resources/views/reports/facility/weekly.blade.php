@@ -256,18 +256,25 @@ document.addEventListener('DOMContentLoaded', function() {
         format: 'YYYY-MM-DD',
         singleMode: true,
         maxDate: new Date(),
-        lockDays: (date) => {
-            // Only allow Mondays (day 1)
+        firstDay: 1, // Week starts on Monday
+        lockDaysFilter: (date) => {
+            // Lock all days except Monday (day = 1)
+            // Return true to lock the day, false to allow selection
             return date.getDay() !== 1;
         },
         setup: (picker) => {
-            picker.on('selected', (date) => {
-                // Ensure the selected date is a Monday
+            picker.on('preselect', (date) => {
+                // Additional validation before selection
                 if (date.getDay() !== 1) {
                     alert('Please select a Monday');
-                    picker.clearSelection();
+                    return false;
                 }
             });
+        },
+        lang: 'en-US',
+        buttonText: {
+            previousMonth: '<',
+            nextMonth: '>',
         }
     });
 });
