@@ -237,6 +237,15 @@
         background-color: #0d6efd !important;
         color: #fff !important;
     }
+    
+    /* Litepicker - Style non-Monday days */
+    .litepicker .container__days .day-item.is-locked {
+        opacity: 0.3 !important;
+        cursor: not-allowed !important;
+        text-decoration: line-through !important;
+        pointer-events: none !important;
+        color: #ccc !important;
+    }
 </style>
 @endpush
 
@@ -278,22 +287,40 @@ document.addEventListener('DOMContentLoaded', function() {
                     return false;
                 }
             });
+            
+            // Apply visual styling after calendar is rendered
+            picker.on('render', (ui) => {
+                applyLockedDaysStyle();
+            });
+            
+            picker.on('show', (ui) => {
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    applyLockedDaysStyle();
+                }, 10);
+            });
         },
         lang: 'en-US',
         buttonText: {
             previousMonth: '<',
             nextMonth: '>',
-        },
-        // Add CSS class to locked days for visual feedback
-        onDayCreate: (date, element) => {
-            if (date.getDay() !== 1) {
-                element.classList.add('is-locked');
-                element.style.opacity = '0.3';
-                element.style.cursor = 'not-allowed';
-                element.style.textDecoration = 'line-through';
-            }
         }
     });
+    
+    // Function to apply locked styling to non-Monday days
+    function applyLockedDaysStyle() {
+        const dayElements = document.querySelectorAll('.litepicker .container__days .day-item');
+        dayElements.forEach((element) => {
+            const dateAttr = element.getAttribute('data-time');
+            if (dateAttr) {
+                const date = new Date(parseInt(dateAttr));
+                // If not Monday (day 1), add is-locked class
+                if (date.getDay() !== 1) {
+                    element.classList.add('is-locked');
+                }
+            }
+        });
+    }
 });
 
 function showCellDetails(date, locationId, locationName) {
