@@ -30,14 +30,14 @@ final class CleaningTaskController extends Controller
         $this->authorize('facility.tasks.view');
 
         $date = $request->input('date', today()->toDateString());
-        $locationId = $request->input('location_id');
+        $locationIds = $request->input('location_ids', []);
         $status = $request->input('status');
 
         $query = CleaningTask::with(['location', 'assignedUser', 'cleaningSchedule'])
             ->whereDate('scheduled_date', $date);
 
-        if ($locationId) {
-            $query->where('location_id', $locationId);
+        if (!empty($locationIds)) {
+            $query->whereIn('location_id', $locationIds);
         }
 
         if ($status) {
@@ -50,7 +50,7 @@ final class CleaningTaskController extends Controller
 
         $locations = \App\Models\Location::active()->orderBy('name')->get();
 
-        return view('facility.tasks.index', compact('tasks', 'locations', 'date', 'locationId', 'status'));
+        return view('facility.tasks.index', compact('tasks', 'locations', 'date', 'locationIds', 'status'));
     }
 
     /**

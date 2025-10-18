@@ -38,15 +38,15 @@
                             <input type="date" name="date" class="form-control" value="{{ $date }}">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Location</label>
-                            <select name="location_id" class="form-select">
-                                <option value="">All Locations</option>
+                            <label class="form-label">Locations</label>
+                            <select name="location_ids[]" id="location-select" class="form-select" multiple>
                                 @foreach($locations as $loc)
-                                    <option value="{{ $loc->id }}" {{ $locationId == $loc->id ? 'selected' : '' }}>
+                                    <option value="{{ $loc->id }}" {{ in_array($loc->id, $locationIds) ? 'selected' : '' }}>
                                         {{ $loc->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <small class="form-hint">Leave empty for all locations</small>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Status</label>
@@ -231,5 +231,24 @@
 
     </div>
 </div>
+
+@push('css')
+<link rel="stylesheet" href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}">
+@endpush
+
+@push('scripts')
+<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize TomSelect for locations
+    new TomSelect('#location-select', {
+        plugins: ['remove_button'],
+        placeholder: 'Select locations...',
+        maxOptions: null,
+        closeAfterSelect: true
+    });
+});
+</script>
+@endpush
 @endsection
 
