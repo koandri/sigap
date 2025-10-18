@@ -12,16 +12,6 @@
                     <i class="fa fa-calendar-week"></i> Weekly Cleaning Report
                 </h2>
             </div>
-            <div class="col-auto ms-auto d-print-none">
-                <div class="btn-list">
-                    <a href="{{ route('reports.facility.weekly-pdf', ['date' => $weekStart->toDateString(), 'locations' => $locationIds]) }}" 
-                       class="btn btn-primary" 
-                       target="_blank"
-                       title="Open print-friendly view. Use your browser's print function (Ctrl+P / Cmd+P) to save as PDF">
-                        <i class="fa fa-print"></i> Print / Export PDF
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -72,15 +62,29 @@
 
         <!-- Report Info -->
         <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fa fa-calendar-week"></i> Weekly Report
+                </h3>
+                <div class="card-actions">
+                    <a href="{{ route('reports.facility.weekly-pdf', ['date' => $weekStart->toDateString(), 'locations' => $locationIds]) }}" 
+                       class="btn btn-primary btn-sm" 
+                       target="_blank"
+                       title="Open print-friendly view. Use your browser's print function (Ctrl+P / Cmd+P) to save as PDF">
+                        <i class="fa fa-print"></i> Print / Export PDF
+                    </a>
+                </div>
+            </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <h3>Weekly Report</h3>
-                        <p class="text-muted">
-                            {{ $weekStart->format('F d, Y') }} - {{ $weekEnd->format('F d, Y') }}
+                    <div class="col-md-12">
+                        <p class="text-muted mb-3">
+                            <strong>Period:</strong> {{ $weekStart->format('F d, Y') }} - {{ $weekEnd->format('F d, Y') }}
                         </p>
                     </div>
-                    <div class="col-md-6 text-end">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
                         <div class="mb-2">
                             <span class="badge bg-success text-white me-2" style="font-size: 1.2rem;">✓</span> All tasks completed
                         </div>
@@ -257,16 +261,20 @@ document.addEventListener('DOMContentLoaded', function() {
         singleMode: true,
         maxDate: new Date(),
         firstDay: 1, // Week starts on Monday
-        lockDaysFilter: (date) => {
-            // Lock all days except Monday (day = 1)
-            // Return true to lock the day, false to allow selection
-            return date.getDay() !== 1;
-        },
+        lockDays: [
+            // Lock all days except Monday using a filter function
+            (date) => {
+                // Return true to lock the day
+                return date.getDay() !== 1;
+            }
+        ],
         setup: (picker) => {
-            picker.on('preselect', (date) => {
+            picker.on('preselect', (date1, date2) => {
                 // Additional validation before selection
-                if (date.getDay() !== 1) {
+                const selectedDate = date1.dateInstance;
+                if (selectedDate.getDay() !== 1) {
                     alert('Please select a Monday');
+                    picker.clearSelection();
                     return false;
                 }
             });
@@ -275,6 +283,15 @@ document.addEventListener('DOMContentLoaded', function() {
         buttonText: {
             previousMonth: '<',
             nextMonth: '>',
+        },
+        // Add CSS class to locked days for visual feedback
+        onDayCreate: (date, element) => {
+            if (date.getDay() !== 1) {
+                element.classList.add('is-locked');
+                element.style.opacity = '0.3';
+                element.style.cursor = 'not-allowed';
+                element.style.textDecoration = 'line-through';
+            }
         }
     });
 });
