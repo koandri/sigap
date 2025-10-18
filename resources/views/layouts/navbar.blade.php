@@ -152,14 +152,14 @@
                     </div>
                 </li>
                 @endcanany
-                <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*']) }}">
+                <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*', 'facility.reports.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                             <i class="fa-regular fa-chart-bar"></i>
                         </span>
                         <span class="nav-link-title">Reports</span>
                     </a>
-                    <div class="dropdown-menu {{ areOpenRoutes(['reports.assets.*']) }}">
+                    <div class="dropdown-menu {{ areOpenRoutes(['reports.assets.*', 'facility.reports.*']) }}">
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <h6 class="dropdown-header">Assets</h6>
@@ -179,6 +179,17 @@
                                     <i class="fa-regular fa-user"></i> &nbsp;by Assigned User
                                 </a>
                             </div>
+                            @can('facility.reports.view')
+                            <div class="dropdown-menu-column">
+                                <h6 class="dropdown-header">Facility Management</h6>
+                                <a class="dropdown-item {{ areActiveRoutes('facility.reports.daily') }}" href="{{ route('facility.reports.daily') }}">
+                                    <i class="fa-regular fa-calendar-day"></i> &nbsp;Daily Report
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('facility.reports.weekly') }}" href="{{ route('facility.reports.weekly') }}">
+                                    <i class="fa-regular fa-calendar-week"></i> &nbsp;Weekly Report
+                                </a>
+                            </div>
+                            @endcan
                         </div>
                     </div>
                 </li>
