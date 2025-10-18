@@ -132,8 +132,7 @@
     <div class="header">
         <h1>Weekly Cleaning Report</h1>
         <p><strong>Period:</strong> {{ $weekStart->format('F d, Y') }} - {{ $weekEnd->format('F d, Y') }}</p>
-        <p><strong>Printed By:</strong> {{ auth()->user()->name }}</p>
-        <p><strong>Printed Date/Time:</strong> {{ now()->format('F d, Y H:i') }}</p>
+        <p>This report provides a weekly overview of cleaning task completion across locations.</p>
     </div>
 
     <div class="legend">
@@ -192,7 +191,8 @@
 
     <div class="footer">
         <p>SIGAP - Facility Management System</p>
-        <p>This report provides a weekly overview of cleaning task completion across locations.</p>
+        <p><strong>Printed By:</strong> {{ auth()->user()->name }}</p>
+        <p><strong>Printed Date/Time:</strong> {{ now()->format('F d, Y H:i') }}</p>
     </div>
 </body>
 </html>

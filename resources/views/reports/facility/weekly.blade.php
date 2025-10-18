@@ -28,14 +28,19 @@
                     <div class="row g-2">
                         <div class="col-md-5">
                             <label class="form-label required">Week Starting (Monday)</label>
-                            <input type="text" 
-                                   name="date" 
-                                   id="weekDate"
-                                   class="form-control" 
-                                   value="{{ $weekStart->toDateString() }}" 
-                                   placeholder="Select a Monday"
-                                   autocomplete="off"
-                                   required>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                <input type="text" 
+                                       name="date" 
+                                       id="weekDate"
+                                       class="form-control" 
+                                       value="{{ $weekStart->toDateString() }}" 
+                                       placeholder="Select a Monday"
+                                       autocomplete="off"
+                                       required>
+                            </div>
                             <small class="form-hint">Select the Monday for the week you want to view</small>
                         </div>
                         <div class="col-md-5">
@@ -85,17 +90,19 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="mb-2">
-                            <span class="badge bg-success text-white me-2" style="font-size: 1.2rem;">✓</span> All tasks completed
-                        </div>
-                        <div class="mb-2">
-                            <span class="badge bg-warning text-white me-2" style="font-size: 1.2rem;">⚠</span> Partially completed
-                        </div>
-                        <div class="mb-2">
-                            <span class="badge bg-danger text-white me-2" style="font-size: 1.2rem;">✗</span> No tasks completed
-                        </div>
-                        <div>
-                            <span class="badge bg-secondary text-white me-2" style="font-size: 1.2rem;">-</span> No tasks scheduled
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div>
+                                <span class="badge bg-success text-white me-2" style="font-size: 1.2rem;">✓</span> All tasks completed
+                            </div>
+                            <div>
+                                <span class="badge bg-warning text-white me-2" style="font-size: 1.2rem;">⚠</span> Partially completed
+                            </div>
+                            <div>
+                                <span class="badge bg-danger text-white me-2" style="font-size: 1.2rem;">✗</span> No tasks completed
+                            </div>
+                            <div>
+                                <span class="badge bg-secondary text-white me-2" style="font-size: 1.2rem;">-</span> No tasks scheduled
+                            </div>
                         </div>
                     </div>
                 </div>
