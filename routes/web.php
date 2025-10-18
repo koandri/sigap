@@ -273,13 +273,6 @@ Route::prefix('facility')->name('facility.')->middleware(['auth'])->group(functi
     Route::get('requests', [CleaningRequestController::class, 'index'])->name('requests.index');
     Route::get('requests/{cleaningRequest}/handle', [CleaningRequestController::class, 'handleForm'])->name('requests.handle-form');
     Route::post('requests/{cleaningRequest}/handle', [CleaningRequestController::class, 'handle'])->name('requests.handle');
-    
-    // Reports
-    Route::get('reports/daily', [CleaningReportController::class, 'dailyReport'])->name('reports.daily');
-    Route::get('reports/daily/pdf', [CleaningReportController::class, 'dailyReportPdf'])->name('reports.daily-pdf');
-    Route::get('reports/weekly', [CleaningReportController::class, 'weeklyReport'])->name('reports.weekly');
-    Route::get('reports/weekly/pdf', [CleaningReportController::class, 'weeklyReportPdf'])->name('reports.weekly-pdf');
-    Route::get('reports/cell-details', [CleaningReportController::class, 'cellDetails'])->name('reports.cell-details');
 });
 
 // Reports Routes
@@ -290,6 +283,13 @@ Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function
     Route::get('assets/by-category-location', [AssetReportController::class, 'assetsByCategoryAndLocation'])->name('assets.by-category-location');
     Route::get('assets/by-department', [AssetReportController::class, 'assetsByDepartment'])->name('assets.by-department');
     Route::get('assets/by-user', [AssetReportController::class, 'assetsByUser'])->name('assets.by-user');
+    
+    // Facility Management Reports
+    Route::get('facility/daily', [CleaningReportController::class, 'dailyReport'])->name('facility.daily');
+    Route::get('facility/daily/pdf', [CleaningReportController::class, 'dailyReportPdf'])->name('facility.daily-pdf');
+    Route::get('facility/weekly', [CleaningReportController::class, 'weeklyReport'])->name('facility.weekly');
+    Route::get('facility/weekly/pdf', [CleaningReportController::class, 'weeklyReportPdf'])->name('facility.weekly-pdf');
+    Route::get('facility/cell-details', [CleaningReportController::class, 'cellDetails'])->name('facility.cell-details');
 });
 
 // API Routes for Form Field Options

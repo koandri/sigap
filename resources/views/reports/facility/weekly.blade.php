@@ -14,7 +14,7 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('facility.reports.weekly-pdf', ['year' => $year, 'week' => $week, 'locations' => $locationIds]) }}" 
+                    <a href="{{ route('reports.facility.weekly-pdf', ['date' => $weekStart->toDateString(), 'locations' => $locationIds]) }}" 
                        class="btn btn-primary" 
                        target="_blank">
                         <i class="fa fa-file-pdf"></i> Export PDF
@@ -33,29 +33,23 @@
         <!-- Filters -->
         <div class="card mb-3">
             <div class="card-body">
-                <form method="GET" action="{{ route('facility.reports.weekly') }}">
+                <form method="GET" action="{{ route('reports.facility.weekly') }}" id="weeklyReportForm">
                     <div class="row g-2">
-                        <div class="col-md-3">
-                            <label class="form-label">Year</label>
-                            <input type="number" 
-                                   name="year" 
+                        <div class="col-md-5">
+                            <label class="form-label required">Week Starting (Monday)</label>
+                            <input type="text" 
+                                   name="date" 
+                                   id="weekDate"
                                    class="form-control" 
-                                   value="{{ $year }}" 
-                                   min="2020" 
-                                   max="2099">
+                                   value="{{ $weekStart->toDateString() }}" 
+                                   placeholder="Select a Monday"
+                                   autocomplete="off"
+                                   required>
+                            <small class="form-hint">Select the Monday for the week you want to view</small>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Week</label>
-                            <input type="number" 
-                                   name="week" 
-                                   class="form-control" 
-                                   value="{{ $week }}" 
-                                   min="1" 
-                                   max="53">
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <label class="form-label">Locations (optional)</label>
-                            <select name="locations[]" class="form-select" multiple>
+                            <select name="locations[]" id="locationSelect" class="form-select" multiple>
                                 @foreach($allLocations as $loc)
                                     <option value="{{ $loc->id }}" {{ in_array($loc->id, $locationIds) ? 'selected' : '' }}>
                                         {{ $loc->name }}
@@ -80,7 +74,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h3>Week {{ $week }}, {{ $year }}</h3>
+                        <h3>Weekly Report</h3>
                         <p class="text-muted">
                             {{ $weekStart->format('F d, Y') }} - {{ $weekEnd->format('F d, Y') }}
                         </p>
@@ -92,8 +86,11 @@
                         <div class="mb-2">
                             <span class="badge bg-warning me-2" style="font-size: 1.2rem;">⚠</span> Partially completed
                         </div>
-                        <div>
+                        <div class="mb-2">
                             <span class="badge bg-danger me-2" style="font-size: 1.2rem;">✗</span> No tasks completed
+                        </div>
+                        <div>
+                            <span class="badge bg-secondary me-2" style="font-size: 1.2rem;">-</span> No tasks scheduled
                         </div>
                     </div>
                 </div>
@@ -129,20 +126,29 @@
                             </td>
                             @foreach($row['days'] as $day)
                             <td class="text-center" 
+                                @if($day['indicator'] !== '-')
                                 style="cursor: pointer; background-color: {{ $day['indicator'] === '✓' ? '#d4edda' : ($day['indicator'] === '⚠' ? '#fff3cd' : '#f8d7da') }};"
-                                onclick="showCellDetails('{{ $day['date'] }}', {{ $row['location']->id }}, '{{ $row['location']->name }}')">
+                                onclick="showCellDetails('{{ $day['date'] }}', {{ $row['location']->id }}, '{{ $row['location']->name }}')"
+                                @else
+                                style="background-color: #f8f9fa;"
+                                @endif
+                                >
                                 <div style="font-size: 2rem;">
                                     @if($day['indicator'] === '✓')
                                         <span class="text-success">✓</span>
                                     @elseif($day['indicator'] === '⚠')
                                         <span class="text-warning">⚠</span>
-                                    @else
+                                    @elseif($day['indicator'] === '✗')
                                         <span class="text-danger">✗</span>
+                                    @else
+                                        <span class="text-muted">-</span>
                                     @endif
                                 </div>
+                                @if($day['indicator'] !== '-')
                                 <small class="text-muted">
                                     {{ $day['completed'] }}/{{ $day['total'] }}
                                 </small>
+                                @endif
                             </td>
                             @endforeach
                         </tr>
@@ -188,8 +194,44 @@
     </div>
 </div>
 
+@push('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
+@endpush
+
 @push('scripts')
+<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+
 <script>
+// Initialize TomSelect for locations
+new TomSelect('#locationSelect', {
+    placeholder: 'Select locations...',
+    maxItems: null,
+    hideSelected: true,
+    closeAfterSelect: false
+});
+
+// Initialize date picker for Mondays only
+const picker = new Litepicker({
+    element: document.getElementById('weekDate'),
+    format: 'YYYY-MM-DD',
+    singleMode: true,
+    maxDate: new Date(),
+    lockDays: (date) => {
+        // Only allow Mondays (day 1)
+        return date.getDay() !== 1;
+    },
+    setup: (picker) => {
+        picker.on('selected', (date) => {
+            // Ensure the selected date is a Monday
+            if (date.getDay() !== 1) {
+                alert('Please select a Monday');
+                picker.clearSelection();
+            }
+        });
+    }
+});
+
 function showCellDetails(date, locationId, locationName) {
     const modal = new bootstrap.Modal(document.getElementById('cellDetailsModal'));
     const title = document.getElementById('cellDetailsTitle');
@@ -210,7 +252,7 @@ function showCellDetails(date, locationId, locationName) {
     modal.show();
     
     // Fetch data
-    fetch(`{{ route('facility.reports.cell-details') }}?date=${date}&location_id=${locationId}`)
+    fetch(`{{ route('reports.facility.cell-details') }}?date=${date}&location_id=${locationId}`)
         .then(response => response.json())
         .then(data => {
             if (data.tasks.length === 0) {

@@ -168,10 +168,10 @@
                     <i class="fa fa-map-marker-alt"></i> {{ $data['location']->name }} - {{ \Carbon\Carbon::parse($date)->format('l, F d, Y') }}
                 </h3>
                 <div class="card-actions">
-                    <span class="badge bg-blue">{{ $data['stats']['total'] }} Tasks</span>
-                    <span class="badge bg-success">{{ $data['stats']['completed'] }} Completed</span>
-                    <span class="badge bg-warning">{{ $data['stats']['pending'] }} Pending</span>
-                    <span class="badge bg-danger">{{ $data['stats']['missed'] }} Missed</span>
+                    <span class="badge bg-blue text-white">{{ $data['stats']['total'] }} Tasks</span>
+                    <span class="badge bg-success text-white">{{ $data['stats']['completed'] }} Completed</span>
+                    <span class="badge bg-warning text-white">{{ $data['stats']['pending'] }} Pending</span>
+                    <span class="badge bg-danger text-white">{{ $data['stats']['missed'] }} Missed</span>
                 </div>
             </div>
             <div class="table-responsive">
@@ -225,15 +225,15 @@
                             </td>
                             <td>
                                 @if($task->status === 'completed' || $task->status === 'approved')
-                                    <span class="badge bg-success"><i class="fa fa-check"></i> {{ ucfirst($task->status) }}</span>
+                                    <span class="badge bg-success text-white"><i class="fa fa-check"></i> {{ ucfirst($task->status) }}</span>
                                 @elseif($task->status === 'in-progress')
-                                    <span class="badge bg-info"><i class="fa fa-spinner"></i> In Progress</span>
+                                    <span class="badge bg-info text-white"><i class="fa fa-spinner"></i> In Progress</span>
                                 @elseif($task->status === 'pending')
-                                    <span class="badge bg-warning"><i class="fa fa-clock"></i> Pending</span>
+                                    <span class="badge bg-warning text-white"><i class="fa fa-clock"></i> Pending</span>
                                 @elseif($task->status === 'missed')
-                                    <span class="badge bg-danger"><i class="fa fa-exclamation-triangle"></i> Missed</span>
+                                    <span class="badge bg-danger text-white"><i class="fa fa-exclamation-triangle"></i> Missed</span>
                                 @else
-                                    <span class="badge bg-secondary">{{ ucfirst($task->status) }}</span>
+                                    <span class="badge bg-secondary text-white">{{ ucfirst($task->status) }}</span>
                                 @endif
                             </td>
                             <td>
