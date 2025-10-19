@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use App\Services\PushoverService;
 
 class KeycloakController extends Controller
 {
+    public function __construct(
+        private readonly PushoverService $pushoverService
+    ) {}
     /**
      * Redirect to Keycloak login
      */
@@ -55,7 +59,15 @@ class KeycloakController extends Controller
             // Redirect to intended page or dashboard
             return redirect()->intended('/dashboard');
             
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {  
+            $message = "SIGaP SSO login attempt for non-existent user (" . $keycloakUser->getEmail() . ") from IP: " . request()->ip();
+
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                'Invalid SIGaP SSO Login Attempt',
+                env('WAHA_DEFAULT_CHAT_ID'),
+                $message
+            );
+
             return redirect()->route('login')
                 ->withErrors(['error' => 'Unable to login with SSO. Please try again or use password login.']);
         }

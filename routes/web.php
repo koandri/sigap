@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Auth\KeycloakController;
+
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
@@ -42,27 +43,16 @@ use App\Http\Controllers\MaintenanceReportController;
 use App\Http\Controllers\MaintenanceCalendarController;
 use App\Http\Controllers\Reports\AssetReportController;
 
-use App\Http\Controllers\Auth\KeycloakController;
-
-use App\Models\FormSubmission;
-
 //Basic
 Route::get('/', [HomeController::class, 'index'])->name('home')->middleware(['auth', 'verified']);
 Route::get('/editmyprofile', [UserController::class, 'editmyprofile'])->name('editmyprofile')->middleware('auth');
 
-//Asana
-Route::get('/auth/redirect', [LoginController::class, 'redirect']);
-Route::get('/auth/callback', [LoginController::class, 'callback']);
-
 // ===== KEYCLOAK SSO ROUTES =====
-Route::get('/auth/keycloak', [KeycloakController::class, 'redirectToKeycloak'])
-    ->name('keycloak.login');
+Route::get('/auth/keycloak', [KeycloakController::class, 'redirectToKeycloak'])->name('keycloak.login');
 
-Route::get('/auth/keycloak/callback', [KeycloakController::class, 'handleKeycloakCallback'])
-    ->name('keycloak.callback');
+Route::get('/auth/keycloak/callback', [KeycloakController::class, 'handleKeycloakCallback'])->name('keycloak.callback');
 
-Route::post('/auth/keycloak/logout', [KeycloakController::class, 'logout'])
-    ->name('keycloak.logout');
+Route::post('/auth/keycloak/logout', [KeycloakController::class, 'logout'])->name('keycloak.logout');
 
 //Impersonate
 Route::impersonate();
