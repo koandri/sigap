@@ -42,6 +42,8 @@ use App\Http\Controllers\MaintenanceReportController;
 use App\Http\Controllers\MaintenanceCalendarController;
 use App\Http\Controllers\Reports\AssetReportController;
 
+use App\Http\Controllers\Auth\KeycloakController;
+
 use App\Models\FormSubmission;
 
 //Basic
@@ -51,6 +53,16 @@ Route::get('/editmyprofile', [UserController::class, 'editmyprofile'])->name('ed
 //Asana
 Route::get('/auth/redirect', [LoginController::class, 'redirect']);
 Route::get('/auth/callback', [LoginController::class, 'callback']);
+
+// ===== KEYCLOAK SSO ROUTES =====
+Route::get('/auth/keycloak', [KeycloakController::class, 'redirectToKeycloak'])
+    ->name('keycloak.login');
+
+Route::get('/auth/keycloak/callback', [KeycloakController::class, 'handleKeycloakCallback'])
+    ->name('keycloak.callback');
+
+Route::post('/auth/keycloak/logout', [KeycloakController::class, 'logout'])
+    ->name('keycloak.logout');
 
 //Impersonate
 Route::impersonate();

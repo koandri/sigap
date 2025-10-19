@@ -15,11 +15,12 @@
         "intervention/image": "^3.11",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^12.0",
-        "laravel/socialite": "^5.21",
+        "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "ryangjchandler/laravel-cloudflare-turnstile": "^2.0",
         "socialiteproviders/asana": "^4.1",
+        "socialiteproviders/keycloak": "^5.3",
         "spatie/laravel-options": "^1.2",
         "spatie/laravel-permission": "^6.20",
         "zacksmash/fortify-ui": "^2.0"

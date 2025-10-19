@@ -40,6 +40,11 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
+                            <a href="{{ route('keycloak.login') }}" class="btn btn-4 w-100">
+                                <i class="fa-kit fa-keycloak"></i> &nbsp;Login with Keycloak
+                            </a>
+                        </div>
+                        <div class="col">
                             <a href="#" class="btn btn-4 w-100">
                                 <i class="fa-kit fa-asana"></i> &nbsp;Login with Asana
                             </a>
