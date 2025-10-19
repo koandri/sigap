@@ -26,17 +26,28 @@ class KeycloakController extends Controller
             // Get user from Keycloak
             $keycloakUser = Socialite::driver('keycloak')->user();
             
-            // Find or create user in local database
-            $user = User::updateOrCreate(
-                ['email' => $keycloakUser->getEmail()],
-                [
-                    'name' => $keycloakUser->getName() ?? $keycloakUser->getNickname(),
-                    'email' => $keycloakUser->getEmail(),
-                    'email_verified_at' => now(),
-                    // Store Keycloak ID for reference
-                    'keycloak_id' => $keycloakUser->getId(),
-                ]
-            );
+            // Check if user exists in local database
+            $user = User::where('email', $keycloakUser->getEmail())->first();
+            
+            // If user doesn't exist, deny access
+            if (!$user) {
+                return redirect()->route('login')
+                    ->withErrors([
+                        'error' => 'Your account is not registered in this application. Please contact the IT Staff.'
+                    ]);
+            }
+
+            if (!$user->active) {
+                return redirect()->route('login')
+                    ->withErrors([
+                        'error' => 'Your account is not not active. Please contact the IT Staff.'
+                    ]);
+            }
+            
+            //Update the user keycloak_id
+            $user->update([
+                'keycloak_id' => $keycloakUser->getId(),
+            ]);
 
             // Login the user
             Auth::login($user, true);
@@ -44,12 +55,9 @@ class KeycloakController extends Controller
             // Redirect to intended page or dashboard
             return redirect()->intended('/dashboard');
             
-        } catch (\Exception $e) {
-            // Log the error
-            \Log::error('Keycloak SSO Error: ' . $e->getMessage());
-            
+        } catch (\Exception $e) {            
             return redirect()->route('login')
-                ->withErrors(['sso' => 'Unable to login with SSO. Please try again or use password login.']);
+                ->withErrors(['error' => 'Unable to login with SSO. Please try again or use password login.']);
         }
     }
 
