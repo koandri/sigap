@@ -343,7 +343,7 @@ class FormSubmissionController extends Controller
                         
                         // Store to sigap disk
                         $filePath = $folderPath . '/' . $filename;
-                        Storage::disk('sigap')->put($filePath, $decodedImage);
+                        Storage::disk('s3')->put($filePath, $decodedImage, 'public');
                         
                         $answer = new FormAnswer();
                         $answer->form_submission_id = $submission->id;
@@ -425,7 +425,7 @@ class FormSubmissionController extends Controller
                                     
                                     // Store to sigap disk
                                     $filePath = $folderPath . '/' . $filename;
-                                    Storage::disk('sigap')->put($filePath, $decodedImage);
+                                    Storage::disk('s3')->put($filePath, $decodedImage, 'public');
                                     
                                     // Add watermark with EXIF data and GPS coordinates
                                     $watermarkedPath = $this->addLivePhotoWatermark($filePath, $decodedImage, $field, $submission, $gpsData);
@@ -433,7 +433,7 @@ class FormSubmissionController extends Controller
                                     $storedPhotos[] = [
                                         'file_path' => $watermarkedPath,
                                         'original_filename' => $filename,
-                                        'file_size' => Storage::disk('sigap')->size($watermarkedPath),
+                                        'file_size' => Storage::disk('s3')->size($watermarkedPath),
                                         'captured_at' => now()->toISOString(),
                                         'camera_type' => 'rear',
                                         'photo_quality' => $field->validation_rules['photo_quality'] ?? 0.8,
@@ -878,8 +878,8 @@ class FormSubmissionController extends Controller
                     if ($signatureData && str_starts_with($signatureData, 'data:image')) {
                         // New signature provided - delete old file if exists
                         if ($answer && $answer->answer_value) {
-                            if (Storage::disk('sigap')->exists($answer->answer_value)) {
-                                Storage::disk('sigap')->delete($answer->answer_value);
+                            if (Storage::disk('s3')->exists($answer->answer_value)) {
+                                Storage::disk('s3')->delete($answer->answer_value);
                             }
                         }
                         
@@ -895,7 +895,7 @@ class FormSubmissionController extends Controller
                         
                         // Store to sigap disk
                         $filePath = $folderPath . '/' . $filename;
-                        Storage::disk('sigap')->put($filePath, $decodedImage);
+                        Storage::disk('s3')->put($filePath, $decodedImage, 'public');
                         
                         $signatureMetadata = [
                             'signature' => true,
@@ -995,7 +995,7 @@ class FormSubmissionController extends Controller
                                     
                                     // Store to sigap disk
                                     $filePath = $folderPath . '/' . $filename;
-                                    Storage::disk('sigap')->put($filePath, $decodedImage);
+                                    Storage::disk('s3')->put($filePath, $decodedImage, 'public');
                                     
                                     // Add watermark with EXIF data and GPS coordinates
                                     $watermarkedPath = $this->addLivePhotoWatermark($filePath, $decodedImage, $field, $submission, $gpsData);
@@ -1003,7 +1003,7 @@ class FormSubmissionController extends Controller
                                     $storedPhotos[] = [
                                         'file_path' => $watermarkedPath,
                                         'original_filename' => $filename,
-                                        'file_size' => Storage::disk('sigap')->size($watermarkedPath),
+                                        'file_size' => Storage::disk('s3')->size($watermarkedPath),
                                         'captured_at' => now()->toISOString(),
                                         'camera_type' => 'rear',
                                         'photo_quality' => $field->validation_rules['photo_quality'] ?? 0.8,
@@ -1117,8 +1117,8 @@ class FormSubmissionController extends Controller
         foreach ($fileAnswers as $answer) {
             if ($answer->field->field_type === 'live_photo') {
                 $this->deleteLivePhotos($answer);
-            } elseif ($answer->answer_value && Storage::disk('sigap')->exists($answer->answer_value)) {
-                Storage::disk('sigap')->delete($answer->answer_value);
+            } elseif ($answer->answer_value && Storage::disk('s3')->exists($answer->answer_value)) {
+                Storage::disk('s3')->delete($answer->answer_value);
             }
         }
 
@@ -1166,8 +1166,8 @@ class FormSubmissionController extends Controller
         foreach ($fileAnswers as $answer) {
             if ($answer->field->field_type === 'live_photo') {
                 $this->deleteLivePhotos($answer);
-            } elseif ($answer->answer_value && Storage::disk('sigap')->exists($answer->answer_value)) {
-                Storage::disk('sigap')->delete($answer->answer_value);
+            } elseif ($answer->answer_value && Storage::disk('s3')->exists($answer->answer_value)) {
+                Storage::disk('s3')->delete($answer->answer_value);
             }
         }
     }
@@ -1247,7 +1247,7 @@ class FormSubmissionController extends Controller
                 $folderPath = 'formsubmissions/' . $submission->formVersion->form_id . '/' . date('Y') . '/' . date('m') . '/' . $submission->id;
                 
                 $path = $file->storeAs($folderPath, $filename, [
-                    'disk' => 'sigap',
+                    'disk' => 's3',
                     'visibility' => 'public'
                 ]);
                 
@@ -1269,7 +1269,7 @@ class FormSubmissionController extends Controller
                     'answer_metadata' => [
                         'files' => $uploadedFiles,
                         'count' => count($uploadedFiles),
-                        'disk' => 'sigap',
+                        'disk' => 's3',
                         'multiple' => true
                     ]
                 ]);
@@ -1287,7 +1287,7 @@ class FormSubmissionController extends Controller
             $folderPath = 'formsubmissions/' . $submission->formVersion->form_id . '/' . date('Y') . '/' . date('m') . '/' . $submission->id;
             
             $path = $file->storeAs($folderPath, $filename, [
-                'disk' => 'sigap',
+                'disk' => 's3',
                 'visibility' => 'public'
             ]);
             
@@ -1394,8 +1394,8 @@ class FormSubmissionController extends Controller
                 $oldPaths = json_decode($answer->answer_value, true);
                 if (is_array($oldPaths)) {
                     foreach ($oldPaths as $path) {
-                        if (Storage::disk('sigap')->exists($path)) {
-                            Storage::disk('sigap')->delete($path);
+                        if (Storage::disk('s3')->exists($path)) {
+                            Storage::disk('s3')->delete($path);
                         }
                     }
                 }
@@ -1416,7 +1416,7 @@ class FormSubmissionController extends Controller
                 $folderPath = 'formsubmissions/' . $submission->formVersion->form_id . '/' . date('Y') . '/' . date('m') . '/' . $submission->id;
                 
                 $path = $file->storeAs($folderPath, $filename, [
-                    'disk' => 'sigap',
+                    'disk' => 's3',
                     'visibility' => 'public'
                 ]);
                 
@@ -1436,7 +1436,7 @@ class FormSubmissionController extends Controller
                     'answer_metadata' => [
                         'files' => $uploadedFiles,
                         'count' => count($uploadedFiles),
-                        'disk' => 'sigap',
+                        'disk' => 's3',
                         'multiple' => true
                     ]
                 ]);
@@ -1448,7 +1448,7 @@ class FormSubmissionController extends Controller
                     'answer_metadata' => [
                         'files' => $uploadedFiles,
                         'count' => count($uploadedFiles),
-                        'disk' => 'sigap',
+                        'disk' => 's3',
                         'multiple' => true
                     ]
                 ]);
@@ -1466,7 +1466,7 @@ class FormSubmissionController extends Controller
             $folderPath = 'formsubmissions/' . $submission->formVersion->form_id . '/' . date('Y') . '/' . date('m') . '/' . $submission->id;
             
             $path = $file->storeAs($folderPath, $filename, [
-                'disk' => 'sigap',
+                'disk' => 's3',
                 'visibility' => 'public'
             ]);
             
@@ -1884,7 +1884,7 @@ class FormSubmissionController extends Controller
             
             // Save watermarked image
             $watermarkedData = $image->toJpeg(90);
-            Storage::disk('sigap')->put($filePath, $watermarkedData);
+            Storage::disk('s3')->put($filePath, $watermarkedData, 'public');
             
             return $filePath;
             
@@ -1892,7 +1892,7 @@ class FormSubmissionController extends Controller
             \Log::error('Live photo watermarking failed: ' . $e->getMessage());
             
             // Return original file if watermarking fails
-            Storage::disk('sigap')->put($filePath, $imageData);
+            Storage::disk('s3')->put($filePath, $imageData, 'public');
             return $filePath;
         }
     }
@@ -2028,8 +2028,8 @@ class FormSubmissionController extends Controller
             
             foreach ($photos as $photo) {
                 $filePath = is_array($photo) ? $photo['file_path'] : $photo;
-                if ($filePath && Storage::disk('sigap')->exists($filePath)) {
-                    Storage::disk('sigap')->delete($filePath);
+                if ($filePath && Storage::disk('s3')->exists($filePath)) {
+                    Storage::disk('s3')->delete($filePath);
                 }
             }
             

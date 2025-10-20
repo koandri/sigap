@@ -219,7 +219,7 @@ final class CleaningTaskController extends Controller
         $filePath = $folderPath . '/' . $filename;
 
         // Store original
-        Storage::disk('sigap')->put($filePath, $decodedImage);
+        Storage::disk('s3')->put($filePath, $decodedImage, 'public');
 
         // Add watermark
         $watermarkedPath = $this->addWatermark($filePath, $decodedImage, $task, $gpsData, $type);
@@ -259,7 +259,7 @@ final class CleaningTaskController extends Controller
 
             // Save watermarked image
             $watermarkedData = $image->toJpeg(90);
-            Storage::disk('sigap')->put($filePath, $watermarkedData);
+            Storage::disk('s3')->put($filePath, $watermarkedData, 'public');
 
             return $filePath;
         } catch (\Exception $e) {

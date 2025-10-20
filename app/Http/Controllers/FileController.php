@@ -42,11 +42,11 @@ class FileController extends Controller
         $filePath = $this->getFilePath($answer, $fileIndex);
         $fileMetadata = $this->getFileMetadata($answer, $fileIndex);
         
-        if (!$filePath || !Storage::disk('sigap')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('s3')->exists($filePath)) {
             abort(404, 'File not found');
         }
         
-        $mimeType = $fileMetadata['mime_type'] ?? Storage::disk('sigap')->mimeType($filePath);
+        $mimeType = $fileMetadata['mime_type'] ?? Storage::disk('s3')->mimeType($filePath);
         
         // Determine if file can be previewed
         $previewableTypes = [
@@ -65,7 +65,7 @@ class FileController extends Controller
                 return $this->getWatermarkedImage($filePath, $fileMetadata, 'preview');
             }
 
-            return Storage::disk('sigap')->response($filePath, null, [
+            return Storage::disk('s3')->response($filePath, null, [
                 'Content-Type' => $mimeType,
                 'Content-Disposition' => 'inline; filename="' . ($fileMetadata['original_name'] ?? basename($filePath)) . '"',
                 'Pragma' => 'no-cache',
@@ -97,19 +97,19 @@ class FileController extends Controller
         $filePath = $this->getFilePath($answer, $fileIndex);
         $fileMetadata = $this->getFileMetadata($answer, $fileIndex);
         
-        if (!$filePath || !Storage::disk('sigap')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('s3')->exists($filePath)) {
             abort(404, 'File not found');
         }
         
         $fileName = $fileMetadata['original_name'] ?? basename($filePath);
-        $mimeType = $fileMetadata['mime_type'] ?? Storage::disk('sigap')->mimeType($filePath);
+        $mimeType = $fileMetadata['mime_type'] ?? Storage::disk('s3')->mimeType($filePath);
         
         // For images, add download watermark
         if (str_starts_with($mimeType, 'image/')) {
             return $this->downloadWatermarkedImage($filePath, $fileMetadata, $fileName);
         }
         
-        return Storage::disk('sigap')->download($filePath, $fileName, [
+        return Storage::disk('s3')->download($filePath, $fileName, [
             'Content-Type' => $mimeType,
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Pragma' => 'no-cache',
@@ -132,7 +132,7 @@ class FileController extends Controller
         $filePath = $this->getFilePath($answer, $fileIndex);
         $fileMetadata = $this->getFileMetadata($answer, $fileIndex);
         
-        if (!$filePath || !Storage::disk('sigap')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('s3')->exists($filePath)) {
             abort(404);
         }
         
@@ -158,7 +158,7 @@ class FileController extends Controller
     {
         try {
             // Read and process image
-            $imageContent = Storage::disk('sigap')->get($filePath);
+            $imageContent = Storage::disk('s3')->get($filePath);
             $image = $this->imageManager->read($imageContent);
             
             // Resize for thumbnails
@@ -227,7 +227,7 @@ class FileController extends Controller
             \Log::error('Watermarked image generation failed: ' . $e->getMessage());
             
             // Return original image if watermarking fails
-            return Storage::disk('sigap')->response($filePath, null, [
+            return Storage::disk('s3')->response($filePath, null, [
                 'Content-Type' => $fileMetadata['mime_type'] ?? 'image/jpeg',
                 'Cache-Control' => 'no-cache, no-store, must-revalidate',
                 'Pragma' => 'no-cache',
@@ -411,13 +411,13 @@ class FileController extends Controller
         $filePath = $this->getFilePath($answer, $fileIndex);
         $fileMetadata = $this->getFileMetadata($answer, $fileIndex);
         
-        if (!$filePath || !Storage::disk('sigap')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('s3')->exists($filePath)) {
             abort(404, 'File not found');
         }
         
         $fileName = 'ORIGINAL_' . ($fileMetadata['original_name'] ?? basename($filePath));
         
-        return Storage::disk('sigap')->download($filePath, $fileName, [
+        return Storage::disk('s3')->download($filePath, $fileName, [
             'Content-Type' => $fileMetadata['mime_type'] ?? 'application/octet-stream',
             'Cache-Control' => 'no-cache, no-store, must-revalidate'
         ]);
@@ -438,7 +438,7 @@ class FileController extends Controller
         $filePath = $this->getFilePath($answer, $fileIndex);
         $fileMetadata = $this->getFileMetadata($answer, $fileIndex);
         
-        if (!$filePath || !Storage::disk('sigap')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('s3')->exists($filePath)) {
             abort(404);
         }
         
@@ -451,7 +451,7 @@ class FileController extends Controller
         
         try {
             // Read image
-            $imageContent = Storage::disk('sigap')->get($filePath);
+            $imageContent = Storage::disk('s3')->get($filePath);
             $image = $this->imageManager->read($imageContent);
             
             // Add watermark text
@@ -487,7 +487,7 @@ class FileController extends Controller
     public function generateThumbnailSizes($filePath, $sizes = [])
     {
         try {
-            $imageContent = Storage::disk('sigap')->get($filePath);
+            $imageContent = Storage::disk('s3')->get($filePath);
             $image = $this->imageManager->read($imageContent);
             
             $thumbnails = [];
@@ -504,9 +504,10 @@ class FileController extends Controller
                 $cacheKey = md5($filePath . $width . $height);
                 $cachePath = 'thumbnails/' . $cacheKey . '.jpg';
                 
-                Storage::disk('sigap')->put(
+                Storage::disk('s3')->put(
                     $cachePath, 
-                    $resized->toJpeg((int) $quality)
+                    $resized->toJpeg((int) $quality),
+                    'public'
                 );
                 
                 $thumbnails[] = [
@@ -538,13 +539,13 @@ class FileController extends Controller
         $filePath = $this->getFilePath($answer, $fileIndex);
         $fileMetadata = $this->getFileMetadata($answer, $fileIndex);
         
-        if (!$filePath || !Storage::disk('sigap')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('s3')->exists($filePath)) {
             abort(404);
         }
         
         $fileName = $fileMetadata['original_name'] ?? basename($filePath);
         $mimeType = $fileMetadata['mime_type'] ?? 'application/octet-stream';
-        $fileSize = Storage::disk('sigap')->size($filePath);
+        $fileSize = Storage::disk('s3')->size($filePath);
         
         $headers = [
             'Content-Type' => $mimeType,
@@ -556,7 +557,7 @@ class FileController extends Controller
             'Expires' => '0'
         ];
         
-        return Storage::disk('sigap')->response($filePath, null, $headers);
+        return Storage::disk('s3')->response($filePath, null, $headers);
     }
     
     /**
@@ -673,7 +674,7 @@ class FileController extends Controller
     {
         try {            
             // Read and process image
-            $imageContent = Storage::disk('sigap')->get($filePath);
+            $imageContent = Storage::disk('s3')->get($filePath);
             $image = $this->imageManager->read($imageContent);
             
             // Add download-specific watermark
@@ -696,7 +697,7 @@ class FileController extends Controller
             \Log::error('Download watermark failed: ' . $e->getMessage());
             
             // Return original file if watermarking fails
-            return Storage::disk('sigap')->download($filePath, $fileName, [
+            return Storage::disk('s3')->download($filePath, $fileName, [
                 'Content-Type' => $fileMetadata['mime_type'] ?? 'image/jpeg',
                 'Cache-Control' => 'no-cache, no-store, must-revalidate',
                 'Pragma' => 'no-cache',

@@ -105,7 +105,7 @@ final class AssetController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = 'asset_' . time() . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('assets', $filename, 'public');
+            $path = 'assets/' . $filename;
             
             // Resize image
             $resized = Image::make($image)->resize(800, 600, function ($constraint) {
@@ -113,7 +113,7 @@ final class AssetController extends Controller
                 $constraint->upsize();
             });
             
-            Storage::disk('public')->put($path, $resized->encode());
+            Storage::disk('s3')->put($path, $resized->encode(), 'public');
             $validated['image_path'] = $path;
         }
 
@@ -186,12 +186,12 @@ final class AssetController extends Controller
         if ($request->hasFile('image')) {
             // Delete old image
             if ($asset->image_path) {
-                Storage::disk('public')->delete($asset->image_path);
+                Storage::disk('s3')->delete($asset->image_path);
             }
 
             $image = $request->file('image');
             $filename = 'asset_' . time() . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('assets', $filename, 'public');
+            $path = 'assets/' . $filename;
             
             // Resize image
             $resized = Image::make($image)->resize(800, 600, function ($constraint) {
@@ -199,7 +199,7 @@ final class AssetController extends Controller
                 $constraint->upsize();
             });
             
-            Storage::disk('public')->put($path, $resized->encode());
+            Storage::disk('s3')->put($path, $resized->encode(), 'public');
             $validated['image_path'] = $path;
         }
 
@@ -231,7 +231,7 @@ final class AssetController extends Controller
 
         // Delete image
         if ($asset->image_path) {
-            Storage::disk('public')->delete($asset->image_path);
+            Storage::disk('s3')->delete($asset->image_path);
         }
 
         // Delete QR code
