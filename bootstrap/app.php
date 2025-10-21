@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+        
+        // Exclude OnlyOffice callback from CSRF protection
+        $middleware->validateCsrfTokens(except: [
+            'document-versions/*/onlyoffice-callback',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

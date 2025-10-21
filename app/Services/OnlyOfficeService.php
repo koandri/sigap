@@ -16,7 +16,7 @@ final class OnlyOfficeService
     public function __construct()
     {
         $this->documentServerUrl = config('dms.onlyoffice.server_url', 'https://office.suryagroup.app');
-        $this->callbackUrl = config('dms.onlyoffice.callback_url', route('document-versions.onlyoffice-callback'));
+        $this->callbackUrl = config('dms.onlyoffice.callback_url');
     }
 
     public function createDocument(DocumentVersion $version, string $fileType = 'docx'): string
@@ -38,12 +38,19 @@ final class OnlyOfficeService
         $documentUrl = Storage::disk('s3')->url($version->file_path);
         $callbackUrl = route('document-versions.onlyoffice-callback', $version);
         
-        return [
+        $config = [
             'document' => [
                 'fileType' => $version->file_type,
                 'key' => $this->generateDocumentKey($version),
                 'title' => $version->document->title,
                 'url' => $documentUrl,
+                'permissions' => [
+                    'download' => false,
+                    'print' => false,
+                    'edit' => $this->getEditorMode($version) === 'edit',
+                    'review' => false,
+                    'comment' => false,
+                ],
             ],
             'documentType' => $this->getDocumentType($version->file_type),
             'editorConfig' => [
@@ -51,7 +58,7 @@ final class OnlyOfficeService
                 'lang' => 'en',
                 'callbackUrl' => $callbackUrl,
                 'user' => [
-                    'id' => auth()->id(),
+                    'id' => (string) auth()->id(),
                     'name' => auth()->user()->name,
                 ],
                 'customization' => [
@@ -62,6 +69,23 @@ final class OnlyOfficeService
             'height' => '100%',
             'width' => '100%',
         ];
+        
+        // Add JWT token if enabled
+        if (config('dms.onlyoffice.jwt_enabled') && config('dms.onlyoffice.secret')) {
+            $config['token'] = $this->generateJWT($config);
+        }
+        
+        // Log configuration for debugging
+        \Log::info('OnlyOffice Editor Config', [
+            'document_url' => $documentUrl,
+            'callback_url' => $callbackUrl,
+            'file_path' => $version->file_path,
+            'file_type' => $version->file_type,
+            'jwt_enabled' => config('dms.onlyoffice.jwt_enabled'),
+            'has_secret' => !empty(config('dms.onlyoffice.secret')),
+        ]);
+        
+        return $config;
     }
 
     public function handleCallback(DocumentVersion $version, array $callbackData): void
@@ -124,12 +148,11 @@ final class OnlyOfficeService
     private function generateFilename(DocumentVersion $version, string $fileType): string
     {
         $documentTitle = Str::slug($version->document->title);
-        $versionNumber = str_replace('.', '_', $version->version_number);
         
         return sprintf(
             '%s_v%s_%s.%s',
             $documentTitle,
-            $versionNumber,
+            $version->version_number,
             time(),
             $fileType
         );
@@ -153,22 +176,39 @@ final class OnlyOfficeService
 
     private function getEmptyDocxContent(): string
     {
-        // Return empty DOCX content
-        // In production, you'd create a proper empty DOCX file
-        return '';
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $section = $phpWord->addSection();
+        $section->addText('');
+        
+        $tempFile = tempnam(sys_get_temp_dir(), 'docx');
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($tempFile);
+        
+        $content = file_get_contents($tempFile);
+        unlink($tempFile);
+        
+        return $content;
     }
 
     private function getEmptyXlsxContent(): string
     {
-        // Return empty XLSX content
-        // In production, you'd create a proper empty XLSX file
-        return '';
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', '');
+        
+        $tempFile = tempnam(sys_get_temp_dir(), 'xlsx');
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save($tempFile);
+        
+        $content = file_get_contents($tempFile);
+        unlink($tempFile);
+        
+        return $content;
     }
 
     private function getEmptyPptxContent(): string
     {
-        // Return empty PPTX content
-        // In production, you'd create a proper empty PPTX file
+        // For now, return empty string. PPTX support can be added later if needed.
         return '';
     }
 
@@ -253,5 +293,36 @@ final class OnlyOfficeService
         } catch (\Exception $e) {
             \Log::error("Failed to download document for version {$version->id}: " . $e->getMessage());
         }
+    }
+
+    private function generateJWT(array $payload): string
+    {
+        $secret = config('dms.onlyoffice.secret');
+        
+        if (empty($secret)) {
+            throw new \Exception('OnlyOffice JWT secret is not configured');
+        }
+        
+        // JWT Header
+        $header = [
+            'alg' => 'HS256',
+            'typ' => 'JWT'
+        ];
+        
+        // Encode header and payload
+        $headerEncoded = $this->base64UrlEncode(json_encode($header));
+        $payloadEncoded = $this->base64UrlEncode(json_encode($payload));
+        
+        // Create signature
+        $signature = hash_hmac('sha256', "$headerEncoded.$payloadEncoded", $secret, true);
+        $signatureEncoded = $this->base64UrlEncode($signature);
+        
+        // Return JWT token
+        return "$headerEncoded.$payloadEncoded.$signatureEncoded";
+    }
+
+    private function base64UrlEncode(string $data): string
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
     }
 }

@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "emreyarligan/enum-concern": "^1.0",
         "endroid/qr-code": "^6.0",
         "intervention/image": "^3.11",
@@ -17,7 +18,9 @@
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
+        "league/flysystem-aws-s3-v3": "^3.29",
         "maatwebsite/excel": "^3.1",
+        "phpoffice/phpword": "^1.4",
         "ryangjchandler/laravel-cloudflare-turnstile": "^2.0",
         "socialiteproviders/asana": "^4.1",
         "socialiteproviders/keycloak": "^5.3",

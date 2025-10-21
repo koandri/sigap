@@ -44,6 +44,38 @@
                         </div>
                     </div>
                 </li>
+                <li class="nav-item dropdown {{ areActiveRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
+                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fa-regular fa-file-lines"></i>
+                        </span>
+                        <span class="nav-link-title">Document Management</span>
+                    </a>
+                    <div class="dropdown-menu {{ areOpenRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                <a class="dropdown-item {{ areActiveRoutes('dms-dashboard') }}" href="{{ route('dms-dashboard') }}">
+                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('documents.*') }}" href="{{ route('documents.index') }}">
+                                    <i class="fa-regular fa-folder"></i> &nbsp;Documents
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('my-document-access') }}" href="{{ route('my-document-access') }}">
+                                    <i class="fa-regular fa-eye"></i> &nbsp;My Documents
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('form-requests.*') }}" href="{{ route('form-requests.index') }}">
+                                    <i class="fa-regular fa-file-text"></i> &nbsp;Form Requests
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('documents.masterlist') }}" href="{{ route('documents.masterlist') }}">
+                                    <i class="fa-regular fa-list"></i> &nbsp;Masterlist
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('dms-sla') }}" href="{{ route('dms-sla') }}">
+                                    <i class="fa-regular fa-chart-bar"></i> &nbsp;SLA Report
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
                 <li class="nav-item dropdown {{ areActiveRoutes(['manufacturing.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">

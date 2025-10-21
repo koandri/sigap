@@ -43,6 +43,23 @@ use App\Http\Controllers\MaintenanceReportController;
 use App\Http\Controllers\MaintenanceCalendarController;
 use App\Http\Controllers\Reports\AssetReportController;
 
+// Facility Management Routes
+use App\Http\Controllers\FacilityDashboardController;
+use App\Http\Controllers\CleaningScheduleController;
+use App\Http\Controllers\CleaningTaskController;
+use App\Http\Controllers\CleaningApprovalController;
+use App\Http\Controllers\CleaningRequestController;
+use App\Http\Controllers\CleaningReportController;
+
+// Document Management System Routes
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentVersionController;
+use App\Http\Controllers\DocumentApprovalController;
+use App\Http\Controllers\DocumentAccessController;
+use App\Http\Controllers\FormRequestController;
+use App\Http\Controllers\PrintedFormController;
+use App\Http\Controllers\DashboardController;
+
 //Basic
 Route::get('/', [HomeController::class, 'index'])->name('home')->middleware(['auth', 'verified']);
 Route::get('/editmyprofile', [UserController::class, 'editmyprofile'])->name('editmyprofile')->middleware('auth');
@@ -236,14 +253,6 @@ Route::prefix('maintenance')->name('maintenance.')->middleware(['auth'])->group(
     Route::get('calendar/events', [MaintenanceCalendarController::class, 'events'])->name('calendar.events');
 });
 
-// Facility Management Routes
-use App\Http\Controllers\FacilityDashboardController;
-use App\Http\Controllers\CleaningScheduleController;
-use App\Http\Controllers\CleaningTaskController;
-use App\Http\Controllers\CleaningApprovalController;
-use App\Http\Controllers\CleaningRequestController;
-use App\Http\Controllers\CleaningReportController;
-
 // Guest request form (public)
 Route::get('facility/request', [CleaningRequestController::class, 'guestForm'])->name('facility.requests.guest-form');
 Route::post('facility/request', [CleaningRequestController::class, 'store'])->name('facility.requests.store');
@@ -292,6 +301,54 @@ Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function
     Route::get('facility/weekly', [CleaningReportController::class, 'weeklyReport'])->name('facility.weekly');
     Route::get('facility/weekly/pdf', [CleaningReportController::class, 'weeklyReportPdf'])->name('facility.weekly-pdf');
     Route::get('facility/cell-details', [CleaningReportController::class, 'cellDetails'])->name('facility.cell-details');
+});
+
+// OnlyOffice Callback (no auth/CSRF required - uses JWT verification)
+Route::post('document-versions/{version}/onlyoffice-callback', [DocumentVersionController::class, 'onlyofficeCallback'])->name('document-versions.onlyoffice-callback');
+
+Route::middleware(['auth'])->group(function () {
+    // Documents
+    Route::resource('documents', DocumentController::class);
+    Route::get('documents-masterlist', [DocumentController::class, 'masterlist'])->name('documents.masterlist');
+    
+    // Versions
+    Route::resource('documents.versions', DocumentVersionController::class);
+    Route::post('document-versions/{version}/submit', [DocumentVersionController::class, 'submitForApproval'])->name('document-versions.submit');
+    Route::get('document-versions/{version}/editor', [DocumentVersionController::class, 'edit'])->name('document-versions.editor');
+    Route::get('document-versions/{version}/view', [DocumentVersionController::class, 'viewPDF'])->name('document-versions.view');
+    
+    // Approvals
+    Route::get('document-approvals', [DocumentApprovalController::class, 'index'])->name('document-approvals.index');
+    Route::post('document-approvals/{approval}/approve', [DocumentApprovalController::class, 'approve'])->name('document-approvals.approve');
+    Route::post('document-approvals/{approval}/reject', [DocumentApprovalController::class, 'reject'])->name('document-approvals.reject');
+    
+    // Access Requests
+    Route::get('my-document-access', [DocumentAccessController::class, 'myAccess'])->name('my-document-access');
+    Route::get('documents/{document}/request-access', [DocumentAccessController::class, 'requestAccess'])->name('documents.request-access');
+    Route::post('documents/{document}/request-access', [DocumentAccessController::class, 'storeAccessRequest'])->name('documents.request-access.store');
+    Route::get('document-access-requests', [DocumentAccessController::class, 'pendingRequests'])->name('document-access-requests.pending');
+    Route::post('document-access-requests/{request}/approve', [DocumentAccessController::class, 'approve'])->name('document-access-requests.approve');
+    Route::post('document-access-requests/{request}/reject', [DocumentAccessController::class, 'reject'])->name('document-access-requests.reject');
+    
+    // Form Requests
+    Route::resource('form-requests', FormRequestController::class);
+    Route::post('form-requests/{request}/acknowledge', [FormRequestController::class, 'acknowledge'])->name('form-requests.acknowledge');
+    Route::post('form-requests/{request}/process', [FormRequestController::class, 'process'])->name('form-requests.process');
+    Route::post('form-requests/{request}/ready', [FormRequestController::class, 'markReady'])->name('form-requests.ready');
+    Route::get('form-requests/{request}/labels', [FormRequestController::class, 'printLabels'])->name('form-requests.labels');
+    Route::post('form-requests/{request}/collect', [FormRequestController::class, 'collect'])->name('form-requests.collect');
+    
+    // Printed Forms
+    Route::get('printed-forms/{form}', [PrintedFormController::class, 'show'])->name('printed-forms.show');
+    Route::get('printed-forms/{form}/track', [PrintedFormController::class, 'track'])->name('printed-forms.track');
+    Route::post('printed-forms/{form}/return', [PrintedFormController::class, 'returnForm'])->name('printed-forms.return');
+    Route::post('printed-forms/{form}/receive', [PrintedFormController::class, 'receive'])->name('printed-forms.receive');
+    Route::post('printed-forms/{form}/upload-scan', [PrintedFormController::class, 'uploadScans'])->name('printed-forms.upload-scan');
+    Route::get('printed-forms/{form}/view-scanned', [PrintedFormController::class, 'viewScanned'])->name('printed-forms.view-scanned');
+    
+    // Dashboard
+    Route::get('dms-dashboard', [DashboardController::class, 'index'])->name('dms-dashboard');
+    Route::get('dms-sla', [DashboardController::class, 'sla'])->name('dms-sla');
 });
 
 // API Routes for Form Field Options
