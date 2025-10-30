@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <button type="button" class="btn btn-outline-primary" onclick="printMasterlist()">
-                        <i class="ti ti-printer"></i>
+                        <i class="far fa-print"></i>
                         Print
                     </button>
                 </div>
@@ -59,11 +59,11 @@
                                 <label class="form-label">&nbsp;</label>
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary w-100">
-                                        <i class="ti ti-filter"></i>
+                                        <i class="far fa-filter"></i>
                                         Filter
                                     </button>
                                     <a href="{{ route('documents.masterlist') }}" class="btn btn-outline-secondary">
-                                        <i class="ti ti-x"></i>
+                                        <i class="far fa-times"></i>
                                     </a>
                                 </div>
                             </div>
@@ -127,7 +127,7 @@
                     @else
                         <div class="empty">
                             <div class="empty-icon">
-                                <i class="ti ti-list"></i>
+                                <i class="far fa-list"></i>
                             </div>
                             <p class="empty-title">No documents found</p>
                             <p class="empty-subtitle text-muted">
