@@ -18,6 +18,57 @@ final class PrintedFormController extends Controller
         private readonly DocumentAccessService $accessService
     ) {}
 
+    public function index(Request $request): View
+    {
+        $user = auth()->user();
+        $isAdmin = $user->hasRole(['Super Admin', 'Owner', 'Document Control']);
+        
+        // Get filters from request
+        $filters = [
+            'status' => $request->input('status'),
+            'issued_to' => $request->input('issued_to'),
+            'form_number' => $request->input('form_number'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+        ];
+        
+        // Build query
+        $query = PrintedForm::with(['formRequestItem.formRequest.requester', 'documentVersion.document', 'issuedTo']);
+        
+        // Apply filters
+        if ($filters['status']) {
+            $query->where('status', $filters['status']);
+        }
+        
+        if ($filters['issued_to']) {
+            $query->where('issued_to', $filters['issued_to']);
+        }
+        
+        if ($filters['form_number']) {
+            $query->where('form_number', 'like', '%' . $filters['form_number'] . '%');
+        }
+        
+        if ($filters['date_from']) {
+            $query->whereDate('issued_at', '>=', $filters['date_from']);
+        }
+        
+        if ($filters['date_to']) {
+            $query->whereDate('issued_at', '<=', $filters['date_to']);
+        }
+        
+        // If not admin, only show forms issued to the user
+        if (!$isAdmin) {
+            $query->where('issued_to', $user->id);
+        }
+        
+        $printedForms = $query->latest('issued_at')->paginate(20);
+        
+        // Get users for filter dropdown
+        $users = $isAdmin ? \App\Models\User::orderBy('name')->get() : collect();
+        
+        return view('printed-forms.index', compact('printedForms', 'filters', 'users', 'isAdmin'));
+    }
+
     public function show(PrintedForm $printedForm): View
     {
         $printedForm->load(['formRequestItem.formRequest.requester', 'documentVersion.document', 'issuedTo']);

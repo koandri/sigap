@@ -61,11 +61,7 @@
                                 <label class="form-label">Date To</label>
                                 <input type="date" name="date_to" class="form-control" value="{{ $filters['date_to'] ?? '' }}">
                             </div>
-                            <div class="col-md-{{ $isAdmin ? '2' : '5' }}">
-                                <label class="form-label">Search Request ID</label>
-                                <input type="text" name="search" class="form-control" placeholder="Request ID..." value="{{ $filters['search'] ?? '' }}">
-                            </div>
-                            <div class="col-md-2 {{ $isAdmin ? '' : 'offset-md-2' }}">
+                            <div class="col-md-2 {{ $isAdmin ? '' : 'offset-md-3' }}">
                                 <label class="form-label">&nbsp;</label>
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary w-100">
@@ -120,6 +116,12 @@
                                                         <i class="far fa-eye"></i>
                                                         View
                                                     </a>
+                                                    @can('update', $request)
+                                                        <a href="{{ route('form-requests.edit', $request) }}" class="btn btn-sm btn-outline-info">
+                                                            <i class="far fa-edit"></i>
+                                                            Edit
+                                                        </a>
+                                                    @endcan
                                                     @if($request->isPending() && auth()->user()->hasRole(['Super Admin', 'Owner', 'Document Control']))
                                                         <form method="POST" action="{{ route('form-requests.acknowledge', $request) }}" class="d-inline">
                                                             @csrf

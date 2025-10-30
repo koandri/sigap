@@ -30,7 +30,7 @@
                         @endcan
                         
                         @can('process', $formRequest)
-                            @if($formRequest->isAcknowledged() || $formRequest->isProcessing())
+                            @if($formRequest->isProcessing() || $formRequest->isReady() || $formRequest->isCollected() || $formRequest->isCompleted())
                                 <a href="{{ route('form-requests.labels', $formRequest) }}" class="btn btn-info">
                                     <i class="far fa-print"></i>
                                     Print Labels

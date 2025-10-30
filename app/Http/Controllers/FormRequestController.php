@@ -36,7 +36,6 @@ final class FormRequestController extends Controller
             'requester' => $request->input('requester'),
             'date_from' => $request->input('date_from'),
             'date_to' => $request->input('date_to'),
-            'search' => $request->input('search'),
         ];
         
         if ($isAdmin) {

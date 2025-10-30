@@ -78,6 +78,9 @@
                                 <a class="dropdown-item {{ areActiveRoutes('form-requests.*') }}" href="{{ route('form-requests.index') }}">
                                     <i class="far fa-file-text"></i> &nbsp;Form Requests
                                 </a>
+                                <a class="dropdown-item {{ areActiveRoutes('printed-forms.*') }}" href="{{ route('printed-forms.index') }}">
+                                    <i class="far fa-print"></i> &nbsp;Printed Forms
+                                </a>
                                 <a class="dropdown-item {{ areActiveRoutes('documents.masterlist') }}" href="{{ route('documents.masterlist') }}">
                                     <i class="far fa-list"></i> &nbsp;Masterlist
                                 </a>

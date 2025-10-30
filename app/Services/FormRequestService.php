@@ -70,6 +70,9 @@ final class FormRequestService
     public function processRequest(FormRequest $request): void
     {
         DB::transaction(function () use ($request) {
+            // Generate printed form records when processing starts
+            $this->generatePrintedForms($request);
+            
             $request->update([
                 'status' => FormRequestStatus::Processing,
             ]);
@@ -79,9 +82,6 @@ final class FormRequestService
     public function markReady(FormRequest $request): void
     {
         DB::transaction(function () use ($request) {
-            // Generate printed form records
-            $this->generatePrintedForms($request);
-            
             $request->update([
                 'ready_at' => now(),
                 'status' => FormRequestStatus::Ready,
@@ -277,11 +277,6 @@ final class FormRequestService
 
         if (!empty($filters['date_to'])) {
             $query->whereDate('request_date', '<=', $filters['date_to']);
-        }
-
-        // Search by request ID
-        if (!empty($filters['search'])) {
-            $query->where('id', 'like', '%' . $filters['search'] . '%');
         }
     }
 

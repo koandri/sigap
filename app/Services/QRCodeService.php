@@ -6,7 +6,10 @@ namespace App\Services;
 
 use App\Models\FormRequest;
 use App\Models\PrintedForm;
-use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -61,97 +64,42 @@ final class QRCodeService
     {
         $url = route('printed-forms.show', $printedForm);
         
-        $qrCode = QrCode::create($url)
-            ->setSize(200)
-            ->setMargin(10);
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $url,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 200,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+        );
         
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
+        $result = $builder->build();
         
         return 'data:image/png;base64,' . base64_encode($result->getString());
     }
 
     public function generateQRCodeForUrl(string $url): string
     {
-        $qrCode = QrCode::create($url)
-            ->setSize(200)
-            ->setMargin(10);
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $url,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 200,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+        );
         
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
+        $result = $builder->build();
         
         return 'data:image/png;base64,' . base64_encode($result->getString());
     }
 
-    public function generatePrintableLabels(FormRequest $request): string
-    {
-        $printedForms = $request->items->flatMap(function ($item) {
-            return $item->printedForms;
-        });
-
-        $labels = $printedForms->flatMap(function ($printedForm) {
-            $labelData = [
-                'form_number' => $printedForm->form_number,
-                'form_name' => $printedForm->form_name,
-                'issue_date' => $printedForm->issue_date,
-                'qr_code' => $this->generateQRCode($printedForm),
-            ];
-            
-            // If NCR paper, generate 3 copies of the label
-            if ($printedForm->documentVersion->is_ncr_paper) {
-                return collect()->times(3, fn() => $labelData);
-            }
-            
-            return [$labelData];
-        });
-
-        // Generate PDF with labels in a grid format
-        $pdf = Pdf::loadView('form-requests.printable-labels', [
-            'labels' => $labels,
-            'request' => $request,
-        ])->setPaper('A4', 'portrait');
-
-        $filename = 'printable-labels-' . $request->id . '-' . time() . '.pdf';
-        $filePath = 'documents/labels/' . $filename;
-        
-        Storage::disk('s3')->put($filePath, $pdf->output(), 'public');
-        
-        return $filePath;
-    }
-
-    public function generateBulkLabels(array $printedFormIds): string
-    {
-        $printedForms = PrintedForm::whereIn('id', $printedFormIds)
-            ->with('documentVersion')
-            ->get();
-        
-        $labels = $printedForms->flatMap(function ($printedForm) {
-            $labelData = [
-                'form_number' => $printedForm->form_number,
-                'form_name' => $printedForm->form_name,
-                'issue_date' => $printedForm->issue_date,
-                'qr_code' => $this->generateQRCode($printedForm),
-            ];
-            
-            // If NCR paper, generate 3 copies of the label
-            if ($printedForm->documentVersion->is_ncr_paper) {
-                return collect()->times(3, fn() => $labelData);
-            }
-            
-            return [$labelData];
-        });
-
-        $pdf = Pdf::loadView('form-requests.bulk-labels', [
-            'labels' => $labels,
-        ])->setPaper('A4', 'portrait');
-
-        $filename = 'bulk-labels-' . time() . '.pdf';
-        $filePath = 'documents/labels/' . $filename;
-        
-        Storage::disk('s3')->put($filePath, $pdf->output(), 'public');
-        
-        return $filePath;
-    }
 
     public function cleanupOldLabels(): int
     {

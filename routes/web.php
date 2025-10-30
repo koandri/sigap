@@ -340,12 +340,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('form-requests/{form_request}/collect', [FormRequestController::class, 'collect'])->name('form-requests.collect');
     
     // Printed Forms
-    Route::get('printed-forms/{form}', [PrintedFormController::class, 'show'])->name('printed-forms.show');
-    Route::get('printed-forms/{form}/track', [PrintedFormController::class, 'track'])->name('printed-forms.track');
-    Route::post('printed-forms/{form}/return', [PrintedFormController::class, 'returnForm'])->name('printed-forms.return');
-    Route::post('printed-forms/{form}/receive', [PrintedFormController::class, 'receive'])->name('printed-forms.receive');
-    Route::post('printed-forms/{form}/upload-scan', [PrintedFormController::class, 'uploadScans'])->name('printed-forms.upload-scan');
-    Route::get('printed-forms/{form}/view-scanned', [PrintedFormController::class, 'viewScanned'])->name('printed-forms.view-scanned');
+    Route::get('printed-forms', [PrintedFormController::class, 'index'])->name('printed-forms.index');
+    Route::get('printed-forms/{printedForm}', [PrintedFormController::class, 'show'])->name('printed-forms.show');
+    Route::get('printed-forms/{printedForm}/track', [PrintedFormController::class, 'track'])->name('printed-forms.track');
+    Route::post('printed-forms/{printedForm}/return', [PrintedFormController::class, 'returnForm'])->name('printed-forms.return');
+    Route::post('printed-forms/{printedForm}/receive', [PrintedFormController::class, 'receive'])->name('printed-forms.receive');
+    Route::post('printed-forms/{printedForm}/upload-scan', [PrintedFormController::class, 'uploadScans'])->name('printed-forms.upload-scan');
+    Route::get('printed-forms/{printedForm}/view-scanned', [PrintedFormController::class, 'viewScanned'])->name('printed-forms.view-scanned');
     
     // Dashboard
     Route::get('dms-dashboard', [DashboardController::class, 'index'])->name('dms-dashboard');
