@@ -18,7 +18,7 @@
                 @can('maintenance.assets.manage')
                 <div class="btn-list">
                     <a href="{{ route('options.asset-categories.edit', $assetCategory) }}" class="btn btn-primary">
-                        <i class="fa-regular fa-pen"></i>
+                        <i class="far fa-pen"></i>
                         Edit Category
                     </a>
                 </div>
@@ -119,7 +119,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="fa-regular fa-clipboard icon"></i>
+                                    <i class="far fa-clipboard icon"></i>
                                 </div>
                                 <p class="empty-title">No assets in this category</p>
                                 <p class="empty-subtitle text-muted">

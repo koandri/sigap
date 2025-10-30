@@ -15,7 +15,7 @@
                 <div class="col-auto ms-auto d-print-none">
                     @can('create', App\Models\Document::class)
                         <a href="{{ route('documents.create') }}" class="btn btn-primary">
-                            <i class="ti ti-plus"></i>
+                            <i class="far fa-plus"></i>
                             New Document
                         </a>
                     @endcan
@@ -56,7 +56,7 @@
                             </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-outline-primary w-100">
-                                    <i class="ti ti-search"></i>
+                                    <i class="far fa-search"></i>
                                     Search
                                 </button>
                             </div>
@@ -111,12 +111,12 @@
                                             <td>
                                                 <div class="btn-list">
                                                     <a href="{{ route('documents.show', $document) }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="ti ti-eye"></i>
+                                                        <i class="far fa-eye"></i>
                                                         View
                                                     </a>
                                                     @can('update', $document)
                                                         <a href="{{ route('documents.edit', $document) }}" class="btn btn-sm btn-outline-secondary">
-                                                            <i class="ti ti-edit"></i>
+                                                            <i class="far fa-edit"></i>
                                                             Edit
                                                         </a>
                                                     @endcan
@@ -130,7 +130,7 @@
                     @else
                         <div class="empty">
                             <div class="empty-icon">
-                                <i class="ti ti-file-text"></i>
+                                <i class="far fa-file-alt"></i>
                             </div>
                             <p class="empty-title">No documents found</p>
                             <p class="empty-subtitle text-muted">
@@ -138,7 +138,7 @@
                             </p>
                             <div class="empty-action">
                                 <a href="{{ route('documents.create') }}" class="btn btn-primary">
-                                    <i class="ti ti-plus"></i>
+                                    <i class="far fa-plus"></i>
                                     Create Document
                                 </a>
                             </div>

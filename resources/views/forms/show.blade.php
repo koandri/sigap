@@ -102,7 +102,7 @@
                                     @if($activeWorkflow)
                                         <div class="alert alert-success alert-dismissible" role="alert">
                                             <div class="alert-icon">
-                                                <i class="fa-regular fa-circle-check"></i>
+                                                <i class="far fa-circle-check"></i>
                                             </div>
                                             <div>
                                                 <h4 class="alert-heading">Active Workflow: {{ $activeWorkflow->workflow_name }}</h4>
@@ -116,7 +116,7 @@
                                                     </small>
                                                     <br>
                                                     <a href="{{ route('approval-workflows.show', [$form, $activeWorkflow]) }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="fa-regular fa-eye"></i>&nbsp;View Details
+                                                        <i class="far fa-eye"></i>&nbsp;View Details
                                                     </a>
                                                 </div>
                                             </div>
@@ -161,13 +161,13 @@
                                         @endif
                                     @else
                                         <div class="text-center text-muted py-4">
-                                            <i class="fa-regular fa-circle-info fa-2x mb-2"></i>
+                                            <i class="far fa-circle-info fa-2x mb-2"></i>
                                             <p>No active workflow configured</p>
                                             <p>This form requires approval but has no active workflow.<br/>
                                                 Submissions will be auto-approved until a workflow is activated.
                                             </p>
                                             <a href="{{ route('approval-workflows.create', $form) }}" class="btn btn-sm btn-primary">
-                                                <i class="fa-regular fa-circle-plus"></i>&nbsp;Create Workflow
+                                                <i class="far fa-circle-plus"></i>&nbsp;Create Workflow
                                             </a>
                                         </div>
                                     @endif
@@ -184,7 +184,7 @@
                                     <h3 class="card-title">Form Versions</h3>
                                     <div class="card-actions">
                                         <a href="{{ route('formversions.create', $form) }}" class="btn btn-primary btn-sm">
-                                            <i class="fa-regular fa-square-plus"></i>&nbsp;Add New Version
+                                            <i class="far fa-square-plus"></i>&nbsp;Add New Version
                                         </a>
                                     </div>
                                     
@@ -215,12 +215,12 @@
                                                         <td>{{ $version->created_on->format('d M Y H:i') }}</td>
                                                         <td>
                                                             <div class="btn-group btn-group-sm">
-                                                                <a href="{{ route('formversions.show', [$form, $version]) }}" class="btn btn-outline-secondary" title="Manage Fields"><i class="fa-regular fa-list-ul"></i></a>
+                                                                <a href="{{ route('formversions.show', [$form, $version]) }}" class="btn btn-outline-secondary" title="Manage Fields"><i class="far fa-list-ul"></i></a>
                                                                 @if(!$version->is_active)
-                                                                <a class="btn btn-outline-success" title="Activate Version" onclick="activateVersion({{ $version->id }})"><i class="fa-regular fa-circle-check"></i></a>
+                                                                <a class="btn btn-outline-success" title="Activate Version" onclick="activateVersion({{ $version->id }})"><i class="far fa-circle-check"></i></a>
                                                                 @endif
                                                                 @if($version->submissions->count() == 0)
-                                                                <a class="btn btn-outline-danger" title="Delete Version" onclick="deleteVersion({{ $version->id }})"><i class="fa-regular fa-trash-can"></i></a>
+                                                                <a class="btn btn-outline-danger" title="Delete Version" onclick="deleteVersion({{ $version->id }})"><i class="far fa-trash-can"></i></a>
                                                                 @endif
                                                             </div>
                                                         </td>

@@ -40,7 +40,7 @@
         @if($field && $field->hasOptions() && !$hasApiSource)
         <div class="alert alert-info alert-dismissible" role="alert">
             <div class="alert-icon">
-                <i class="fa-regular fa-list-ul"></i>
+                <i class="far fa-list-ul"></i>
             </div>
             <div>
                 <h4 class="alert-heading">Current Options</h4>
@@ -55,7 +55,7 @@
         @elseif($field && !$hasApiSource)
         <div class="alert alert-warning alert-dismissible" role="alert">
             <div class="alert-icon">
-                <i class="fa-regular fa-triangle-exclamation"></i>
+                <i class="far fa-triangle-exclamation"></i>
             </div>
             <div>
                 <h4 class="alert-heading">No Options</h4>
@@ -70,7 +70,7 @@
         @elseif(!$field)
         <div class="alert alert-info alert-dismissible" role="alert">
             <div class="alert-icon">
-                <i class="fa-regular fa-circle-info"></i>
+                <i class="far fa-circle-info"></i>
             </div>
             <div>
                 <h4 class="alert-heading">Options Configuration</h4>
@@ -86,7 +86,7 @@
     <div id="apiOptionsContainer" style="{{ $hasApiSource ? '' : 'display: none;' }}">
         <div class="alert alert-info alert-dismissible" role="alert">
             <div class="alert-icon">
-                <i class="fa-regular fa-cloud"></i>
+                <i class="far fa-cloud"></i>
             </div>
             <div>
                 <h4 class="alert-heading">API Source Configuration</h4>
@@ -133,7 +133,7 @@
         @if(!$hasSubmissions)
         <div class="mb-3">
             <button type="button" class="btn btn-outline-primary btn-sm" id="testApiButton">
-                <i class="fa-regular fa-flask"></i> &nbsp;Test API
+                <i class="far fa-flask"></i> &nbsp;Test API
             </button>
             <span id="testApiResult" class="ms-2"></span>
         </div>

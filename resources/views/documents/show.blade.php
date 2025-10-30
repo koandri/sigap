@@ -19,12 +19,12 @@
                     <div class="btn-list">
                         @can('update', $document)
                             <a href="{{ route('documents.edit', $document) }}" class="btn btn-outline-secondary">
-                                <i class="ti ti-edit"></i>
+                                <i class="far fa-edit"></i>
                                 Edit
                             </a>
                         @endcan
                         <a href="{{ route('documents.index') }}" class="btn btn-outline-primary">
-                            <i class="ti ti-arrow-left"></i>
+                            <i class="far fa-arrow-left"></i>
                             Back to Documents
                         </a>
                     </div>
@@ -116,6 +116,11 @@
                                                         <span class="badge {{ $version->isActive() ? 'bg-success' : ($version->isDraft() ? 'bg-warning' : 'bg-secondary') }} text-white">
                                                             {{ $version->status->label() }}
                                                         </span>
+                                                        @if($document->document_type->value === 'form' && $version->is_ncr_paper)
+                                                            <span class="badge bg-info text-white ms-1" title="3-Ply NCR Paper">
+                                                                <i class="far fa-copy"></i> NCR
+                                                            </span>
+                                                        @endif
                                                     </td>
                                                     <td>{{ $version->creator->name }}</td>
                                                     <td>{{ $version->created_at->format('Y-m-d H:i') }}</td>
@@ -123,13 +128,13 @@
                                                         <div class="btn-list">
                                                             @if($version->isActive())
                                                                 <a href="{{ route('document-versions.view', $version) }}" class="btn btn-sm btn-outline-primary">
-                                                                    <i class="ti ti-eye"></i>
+                                                                    <i class="far fa-eye"></i>
                                                                     View
                                                                 </a>
                                                             @endif
                                                             @if($version->canBeEdited())
                                                                 <a href="{{ route('document-versions.editor', $version) }}" class="btn btn-sm btn-outline-secondary">
-                                                                    <i class="ti ti-edit"></i>
+                                                                    <i class="far fa-edit"></i>
                                                                     Edit
                                                                 </a>
                                                             @endif
@@ -143,7 +148,7 @@
                             @else
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="ti ti-file-text"></i>
+                                        <i class="far fa-file-alt"></i>
                                     </div>
                                     <p class="empty-title">No versions found</p>
                                     <p class="empty-subtitle text-muted">
@@ -165,7 +170,7 @@
                             @if($document->document_type->canHaveVersions())
                                 @can('create', [App\Models\DocumentVersion::class, $document])
                                     <a href="{{ route('documents.versions.create', $document) }}" class="btn btn-primary w-100 mb-2">
-                                        <i class="ti ti-plus"></i>
+                                        <i class="far fa-plus"></i>
                                         Create New Version
                                     </a>
                                 @endcan
@@ -173,14 +178,14 @@
                             
                             @if($document->document_type->requiresAccessRequest() && !auth()->user()->hasRole(['Super Admin', 'Owner']))
                                 <a href="{{ route('documents.request-access', $document) }}" class="btn btn-outline-info w-100 mb-2">
-                                    <i class="ti ti-eye"></i>
+                                    <i class="far fa-eye"></i>
                                     Request Access
                                 </a>
                             @endif
                             
                             @if($document->document_type->value === 'form')
                                 <a href="{{ route('form-requests.create') }}" class="btn btn-outline-success w-100 mb-2">
-                                    <i class="ti ti-file-text"></i>
+                                    <i class="far fa-file-alt"></i>
                                     Request Forms
                                 </a>
                             @endif

@@ -405,7 +405,7 @@
     function testApiConfiguration() {
         const resultSpan = document.getElementById('testApiResult');
         if (resultSpan) {
-            resultSpan.innerHTML = '<i class="fa-regular fa-spinner fa-spin"></i> &nbsp;Testing...';
+            resultSpan.innerHTML = '<i class="far fa-spinner fa-spin"></i> &nbsp;Testing...';
         }
         
         const apiConfig = buildApiConfig();
@@ -423,15 +423,15 @@
         .then(data => {
             if (resultSpan) {
                 if (data.success) {
-                    resultSpan.innerHTML = `<span class="text-success"><i class="fa-regular fa-check"></i> &nbsp;Found ${data.options_count} options</span>`;
+                    resultSpan.innerHTML = `<span class="text-success"><i class="far fa-check"></i> &nbsp;Found ${data.options_count} options</span>`;
                 } else {
-                    resultSpan.innerHTML = `<span class="text-danger"><i class="fa-regular fa-xmark"></i> &nbsp;${data.message}</span>`;
+                    resultSpan.innerHTML = `<span class="text-danger"><i class="far fa-xmark"></i> &nbsp;${data.message}</span>`;
                 }
             }
         })
         .catch(error => {
             if (resultSpan) {
-                resultSpan.innerHTML = `<span class="text-danger"><i class="fa-regular fa-xmark"></i> &nbsp;Error: ${error.message}</span>`;
+                resultSpan.innerHTML = `<span class="text-danger"><i class="far fa-xmark"></i> &nbsp;Error: ${error.message}</span>`;
             }
         });
     }
@@ -512,7 +512,7 @@
             container.innerHTML = `
                 <div class="alert alert-warning alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="fa-regular fa-triangle-exclamation"></i>
+                        <i class="far fa-triangle-exclamation"></i>
                     </div>
                     <div>
                         <h4 class="alert-heading">Warning!</h4>
@@ -534,7 +534,7 @@
             container.innerHTML = `
                 <div class="alert alert-info alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="fa-regular fa-circle-info"></i>
+                        <i class="far fa-circle-info"></i>
                     </div>
                     <div>
                         <h4 class="alert-heading">Info!</h4>
@@ -556,7 +556,7 @@
         let html = `
             <div class="mb-2">
                 <small class="text-success">
-                    <i class="fa-regular fa-circle-check"></i>&nbsp;Found ${fields.length} field(s) available for calculation
+                    <i class="far fa-circle-check"></i>&nbsp;Found ${fields.length} field(s) available for calculation
                     ${debug ? ` (${debug.total_fields_in_version} total fields in version)` : ''}
                 </small>
             </div>
@@ -569,7 +569,7 @@
             regularFields.forEach(field => {
                 html += `
                     <button type="button" class="btn btn-sm btn-outline-primary me-1 mb-1" onclick="insertFieldCode('${field.field_code}')" title="${field.display_name}" ${document.getElementById('calculation_formula').readOnly ? 'disabled' : ''}>
-                        <i class="fa-regular fa-input-numeric"></i>&nbsp;{${field.field_code}}
+                        <i class="far fa-input-numeric"></i>&nbsp;{${field.field_code}}
                     </button>
                 `;
             });
@@ -581,7 +581,7 @@
             html += `<h6 class="mt-2 mb-1 small">Hidden Numeric Fields (${hiddenFields.length}):</h6>`;
             html += '<div class="mb-2">';
             hiddenFields.forEach(field => {
-                const iconClass = field.dynamic_type ? 'fa-regular fa-gear' : 'fa-regular fa-eye-slash';
+                const iconClass = field.dynamic_type ? 'far fa-gear' : 'far fa-eye-slash';
                 html += `
                     <button type="button" class="btn btn-sm btn-outline-secondary me-1 mb-1" onclick="insertFieldCode('${field.field_code}')" title="${field.display_name}" ${document.getElementById('calculation_formula').readOnly ? 'disabled' : ''}>
                         <i class="${iconClass}"></i>&nbsp;{${field.field_code}}
@@ -606,9 +606,9 @@
             currentDeps.forEach(dep => {
                 const field = fields.find(f => f.field_code === dep);
                 if (field) {
-                    html += `<span class="badge badge-outline text-success me-1">${dep} <i class="fa-regular fa-check"></i></span>`;
+                    html += `<span class="badge badge-outline text-success me-1">${dep} <i class="far fa-check"></i></span>`;
                 } else {
-                    html += `<span class="badge badge-outline text-danger me-1">${dep} <i class="fa-regular fa-xmark"></i></span>`;
+                    html += `<span class="badge badge-outline text-danger me-1">${dep} <i class="far fa-xmark"></i></span>`;
                 }
             });
             

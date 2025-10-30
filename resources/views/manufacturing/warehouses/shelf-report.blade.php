@@ -244,11 +244,11 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <button onclick="window.print()" class="btn btn-primary print-button">
-                        <i class="fa-regular fa-print me-2"></i>
+                        <i class="far fa-print me-2"></i>
                         Print Report
                     </button>
                     <a href="{{ route('manufacturing.warehouses.shelf-inventory', $warehouse) }}" class="btn btn-outline-secondary">
-                        <i class="fa-regular fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>
                         Back to Inventory
                     </a>
                 </div>
@@ -266,7 +266,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h1>
-                        <i class="fa-regular fa-chart-bar me-3"></i>
+                        <i class="far fa-chart-bar me-3"></i>
                         Shelf Inventory Report
                     </h1>
                     <div class="subtitle">
@@ -305,7 +305,7 @@
         <!-- Shelf Status Summary -->
         <div class="report-section">
             <h3>
-                <i class="fa-regular fa-warehouse me-2"></i>
+                <i class="far fa-warehouse me-2"></i>
                 Shelf Status Summary
             </h3>
             <div class="table-responsive">
@@ -361,7 +361,7 @@
         @if($expiringItems->count() > 0)
         <div class="report-section">
             <h3>
-                <i class="fa-regular fa-clock me-2"></i>
+                <i class="far fa-clock me-2"></i>
                 Items Expiring Soon (Next 30 Days)
             </h3>
             <div class="table-responsive">
@@ -412,7 +412,7 @@
         @if($expiredItems->count() > 0)
         <div class="report-section">
             <h3>
-                <i class="fa-regular fa-exclamation-triangle me-2"></i>
+                <i class="far fa-exclamation-triangle me-2"></i>
                 Expired Items
             </h3>
             <div class="table-responsive">
@@ -462,7 +462,7 @@
         <!-- Detailed Inventory -->
         <div class="report-section">
             <h3>
-                <i class="fa-regular fa-list me-2"></i>
+                <i class="far fa-list me-2"></i>
                 Detailed Inventory
             </h3>
             <div class="table-responsive">

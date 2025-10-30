@@ -29,14 +29,14 @@
                         </nav>
                     </div>
                     <h2 class="page-title">
-                        <i class="fa-regular fa-edit me-2"></i>
+                        <i class="far fa-edit me-2"></i>
                         Bulk Edit Inventory
                     </h2>
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <div class="btn-list">
                         <a href="{{ route('manufacturing.warehouses.show', $warehouse) }}" class="btn btn-outline-secondary">
-                            <i class="fa-regular fa-arrow-left me-2"></i>
+                            <i class="far fa-arrow-left me-2"></i>
                             Back to Warehouse
                         </a>
                     </div>
@@ -132,7 +132,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fa-regular fa-layer-group me-2"></i>
+                                <i class="far fa-layer-group me-2"></i>
                                 Aisle Navigation
                             </h3>
                         </div>
@@ -143,7 +143,7 @@
                                     <button type="button" class="btn btn-outline-primary aisle-nav-btn {{ $aisles->has($aisle) ? 'active' : '' }}" 
                                             data-aisle="{{ $aisle }}" 
                                             id="aisle-btn-{{ $aisle }}">
-                                        <i class="fa-regular fa-layer-group me-1"></i>
+                                        <i class="far fa-layer-group me-1"></i>
                                         Aisle {{ $aisle }}
                                         <span class="badge bg-blue-lt ms-1" id="aisle-count-{{ $aisle }}">-</span>
                                     </button>
@@ -190,11 +190,11 @@
                                     <label class="form-label">&nbsp;</label>
                                     <div class="d-flex gap-2">
                                         <button type="button" class="btn btn-outline-primary" id="apply-filters">
-                                            <i class="fa-regular fa-filter me-1"></i>
+                                            <i class="far fa-filter me-1"></i>
                                             Filter
                                         </button>
                                         <button type="button" class="btn btn-outline-secondary" id="clear-filters">
-                                            <i class="fa-regular fa-times me-1"></i>
+                                            <i class="far fa-times me-1"></i>
                                             Clear
                                         </button>
                                     </div>
@@ -241,7 +241,7 @@
                                     </div>
                                     <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary" id="execute-bulk-action">
-                                            <i class="fa-regular fa-play me-1"></i>
+                                            <i class="far fa-play me-1"></i>
                                             Execute
                                         </button>
                                     </div>
@@ -263,7 +263,7 @@
                             <div class="row align-items-center">
                                 <div class="col">
                                     <h3 class="card-title">
-                                        <i class="fa-regular fa-layer-group me-2"></i>
+                                        <i class="far fa-layer-group me-2"></i>
                                         Aisle {{ $aisle }}
                                         <span class="badge bg-blue-lt ms-2" id="aisle-count-badge-{{ $aisle }}">{{ $positions->count() }} positions</span>
                                     </h3>
@@ -297,7 +297,7 @@
                                             <!-- Shelf Header Row -->
                                             <tr class="shelf-header-row bg-light">
                                                 <td colspan="8" class="fw-bold text-primary">
-                                                    <i class="fa-regular fa-layer-group me-2"></i>
+                                                    <i class="far fa-layer-group me-2"></i>
                                                     Shelf {{ $shelfCode }} ({{ $shelfPositions->count() }} positions)
                                                 </td>
                                             </tr>
@@ -354,7 +354,7 @@
                                                         <input type="hidden" name="position_ids[]" value="{{ $position->id }}">
                                                         <button type="submit" class="btn btn-sm btn-outline-warning" 
                                                                 title="Clear position data">
-                                                            <i class="fa-regular fa-broom"></i>
+                                                            <i class="far fa-broom"></i>
                                                         </button>
                                                     </form>
                                                 </td>
@@ -389,7 +389,7 @@
             <div class="col-12">
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-success btn-lg" id="save-all-btn" disabled>
-                        <i class="fa-regular fa-save me-2"></i>
+                        <i class="far fa-save me-2"></i>
                         Save All Changes
                     </button>
                 </div>
@@ -588,7 +588,7 @@ $(document).ready(function() {
         const originalText = button.html();
         
         // Show loading state
-        button.prop('disabled', true).html('<i class="fa-regular fa-spinner fa-spin me-1"></i>Loading...');
+        button.prop('disabled', true).html('<i class="far fa-spinner fa-spin me-1"></i>Loading...');
         $('#aisle-loading-placeholder').show();
 
         const url = '{{ url("manufacturing/warehouses/{$warehouse->id}/aisle-positions") }}/' + aisle;
@@ -651,7 +651,7 @@ $(document).ready(function() {
                 const shelfHeaderHtml = `
                     <tr class="shelf-header-row bg-light">
                         <td colspan="8" class="fw-bold text-primary">
-                            <i class="fa-regular fa-layer-group me-2"></i>
+                            <i class="far fa-layer-group me-2"></i>
                             Shelf ${shelfCode} (${shelfPositions.length} positions)
                         </td>
                     </tr>
@@ -702,7 +702,7 @@ $(document).ready(function() {
                         <div class="row align-items-center">
                             <div class="col">
                                 <h3 class="card-title">
-                                    <i class="fa-regular fa-layer-group me-2"></i>
+                                    <i class="far fa-layer-group me-2"></i>
                                     Aisle ${aisle}
                                     <span class="badge bg-blue-lt ms-2" id="aisle-count-badge-${aisle}">${positions.length} positions</span>
                                 </h3>
@@ -788,7 +788,7 @@ $(document).ready(function() {
                         <input type="hidden" name="position_ids[]" value="${position.id}">
                         <button type="submit" class="btn btn-sm btn-outline-warning" 
                                 title="Clear position data">
-                            <i class="fa-regular fa-broom"></i>
+                            <i class="far fa-broom"></i>
                         </button>
                     </form>
                 </td>

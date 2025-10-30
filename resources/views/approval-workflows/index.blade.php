@@ -28,7 +28,7 @@
                         @if(!$form->requires_approval)
                         <div class="alert alert-warning alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-triangle-exclamation"></i>
+                                <i class="far fa-triangle-exclamation"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Approval Not Required</h4>
@@ -51,10 +51,10 @@
                                     <h3 class="card-title">Approval Workflows for Form: {{ $form->name }} ({{ $form->form_no }})</h3>
                                     <div class="card-actions">
                                         <a href="{{ route('approval-workflows.create', $form) }}" class="btn btn-sm btn-success">
-                                            <i class="fa-regular fa-circle-plus"></i>&nbsp;Create Workflow
+                                            <i class="far fa-circle-plus"></i>&nbsp;Create Workflow
                                         </a>
                                         <a href="{{ route('forms.show', $form) }}" class="btn btn-sm btn-secondary">
-                                            <i class="fa-regular fa-arrow-left"></i>&nbsp;Back to Form
+                                            <i class="far fa-arrow-left"></i>&nbsp;Back to Form
                                         </a>
                                     </div>
                                 </div>
@@ -128,17 +128,17 @@
                                                     </td>
                                                     <td>
                                                         <a href="{{ route('approval-workflows.show', [$form, $workflow]) }}" class="btn btn-sm btn-outline-primary">
-                                                            <i class="fa-regular fa-eye"></i>&nbsp;View
+                                                            <i class="far fa-eye"></i>&nbsp;View
                                                         </a>
                                                         <a href="{{ route('approval-workflows.edit', [$form, $workflow]) }}" class="btn btn-sm btn-outline-secondary">
-                                                            <i class="fa-regular fa-pen-to-square"></i>&nbsp;Edit
+                                                            <i class="far fa-pen-to-square"></i>&nbsp;Edit
                                                         </a>
                                                         @if(!$workflow->is_active)
                                                             <form action="{{ route('approval-workflows.toggle', [$form, $workflow]) }}" method="POST" class="d-inline">
                                                                 @csrf
                                                                 @method('PUT')
                                                                 <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Activate this workflow?')">
-                                                                    <i class="fa-regular fa-circle-check"></i>&nbsp;Activate
+                                                                    <i class="far fa-circle-check"></i>&nbsp;Activate
                                                                 </button>
                                                             </form>
                                                         @else
@@ -146,7 +146,7 @@
                                                                 @csrf
                                                                 @method('PUT')
                                                                 <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Deactivate this workflow?')">
-                                                                    <i class="fa-regular fa-circle-pause"></i>&nbsp;Deactivate
+                                                                    <i class="far fa-circle-pause"></i>&nbsp;Deactivate
                                                                 </button>
                                                             </form>
                                                         @endif
@@ -159,11 +159,11 @@
                                     @else
                                     <!-- No Workflows -->
                                     <div class="card-body text-center py-5">
-                                        <i class="fa-regular fa-diagram-project display-1 text-muted"></i>
+                                        <i class="far fa-diagram-project display-1 text-muted"></i>
                                         <h4 class="mt-3">No Approval Workflows</h4>
                                         <p class="text-muted">Create an approval workflow to define how submissions should be reviewed.</p>
                                         <a href="{{ route('approval-workflows.create', $form) }}" class="btn btn-primary">
-                                            <i class="fa-regular fa-circle-plus"></i>&nbsp;Create First Workflow
+                                            <i class="far fa-circle-plus"></i>&nbsp;Create First Workflow
                                         </a>
                                     </div>
                                     @endif

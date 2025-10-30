@@ -4,7 +4,7 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                <i class="fa-regular fa-list-check"></i>
+                <i class="far fa-list-check"></i>
                 Form Answers
             </h3>
             
@@ -16,7 +16,7 @@
                            placeholder="Search answers..." 
                            id="searchAnswers">
                     <button class="btn btn-outline-secondary" type="button">
-                        <i class="fa-regular fa-search"></i>
+                        <i class="far fa-search"></i>
                     </button>
                 </div>
             </div>

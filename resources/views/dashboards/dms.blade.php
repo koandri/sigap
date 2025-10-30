@@ -19,7 +19,7 @@
     <div class="page-body">
         <div class="container-xl">
             <!-- Statistics Cards -->
-            <div class="row row-deck row-cards">
+            <div class="row row-deck row-cards mb-3">
                 <div class="col-sm-6 col-lg-3">
                     <div class="card">
                         <div class="card-body">
@@ -63,7 +63,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="row row-deck row-cards">
+            <div class="row row-deck row-cards mb-3">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
@@ -73,31 +73,31 @@
                             <div class="row g-2">
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('documents.create') }}" class="btn btn-outline-primary w-100">
-                                        <i class="ti ti-plus"></i>
+                                        <i class="far fa-plus"></i>
                                         New Document
                                     </a>
                                 </div>
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('form-requests.create') }}" class="btn btn-outline-success w-100">
-                                        <i class="ti ti-file-text"></i>
+                                        <i class="far fa-file-alt"></i>
                                         Request Forms
                                     </a>
                                 </div>
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('my-document-access') }}" class="btn btn-outline-info w-100">
-                                        <i class="ti ti-eye"></i>
+                                        <i class="far fa-eye"></i>
                                         My Documents
                                     </a>
                                 </div>
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('documents.masterlist') }}" class="btn btn-outline-secondary w-100">
-                                        <i class="ti ti-list"></i>
+                                        <i class="far fa-list"></i>
                                         Masterlist
                                     </a>
                                 </div>
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('dms-sla') }}" class="btn btn-outline-warning w-100">
-                                        <i class="ti ti-chart-line"></i>
+                                        <i class="far fa-chart-line"></i>
                                         SLA Report
                                     </a>
                                 </div>
@@ -113,28 +113,38 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Recent Activities</h3>
-                        </div>
-                        <div class="card-body">
                             @if($recentActivities->count() > 0)
-                                <div class="timeline">
+                                <span class="badge bg-blue-lt ms-auto">{{ $recentActivities->count() }} activities</span>
+                            @endif
+                        </div>
+                        <div class="card-body p-0">
+                            @if($recentActivities->count() > 0)
+                                <div class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
                                     @foreach($recentActivities as $activity)
-                                        <div class="timeline-item">
-                                            <div class="timeline-marker"></div>
-                                            <div class="timeline-content">
-                                                <div class="timeline-header">
-                                                    <span class="timeline-time">{{ \Carbon\Carbon::parse($activity['timestamp'])->diffForHumans() }}</span>
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <span class="avatar bg-blue-lt">
+                                                        <i class="far fa-bell"></i>
+                                                    </span>
                                                 </div>
-                                                <div class="timeline-body">
-                                                    {{ $activity['message'] }}
+                                                <div class="col">
+                                                    <div class="text-body">{{ $activity['message'] }}</div>
+                                                    <div class="text-muted mt-1">
+                                                        <small>
+                                                            <i class="far fa-clock me-1"></i>
+                                                            {{ \Carbon\Carbon::parse($activity['timestamp'])->diffForHumans() }}
+                                                        </small>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
                             @else
-                                <div class="empty">
+                                <div class="empty py-5">
                                     <div class="empty-icon">
-                                        <i class="ti ti-activity"></i>
+                                        <i class="far fa-chart-line"></i>
                                     </div>
                                     <p class="empty-title">No recent activities</p>
                                     <p class="empty-subtitle text-muted">
@@ -154,7 +164,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title text-warning">
-                                <i class="ti ti-alert-triangle"></i>
+                                <i class="far fa-exclamation-triangle"></i>
                                 Overdue Requests
                             </h3>
                         </div>

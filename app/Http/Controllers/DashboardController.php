@@ -117,6 +117,6 @@ final class DashboardController extends Controller
             ->selectRaw("AVG(TIMESTAMPDIFF(HOUR, {$startColumn}, {$endColumn})) as avg_hours")
             ->first();
 
-        return $result && $result->avg_hours !== null ? round($result->avg_hours, 2) : null;
+        return $result && $result->avg_hours !== null ? round((float)$result->avg_hours, 2) : null;
     }
 }

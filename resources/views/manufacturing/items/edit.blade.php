@@ -20,7 +20,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-secondary d-none d-sm-inline-block">
-                        <i class="fa-regular fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>
                         Back to Items
                     </a>
                 </div>
@@ -144,7 +144,7 @@
                             <div class="d-flex">
                                 <a href="{{ route('manufacturing.items.index') }}" class="btn btn-link">Cancel</a>
                                 <button type="submit" class="btn btn-primary ms-auto">
-                                    <i class="fa-regular fa-save me-2"></i>
+                                    <i class="far fa-save me-2"></i>
                                     Update Item
                                 </button>
                             </div>
@@ -162,7 +162,7 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <small class="text-muted">
-                                <i class="fa-regular fa-info-circle me-1"></i>
+                                <i class="far fa-info-circle me-1"></i>
                                 <strong>Limited Editing:</strong><br>
                                 Only Quantity per Pack and Status can be modified here.
                             </small>
@@ -170,7 +170,7 @@
                         
                         <div class="mb-3">
                             <small class="text-muted">
-                                <i class="fa-regular fa-file-arrow-up me-1"></i>
+                                <i class="far fa-file-arrow-up me-1"></i>
                                 <strong>Other Changes:</strong><br>
                                 Use Excel import to modify other item details.
                             </small>
@@ -178,7 +178,7 @@
                         
                         <div class="mb-3">
                             <small class="text-muted">
-                                <i class="fa-regular fa-clock me-1"></i>
+                                <i class="far fa-clock me-1"></i>
                                 <strong>Last Updated:</strong><br>
                                 {{ $item->updated_at->format('M d, Y H:i') }}
                             </small>

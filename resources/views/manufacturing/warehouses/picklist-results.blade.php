@@ -311,11 +311,11 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <button onclick="window.print()" class="btn btn-primary print-button">
-                        <i class="fa-regular fa-print me-2"></i>
+                        <i class="far fa-print me-2"></i>
                         Print Picklist
                     </button>
                     <a href="{{ route('manufacturing.warehouses.picklist') }}" class="btn btn-outline-secondary">
-                        <i class="fa-regular fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>
                         New Picklist
                     </a>
                 </div>
@@ -333,7 +333,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h1>
-                        <i class="fa-regular fa-list-check me-3"></i>
+                        <i class="far fa-list-check me-3"></i>
                         Global Picklist Results
                     </h1>
                     <div class="subtitle">
@@ -411,14 +411,14 @@
 
             @if($itemResult['shortage'] > 0)
             <div class="shortage-alert">
-                <i class="fa-regular fa-exclamation-triangle me-2"></i>
+                <i class="far fa-exclamation-triangle me-2"></i>
                 <strong>Shortage Alert:</strong> Only {{ number_format($itemResult['total_pickable'], 2) }} {{ $itemResult['item']->unit }} available, but {{ number_format($itemResult['requested_quantity'], 2) }} {{ $itemResult['item']->unit }} requested.
             </div>
             @endif
 
             <div class="picklist-positions">
                 <h5 class="mb-3">
-                    <i class="fa-regular fa-map-marker-alt me-2"></i>
+                    <i class="far fa-map-marker-alt me-2"></i>
                     Pick from these locations (ordered by expiry date):
                 </h5>
                 
@@ -503,7 +503,7 @@
         <div class="item-section">
             <div class="item-header">
                 <h4 class="text-danger">
-                    <i class="fa-regular fa-exclamation-triangle me-2"></i>
+                    <i class="far fa-exclamation-triangle me-2"></i>
                     Items Not Available in Sufficient Quantity
                 </h4>
             </div>
@@ -538,7 +538,7 @@
         <div class="item-section">
             <div class="item-header">
                 <h4>
-                    <i class="fa-regular fa-info-circle me-2"></i>
+                    <i class="far fa-info-circle me-2"></i>
                     Picklist Instructions
                 </h4>
             </div>

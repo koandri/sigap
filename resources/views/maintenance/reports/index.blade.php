@@ -259,7 +259,7 @@
                 @else
                     <div class="empty">
                         <div class="empty-icon">
-                            <i class="fa-regular fa-clipboard icon"></i>
+                            <i class="far fa-clipboard icon"></i>
                         </div>
                         <p class="empty-title">No work orders found</p>
                         <p class="empty-subtitle text-muted">

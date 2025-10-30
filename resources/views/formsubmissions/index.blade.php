@@ -44,7 +44,7 @@
                                             {{ $form->requires_approval ? 'Requires Approval' : 'Auto Approved' }}
                                         </span>
                                         <a href="{{ route('formsubmissions.create', $form) }}" class="btn btn-primary btn-sm">
-                                            <i class="fa-regular fa-pen-to-square"></i>&nbsp;Fill Form
+                                            <i class="far fa-pen-to-square"></i>&nbsp;Fill Form
                                         </a>
                                     </div>
                                 </div>
@@ -53,7 +53,7 @@
                         @empty
                         <div class="col-12">
                             <div class="alert alert-info">
-                                <i class="fa-regular fa-circle-info"></i> &nbsp;No forms available for your department(s).
+                                <i class="far fa-circle-info"></i> &nbsp;No forms available for your department(s).
                             </div>
                         </div>
                         @endforelse
@@ -108,7 +108,7 @@
                                                     <td>{{ $submission->submitted_at ? $submission->submitted_at->timezone('Asia/Jakarta')->format('d M Y H:i') : '-' }}</td>
                                                     <td>
                                                         <a href="{{ route('formsubmissions.show', $submission) }}" class="btn btn-sm btn-outline-primary">
-                                                            <i class="fa-regular fa-eye"></i>&nbsp;View
+                                                            <i class="far fa-eye"></i>&nbsp;View
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -120,7 +120,7 @@
                                 <div class="card-footer">
                                     <div class="text-center">
                                         <a href="{{ route('formsubmissions.submissions') }}" class="btn btn-outline-primary">
-                                            View All Submissions&nbsp;<i class="fa-regular fa-arrow-right"></i>
+                                            View All Submissions&nbsp;<i class="far fa-arrow-right"></i>
                                         </a>
                                     </div>
                                 </div>

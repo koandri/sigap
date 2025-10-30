@@ -28,17 +28,17 @@
                             <!-- File icon -->
                             <div class="card-img-top text-center py-4" style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center;">
                                 @if($isPdf)
-                                    <i class="fa-regular fa-file-pdf text-danger" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-pdf text-danger" style="font-size: 4rem;"></i>
                                 @elseif(in_array($extension, ['doc', 'docx']))
-                                    <i class="fa-regular fa-file-word text-primary" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-word text-primary" style="font-size: 4rem;"></i>
                                 @elseif(in_array($extension, ['xls', 'xlsx']))
-                                    <i class="fa-regular fa-file-excel text-success" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-excel text-success" style="font-size: 4rem;"></i>
                                 @elseif(in_array($extension, ['ppt', 'pptx']))
-                                    <i class="fa-regular fa-file-ppt text-danger" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-ppt text-danger" style="font-size: 4rem;"></i>
                                 @elseif(in_array($extension, ['zip', 'rar', '7z']))
-                                    <i class="fa-regular fa-file-zip text-warning" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-zip text-warning" style="font-size: 4rem;"></i>
                                 @else
-                                    <i class="fa-regular fa-file text-secondary" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file text-secondary" style="font-size: 4rem;"></i>
                                 @endif
                             </div>
                         @endif
@@ -48,30 +48,30 @@
                                 <strong>{{ $file['original_name'] }}</strong>
                             </p>
                             <p class="card-text small text-muted mb-2">
-                                <i class="fa-regular fa-hard-drive"></i>&nbsp;{{ number_format($file['size'] / 1024, 1) }} KB
+                                <i class="far fa-hard-drive"></i>&nbsp;{{ number_format($file['size'] / 1024, 1) }} KB
                                 <br>
-                                <i class="fa-regular fa-file-code"></i>&nbsp;{{ strtoupper($extension) }}
+                                <i class="far fa-file-code"></i>&nbsp;{{ strtoupper($extension) }}
                             </p>
                             <div class="btn-group btn-group-sm w-100">
                                 @if($isImage)
                                     <button type="button"
                                             class="btn btn-outline-primary btn-sm"
                                             onclick="openLightbox('{{ route('files.preview', [$answer->id, $index ?? null]) }}', '{{ $file['original_name'] ?? $metadata['original_name'] ?? 'Image' }}')">
-                                        <i class="fa-regular fa-eye"></i>&nbsp;View
+                                        <i class="far fa-eye"></i>&nbsp;View
                                     </button>
                                 @elseif($isPdf)
                                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="previewPdf('{{ route('files.preview', [$answer->id, $index ?? null]) }}', '{{ $file['original_name'] ?? $metadata['original_name'] ?? 'PDF' }}')">
-                                        <i class="fa-regular fa-eye"></i>&nbsp;View Full
+                                        <i class="far fa-eye"></i>&nbsp;View Full
                                     </button>
                                 @endif
                                 
                                 <a href="{{ route('files.download', [$answer->id, $index ?? null]) }}" class="btn btn-outline-success btn-sm">
-                                    <i class="fa-regular fa-download"></i>&nbsp;Download
+                                    <i class="far fa-download"></i>&nbsp;Download
                                 </a>
                                 
                                 @if(auth()->user()->hasAnyRole(['Super Admin', 'Owner']) && $isImage)
                                 <a href="{{ route('files.download.original', [$answer->id, $index ?? null]) }}" class="btn btn-outline-warning btn-sm" title="Download without watermark">
-                                    <i class="fa-regular fa-download"></i>&nbsp;Download Original
+                                    <i class="far fa-download"></i>&nbsp;Download Original
                                 </a>
                                 @endif
                                 
@@ -85,7 +85,7 @@
         <!-- Gallery info -->
         <div class="text-center mt-2">
             <small class="text-muted">
-                <i class="fa-regular fa-circle-info"></i>
+                <i class="far fa-circle-info"></i>
                 Total: {{ count($metadata['files']) }} file(s) uploaded
                 @php
                     $imageCount = collect($metadata['files'])->filter(function($file) {
@@ -113,7 +113,7 @@
                         <img src="{{ route('files.thumbnail', $answer->id) }}?w=600&h=800&mode=fit&q=85" class="img-fluid rounded shadow-sm" alt="{{ $metadata['original_name'] ?? 'Image' }}" style="max-height: 400px; cursor: zoom-in;" loading="lazy">
                     </a>
                     <small class="text-muted d-block mt-2">
-                        <i class="fa-regular fa-magnifying-glass-plus"></i>&nbsp;Click image to enlarge
+                        <i class="far fa-magnifying-glass-plus"></i>&nbsp;Click image to enlarge
                     </small>
                 </div>
             @elseif($isPdf)
@@ -126,7 +126,7 @@
                         </div>
                         <div class="text-center mt-2">
                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="previewPdf('{{ route('files.preview', $answer->id) }}', '{{ $metadata['original_name'] ?? 'PDF Document' }}')">
-                                <i class="fa-regular fa-up-right-and-down-left-from-center"></i>&nbsp;Open in Modal
+                                <i class="far fa-up-right-and-down-left-from-center"></i>&nbsp;Open in Modal
                             </button>
                         </div>
                     </div>
@@ -137,15 +137,15 @@
             <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
                 <div>
                     @if($isPdf)
-                        <i class="fa-regular fa-file-pdf text-danger me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-pdf text-danger me-2" style="font-size: 1.5rem;"></i>
                     @elseif($isImage)
-                        <i class="fa-regular fa-file-image text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-image text-primary me-2" style="font-size: 1.5rem;"></i>
                     @elseif(in_array($extension, ['doc', 'docx']))
-                        <i class="fa-regular fa-file-word text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-word text-primary me-2" style="font-size: 1.5rem;"></i>
                     @elseif(in_array($extension, ['xls', 'xlsx']))
-                        <i class="fa-regular fa-file-excel text-success me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-excel text-success me-2" style="font-size: 1.5rem;"></i>
                     @else
-                        <i class="fa-regular fa-file text-secondary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file text-secondary me-2" style="font-size: 1.5rem;"></i>
                     @endif
                     
                     <span>
@@ -165,26 +165,26 @@
                         <button type="button"
                                 class="btn btn-outline-primary btn-sm"
                                 onclick="openLightbox('{{ route('files.preview', [$answer->id, $index ?? null]) }}', '{{ $file['original_name'] ?? $metadata['original_name'] ?? 'Image' }}')">
-                            <i class="fa-regular fa-eye"></i>&nbsp;View
+                            <i class="far fa-eye"></i>&nbsp;View
                         </button>
                     @elseif($isPdf)
                         <button type="button"
                                 class="btn btn-outline-primary btn-sm"
                                 onclick="previewPdf('{{ route('files.preview', [$answer->id, $index ?? null]) }}', '{{ $file['original_name'] ?? $metadata['original_name'] ?? 'PDF' }}')">
-                            <i class="fa-regular fa-eye"></i>&nbsp;View Full
+                            <i class="far fa-eye"></i>&nbsp;View Full
                         </button>
                     @endif
                     
                     <a href="{{ route('files.download', [$answer->id, $index ?? null]) }}" 
                     class="btn btn-outline-success btn-sm">
-                        <i class="fa-regular fa-download"></i>&nbsp;Download
+                        <i class="far fa-download"></i>&nbsp;Download
                     </a>
                     
                     @if(auth()->user()->hasAnyRole(['Super Admin', 'Owner']) && $isImage)
                         <a href="{{ route('files.download.original', [$answer->id, $index ?? null]) }}" 
                         class="btn btn-outline-warning btn-sm"
                         title="Download without watermark">
-                            <i class="fa-regular fa-download"></i>&nbsp;Download Original
+                            <i class="far fa-download"></i>&nbsp;Download Original
                         </a>
                     @endif
                 </div>
@@ -281,7 +281,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">
-                                <i class="fa-regular fa-file-pdf text-danger"></i>&nbsp;${title}
+                                <i class="far fa-file-pdf text-danger"></i>&nbsp;${title}
                             </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
@@ -293,10 +293,10 @@
                         </div>
                         <div class="modal-footer">
                             <a href="${url}" target="_blank" class="btn btn-primary">
-                                <i class="fa-regular fa-arrow-up-right"></i>&nbsp;Open in New Tab
+                                <i class="far fa-arrow-up-right"></i>&nbsp;Open in New Tab
                             </a>
                             <a href="${url.replace('/preview/', '/download/')}" class="btn btn-success">
-                                <i class="fa-regular fa-download"></i>&nbsp;Download PDF
+                                <i class="far fa-download"></i>&nbsp;Download PDF
                             </a>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>

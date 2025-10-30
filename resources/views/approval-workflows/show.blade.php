@@ -74,13 +74,13 @@
                                     <h3 class="card-title">Workflow Information</h3>
                                     <div class="card-actions">
                                         <a href="{{ route('approval-workflows.edit', [$form, $workflow]) }}" class="btn btn-sm btn-primary">
-                                            <i class="fa-regular fa-pen-to-square"></i>&nbsp;Edit Workflow
+                                            <i class="far fa-pen-to-square"></i>&nbsp;Edit Workflow
                                         </a>
                                         <a href="{{ route('approval-workflows.test', [$form, $workflow]) }}" class="btn btn-sm btn-outline-info">
-                                            <i class="fa-regular fa-circle-play"></i>&nbsp;Test Workflow
+                                            <i class="far fa-circle-play"></i>&nbsp;Test Workflow
                                         </a>
                                         <a href="{{ route('approval-workflows.index', $form) }}" class="btn btn-sm btn-secondary">
-                                            <i class="fa-regular fa-arrow-left"></i>&nbsp;Back
+                                            <i class="far fa-arrow-left"></i>&nbsp;Back
                                         </a>
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@
                                     @if($stats['overdue'] > 0)
                                     <div class="alert alert-danger alert-dismissible" role="alert">
                                         <div class="alert-icon">
-                                            <i class="fa-regular fa-octagon-exclamation"></i>
+                                            <i class="far fa-octagon-exclamation"></i>
                                         </div>
                                         <div>
                                             <div class="alert-description">
@@ -272,18 +272,18 @@
                                                             <div class="row mt-1">
                                                                 <div class="col-6">
                                                                     <div class="border rounded py-1">
-                                                                        <small class="text-success"><i class="fa-regular fa-thumbs-up"></i> &nbsp;{{ $stepStats['approved'] }}</small>
+                                                                        <small class="text-success"><i class="far fa-thumbs-up"></i> &nbsp;{{ $stepStats['approved'] }}</small>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-6">
                                                                     <div class="border rounded py-1">
-                                                                        <small class="text-danger"><i class="fa-regular fa-hand"></i> &nbsp;{{ $stepStats['rejected'] }}</small>
+                                                                        <small class="text-danger"><i class="far fa-hand"></i> &nbsp;{{ $stepStats['rejected'] }}</small>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             @if($stepStats['pending'] > 0)
                                                             <div class="mt-1">
-                                                                <small class="text-warning"><i class="fa-regular fa-hourglass-clock"></i> &nbsp;{{ $stepStats['pending'] }} pending</small>
+                                                                <small class="text-warning"><i class="far fa-hourglass-clock"></i> &nbsp;{{ $stepStats['pending'] }} pending</small>
                                                             </div>
                                                             @endif
                                                         </div>
@@ -295,10 +295,10 @@
                                     </div>
                                     @else
                                     <div class="text-center py-4">
-                                        <i class="fa-regular fa-diagram-project display-1 text-muted"></i>
+                                        <i class="far fa-diagram-project display-1 text-muted"></i>
                                         <p class="mt-3 text-muted">No steps defined for this workflow</p>
                                         <a href="{{ route('approval-workflows.edit', [$form, $workflow]) }}" class="btn btn-primary">
-                                            <i class="fa-regular fa-circle-plus"></i>&nbsp;Add Steps
+                                            <i class="far fa-circle-plus"></i>&nbsp;Add Steps
                                         </a>
                                     </div>
                                     @endif
@@ -314,12 +314,12 @@
                                         <div>
                                             @if(!$workflow->is_active)
                                                 <span class="text-warning">
-                                                    <i class="fa-regular fa-circle-exclamation"></i>
+                                                    <i class="far fa-circle-exclamation"></i>
                                                     This workflow is inactive. Activate it to use for form approvals.
                                                 </span>
                                             @else
                                                 <span class="text-success">
-                                                    <i class="fa-regular fa-circle-check"></i>
+                                                    <i class="far fa-circle-check"></i>
                                                     This workflow is active and will be used for new submissions.
                                                 </span>
                                             @endif
@@ -330,7 +330,7 @@
                                                     @csrf
                                                     @method('PUT')
                                                     <button type="submit" class="btn btn-success" onclick="return confirm('Activate this workflow?')">
-                                                        <i class="fa-regular fa-circle-check"></i>&nbsp;Activate Workflow
+                                                        <i class="far fa-circle-check"></i>&nbsp;Activate Workflow
                                                     </button>
                                                 </form>
                                             @elseif($workflow->is_active)
@@ -338,7 +338,7 @@
                                                     @csrf
                                                     @method('PUT')
                                                     <button type="submit" class="btn btn-warning" onclick="return confirm('Deactivate this workflow?')">
-                                                        <i class="fa-regular fa-circle-pause"></i>&nbsp;Deactivate
+                                                        <i class="far fa-circle-pause"></i>&nbsp;Deactivate
                                                     </button>
                                                 </form>
                                             @endif
@@ -348,7 +348,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this workflow? This action cannot be undone.')">
-                                                        <i class="fa-regular fa-trash-can"></i>&nbsp;Delete
+                                                        <i class="far fa-trash-can"></i>&nbsp;Delete
                                                     </button>
                                                 </form>
                                             @endif

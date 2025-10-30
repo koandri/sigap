@@ -60,17 +60,17 @@
                                 <div class="col">
                                     <a href="{{ $submission ? route('formsubmissions.show', $submission) : route('formsubmissions.submissions') }}" 
                                        class="btn btn-secondary">
-                                        <i class="fa-regular fa-arrow-left"></i>
+                                        <i class="far fa-arrow-left"></i>
                                         Cancel
                                     </a>
                                 </div>
                                 <div class="col-auto">
                                     <div class="btn-group" role="group">
                                         <button type="submit" name="action" value="save_draft" class="btn btn-outline-primary">
-                                            <i class="fa-regular fa-save"></i>&nbsp;Save Draft
+                                            <i class="far fa-save"></i>&nbsp;Save Draft
                                         </button>
                                         <button type="submit" name="action" value="submit" class="btn btn-primary">
-                                            <i class="fa-regular fa-paper-plane"></i>
+                                            <i class="far fa-paper-plane"></i>
                                             {{ $submission ? 'Update & Submit' : 'Submit Form' }}
                                         </button>
                                     </div>

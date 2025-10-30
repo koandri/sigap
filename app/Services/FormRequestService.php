@@ -10,6 +10,7 @@ use App\Models\FormRequestItem;
 use App\Models\PrintedForm;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
 
 final class FormRequestService
@@ -33,6 +34,25 @@ final class FormRequestService
             }
 
             return $request;
+        });
+    }
+
+    public function updateFormRequest(FormRequest $request, array $formData): FormRequest
+    {
+        return DB::transaction(function () use ($request, $formData) {
+            // Delete existing items
+            $request->items()->delete();
+
+            // Create new form request items
+            foreach ($formData['forms'] as $formItem) {
+                FormRequestItem::create([
+                    'form_request_id' => $request->id,
+                    'document_version_id' => $formItem['document_version_id'],
+                    'quantity' => $formItem['quantity'],
+                ]);
+            }
+
+            return $request->fresh(['items.documentVersion.document']);
         });
     }
 
@@ -210,6 +230,59 @@ final class FormRequestService
             ->where('request_date', '<', $cutoffTime)
             ->orderBy('request_date')
             ->get();
+    }
+
+    public function getFilteredFormRequests(array $filters): Collection
+    {
+        $query = FormRequest::with(['items.documentVersion.document', 'requester']);
+        
+        $this->applyFilters($query, $filters);
+        
+        return $query->orderBy('request_date', 'desc')->get();
+    }
+
+    public function getFilteredFormRequestsByUser(User $user, array $filters): Collection
+    {
+        $query = FormRequest::with(['items.documentVersion.document', 'requester'])
+            ->where('requested_by', $user->id);
+        
+        $this->applyFilters($query, $filters);
+        
+        return $query->orderBy('request_date', 'desc')->get();
+    }
+
+    public function getAllRequesters(): SupportCollection
+    {
+        return User::whereHas('formRequests')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+    }
+
+    private function applyFilters($query, array $filters): void
+    {
+        // Filter by status
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        // Filter by requester (for admins)
+        if (!empty($filters['requester'])) {
+            $query->where('requested_by', $filters['requester']);
+        }
+
+        // Filter by date range
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('request_date', '>=', $filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('request_date', '<=', $filters['date_to']);
+        }
+
+        // Search by request ID
+        if (!empty($filters['search'])) {
+            $query->where('id', 'like', '%' . $filters['search'] . '%');
+        }
     }
 
     private function generateFormNumber(): string

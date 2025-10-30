@@ -12,7 +12,7 @@
             </div>
             <div class="col-auto">
                 <a href="{{ route('documents.show', $document) }}" class="btn btn-outline-secondary">
-                    <i class="ti ti-arrow-left"></i>
+                    <i class="far fa-arrow-left"></i>
                     Back to Document
                 </a>
             </div>
@@ -82,9 +82,29 @@
                                 @enderror
                             </div>
                             
+                            @if($document->document_type->value === 'form')
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="is_ncr_paper" 
+                                           name="is_ncr_paper" value="1"
+                                           {{ old('is_ncr_paper') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_ncr_paper">
+                                        <i class="far fa-copy me-1"></i>
+                                        3-Ply NCR Paper (prints 3 labels)
+                                    </label>
+                                    <div class="form-text">
+                                        Check this if the form is printed on 3-ply carbonless (NCR) paper
+                                    </div>
+                                </div>
+                                @error('is_ncr_paper')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            @endif
+                            
                             <div class="form-footer">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="ti ti-plus"></i>
+                                    <i class="far fa-plus"></i>
                                     Create Version
                                 </button>
                                 <a href="{{ route('documents.show', $document) }}" class="btn btn-outline-secondary">Cancel</a>

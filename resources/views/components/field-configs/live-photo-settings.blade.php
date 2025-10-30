@@ -54,7 +54,7 @@
     
     <div class="alert alert-info">
         <div class="alert-icon">
-            <i class="fa-regular fa-camera"></i>
+            <i class="far fa-camera"></i>
         </div>
         <div>
             <h4 class="alert-heading">Live Photo Field</h4>

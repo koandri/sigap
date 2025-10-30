@@ -27,12 +27,12 @@
             <div class="col-auto">
                 <div class="btn-list">
                     <a href="{{ route('documents.show', $version->document) }}" class="btn btn-outline-secondary">
-                        <i class="ti ti-arrow-left"></i>
+                        <i class="far fa-arrow-left"></i>
                         Back to Document
                     </a>
                     @if($version->canBeEdited())
                     <a href="{{ route('document-versions.editor', $version) }}" class="btn btn-primary">
-                        <i class="ti ti-edit"></i>
+                        <i class="far fa-edit"></i>
                         Edit Document
                     </a>
                     @endif
@@ -70,7 +70,7 @@
                                     <h4>Document Preview</h4>
                                     <p>This document type ({{ strtoupper($version->file_type) }}) cannot be previewed in the browser.</p>
                                     <a href="{{ route('document-versions.view', $version) }}" class="btn btn-primary" download>
-                                        <i class="ti ti-download"></i>
+                                        <i class="far fa-download"></i>
                                         Download Document
                                     </a>
                                 </div>

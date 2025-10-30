@@ -24,11 +24,11 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.position.create', [$warehouse, $shelf]) }}" class="btn btn-primary">
-                        <i class="fa-regular fa-plus me-2"></i>
+                        <i class="far fa-plus me-2"></i>
                         Add Position
                     </a>
                     <a href="{{ route('manufacturing.warehouses.shelf-management', $warehouse) }}" class="btn btn-outline-secondary">
-                        <i class="fa-regular fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>
                         Back to Shelves
                     </a>
                 </div>
@@ -95,14 +95,14 @@
                                     <td>
                                         <div class="btn-list flex-nowrap">
                                             <a href="{{ route('manufacturing.warehouses.position.edit', [$warehouse, $shelf, $position]) }}" class="btn btn-sm btn-outline-secondary">
-                                                <i class="fa-regular fa-edit me-1"></i>
+                                                <i class="far fa-edit me-1"></i>
                                                 Edit
                                             </a>
                                             <form action="{{ route('manufacturing.warehouses.position.destroy', [$warehouse, $shelf, $position]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this position? This action cannot be undone.')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                    <i class="fa-regular fa-trash me-1"></i>
+                                                    <i class="far fa-trash me-1"></i>
                                                     Delete
                                                 </button>
                                             </form>
@@ -120,7 +120,7 @@
                                             </p>
                                             <div class="empty-action">
                                                 <a href="{{ route('manufacturing.warehouses.position.create', [$warehouse, $shelf]) }}" class="btn btn-primary">
-                                                    <i class="fa-regular fa-plus me-2"></i>
+                                                    <i class="far fa-plus me-2"></i>
                                                     Add First Position
                                                 </a>
                                             </div>

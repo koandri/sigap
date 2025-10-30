@@ -18,7 +18,7 @@
                 @can('maintenance.schedules.manage')
                 <div class="btn-list">
                     <a href="{{ route('maintenance.schedules.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="fa-regular fa-plus"></i>
+                        <i class="far fa-plus"></i>
                         Add Schedule
                     </a>
                 </div>
@@ -158,7 +158,7 @@
                 @else
                     <div class="empty">
                         <div class="empty-icon">
-                            <i class="fa-regular fa-clipboard icon"></i>
+                            <i class="far fa-clipboard icon"></i>
                         </div>
                         <p class="empty-title">No maintenance schedules found</p>
                         <p class="empty-subtitle text-muted">
@@ -167,7 +167,7 @@
                         @can('maintenance.schedules.manage')
                         <div class="empty-action">
                             <a href="{{ route('maintenance.schedules.create') }}" class="btn btn-primary">
-                                <i class="fa-regular fa-plus"></i>
+                                <i class="far fa-plus"></i>
                                 Add Schedule
                             </a>
                         </div>

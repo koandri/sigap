@@ -17,12 +17,12 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('options.assets.qr-index') }}" class="btn btn-outline-primary d-none d-sm-inline-block">
-                        <i class="fa-regular fa-qrcode"></i>
+                        <i class="far fa-qrcode"></i>
                         View QR Codes
                     </a>
                     @can('maintenance.assets.manage')
                     <a href="{{ route('options.assets.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="fa-regular fa-plus"></i>
+                        <i class="far fa-plus"></i>
                         Add Asset
                     </a>
                     @endcan
@@ -113,7 +113,7 @@
                                                 <span class="avatar avatar-sm me-2" style="background-image: url({{ Storage::url($asset->image_path) }})"></span>
                                             @else
                                                 <span class="avatar avatar-sm me-2 bg-secondary">
-                                                    <i class="fa-regular fa-clipboard"></i>
+                                                    <i class="far fa-clipboard"></i>
                                                 </span>
                                             @endif
                                             <div>
@@ -159,7 +159,7 @@
                 @else
                     <div class="empty">
                         <div class="empty-icon">
-                            <i class="fa-regular fa-clipboard icon"></i>
+                            <i class="far fa-clipboard icon"></i>
                         </div>
                         <p class="empty-title">No assets found</p>
                         <p class="empty-subtitle text-muted">
@@ -168,7 +168,7 @@
                         @can('maintenance.assets.manage')
                         <div class="empty-action">
                             <a href="{{ route('options.assets.create') }}" class="btn btn-primary">
-                                <i class="fa-regular fa-plus"></i>
+                                <i class="far fa-plus"></i>
                                 Add Asset
                             </a>
                         </div>

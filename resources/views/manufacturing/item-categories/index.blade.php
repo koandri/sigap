@@ -17,7 +17,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.item-categories.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="fa-regular fa-plus me-2"></i>
+                        <i class="far fa-plus me-2"></i>
                         New Category
                     </a>
                 </div>
@@ -95,7 +95,7 @@
                                             </p>
                                             <div class="empty-action">
                                                 <a href="{{ route('manufacturing.item-categories.create') }}" class="btn btn-primary">
-                                                    <i class="fa-regular fa-plus me-2"></i>
+                                                    <i class="far fa-plus me-2"></i>
                                                     Create Category
                                                 </a>
                                             </div>

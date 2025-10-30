@@ -56,11 +56,11 @@
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-sm btn-success btn-2" onclick="return confirm('Activate this version?')">
-                                                <i class="fa-regular fa-circle-check"></i>&nbsp;Activate Version
+                                                <i class="far fa-circle-check"></i>&nbsp;Activate Version
                                             </button>
                                         </form>
                                         @endif
-                                        <a href="{{ route('formversions.index', $form) }}" class="btn btn-sm btn-2"><i class="fa-regular fa-arrow-left"></i>&nbsp;Back to Form Versions</a>
+                                        <a href="{{ route('formversions.index', $form) }}" class="btn btn-sm btn-2"><i class="far fa-arrow-left"></i>&nbsp;Back to Form Versions</a>
                                     </div>
                                 </div>
                                 <div class="card-body border-bottom py-3">
@@ -109,9 +109,9 @@
                                     <h3 class="card-title">Form Fields - {{ $version->fields->count() }} field(s)</h3>
                                     <div class="card-actions">
                                         @if($version->fields->count() > 0 && $version->submissions->count() == 0)
-                                        <a class="btn btn-sm btn-secondary btn-2" href="#" id="toggleReorder"><i class="fa-regular fa-up-down-left-right"></i>&nbsp;Reorder Fields</a>
+                                        <a class="btn btn-sm btn-secondary btn-2" href="#" id="toggleReorder"><i class="far fa-up-down-left-right"></i>&nbsp;Reorder Fields</a>
                                         @endif
-                                        <a class="btn btn-sm btn-primary btn-2" href="#" onclick="addNewField();"><i class="fa-regular fa-input-text"></i>&nbsp;Add Fields</a>
+                                        <a class="btn btn-sm btn-primary btn-2" href="#" onclick="addNewField();"><i class="far fa-input-text"></i>&nbsp;Add Fields</a>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -120,7 +120,7 @@
                                             <table class="table table-hover" id="fieldsTable">
                                                 <thead>
                                                     <tr>
-                                                        <th width="5%" class="reorder-column" style="display: none;"><i class="fa-regular fa-arrows-up-down-left-right"></i></th>
+                                                        <th width="5%" class="reorder-column" style="display: none;"><i class="far fa-arrows-up-down-left-right"></i></th>
                                                         <th width="5%">#</th>
                                                         <th width="20%">Field Code</th>
                                                         <th width="25%">Label</th>
@@ -135,7 +135,7 @@
                                                     <tr data-field-id="{{ $field->id }}" data-order="{{ $field->order_position }}">
                                                         <td class="reorder-column" style="display: none;">
                                                             <span class="sortable-handle">
-                                                                <i class="fa-regular fa-grip-vertical"></i>
+                                                                <i class="far fa-grip-vertical"></i>
                                                             </span>
                                                         </td>
                                                         <td class="field-number">{{ $index + 1 }}</td>
@@ -164,12 +164,12 @@
                                                         <td>{{ $field->options->count() }}</td>
                                                         <td>
                                                             <div class="btn-group btn-group-sm">
-                                                                <button class="btn btn-outline-primary" title="Edit Field" onclick="editField({{ $field->id }})"><i class="fa-regular fa-pen-to-square"></i></button>
+                                                                <button class="btn btn-outline-primary" title="Edit Field" onclick="editField({{ $field->id }})"><i class="far fa-pen-to-square"></i></button>
                                                                 @if($field->hasOptions())
-                                                                <button class="btn btn-outline-secondary" title="Manage Options" onclick="manageOptions({{ $field->id }})"><i class="fa-regular fa-list-ul"></i></button>
+                                                                <button class="btn btn-outline-secondary" title="Manage Options" onclick="manageOptions({{ $field->id }})"><i class="far fa-list-ul"></i></button>
                                                                 @endif
                                                                 @if($version->submissions->count() == 0)
-                                                                <button class="btn btn-outline-danger" title="Delete Field" onclick="deleteField({{ $field->id }})"><i class="fa-regular fa-trash-can"></i></button>
+                                                                <button class="btn btn-outline-danger" title="Delete Field" onclick="deleteField({{ $field->id }})"><i class="far fa-trash-can"></i></button>
                                                                 @endif
                                                             </div>
                                                         </td>
@@ -180,13 +180,13 @@
                                         </div>
 
                                         <div id="reorderActions" class="alert alert-info mt-3" style="display: none;">
-                                            <i class="fa-regular fa-circle-info"></i> &nbsp;
+                                            <i class="far fa-circle-info"></i> &nbsp;
                                             Drag and drop rows to reorder fields. 
                                             <button class="btn btn-sm btn-success ms-2" onclick="saveOrder()">
-                                                <i class="fa-regular fa-floppy-disk"></i> &nbsp;Save Order
+                                                <i class="far fa-floppy-disk"></i> &nbsp;Save Order
                                             </button>
                                             <button class="btn btn-sm btn-secondary" onclick="cancelReorder()">
-                                                <i class="fa-regular fa-circle-xmark"></i> &nbsp;Cancel
+                                                <i class="far fa-circle-xmark"></i> &nbsp;Cancel
                                             </button>
                                         </div>
 
@@ -213,7 +213,7 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Form Preview</h3>
                                     <div class="card-actions">
-                                        <a class="btn btn-sm btn-primary" href="#" onclick="togglePreview(event)"><i class="fa-regular fa-eye"></i> &nbsp;Toggle Preview</a>
+                                        <a class="btn btn-sm btn-primary" href="#" onclick="togglePreview(event)"><i class="far fa-eye"></i> &nbsp;Toggle Preview</a>
                                     </div>
                                 </div>
                                 <div class="card-body" id="formPreview" style="display: none;">
@@ -297,7 +297,7 @@
                                                     <input type="date" class="form-control" {{ $minDate ? 'min=' . $minDate : '' }} {{ $maxDate ? 'max=' . $maxDate : '' }} disabled>
                                                     @if(!empty($dateInfo))
                                                         <small class="text-info">
-                                                            <i class="fa-regular fa-circle-info"></i> &nbsp;{{ implode(' | ', $dateInfo) }}
+                                                            <i class="far fa-circle-info"></i> &nbsp;{{ implode(' | ', $dateInfo) }}
                                                         </small>
                                                     @endif
                                                     @break
@@ -364,7 +364,7 @@
                                                         disabled>
                                                     @if(!empty($dateTimeInfo))
                                                         <small class="text-info">
-                                                            <i class="fa-regular fa-circle-info"></i> &nbsp;{{ implode(' | ', $dateTimeInfo) }}
+                                                            <i class="far fa-circle-info"></i> &nbsp;{{ implode(' | ', $dateTimeInfo) }}
                                                         </small>
                                                     @endif
                                                     @break
@@ -424,11 +424,11 @@
                                                     <div class="input-group">
                                                         <input type="text" class="form-control" value="(Calculated)" style="background-color: #e9ecef; font-style: italic;" disabled>
                                                         <span class="input-group-text">
-                                                            <i class="fa-regular fa-calculator text-primary"></i>
+                                                            <i class="far fa-calculator text-primary"></i>
                                                         </span>
                                                     </div>
                                                     <small class="form-text text-info">
-                                                        <i class="fa-regular fa-circle-info"></i>
+                                                        <i class="far fa-circle-info"></i>
                                                         Formula: <code>{{ $field->calculation_formula }}</code>
                                                         <br>
                                                         Format: {{ ucfirst(str_replace('_', ' ', $format)) }}
@@ -441,11 +441,11 @@
                                                         <div class="input-group">
                                                             <input type="text" class="form-control" value="(Hidden Field)" style="background-color: #f8f9fa; font-style: italic; border-style: dashed;" disabled>
                                                             <span class="input-group-text">
-                                                                <i class="fa-regular fa-eye-slash text-muted"></i>
+                                                                <i class="far fa-eye-slash text-muted"></i>
                                                             </span>
                                                         </div>
                                                         <small class="form-text text-muted">
-                                                            <i class="fa-regular fa-circle-info"></i>
+                                                            <i class="far fa-circle-info"></i>
                                                             Default: {{ $field->validation_rules['default_value'] ?? 'Not set' }}
                                                             @if(isset($field->validation_rules['value_type']) && $field->validation_rules['value_type'] === 'dynamic')
                                                                 (Dynamic: {{ $field->validation_rules['dynamic_type'] ?? 'Unknown' }})
@@ -454,7 +454,7 @@
                                                     @else
                                                         <!-- Don't show hidden fields to regular users in preview -->
                                                         <div class="text-muted fst-italic">
-                                                            <i class="fa-regular fa-eye-slash"></i>&nbsp;Hidden field (not visible to users)
+                                                            <i class="far fa-eye-slash"></i>&nbsp;Hidden field (not visible to users)
                                                         </div>
                                                     @endif
                                                     @break
@@ -470,7 +470,7 @@
                                                     
                                                     <div class="border rounded p-3" style="background: #f8f9fa;">
                                                         <div class="text-center mb-2">
-                                                            <i class="fa-regular fa-signature" style="font-size: 2rem;"></i>
+                                                            <i class="far fa-signature" style="font-size: 2rem;"></i>
                                                             <p class="mb-0 mt-2">
                                                                 <strong>Digital Signature Pad</strong>
                                                             </p>
@@ -485,7 +485,7 @@
                                                                 style="background: {{ $backgroundColor }}; border-style: dashed !important;">
                                                                 <div style="width: {{ min($width, 300) }}px; height: {{ min($height, 150) }}px; display: flex; align-items: center; justify-content: center;">
                                                                     <div class="text-center">
-                                                                        <i class="fa-regular fa-pencil" style="font-size: 1.5rem; color: {{ $penColor }};"></i>
+                                                                        <i class="far fa-pencil" style="font-size: 1.5rem; color: {{ $penColor }};"></i>
                                                                         <br>
                                                                         <small class="text-muted">{{ $width }}×{{ $height }}px</small>
                                                                     </div>
@@ -502,7 +502,7 @@
                                                         <!-- Configuration Info -->
                                                         <div class="mt-2 text-center">
                                                             <small class="text-info">
-                                                                <i class="fa-regular fa-gear"></i>&nbsp;
+                                                                <i class="far fa-gear"></i>&nbsp;
                                                                 Pen: {{ $penColor }} | Background: {{ $backgroundColor }}
                                                                 @if($signatureRules['required_draw'] ?? false)
                                                                     | Drawing Required
@@ -536,12 +536,12 @@
                                                 <span class="text-muted">Add fields to enable form submission</span>
                                             @elseif(!$version->is_active)
                                                 <span class="text-warning">
-                                                    <i class="fa-regular fa-circle-exclamation"></i>
+                                                    <i class="far fa-circle-exclamation"></i>
                                                     Activate this version to enable form submission
                                                 </span>
                                             @else
                                                 <span class="text-success">
-                                                    <i class="fa-regular fa-circle-check"></i>
+                                                    <i class="far fa-circle-check"></i>
                                                     This version is active and ready for submissions
                                                 </span>
                                             @endif
@@ -549,7 +549,7 @@
                                         <div>
                                             @if($version->is_active && $version->fields->count() > 0)
                                                 <button onclick="testFormSubmission()" class="btn btn-primary btn-sm">
-                                                    <i class="fa-regular fa-arrow-right"></i>&nbsp;Test Form Submission
+                                                    <i class="far fa-arrow-right"></i>&nbsp;Test Form Submission
                                                 </button>
                                             @endif
                                         </div>
@@ -588,7 +588,7 @@
         // Show reorder column and actions
         document.querySelectorAll('.reorder-column').forEach(el => el.style.display = '');
         document.getElementById('reorderActions').style.display = 'block';
-        document.getElementById('toggleReorder').innerHTML = '<i class="fa-regular fa-circle-x"></i> &nbsp;Cancel Reorder';
+        document.getElementById('toggleReorder').innerHTML = '<i class="far fa-circle-x"></i> &nbsp;Cancel Reorder';
         
         // Store original order
         originalOrder = [];
@@ -623,7 +623,7 @@
         // Hide reorder column and actions
         document.querySelectorAll('.reorder-column').forEach(el => el.style.display = 'none');
         document.getElementById('reorderActions').style.display = 'none';
-        document.getElementById('toggleReorder').innerHTML = '<i class="fa-regular fa-up-down-left-right"></i> &nbsp;Reorder Fields';
+        document.getElementById('toggleReorder').innerHTML = '<i class="far fa-up-down-left-right"></i> &nbsp;Reorder Fields';
         
         // Disable sortable
         if ($('#sortableFields').sortable('instance')) {
@@ -726,14 +726,14 @@
         
         if (preview.style.display === 'none' || preview.style.display === '') {
             preview.style.display = 'block';
-            button.innerHTML = '<i class="fa-regular fa-eye-slash"></i> &nbsp;Hide Preview';
+            button.innerHTML = '<i class="far fa-eye-slash"></i> &nbsp;Hide Preview';
             // Smooth scroll to preview
             setTimeout(() => {
                 preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
         } else {
             preview.style.display = 'none';
-            button.innerHTML = '<i class="fa-regular fa-eye"></i> &nbsp;Toggle Preview';
+            button.innerHTML = '<i class="far fa-eye"></i> &nbsp;Toggle Preview';
         }
     }
 

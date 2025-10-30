@@ -14,7 +14,7 @@
     
     <div class="alert alert-info alert-dismissible" role="alert">
         <div class="alert-icon">
-            <i class="fa-regular fa-circle-info"></i>
+            <i class="far fa-circle-info"></i>
         </div>
         <div>
             <h4 class="alert-heading">Hidden Field!</h4>

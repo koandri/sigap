@@ -71,7 +71,7 @@
                                             </td>
                                             <td>
                                                 <a href="{{ route('document-versions.view', $version) }}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="ti ti-eye"></i>
+                                                    <i class="far fa-eye"></i>
                                                     View
                                                 </a>
                                             </td>
@@ -83,7 +83,7 @@
                     @else
                         <div class="empty">
                             <div class="empty-icon">
-                                <i class="ti ti-eye"></i>
+                                <i class="far fa-eye"></i>
                             </div>
                             <p class="empty-title">No accessible documents</p>
                             <p class="empty-subtitle text-muted">
@@ -91,7 +91,7 @@
                             </p>
                             <div class="empty-action">
                                 <a href="{{ route('documents.index') }}" class="btn btn-primary">
-                                    <i class="ti ti-folder"></i>
+                                    <i class="far fa-folder"></i>
                                     Browse Documents
                                 </a>
                             </div>

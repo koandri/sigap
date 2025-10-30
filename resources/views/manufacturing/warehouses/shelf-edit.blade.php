@@ -24,7 +24,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.shelf-management', $warehouse) }}" class="btn btn-outline-secondary">
-                        <i class="fa-regular fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>
                         Back to Shelves
                     </a>
                 </div>
@@ -131,7 +131,7 @@
                             <div class="d-flex">
                                 <a href="{{ route('manufacturing.warehouses.shelf-management', $warehouse) }}" class="btn btn-link">Cancel</a>
                                 <button type="submit" class="btn btn-primary ms-auto">
-                                    <i class="fa-regular fa-save me-2"></i>
+                                    <i class="far fa-save me-2"></i>
                                     Update Shelf
                                 </button>
                             </div>

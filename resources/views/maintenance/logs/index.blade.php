@@ -24,7 +24,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fas fa-filter me-2"></i>Filters
+                    <i class="far fa-filter me-2"></i>Filters
                 </h3>
             </div>
             <div class="card-body">
@@ -53,10 +53,10 @@
                             <label class="form-label">&nbsp;</label>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-search me-1"></i> Filter
+                                    <i class="far fa-search me-1"></i> Filter
                                 </button>
                                 <a href="{{ route('maintenance.logs.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i>
+                                    <i class="far fa-times"></i>
                                 </a>
                             </div>
                         </div>
@@ -69,7 +69,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fas fa-list me-2"></i>All Maintenance Logs
+                    <i class="far fa-list me-2"></i>All Maintenance Logs
                 </h3>
                 <div class="card-actions">
                     <span class="text-muted">{{ $logs->total() }} total log(s)</span>
@@ -151,7 +151,7 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="fas fa-clipboard-list fa-3x text-muted"></i>
+                        <i class="far fa-clipboard-list fa-3x text-muted"></i>
                     </div>
                     <p class="empty-title">No maintenance logs found</p>
                     <p class="empty-subtitle text-muted">

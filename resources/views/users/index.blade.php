@@ -28,7 +28,7 @@
                                     <h3 class="card-title">@yield('title')</h3>
                                     <div class="card-actions">
                                         <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
-                                            <i class="fa-regular fa-square-plus"></i>&nbsp;Add new user
+                                            <i class="far fa-square-plus"></i>&nbsp;Add new user
                                         </a>
                                     </div>
                                 </div>
@@ -59,14 +59,14 @@
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             @canBeImpersonated($user)
                                                             <a href="{{ route('impersonate', $user->id) }}" class="btn btn-outline-warning" title="Impersonate">
-                                                                <i class="fa-regular fa-user-dashed"></i> &nbsp;   
+                                                                <i class="far fa-user-dashed"></i> &nbsp;   
                                                             </a>
                                                             @endCanBeImpersonated
                                                             <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary" title="View">
-                                                                <i class="fa-regular fa-eye"></i>
+                                                                <i class="far fa-eye"></i>
                                                             </a>
                                                             <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-primary" title="Edit">
-                                                                <i class="fa-regular fa-pen-to-square"></i>
+                                                                <i class="far fa-pen-to-square"></i>
                                                             </a>
                                                         </div>
                                                     </td>

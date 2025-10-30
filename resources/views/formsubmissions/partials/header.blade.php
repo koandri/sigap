@@ -4,7 +4,7 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                <i class="fa-regular fa-file-lines"></i>
+                <i class="far fa-file-lines"></i>
                 Submission Details
             </h3>
             <div class="card-actions">
@@ -19,7 +19,7 @@
                                 class="btn btn-sm btn-warning" 
                                 onclick="return confirm('Start approval workflow for this submission?')"
                                 title="Manually start approval workflow">
-                            <i class="fa-regular fa-play"></i>&nbsp;Start Workflow
+                            <i class="far fa-play"></i>&nbsp;Start Workflow
                         </button>
                     </form>
                 @endif
@@ -27,11 +27,11 @@
                 <a href="{{ route('formsubmissions.print', $submission) }}" 
                    target="_blank" 
                    class="btn btn-sm btn-outline-secondary">
-                    <i class="fa-regular fa-print"></i>&nbsp;Print
+                    <i class="far fa-print"></i>&nbsp;Print
                 </a>
                 <a href="{{ route('formsubmissions.submissions') }}" 
                    class="btn btn-sm btn-secondary">
-                    <i class="fa-regular fa-arrow-left"></i>&nbsp;Back
+                    <i class="far fa-arrow-left"></i>&nbsp;Back
                 </a>
             </div>
         </div>

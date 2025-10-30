@@ -142,11 +142,11 @@
 
                                 <div class="form-footer">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="ti ti-send"></i>
+                                        <i class="far fa-paper-plane"></i>
                                         Submit Access Request
                                     </button>
                                     <a href="{{ route('documents.show', $document) }}" class="btn btn-secondary">
-                                        <i class="ti ti-arrow-left"></i>
+                                        <i class="far fa-arrow-left"></i>
                                         Cancel
                                     </a>
                                 </div>
@@ -202,7 +202,7 @@
                         </div>
                         <div class="card-body">
                             <div class="alert alert-info">
-                                <i class="ti ti-info-circle"></i>
+                                <i class="far fa-info-circle"></i>
                                 <strong>Access Control Required</strong><br>
                                 This document requires approval before access is granted. Your request will be reviewed by the document owner or department head.
                             </div>

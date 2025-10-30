@@ -31,7 +31,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="mb-0">Options</h5>
                     <button type="button" class="btn btn-sm btn-outline-primary" id="add-option">
-                        <i class="fa-regular fa-plus"></i> Add Option
+                        <i class="far fa-plus"></i> Add Option
                     </button>
                 </div>
                 <div id="options-container">
@@ -97,7 +97,7 @@
             <div class="col-sm-2"></div>
             <div class="col-sm-10">
                 <button type="button" class="btn btn-outline-info" id="test-api">
-                    <i class="fa-regular fa-flask"></i> Test API
+                    <i class="far fa-flask"></i> Test API
                 </button>
                 <span id="api-test-result" class="ms-2"></span>
             </div>

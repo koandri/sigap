@@ -426,11 +426,11 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.shelf-report', $warehouse) }}" class="btn btn-outline-primary">
-                        <i class="fa-regular fa-chart-bar me-2"></i>
+                        <i class="far fa-chart-bar me-2"></i>
                         Generate Report
                     </a>
                     <a href="{{ route('manufacturing.warehouses.show', $warehouse) }}" class="btn">
-                        <i class="fa-regular fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>
                         Back to Warehouse
                     </a>
                 </div>
@@ -451,14 +451,14 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <div class="subheader d-flex align-items-center">
-                                    <i class="fa-regular fa-warehouse me-2 text-primary"></i>
+                                    <i class="far fa-warehouse me-2 text-primary"></i>
                                     Total Sections
                                 </div>
                                 <div class="stats-number">{{ $stats['total_shelves'] }}</div>
                                 <div class="stats-label">Sections Available</div>
                             </div>
                             <div class="text-primary">
-                                <i class="fa-regular fa-warehouse fa-2x opacity-50"></i>
+                                <i class="far fa-warehouse fa-2x opacity-50"></i>
                             </div>
                         </div>
                     </div>
@@ -489,14 +489,14 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <div class="subheader d-flex align-items-center">
-                                    <i class="fa-regular fa-layer-group me-2 text-info"></i>
+                                    <i class="far fa-layer-group me-2 text-info"></i>
                                     Total Positions
                                 </div>
                                 <div class="stats-number text-info">{{ $stats['total_positions'] }}</div>
                                 <div class="stats-label">Storage Positions</div>
                             </div>
                             <div class="text-info">
-                                <i class="fa-regular fa-layer-group fa-2x opacity-50"></i>
+                                <i class="far fa-layer-group fa-2x opacity-50"></i>
                             </div>
                         </div>
                     </div>
@@ -508,14 +508,14 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <div class="subheader d-flex align-items-center">
-                                    <i class="fa-regular fa-chart-pie me-2 text-warning"></i>
+                                    <i class="far fa-chart-pie me-2 text-warning"></i>
                                     Occupancy Rate
                                 </div>
                                 <div class="stats-number text-warning">{{ $stats['occupancy_rate'] }}%</div>
                                 <div class="stats-label">Warehouse Utilization</div>
                             </div>
                             <div class="text-warning">
-                                <i class="fa-regular fa-chart-pie fa-2x opacity-50"></i>
+                                <i class="far fa-chart-pie fa-2x opacity-50"></i>
                             </div>
                         </div>
                     </div>
@@ -529,24 +529,24 @@
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text">
-                            <i class="fa-regular fa-search"></i>
+                            <i class="far fa-search"></i>
                         </span>
                         <input type="text" class="form-control" placeholder="Search shelves by code..." id="shelfSearch">
                         <button class="btn btn-outline-secondary" type="button" id="clearSearch">
-                            <i class="fa-regular fa-times"></i>
+                            <i class="far fa-times"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="btn-group filter-btn-group w-100" role="group">
                         <button type="button" class="btn btn-outline-secondary active" data-filter="all">
-                            <i class="fa-regular fa-th me-1"></i> All
+                            <i class="far fa-th me-1"></i> All
                         </button>
                         <button type="button" class="btn btn-outline-success" data-filter="occupied">
                             <i class="fa-solid fa-box me-1"></i> Occupied
                         </button>
                         <button type="button" class="btn btn-outline-warning" data-filter="empty">
-                            <i class="fa-regular fa-square me-1"></i> Empty
+                            <i class="far fa-square me-1"></i> Empty
                         </button>
                         <button type="button" class="btn btn-outline-danger" data-filter="full">
                             <i class="fa-solid fa-exclamation-triangle me-1"></i> Full
@@ -557,10 +557,10 @@
             <div class="row mt-3" id="filterSummary" style="display: none;">
                 <div class="col-12">
                     <div class="alert alert-info mb-0">
-                        <i class="fa-regular fa-info-circle me-2"></i>
+                        <i class="far fa-info-circle me-2"></i>
                         <span id="filterSummaryText">Showing all shelves</span>
                         <button class="btn btn-sm btn-outline-info ms-2" id="resetFilters">
-                            <i class="fa-regular fa-refresh me-1"></i> Reset Filters
+                            <i class="far fa-refresh me-1"></i> Reset Filters
                         </button>
                     </div>
                 </div>
@@ -571,7 +571,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fa-regular fa-warehouse me-2"></i>
+                    <i class="far fa-warehouse me-2"></i>
                     Warehouse Shelf Layout
                 </h3>
                 <div class="card-actions">
@@ -580,7 +580,7 @@
                             <i class="fa-solid fa-box me-1"></i> Occupied
                         </span>
                         <span class="badge bg-light text-dark me-2">
-                            <i class="fa-regular fa-square me-1"></i> Empty
+                            <i class="far fa-square me-1"></i> Empty
                         </span>
                         <span class="badge bg-danger text-white">
                             <i class="fa-solid fa-exclamation-triangle me-1"></i> Full
@@ -609,7 +609,7 @@
                                                         @elseif($shelf->occupancy_rate > 0)
                                                             <i class="fa-solid fa-box text-success"></i>
                                                         @else
-                                                            <i class="fa-regular fa-square text-muted"></i>
+                                                            <i class="far fa-square text-muted"></i>
                                                         @endif
                                                     </div>
                                                     <div class="section-occupancy">
@@ -643,7 +643,7 @@
                                                         @elseif($shelf->occupancy_rate > 0)
                                                             <i class="fa-solid fa-box text-success"></i>
                                                         @else
-                                                            <i class="fa-regular fa-square text-muted"></i>
+                                                            <i class="far fa-square text-muted"></i>
                                                         @endif
                                                     </div>
                                                     <div class="section-occupancy">
@@ -677,7 +677,7 @@
                                                         @elseif($shelf->occupancy_rate > 0)
                                                             <i class="fa-solid fa-box text-success"></i>
                                                         @else
-                                                            <i class="fa-regular fa-square text-muted"></i>
+                                                            <i class="far fa-square text-muted"></i>
                                                         @endif
                                                     </div>
                                                     <div class="section-occupancy">
@@ -709,31 +709,31 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-primary w-100">
-                                    <i class="fa-regular fa-list me-2"></i>
+                                    <i class="far fa-list me-2"></i>
                                     View All Items
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.picklist', $warehouse) }}" class="btn btn-outline-success w-100">
-                                    <i class="fa-regular fa-list-check me-2"></i>
+                                    <i class="far fa-list-check me-2"></i>
                                     Generate Picklist
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.shelf-report', $warehouse) }}" class="btn btn-outline-info w-100">
-                                    <i class="fa-regular fa-chart-bar me-2"></i>
+                                    <i class="far fa-chart-bar me-2"></i>
                                     Generate Report
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.show', $warehouse) }}" class="btn btn-outline-secondary w-100">
-                                    <i class="fa-regular fa-building me-2"></i>
+                                    <i class="far fa-building me-2"></i>
                                     Warehouse Details
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.index') }}" class="btn btn-outline-secondary w-100">
-                                    <i class="fa-regular fa-arrow-left me-2"></i>
+                                    <i class="far fa-arrow-left me-2"></i>
                                     All Warehouses
                                 </a>
                             </div>

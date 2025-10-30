@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <a href="{{ route('documents.index') }}" class="btn btn-outline-secondary">
-                        <i class="ti ti-arrow-left"></i>
+                        <i class="far fa-arrow-left"></i>
                         Back to Documents
                     </a>
                 </div>
@@ -150,7 +150,7 @@
                             <div class="row">
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="ti ti-device-floppy"></i>
+                                        <i class="far fa-save"></i>
                                         Create Document
                                     </button>
                                     <a href="{{ route('documents.index') }}" class="btn btn-outline-secondary">

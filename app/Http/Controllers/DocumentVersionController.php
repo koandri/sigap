@@ -52,6 +52,7 @@ final class DocumentVersionController extends Controller
                 }
             ],
             'revision_description' => 'nullable|string|max:1000',
+            'is_ncr_paper' => 'nullable|boolean',
         ]);
 
         $version = match ($request->creation_method) {
@@ -61,6 +62,11 @@ final class DocumentVersionController extends Controller
 
         if ($request->revision_description) {
             $version->update(['revision_description' => $request->revision_description]);
+        }
+        
+        // Update NCR paper setting for forms
+        if ($document->document_type->value === 'form') {
+            $version->update(['is_ncr_paper' => $request->boolean('is_ncr_paper')]);
         }
 
         return redirect()->route('document-versions.editor', $version)

@@ -25,17 +25,29 @@ final class FormRequestController extends Controller
         private readonly QRCodeService $qrCodeService
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $user = Auth::user();
+        $isAdmin = $user->hasRole(['Super Admin', 'Owner', 'Document Control']);
         
-        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
-            $formRequests = $this->formRequestService->getAllFormRequests();
+        // Get filters from request
+        $filters = [
+            'status' => $request->input('status'),
+            'requester' => $request->input('requester'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+            'search' => $request->input('search'),
+        ];
+        
+        if ($isAdmin) {
+            $formRequests = $this->formRequestService->getFilteredFormRequests($filters);
+            $requesters = $this->formRequestService->getAllRequesters();
         } else {
-            $formRequests = $this->formRequestService->getFormRequestsByUser($user);
+            $formRequests = $this->formRequestService->getFilteredFormRequestsByUser($user, $filters);
+            $requesters = collect();
         }
         
-        return view('form-requests.index', compact('formRequests'));
+        return view('form-requests.index', compact('formRequests', 'filters', 'requesters', 'isAdmin'));
     }
 
     public function create(): View
@@ -69,6 +81,36 @@ final class FormRequestController extends Controller
         $formRequest->load(['items.documentVersion.document', 'requester', 'acknowledger']);
         
         return view('form-requests.show', compact('formRequest'));
+    }
+
+    public function edit(FormRequest $formRequest): View
+    {
+        $this->authorize('update', $formRequest);
+        
+        $formRequest->load(['items.documentVersion.document.department']);
+        
+        $formDocuments = Document::where('document_type', DocumentType::Form)
+            ->whereHas('activeVersion')
+            ->with(['activeVersion', 'department'])
+            ->get();
+        
+        return view('form-requests.edit', compact('formRequest', 'formDocuments'));
+    }
+
+    public function update(Request $request, FormRequest $formRequest): RedirectResponse
+    {
+        $this->authorize('update', $formRequest);
+        
+        $request->validate([
+            'forms' => 'required|array|min:1',
+            'forms.*.document_version_id' => 'required|exists:document_versions,id',
+            'forms.*.quantity' => 'required|integer|min:1|max:100',
+        ]);
+
+        $this->formRequestService->updateFormRequest($formRequest, $request->all());
+
+        return redirect()->route('form-requests.show', $formRequest)
+            ->with('success', 'Form request updated successfully.');
     }
 
     public function acknowledge(FormRequest $formRequest): RedirectResponse

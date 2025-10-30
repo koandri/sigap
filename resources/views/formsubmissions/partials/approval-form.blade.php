@@ -3,7 +3,7 @@
 <div class="card mt-3">
     <div class="card-header">
         <h4 class="card-title">
-            <i class="fa-regular fa-gavel"></i>
+            <i class="far fa-gavel"></i>
             Approval Action Required
         </h4>
     </div>
@@ -21,14 +21,14 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="decision" id="approve" value="approve" required>
                         <label class="form-check-label text-success" for="approve">
-                            <i class="fa-regular fa-check-circle"></i>
+                            <i class="far fa-check-circle"></i>
                             <strong>Approve</strong>
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="decision" id="reject" value="reject" required>
                         <label class="form-check-label text-danger" for="reject">
-                            <i class="fa-regular fa-times-circle"></i>
+                            <i class="far fa-times-circle"></i>
                             <strong>Reject</strong>
                         </label>
                     </div>
@@ -72,10 +72,10 @@
                 <div class="col-12">
                     <div class="btn-group" role="group">
                         <button type="submit" class="btn btn-sm btn-success" id="submitApproval">
-                            <i class="fa-regular fa-check"></i>&nbsp;Submit
+                            <i class="far fa-check"></i>&nbsp;Submit
                         </button>
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetApprovalForm()">
-                            <i class="fa-regular fa-undo"></i>&nbsp;Reset
+                            <i class="far fa-undo"></i>&nbsp;Reset
                         </button>
                     </div>
                 </div>
@@ -129,7 +129,7 @@ window.addEventListener('load', function() {
         
         // Disable submit button and show loading
         submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fa-regular fa-spinner fa-spin"></i> &nbsp;Processing...';
+        submitButton.innerHTML = '<i class="far fa-spinner fa-spin"></i> &nbsp;Processing...';
         
         // Submit form
         fetch(this.action, {
@@ -156,7 +156,7 @@ window.addEventListener('load', function() {
         })
         .finally(() => {
             submitButton.disabled = false;
-            submitButton.innerHTML = '<i class="fa-regular fa-check"></i>&nbsp;Submit Decision';
+            submitButton.innerHTML = '<i class="far fa-check"></i>&nbsp;Submit Decision';
         });
     });
 });

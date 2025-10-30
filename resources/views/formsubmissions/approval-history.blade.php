@@ -62,7 +62,7 @@
                                     <h3 class="card-title">Submission Summary</h3>
                                     <div class="card-actions">
                                         <a href="{{ route('formsubmissions.show', $submission) }}" class="btn btn-sm btn-secondary">
-                                            <i class="fa-regular fa-arrow-left"></i>&nbsp;Back to Submission
+                                            <i class="far fa-arrow-left"></i>&nbsp;Back to Submission
                                         </a>
                                     </div>
                                 </div>
@@ -109,7 +109,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <i class="fa-regular fa-clock-rotate-left"></i>&nbsp;Approval Timeline
+                                        <i class="far fa-clock-rotate-left"></i>&nbsp;Approval Timeline
                                     </h3>
                                 </div>
                                 <div class="card-body">
@@ -132,19 +132,19 @@
                                                             <td style="text-align: center;">
                                                                 @switch($log->status)
                                                                     @case('approved')
-                                                                        <i class="fa-regular fa-circle-check text-success" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle-check text-success" style="font-size: 2rem;"></i>
                                                                         @break
                                                                     @case('rejected')
-                                                                        <i class="fa-regular fa-circle-x text-danger" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle-x text-danger" style="font-size: 2rem;"></i>
                                                                         @break
                                                                     @case('pending')
-                                                                        <i class="fa-regular fa-clock text-warning" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-clock text-warning" style="font-size: 2rem;"></i>
                                                                         @break
                                                                     @case('escalated')
-                                                                        <i class="fa-regular fa-circle-arrow-up text-info" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle-arrow-up text-info" style="font-size: 2rem;"></i>
                                                                         @break
                                                                     @default
-                                                                        <i class="fa-regular fa-circle text-secondary" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle text-secondary" style="font-size: 2rem;"></i>
                                                                 @endswitch
                                                                 @if($index < $submission->approvalHistory->count() - 1)
                                                                     <div class="timeline-line"></div>
@@ -162,16 +162,16 @@
                                                                 <div class="row text-muted small">
                                                                     <div class="col-md-6">
                                                                         @if($log->assigned_at)
-                                                                        <i class="fa-regular fa-user-tag"></i>
+                                                                        <i class="far fa-user-tag"></i>
                                                                         Assigned: {{ $log->assigned_at->format('d M Y H:i') }}
                                                                         @endif
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         @if($log->action_at)
-                                                                        <i class="fa-regular fa-calendar-check"></i>
+                                                                        <i class="far fa-calendar-check"></i>
                                                                         {{ ucfirst($log->status) }}: {{ $log->action_at->format('d M Y H:i') }}
                                                                         @elseif($log->due_at)
-                                                                        <i class="fa-regular fa-calendar-xmark"></i>
+                                                                        <i class="far fa-calendar-xmark"></i>
                                                                         Due: {{ $log->due_at->format('d M Y H:i') }}
                                                                         @if($log->isOverdue())
                                                                         <span class="text-danger">(Overdue)</span>
@@ -190,13 +190,13 @@
                                                                 @if($log->status === 'pending' && $log->assigned_to === auth()->id())
                                                                 <div class="btn-group btn-group-sm" role="group">
                                                                     <a href="#" class="btn btn-outline-danger" title="Approve" onclick="confirm('Approve this submission?'); event.preventDefault(); document.getElementById('approve-{{ $submission->id }}').submit();">
-                                                                        <i class="fa-regular fa-circle-check"></i>&nbsp;Approve
+                                                                        <i class="far fa-circle-check"></i>&nbsp;Approve
                                                                     </a>
                                                                     <form id="approve-{{ $submission->id }}" action="{{ route('formsubmissions.approve', $submission) }}" method="POST" style="display: none;">
                                                                         @csrf
                                                                     </form>
                                                                     <a href="#" class="btn btn-outline-danger" title="Reject" onclick="showRejectModal('{{ $submission->id }}', '{{ $submission->submission_code }}')">
-                                                                        <i class="fa-regular fa-circle-x"></i>&nbsp;Reject
+                                                                        <i class="far fa-circle-x"></i>&nbsp;Reject
                                                                     </a>
                                                                 </div>
                                                                 @endif
@@ -208,7 +208,7 @@
                                             </div>
                                             @else
                                             <div class="text-center py-4">
-                                                <i class="fa-regular fa-clock-rotate-left display-4 text-muted"></i>
+                                                <i class="far fa-clock-rotate-left display-4 text-muted"></i>
                                                 <p class="mt-3 text-muted">No approval history available</p>
                                             </div>
                                             @endif
@@ -293,7 +293,7 @@
                 <div class="modal-body">
                     <div class="alert alert-warning alert-dismissible" role="alert">
                         <div class="alert-icon">
-                            <i class="fa-regular fa-triangle-exclamation"></i>
+                            <i class="far fa-triangle-exclamation"></i>
                         </div>
                         <div>
                             <div class="alert-description">
@@ -312,7 +312,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" name="action" value="reject" class="btn btn-danger">
-                        <i class="fa-regular fa-circle-x"></i>&nbsp;Confirm Rejection
+                        <i class="far fa-circle-x"></i>&nbsp;Confirm Rejection
                     </button>
                 </div>
             </form>

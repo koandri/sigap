@@ -48,7 +48,7 @@
                     @can('manufacturing.bom.create')
                     @if($bom && $bom->id)
                     <a href="{{ route('manufacturing.bom.copy', $bom) }}" class="btn btn-outline-info">
-                        <i class="fa-regular fa-copy"></i>
+                        <i class="far fa-copy"></i>
                         Copy Template
                     </a>
                     @else
@@ -59,7 +59,7 @@
                     @can('manufacturing.bom.edit')
                     @if($bom && $bom->id)
                     <a href="{{ route('manufacturing.bom.edit', $bom) }}" class="btn btn-primary">
-                        <i class="fa-regular fa-pen"></i>
+                        <i class="far fa-pen"></i>
                         Edit Template
                     </a>
                     @else
@@ -252,7 +252,7 @@
                         <div class="text-center py-4 text-muted">
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="fa-regular fa-crosshairs icon"></i>
+                                    <i class="far fa-crosshairs icon"></i>
                                 </div>
                                 <p class="empty-title">No ingredients defined</p>
                                 <p class="empty-subtitle text-muted">This BoM template doesn't have any ingredients yet.</p>
@@ -284,12 +284,12 @@
                             <div class="col-md-4 mb-4">
                                 @if($bom && $bom->id)
                                 <a href="{{ route('manufacturing.bom.copy', $bom) }}" class="btn btn-outline-info w-100">
-                                    <i class="fa-regular fa-copy icon mb-2"></i>
+                                    <i class="far fa-copy icon mb-2"></i>
                                     <br>Copy Template
                                 </a>
                                 @else
                                 <span class="btn btn-outline-info w-100 disabled">
-                                    <i class="fa-regular fa-copy icon mb-2"></i>
+                                    <i class="far fa-copy icon mb-2"></i>
                                     <br>Copy Template
                                 </span>
                                 @endif
@@ -300,12 +300,12 @@
                             <div class="col-md-4 mb-4">
                                 @if($bom && $bom->id)
                                 <a href="{{ route('manufacturing.bom.edit', $bom) }}" class="btn btn-outline-primary w-100">
-                                    <i class="fa-regular fa-pen icon mb-2"></i>
+                                    <i class="far fa-pen icon mb-2"></i>
                                     <br>Edit Template
                                 </a>
                                 @else
                                 <span class="btn btn-outline-primary w-100 disabled">
-                                    <i class="fa-regular fa-pen icon mb-2"></i>
+                                    <i class="far fa-pen icon mb-2"></i>
                                     <br>Edit Template
                                 </span>
                                 @endif
@@ -315,7 +315,7 @@
                             
                             <div class="col-md-4 mb-4">
                                 <a href="{{ route('manufacturing.bom.index') }}" class="btn btn-outline-secondary w-100">
-                                    <i class="fa-regular fa-arrow-left icon mb-2"></i>
+                                    <i class="far fa-arrow-left icon mb-2"></i>
                                     <br>Back to List
                                 </a>
                             </div>

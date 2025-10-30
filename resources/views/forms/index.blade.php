@@ -32,7 +32,7 @@
                                     <h3 class="card-title">@yield('title')</h3>
                                     <div class="card-actions">
                                         <a href="{{ route('forms.create') }}" class="btn btn-primary btn-sm">
-                                            <i class="fa-regular fa-square-plus"></i>&nbsp;Add new form
+                                            <i class="far fa-square-plus"></i>&nbsp;Add new form
                                         </a>
                                     </div>
                                 </div>
@@ -62,13 +62,13 @@
                                                     <td>
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             <a href="{{ route('forms.show', $form) }}" class="btn btn-outline-secondary" title="View">
-                                                                <i class="fa-regular fa-eye"></i>
+                                                                <i class="far fa-eye"></i>
                                                             </a>
                                                             <a href="{{ route('forms.edit', $form) }}" class="btn btn-outline-primary" title="Edit">
-                                                                <i class="fa-regular fa-pen-to-square"></i>
+                                                                <i class="far fa-pen-to-square"></i>
                                                             </a>
                                                             <a href="#" class="btn btn-outline-danger" onclick="confirm('Are you sure?'); event.preventDefault(); document.getElementById('delete-{{ $form->id }}').submit();" title="Delete">
-                                                                <i class="fa-regular fa-trash-can"></i>
+                                                                <i class="far fa-trash-can"></i>
                                                             </a>
                                                             <form id="delete-{{ $form->id }}" action="{{ route('forms.destroy', $form) }}" method="POST" style="display: none;" onsubmit="return confirm('Are you sure?')">
                                                                 @csrf

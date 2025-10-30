@@ -23,7 +23,7 @@
                         @if($hasUsage)
                         <div class="alert alert-warning alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-triangle-exclamation"></i>
+                                <i class="far fa-triangle-exclamation"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Limited Editing</h4>
@@ -144,17 +144,17 @@
                                 </div>
                                 <div class="card-footer clearfix">
                                     <div class="mb-3">
-                                        <button type="submit" class="btn btn-primary"><i class="fa-regular fa-floppy-disk"></i>&nbsp;Update Workflow</button>
-                                        <a href="{{ route('approval-workflows.index', $form) }}" class="btn float-end"><i class="fa-regular fa-arrow-left"></i>&nbsp;Cancel</a>
+                                        <button type="submit" class="btn btn-primary"><i class="far fa-floppy-disk"></i>&nbsp;Update Workflow</button>
+                                        <a href="{{ route('approval-workflows.index', $form) }}" class="btn float-end"><i class="far fa-arrow-left"></i>&nbsp;Cancel</a>
                                     </div>
                                     <div>
                                         <small class="text-muted">
-                                            <i class="fa-regular fa-clock"></i>&nbsp;Created: {{ $workflow->created_at->format('d M Y H:i') }}
+                                            <i class="far fa-clock"></i>&nbsp;Created: {{ $workflow->created_at->format('d M Y H:i') }}
                                             @if($workflow->creator)
                                                 by {{ $workflow->creator->name }}
                                             @endif
                                             <br>
-                                            <i class="fa-regular fa-clock-rotate-left"></i>&nbsp;Last updated: {{ $workflow->updated_at->format('d M Y H:i') }}
+                                            <i class="far fa-clock-rotate-left"></i>&nbsp;Last updated: {{ $workflow->updated_at->format('d M Y H:i') }}
                                         </small>
                                     </div>
                                 </div>
@@ -169,7 +169,7 @@
                                             Step <span class="step-order-text">1</span>
                                         </h6>
                                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeStep(this)">
-                                            <i class="fa-regular fa-trash-can"></i>&nbsp;Remove
+                                            <i class="far fa-trash-can"></i>&nbsp;Remove
                                         </button>
                                     </div>
                                     <div class="card-body">

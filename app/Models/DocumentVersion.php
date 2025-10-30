@@ -19,6 +19,7 @@ final class DocumentVersion extends Model
         'version_number',
         'file_path',
         'file_type',
+        'is_ncr_paper',
         'status',
         'created_by',
         'revision_description',
@@ -27,6 +28,7 @@ final class DocumentVersion extends Model
 
     protected $casts = [
         'version_number' => 'integer',
+        'is_ncr_paper' => 'boolean',
         'status' => DocumentVersionStatus::class,
         'finalized_at' => 'datetime',
     ];

@@ -146,7 +146,7 @@
             <div class="calculated-result">
                 <span class="text-primary">{{ $formattedValue }}</span>
                 <span class="form-check-description">
-                    <i class="fa-regular fa-calculator"></i>
+                    <i class="far fa-calculator"></i>
                     Formula: <code>{{ $field->calculation_formula }}</code>
                     <br>
                     Raw value: {{ $rawValue }}
@@ -158,7 +158,7 @@
             @if(auth()->user()->hasAnyRole(['Super Admin', 'Owner']))
                 <div class="alert alert-light py-2">
                     <small>
-                        <i class="fa-regular fa-eye-slash text-muted"></i> &nbsp;
+                        <i class="far fa-eye-slash text-muted"></i> &nbsp;
                         <strong>Hidden:</strong> {{ $answer ? $answer->answer_value : '-' }}
                         <span class="text-muted">(Admin view only)</span>
                     </small>
@@ -176,17 +176,17 @@
                     </div>
                     <div class="mt-2">
                         <small class="text-muted">
-                            <i class="fa-regular fa-person-circle-check"></i>&nbsp;
+                            <i class="far fa-person-circle-check"></i>&nbsp;
                             Signed by: {{ $answer->answer_metadata['signed_by'] ?? 'Unknown' }}
                             <br>
-                            <i class="fa-regular fa-clock"></i>&nbsp;
+                            <i class="far fa-clock"></i>&nbsp;
                             Signed at: {{ isset($answer->answer_metadata['signed_at']) ? \Carbon\Carbon::parse($answer->answer_metadata['signed_at'])->format('d M Y H:i') : 'Unknown' }}
                         </small>
                     </div>
                 </div>
             @else
                 <div class="text-center py-3">
-                    <i class="fa-regular fa-signature" style="font-size: 2rem;"></i>
+                    <i class="far fa-signature" style="font-size: 2rem;"></i>
                     <p class="text-muted mt-2">No signature provided</p>
                 </div>
             @endif

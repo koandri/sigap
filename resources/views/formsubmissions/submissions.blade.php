@@ -11,7 +11,7 @@
                             <h2 class="page-title">@yield('title')</h2>
                             @if($hasFullAccess)
                                 <span class="badge bg-success text-dark-fg">
-                                    <i class="fa-regular fa-shield-check"></i> &nbsp;Full Access
+                                    <i class="far fa-shield-check"></i> &nbsp;Full Access
                                 </span>
                             @endif
                         </div>
@@ -68,7 +68,7 @@
                             <div class="card mb-4">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <i class="fa-regular fa-filter"></i> &nbsp;Filters
+                                        <i class="far fa-filter"></i> &nbsp;Filters
                                     </h3>
                                 </div>
                                 <div class="card-body">
@@ -80,18 +80,18 @@
                                                 <div class="btn-group w-100" role="group">
                                                     <input type="radio" class="btn-check" name="filter_mode" id="filter_my" value="my" {{ $filterMode == 'my' ? 'checked' : '' }} onchange="this.form.submit()">
                                                     <label class="btn btn-outline-primary" for="filter_my">
-                                                        <i class="fa-regular fa-person"></i> &nbsp;My Submissions
+                                                        <i class="far fa-person"></i> &nbsp;My Submissions
                                                     </label>
 
                                                     <input type="radio" class="btn-check" name="filter_mode" id="filter_dept" value="department" {{ $filterMode == 'department' ? 'checked' : '' }} onchange="this.form.submit()">
                                                     <label class="btn btn-outline-primary" for="filter_dept">
-                                                        <i class="fa-regular fa-building"></i> &nbsp;Department Submissions
+                                                        <i class="far fa-building"></i> &nbsp;Department Submissions
                                                     </label>
 
                                                     @if($hasFullAccess)
                                                     <input type="radio" class="btn-check" name="filter_mode" id="filter_all" value="all" {{ $filterMode == 'all' ? 'checked' : '' }} onchange="this.form.submit()">
                                                     <label class="btn btn-outline-primary" for="filter_all">
-                                                        <i class="fa-regular fa-globe"></i> &nbsp;All Submissions
+                                                        <i class="far fa-globe"></i> &nbsp;All Submissions
                                                     </label>
                                                     @endif
                                                 </div>
@@ -177,10 +177,10 @@
                                                 <label class="form-label">&nbsp;</label>
                                                 <div>
                                                     <button type="submit" class="btn btn-primary">
-                                                        <i class="fa-regular fa-magnifying-glass"></i>&nbsp;Search
+                                                        <i class="far fa-magnifying-glass"></i>&nbsp;Search
                                                     </button>
                                                     <a href="{{ route('formsubmissions.submissions') }}?filter_mode=my" class="btn btn-secondary">
-                                                        <i class="fa-regular fa-circle-x"></i>&nbsp;Reset
+                                                        <i class="far fa-circle-x"></i>&nbsp;Reset
                                                     </a>
                                                     
                                                     <!-- Quick Date Filters -->
@@ -223,7 +223,7 @@
                                     </h3>
                                     <div class="card-actions">
                                         <a href="{{ route('formsubmissions.index') }}" class="btn btn-primary text-dark-fg">
-                                            <i class="fa-regular fa-circle-plus"></i>&nbsp;Fill New Form
+                                            <i class="far fa-circle-plus"></i>&nbsp;Fill New Form
                                         </a>
                                     </div>
                                 </div>
@@ -284,11 +284,11 @@
                                                     </td>
                                                     <td>
                                                         <div class="btn-group btn-group-sm">
-                                                            <a href="{{ route('formsubmissions.show', $submission) }}" class="btn btn-outline-primary" title="View"><i class="fa-regular fa-eye"></i></a>
+                                                            <a href="{{ route('formsubmissions.show', $submission) }}" class="btn btn-outline-primary" title="View"><i class="far fa-eye"></i></a>
                                                             @if($submission->status === 'draft' && $submission->submitted_by == auth()->id())
-                                                            <a href="{{ route('formsubmissions.edit', $submission) }}" class="btn btn-outline-warning" title="Edit"><i class="fa-regular fa-pen-to-square"></i></a>
+                                                            <a href="{{ route('formsubmissions.edit', $submission) }}" class="btn btn-outline-warning" title="Edit"><i class="far fa-pen-to-square"></i></a>
                                                             @endif
-                                                            <a href="{{ route('formsubmissions.print', $submission) }}" target="_blank" class="btn btn-outline-secondary" title="Print"><i class="fa-regular fa-print"></i></a>
+                                                            <a href="{{ route('formsubmissions.print', $submission) }}" target="_blank" class="btn btn-outline-secondary" title="Print"><i class="far fa-print"></i></a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -303,7 +303,7 @@
                                     </div>
                                     @else
                                     <div class="text-center py-5">
-                                        <i class="fa-regular fa-inbox display-1 text-muted"></i>
+                                        <i class="far fa-inbox display-1 text-muted"></i>
                                         <p class="mt-3 text-muted">No submissions found</p>
                                         @if($filterMode == 'my')
                                             <a href="{{ route('formsubmissions.index') }}" class="btn btn-primary">

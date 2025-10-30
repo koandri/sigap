@@ -4,7 +4,7 @@
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">
-                <i class="fa-regular fa-circle-check"></i>&nbsp;Approval Status
+                <i class="far fa-circle-check"></i>&nbsp;Approval Status
             </h3>
             @if($approvalSummary)
                 <x-status-badge :status="$submission->status" />
@@ -57,7 +57,7 @@
                 @if($approvalSummary['current_step'])
                     <div class="alert alert-info alert-dismissible mt-3" role="alert">
                         <div class="alert-icon">
-                            <i class="fa-regular fa-clock"></i>
+                            <i class="far fa-clock"></i>
                         </div>
                         <div>
                             <div class="alert-description">
@@ -81,14 +81,14 @@
                 <div class="text-center mt-3">
                     <a href="{{ route('formsubmissions.approval.history', $submission) }}" 
                        class="btn btn-sm btn-outline-primary">
-                        <i class="fa-regular fa-clock-rotate-left"></i>&nbsp;View Full Approval History
+                        <i class="far fa-clock-rotate-left"></i>&nbsp;View Full Approval History
                     </a>
                 </div>
             @elseif($submission->needsApproval() && $submission->status === 'submitted' && !$submission->approvalLogs()->exists())
                 <!-- Workflow Not Started Alert -->
                 <div class="alert alert-warning alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="fa-regular fa-triangle-exclamation"></i>
+                        <i class="far fa-triangle-exclamation"></i>
                     </div>
                     <div>
                         <h4 class="alert-heading">Approval Workflow Not Started</h4>
@@ -104,7 +104,7 @@
                                     <button type="submit" 
                                             class="btn btn-sm btn-warning" 
                                             onclick="return confirm('Start approval workflow for this submission?')">
-                                        <i class="fa-regular fa-play"></i>&nbsp;Start Workflow Now
+                                        <i class="far fa-play"></i>&nbsp;Start Workflow Now
                                     </button>
                                 </form>
                             @endif
@@ -114,7 +114,7 @@
             @else
                 <div class="alert alert-info alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="fa-regular fa-circle-info"></i>
+                        <i class="far fa-circle-info"></i>
                     </div>
                     <div>
                         <div class="alert-description">

@@ -31,24 +31,24 @@
                                 <strong>Photo {{ $index + 1 }}</strong>
                             </p>
                             <p class="card-text small text-muted mb-2">
-                                <i class="fa-regular fa-hard-drive"></i>&nbsp;{{ isset($photo['file_size']) ? number_format($photo['file_size'] / 1024, 1) . ' KB' : 'Unknown size' }}
+                                <i class="far fa-hard-drive"></i>&nbsp;{{ isset($photo['file_size']) ? number_format($photo['file_size'] / 1024, 1) . ' KB' : 'Unknown size' }}
                                 <br>
-                                <i class="fa-regular fa-file-code"></i>&nbsp;JPG
+                                <i class="far fa-file-code"></i>&nbsp;JPG
                             </p>
                             <div class="btn-group btn-group-sm w-100">
                                 @if($isImage)
                                     <a href="{{ route('files.preview', [$answer->id, $index ?? null]) }}" data-lightbox="gallery-{{ $answer->id }}" data-title="Photo {{ $index + 1 }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fa-regular fa-eye"></i>&nbsp;View
+                                        <i class="far fa-eye"></i>&nbsp;View
                                     </a>
                                 @endif
                                 
                                 <a href="{{ route('files.download', [$answer->id, $index ?? null]) }}" class="btn btn-outline-success btn-sm">
-                                    <i class="fa-regular fa-download"></i>&nbsp;Download
+                                    <i class="far fa-download"></i>&nbsp;Download
                                 </a>
                                 
                                 @if(auth()->user()->hasAnyRole(['Super Admin', 'Owner']) && $isImage)
                                     <a href="{{ route('files.download.original', [$answer->id, $index ?? null]) }}" class="btn btn-outline-warning btn-sm" title="Download without watermark">
-                                        <i class="fa-regular fa-download"></i>&nbsp;Original
+                                        <i class="far fa-download"></i>&nbsp;Original
                                     </a>
                                 @endif
                             </div>
@@ -61,7 +61,7 @@
         @if($totalPhotos > 0)
             <div class="mt-2">
                 <small class="text-muted">
-                    <i class="fa-regular fa-images"></i>&nbsp;{{ $totalPhotos }} photo(s) uploaded
+                    <i class="far fa-images"></i>&nbsp;{{ $totalPhotos }} photo(s) uploaded
                     | Click on images to view in gallery mode
                 </small>
             </div>
@@ -83,7 +83,7 @@
                         <img src="{{ route('files.thumbnail', $answer->id) }}?w=600&h=800&mode=fit&q=85" class="img-fluid rounded shadow-sm" alt="Photo" style="max-height: 400px; cursor: zoom-in;" loading="lazy">
                     </a>
                     <small class="text-muted d-block mt-2">
-                        <i class="fa-regular fa-magnifying-glass-plus"></i>&nbsp;Click image to enlarge
+                        <i class="far fa-magnifying-glass-plus"></i>&nbsp;Click image to enlarge
                     </small>
                 </div>
             @endif
@@ -92,9 +92,9 @@
             <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
                 <div>
                     @if($isImage)
-                        <i class="fa-regular fa-file-image text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-image text-primary me-2" style="font-size: 1.5rem;"></i>
                     @else
-                        <i class="fa-regular fa-file text-secondary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file text-secondary me-2" style="font-size: 1.5rem;"></i>
                     @endif
                     
                     <span>
@@ -109,17 +109,17 @@
                 <div class="btn-group">
                     @if($isImage)
                         <a href="{{ route('files.preview', [$answer->id, $index ?? null]) }}" data-lightbox="single-{{ $answer->id }}" data-title="Photo" class="btn btn-outline-primary btn-sm">
-                            <i class="fa-regular fa-eye"></i>&nbsp;View
+                            <i class="far fa-eye"></i>&nbsp;View
                         </a>
                     @endif
                     
                     <a href="{{ route('files.download', [$answer->id, $index ?? null]) }}" class="btn btn-outline-success btn-sm">
-                        <i class="fa-regular fa-download"></i>&nbsp;Download
+                        <i class="far fa-download"></i>&nbsp;Download
                     </a>
                     
                     @if(auth()->user()->hasAnyRole(['Super Admin', 'Owner']) && $isImage)
                         <a href="{{ route('files.download.original', [$answer->id, $index ?? null]) }}" class="btn btn-outline-warning btn-sm" title="Download without watermark">
-                            <i class="fa-regular fa-download"></i>&nbsp;Original
+                            <i class="far fa-download"></i>&nbsp;Original
                         </a>
                     @endif
                 </div>
@@ -129,7 +129,7 @@
     @else
         <!-- No photos -->
         <div class="text-center py-4">
-            <i class="fa-regular fa-file-image" style="font-size: 3rem; color: #6c757d;"></i>
+            <i class="far fa-file-image" style="font-size: 3rem; color: #6c757d;"></i>
             <p class="text-muted mt-2">No photos uploaded</p>
         </div>
     @endif

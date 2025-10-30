@@ -19,7 +19,7 @@
     <div class="page-body">
         <div class="container-xl">
             <!-- SLA Metrics -->
-            <div class="row row-deck row-cards">
+            <div class="row row-deck row-cards mb-3">
                 <div class="col-sm-6 col-lg-3">
                     <div class="card">
                         <div class="card-body">
@@ -132,7 +132,7 @@
                             @else
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="ti ti-file-text"></i>
+                                        <i class="far fa-file-alt"></i>
                                     </div>
                                     <p class="empty-title">No circulating forms</p>
                                     <p class="empty-subtitle text-muted">
@@ -152,7 +152,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title text-warning">
-                                <i class="ti ti-alert-triangle"></i>
+                                <i class="far fa-exclamation-triangle"></i>
                                 Overdue Requests
                             </h3>
                         </div>

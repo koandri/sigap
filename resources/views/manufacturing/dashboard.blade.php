@@ -144,7 +144,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title text-warning">
-                            <i class="fa-regular fa-circle-exclamation"></i>
+                            <i class="far fa-circle-exclamation"></i>
                             Items Expiring Soon (Next 30 Days)
                         </h3>
                     </div>
@@ -195,25 +195,25 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-primary w-100">
-                                    <i class="fa-regular fa-box icon mb-2"></i>
+                                    <i class="far fa-box icon mb-2"></i>
                                     <br>Manage Items
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.item-categories.index') }}" class="btn btn-outline-primary w-100">
-                                    <i class="fa-regular fa-grid-2 icon mb-2"></i>
+                                    <i class="far fa-grid-2 icon mb-2"></i>
                                     <br>Item Categories
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.index') }}" class="btn btn-outline-primary w-100">
-                                    <i class="fa-regular fa-warehouse icon mb-2"></i>
+                                    <i class="far fa-warehouse icon mb-2"></i>
                                     <br>Warehouses
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.overview-report') }}" class="btn btn-outline-info w-100">
-                                    <i class="fa-regular fa-chart-column icon mb-2"></i>
+                                    <i class="far fa-chart-column icon mb-2"></i>
                                     <br>Overview Report
                                 </a>
                             </div>
@@ -223,7 +223,7 @@
                                 @else
                                 <div class="btn btn-outline-secondary w-100 disabled">
                                 @endcan
-                                    <i class="fa-regular fa-clipboard-list icon mb-2"></i>
+                                    <i class="far fa-clipboard-list icon mb-2"></i>
                                     <br>Bill of Materials
                                 @can('manufacturing.bom.view')
                                 </a>
@@ -233,7 +233,7 @@
                             </div>
                             <div class="col-md-3 mb-3">
                                 <div class="btn btn-outline-secondary w-100 disabled">
-                                    <i class="fa-regular fa-terminal icon mb-2"></i>
+                                    <i class="far fa-terminal icon mb-2"></i>
                                     <br>Production (Coming Soon)
                                 </div>
                             </div>

@@ -19,8 +19,15 @@ final class QRCodeService
             return $item->printedForms;
         });
 
-        $labels = $printedForms->map(function ($printedForm) {
-            return $this->generateSingleLabel($printedForm);
+        $labels = $printedForms->flatMap(function ($printedForm) {
+            $labelData = $this->generateSingleLabel($printedForm);
+            
+            // If NCR paper, generate 3 copies of the label
+            if ($printedForm->documentVersion->is_ncr_paper) {
+                return collect()->times(3, fn() => $labelData);
+            }
+            
+            return [$labelData];
         });
 
         // Generate PDF with all labels
@@ -82,13 +89,20 @@ final class QRCodeService
             return $item->printedForms;
         });
 
-        $labels = $printedForms->map(function ($printedForm) {
-            return [
+        $labels = $printedForms->flatMap(function ($printedForm) {
+            $labelData = [
                 'form_number' => $printedForm->form_number,
                 'form_name' => $printedForm->form_name,
                 'issue_date' => $printedForm->issue_date,
                 'qr_code' => $this->generateQRCode($printedForm),
             ];
+            
+            // If NCR paper, generate 3 copies of the label
+            if ($printedForm->documentVersion->is_ncr_paper) {
+                return collect()->times(3, fn() => $labelData);
+            }
+            
+            return [$labelData];
         });
 
         // Generate PDF with labels in a grid format
@@ -107,15 +121,24 @@ final class QRCodeService
 
     public function generateBulkLabels(array $printedFormIds): string
     {
-        $printedForms = PrintedForm::whereIn('id', $printedFormIds)->get();
+        $printedForms = PrintedForm::whereIn('id', $printedFormIds)
+            ->with('documentVersion')
+            ->get();
         
-        $labels = $printedForms->map(function ($printedForm) {
-            return [
+        $labels = $printedForms->flatMap(function ($printedForm) {
+            $labelData = [
                 'form_number' => $printedForm->form_number,
                 'form_name' => $printedForm->form_name,
                 'issue_date' => $printedForm->issue_date,
                 'qr_code' => $this->generateQRCode($printedForm),
             ];
+            
+            // If NCR paper, generate 3 copies of the label
+            if ($printedForm->documentVersion->is_ncr_paper) {
+                return collect()->times(3, fn() => $labelData);
+            }
+            
+            return [$labelData];
         });
 
         $pdf = Pdf::loadView('form-requests.bulk-labels', [

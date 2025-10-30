@@ -180,7 +180,7 @@
                             <h3 class="card-title">Ingredients</h3>
                             <div class="card-actions">
                                 <button type="button" class="btn btn-primary btn-sm" id="addIngredient">
-                        <i class="fa-regular fa-plus"></i>
+                        <i class="far fa-plus"></i>
                                     Add Ingredient
                                 </button>
                             </div>
@@ -223,7 +223,7 @@
                                                 <div class="col-md-1">
                                                     <label class="form-label">&nbsp;</label>
                                                     <button type="button" class="btn btn-outline-danger btn-sm w-100 remove-ingredient">
-                        <i class="fa-regular fa-xmark"></i>
+                        <i class="far fa-xmark"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -246,7 +246,7 @@
                             <div class="d-flex">
                                 <a href="{{ route('manufacturing.bom.show', $bom) }}" class="btn btn-outline-secondary me-auto">Cancel</a>
                                 <button type="submit" class="btn btn-primary">
-                        <i class="fa-regular fa-pen"></i>
+                        <i class="far fa-pen"></i>
                                     Update BoM Template
                                 </button>
                             </div>
@@ -290,7 +290,7 @@
             <div class="col-md-1">
                 <label class="form-label">&nbsp;</label>
                 <button type="button" class="btn btn-outline-danger btn-sm w-100 remove-ingredient">
-                        <i class="fa-regular fa-xmark"></i>
+                        <i class="far fa-xmark"></i>
                 </button>
             </div>
         </div>

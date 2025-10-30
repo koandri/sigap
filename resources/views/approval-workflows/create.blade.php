@@ -22,7 +22,7 @@
 
                         <div class="alert alert-info alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-circle-info"></i>
+                                <i class="far fa-circle-info"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Info!</h4>
@@ -91,8 +91,8 @@
                                     </div>
                                 </div>
                                 <div class="card-footer clearfix">
-                                    <button type="submit" class="btn btn-primary"><i class="fa-regular fa-circle-check"></i>&nbsp;Create Workflow</button>
-                                    <a href="{{ route('approval-workflows.index', $form) }}" class="btn float-end"><i class="fa-regular fa-arrow-left"></i>&nbsp;Cancel</a>
+                                    <button type="submit" class="btn btn-primary"><i class="far fa-circle-check"></i>&nbsp;Create Workflow</button>
+                                    <a href="{{ route('approval-workflows.index', $form) }}" class="btn float-end"><i class="far fa-arrow-left"></i>&nbsp;Cancel</a>
                                 </div>
                             </form>
 
@@ -107,7 +107,7 @@
                                         </h3>
                                         <div class="card-actions">
                                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeStep(this)">
-                                                <i class="fa-regular fa-trash-can"></i>&nbsp;Remove
+                                                <i class="far fa-trash-can"></i>&nbsp;Remove
                                             </button>
                                         </div>
                                     </div>

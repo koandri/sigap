@@ -28,7 +28,7 @@
                                     <h3 class="card-title">@yield('title')</h3>
                                     <div class="card-actions">
                                         <a href="{{ route('roles.create') }}" class="btn btn-primary btn-sm">
-                                            <i class="fa-regular fa-square-plus"></i>&nbsp;Add new role
+                                            <i class="far fa-square-plus"></i>&nbsp;Add new role
                                         </a>
                                     </div>
                                 </div>
@@ -50,10 +50,10 @@
                                                     <td>
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             <a href="{{ route('roles.show', $role) }}" class="btn btn-outline-secondary" title="View">
-                                                                <i class="fa-regular fa-eye"></i>
+                                                                <i class="far fa-eye"></i>
                                                             </a>
                                                             <a href="{{ route('roles.edit', $role) }}" class="btn btn-outline-primary" title="Edit">
-                                                                <i class="fa-regular fa-pen-to-square"></i>
+                                                                <i class="far fa-pen-to-square"></i>
                                                             </a>
                                                         </div>
                                                     </td>

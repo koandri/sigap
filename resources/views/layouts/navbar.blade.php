@@ -3,7 +3,7 @@
                 <li class="nav-item {{ areActiveRoutes('home') }}">
                     <a class="nav-link" href="{{ route('home') }}">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-house-heart"></i>
+                            <i class="far fa-house-heart"></i>
                         </span>
                         <span class="nav-link-title">Home</span>
                     </a>
@@ -11,7 +11,7 @@
                 <li class="nav-item dropdown {{ areActiveRoutes(['forms.*', 'formversions.*', 'formfields.*', 'formsubmissions.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-folder-gear"></i>
+                            <i class="far fa-folder-gear"></i>
                         </span>
                         <span class="nav-link-title">Forms</span>
                     </a>
@@ -19,7 +19,7 @@
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('formsubmissions.submissions') }}" href="{{ route('formsubmissions.submissions') }}">
-                                    <i class="fa-regular fa-square-list"></i> &nbsp;Form Submissions
+                                    <i class="far fa-square-list"></i> &nbsp;Form Submissions
                                 </a>
                                 <!-- Pending Approvals with Badge -->
                                 @php
@@ -29,39 +29,39 @@
                                             ->count() : 0;
                                 @endphp 
                                 <a class="dropdown-item {{ areActiveRoutes('formsubmissions.pending') }}" href="{{ route('formsubmissions.pending') }}">
-                                    <i class="fa-regular fa-hourglass-clock"></i> &nbsp;Pending Approvals
+                                    <i class="far fa-hourglass-clock"></i> &nbsp;Pending Approvals
                                     @if($pendingCount > 0)
                                         <span class="badge badge-outline text-danger ms-1">{{ $pendingCount }}</span>
                                     @endif
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('formsubmissions.index') }}" href="{{ route('formsubmissions.index') }}">
-                                    <i class="fa-regular fa-clipboard-list-check"></i> &nbsp;Fill Form
+                                    <i class="far fa-clipboard-list-check"></i> &nbsp;Fill Form
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes(['forms.*', 'formversions.*', 'formfields.*', 'approval-workflows.*']) }}" href="{{ route('forms.index') }}">
-                                    <i class="fa-regular fa-money-check-pen"></i> &nbsp;Form Templates
+                                    <i class="far fa-money-check-pen"></i> &nbsp;Form Templates
                                 </a>
                             </div>
                         </div>
                     </div>
                 </li>
-                <li class="nav-item dropdown {{ areActiveRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
+                <li class="nav-item dropdown {{ areActiveRoutes(['documents.*', 'documents.versions.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-file-lines"></i>
+                            <i class="far fa-file-lines"></i>
                         </span>
                         <span class="nav-link-title">Document Management</span>
                     </a>
-                    <div class="dropdown-menu {{ areOpenRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
+                    <div class="dropdown-menu {{ areOpenRoutes(['documents.*', 'documents.versions.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('dms-dashboard') }}" href="{{ route('dms-dashboard') }}">
-                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
+                                    <i class="far fa-chart-line"></i> &nbsp;Dashboard
                                 </a>
-                                <a class="dropdown-item {{ areActiveRoutes('documents.*') }}" href="{{ route('documents.index') }}">
-                                    <i class="fa-regular fa-folder"></i> &nbsp;Documents
+                                <a class="dropdown-item {{ areActiveRoutes(['documents.*', 'documents.versions.*', 'document-versions.*']) }}" href="{{ route('documents.index') }}">
+                                    <i class="far fa-folder"></i> &nbsp;Documents
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('my-document-access') }}" href="{{ route('my-document-access') }}">
-                                    <i class="fa-regular fa-eye"></i> &nbsp;My Documents
+                                    <i class="far fa-eye"></i> &nbsp;My Documents
                                 </a>
                                 @php
                                     $pendingDocApprovals = auth()->user() ? 
@@ -70,19 +70,19 @@
                                             ->count() : 0;
                                 @endphp
                                 <a class="dropdown-item {{ areActiveRoutes('document-approvals.*') }}" href="{{ route('document-approvals.index') }}">
-                                    <i class="fa-regular fa-check-double"></i> &nbsp;Document Approvals
+                                    <i class="far fa-check-double"></i> &nbsp;Document Approvals
                                     @if($pendingDocApprovals > 0)
                                         <span class="badge badge-outline text-danger ms-1">{{ $pendingDocApprovals }}</span>
                                     @endif
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('form-requests.*') }}" href="{{ route('form-requests.index') }}">
-                                    <i class="fa-regular fa-file-text"></i> &nbsp;Form Requests
+                                    <i class="far fa-file-text"></i> &nbsp;Form Requests
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('documents.masterlist') }}" href="{{ route('documents.masterlist') }}">
-                                    <i class="fa-regular fa-list"></i> &nbsp;Masterlist
+                                    <i class="far fa-list"></i> &nbsp;Masterlist
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('dms-sla') }}" href="{{ route('dms-sla') }}">
-                                    <i class="fa-regular fa-chart-bar"></i> &nbsp;SLA Report
+                                    <i class="far fa-chart-bar"></i> &nbsp;SLA Report
                                 </a>
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                 <li class="nav-item dropdown {{ areActiveRoutes(['manufacturing.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-industry"></i>
+                            <i class="far fa-industry"></i>
                         </span>
                         <span class="nav-link-title">Manufacturing</span>
                     </a>
@@ -99,27 +99,27 @@
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.dashboard') }}" href="{{ route('manufacturing.dashboard') }}">
-                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
+                                    <i class="far fa-chart-line"></i> &nbsp;Dashboard
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.items.*') }}" href="{{ route('manufacturing.items.index') }}">
-                                    <i class="fa-regular fa-boxes-stacked"></i> &nbsp;Items
+                                    <i class="far fa-boxes-stacked"></i> &nbsp;Items
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.item-categories.*') }}" href="{{ route('manufacturing.item-categories.index') }}">
-                                    <i class="fa-regular fa-layer-group"></i> &nbsp;Item Categories
+                                    <i class="far fa-layer-group"></i> &nbsp;Item Categories
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.warehouses.*') }}" href="{{ route('manufacturing.warehouses.index') }}">
-                                    <i class="fa-regular fa-warehouse"></i> &nbsp;Warehouses
+                                    <i class="far fa-warehouse"></i> &nbsp;Warehouses
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.bom.*') }}" href="{{ route('manufacturing.bom.index') }}">
-                                    <i class="fa-regular fa-sitemap"></i> &nbsp;Bill of Materials
+                                    <i class="far fa-sitemap"></i> &nbsp;Bill of Materials
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header">Coming Soon</h6>
                                 <a class="dropdown-item disabled">
-                                    <i class="fa-regular fa-calendar-check"></i> &nbsp;Production Planning
+                                    <i class="far fa-calendar-check"></i> &nbsp;Production Planning
                                 </a>
                                 <a class="dropdown-item disabled">
-                                    <i class="fa-regular fa-gears"></i> &nbsp;Production Execution
+                                    <i class="far fa-gears"></i> &nbsp;Production Execution
                                 </a>
                             </div>
                         </div>
@@ -128,7 +128,7 @@
                 <li class="nav-item dropdown {{ areActiveRoutes(['maintenance.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-wrench"></i>
+                            <i class="far fa-wrench"></i>
                         </span>
                         <span class="nav-link-title">Assets Maintenance</span>
                     </a>
@@ -136,16 +136,16 @@
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.dashboard') }}" href="{{ route('maintenance.dashboard') }}">
-                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
+                                    <i class="far fa-chart-line"></i> &nbsp;Dashboard
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.work-orders.*') }}" href="{{ route('maintenance.work-orders.index') }}">
-                                    <i class="fa-regular fa-clipboard-list"></i> &nbsp;Work Orders
+                                    <i class="far fa-clipboard-list"></i> &nbsp;Work Orders
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.schedules.*') }}" href="{{ route('maintenance.schedules.index') }}">
-                                    <i class="fa-regular fa-calendar-check"></i> &nbsp;Maintenance Schedules
+                                    <i class="far fa-calendar-check"></i> &nbsp;Maintenance Schedules
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('maintenance.logs.*') }}" href="{{ route('maintenance.logs.index') }}">
-                                    <i class="fa-regular fa-file-lines"></i> &nbsp;Maintenance Logs
+                                    <i class="far fa-file-lines"></i> &nbsp;Maintenance Logs
                                 </a>
                             </div>
                         </div>
@@ -155,7 +155,7 @@
                 <li class="nav-item dropdown {{ areActiveRoutes(['facility.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-broom"></i>
+                            <i class="far fa-broom"></i>
                         </span>
                         <span class="nav-link-title">Facility Management</span>
                     </a>
@@ -164,25 +164,25 @@
                             <div class="dropdown-menu-column">
                                 @can('facility.dashboard.view')
                                 <a class="dropdown-item {{ areActiveRoutes('facility.dashboard') }}" href="{{ route('facility.dashboard') }}">
-                                    <i class="fa-regular fa-chart-line"></i> &nbsp;Dashboard
+                                    <i class="far fa-chart-line"></i> &nbsp;Dashboard
                                 </a>
                                 @endcan
                                 @can('facility.tasks.view')
                                 <a class="dropdown-item {{ areActiveRoutes('facility.tasks.my-tasks') }}" href="{{ route('facility.tasks.my-tasks') }}">
-                                    <i class="fa-regular fa-clipboard-check"></i> &nbsp;My Tasks
+                                    <i class="far fa-clipboard-check"></i> &nbsp;My Tasks
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('facility.tasks.index') }}" href="{{ route('facility.tasks.index') }}">
-                                    <i class="fa-regular fa-list-check"></i> &nbsp;All Tasks
+                                    <i class="far fa-list-check"></i> &nbsp;All Tasks
                                 </a>
                                 @endcan
                                 @can('facility.schedules.view')
                                 <a class="dropdown-item {{ areActiveRoutes('facility.schedules.*') }}" href="{{ route('facility.schedules.index') }}">
-                                    <i class="fa-regular fa-calendar-days"></i> &nbsp;Cleaning Schedules
+                                    <i class="far fa-calendar-days"></i> &nbsp;Cleaning Schedules
                                 </a>
                                 @endcan
                                 @can('facility.submissions.review')
                                 <a class="dropdown-item {{ areActiveRoutes('facility.approvals.*') }}" href="{{ route('facility.approvals.index') }}">
-                                    <i class="fa-regular fa-check-double"></i> &nbsp;Approvals
+                                    <i class="far fa-check-double"></i> &nbsp;Approvals
                                 </a>
                                 @php
                                     $pendingApprovals = \App\Models\CleaningApproval::where('status', 'pending')->count();
@@ -192,7 +192,7 @@
                                 @endif
                                 @endcan
                                 <a class="dropdown-item" href="{{ route('facility.requests.guest-form') }}" target="_blank">
-                                    <i class="fa-regular fa-paper-plane"></i> &nbsp;Submit Request
+                                    <i class="far fa-paper-plane"></i> &nbsp;Submit Request
                                 </a>
                             </div>
                         </div>
@@ -202,7 +202,7 @@
                 <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*', 'reports.facility.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-chart-bar"></i>
+                            <i class="far fa-chart-bar"></i>
                         </span>
                         <span class="nav-link-title">Reports</span>
                     </a>
@@ -211,29 +211,29 @@
                             <div class="dropdown-menu-column">
                                 <h6 class="dropdown-header">Assets</h6>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-location') }}" href="{{ route('reports.assets.by-location') }}">
-                                    <i class="fa-regular fa-map-marker-alt"></i> &nbsp;by Location
+                                    <i class="far fa-map-marker-alt"></i> &nbsp;by Location
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-category') }}" href="{{ route('reports.assets.by-category') }}">
-                                    <i class="fa-regular fa-tags"></i> &nbsp;by Category
+                                    <i class="far fa-tags"></i> &nbsp;by Category
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-category-location') }}" href="{{ route('reports.assets.by-category-location') }}">
-                                    <i class="fa-regular fa-layer-group"></i> &nbsp;by Category & Location
+                                    <i class="far fa-layer-group"></i> &nbsp;by Category & Location
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-department') }}" href="{{ route('reports.assets.by-department') }}">
-                                    <i class="fa-regular fa-building"></i> &nbsp;by Department
+                                    <i class="far fa-building"></i> &nbsp;by Department
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-user') }}" href="{{ route('reports.assets.by-user') }}">
-                                    <i class="fa-regular fa-user"></i> &nbsp;by Assigned User
+                                    <i class="far fa-user"></i> &nbsp;by Assigned User
                                 </a>
                             </div>
                             @can('facility.reports.view')
                             <div class="dropdown-menu-column">
                                 <h6 class="dropdown-header">Facility Management</h6>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.facility.daily') }}" href="{{ route('reports.facility.daily') }}">
-                                    <i class="fa-regular fa-calendar-day"></i> &nbsp;Daily Report
+                                    <i class="far fa-calendar-day"></i> &nbsp;Daily Report
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.facility.weekly') }}" href="{{ route('reports.facility.weekly') }}">
-                                    <i class="fa-regular fa-calendar-week"></i> &nbsp;Weekly Report
+                                    <i class="far fa-calendar-week"></i> &nbsp;Weekly Report
                                 </a>
                             </div>
                             @endcan
@@ -243,7 +243,7 @@
                 <li class="nav-item dropdown {{ areActiveRoutes(['options.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-sliders"></i>
+                            <i class="far fa-sliders"></i>
                         </span>
                         <span class="nav-link-title">Options</span>
                     </a>
@@ -251,13 +251,13 @@
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('options.assets.*') }}" href="{{ route('options.assets.index') }}">
-                                    <i class="fa-regular fa-boxes-stacked"></i> &nbsp;Assets
+                                    <i class="far fa-boxes-stacked"></i> &nbsp;Assets
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('options.asset-categories.*') }}" href="{{ route('options.asset-categories.index') }}">
-                                    <i class="fa-regular fa-layer-group"></i> &nbsp;Asset Categories
+                                    <i class="far fa-layer-group"></i> &nbsp;Asset Categories
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('options.locations.*') }}" href="{{ route('options.locations.index') }}">
-                                    <i class="fa-regular fa-map-marker-alt"></i> &nbsp;Locations
+                                    <i class="far fa-map-marker-alt"></i> &nbsp;Locations
                                 </a>
                             </div>
                         </div>
@@ -266,7 +266,7 @@
                 <li class="nav-item dropdown {{ areActiveRoutes(['users.*', 'roles.*', 'permissions.*', 'departments.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-user-crown"></i>
+                            <i class="far fa-user-crown"></i>
                         </span>
                         <span class="nav-link-title">Admin</span>
                     </a>
@@ -274,16 +274,16 @@
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('users.*') }}" href="{{ route('users.index') }}">
-                                    <i class="fa-regular fa-users"></i> &nbsp;Users
+                                    <i class="far fa-users"></i> &nbsp;Users
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('roles.*') }}" href="{{ route('roles.index') }}">
-                                    <i class="fa-regular fa-user-question"></i> &nbsp;Roles
+                                    <i class="far fa-user-question"></i> &nbsp;Roles
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('permissions.*') }}" href="{{ route('permissions.index') }}">
-                                    <i class="fa-regular fa-user-key"></i> &nbsp;Permissions
+                                    <i class="far fa-user-key"></i> &nbsp;Permissions
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('departments.*') }}" href="{{ route('departments.index') }}">
-                                    <i class="fa-regular fa-building-user"></i> &nbsp;Departments
+                                    <i class="far fa-building-user"></i> &nbsp;Departments
                                 </a>
                                 <div class="dropend">
                                     <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
@@ -302,14 +302,14 @@
                     @impersonating($guard = null)
                     <a class="nav-link" href="{{ route('impersonate.leave') }}">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-right-from-bracket"></i>
+                            <i class="far fa-right-from-bracket"></i>
                         </span>
                         <span class="nav-link-title">Leave Impersonating</span>
                     </a>
                     @else
                     <a class="nav-link" href="#" onclick="confirm('Are you sure?'); event.preventDefault(); document.getElementById('navbar-logout-form').submit();">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                            <i class="fa-regular fa-right-from-bracket"></i>
+                            <i class="far fa-right-from-bracket"></i>
                         </span>
                         <span class="nav-link-title">Logout</span>
                     </a>

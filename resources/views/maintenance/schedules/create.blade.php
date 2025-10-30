@@ -282,12 +282,12 @@
                                     <div class="input-group mb-2">
                                         <input type="text" name="checklist[]" class="form-control" placeholder="Checklist item">
                                         <button type="button" class="btn btn-outline-danger" onclick="removeChecklistItem(this)">
-                                            <i class="fa-regular fa-xmark"></i>
+                                            <i class="far fa-xmark"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <button type="button" class="btn btn-outline-primary btn-sm" onclick="addChecklistItem()">
-                                    <i class="fa-regular fa-plus"></i>
+                                    <i class="far fa-plus"></i>
                                     Add Checklist Item
                                 </button>
                                 @error('checklist')
@@ -345,7 +345,7 @@ function addChecklistItem() {
     newItem.innerHTML = `
         <input type="text" name="checklist[]" class="form-control" placeholder="Checklist item">
         <button type="button" class="btn btn-outline-danger" onclick="removeChecklistItem(this)">
-            <i class="fa-regular fa-xmark"></i>
+            <i class="far fa-xmark"></i>
         </button>
     `;
     container.appendChild(newItem);

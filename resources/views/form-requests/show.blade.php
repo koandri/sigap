@@ -22,6 +22,13 @@
                             Back to Requests
                         </a>
                         
+                        @can('update', $formRequest)
+                            <a href="{{ route('form-requests.edit', $formRequest) }}" class="btn btn-primary">
+                                <i class="far fa-edit"></i>
+                                Edit Request
+                            </a>
+                        @endcan
+                        
                         @can('process', $formRequest)
                             @if($formRequest->isAcknowledged() || $formRequest->isProcessing())
                                 <a href="{{ route('form-requests.labels', $formRequest) }}" class="btn btn-info">

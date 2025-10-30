@@ -92,4 +92,18 @@ final class FormRequestPolicy
 
         return false;
     }
+
+    /**
+     * Determine whether the user can update the form request.
+     */
+    public function update(User $user, FormRequest $formRequest): bool
+    {
+        // Only allow editing if status is 'Requested'
+        if (!$formRequest->isPending()) {
+            return false;
+        }
+
+        // Only the requester can edit their own form requests
+        return $formRequest->requested_by === $user->id;
+    }
 }

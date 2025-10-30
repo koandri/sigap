@@ -22,7 +22,7 @@
 
                         <div class="alert alert-info alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-circle-info"></i>
+                                <i class="far fa-circle-info"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Field: <strong>{{ $field->field_label }}</strong> ({{ $field->field_code }})</h4>
@@ -81,7 +81,7 @@
                                                 <div class="col-md-1">
                                                     @if(!$hasSubmissions)
                                                     <label class="form-label">&nbsp;</label>
-                                                    <button type="button" class="btn btn-danger btn-sm d-block" onclick="removeOption(this)"><i class="fa-regular fa-trash-can"></i></button>
+                                                    <button type="button" class="btn btn-danger btn-sm d-block" onclick="removeOption(this)"><i class="far fa-trash-can"></i></button>
                                                     @endif
                                                 </div>
                                             </div>
@@ -92,7 +92,7 @@
                                     </div>
 
                                     @if(!$hasSubmissions)
-                                    <button type="button" class="btn btn-secondary mb-3" onclick="addOption()"><i class="fa-regular fa-plus"></i> &nbsp;Add New Option</button>
+                                    <button type="button" class="btn btn-secondary mb-3" onclick="addOption()"><i class="far fa-plus"></i> &nbsp;Add New Option</button>
                                     @endif
                                 </div>
                                 <div class="card-footer clearfix">
@@ -133,7 +133,7 @@
                 </div>
                 <div class="col-md-1">
                     <label class="form-label">&nbsp;</label>
-                    <button type="button" class="btn btn-danger btn-sm d-block" onclick="removeOption(this)"><i class="fa-regular fa-trash-can"></i></button>
+                    <button type="button" class="btn btn-danger btn-sm d-block" onclick="removeOption(this)"><i class="far fa-trash-can"></i></button>
                 </div>
             </div>
         `;

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Lab404\Impersonate\Models\Impersonate;
 
 class User extends Authenticatable
@@ -212,5 +213,13 @@ class User extends Authenticatable
     public function resolvedCleaningAlerts()
     {
         return $this->hasMany(CleaningScheduleAlert::class, 'resolved_by');
+    }
+
+    /**
+     * Form requests made by this user.
+     */
+    public function formRequests(): HasMany
+    {
+        return $this->hasMany(FormRequest::class, 'requested_by');
     }
 }

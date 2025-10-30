@@ -67,7 +67,7 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fa-regular fa-file-lines"></i>&nbsp;{{ $formName }}
+                                <i class="far fa-file-lines"></i>&nbsp;{{ $formName }}
                                 <span class="badge bg-secondary ms-2">{{ $approvals->count() }} pending</span>
                             </h3>
                         </div>
@@ -140,19 +140,19 @@
                                             <td>
                                                 <div class="btn-group btn-group-sm">
                                                     <a href="{{ route('formsubmissions.show', $approval->submission) }}" class="btn btn-outline-primary" title="View & Approve">
-                                                        <i class="fa-regular fa-eye"></i>&nbsp;Review
+                                                        <i class="far fa-eye"></i>&nbsp;Review
                                                     </a>
                                                     
                                                     <!-- Quick Approve/Reject Buttons -->
                                                     <form action="{{ route('formsubmissions.approve', $approval->submission) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         <button type="submit" name="action" value="approve" class="btn btn-success btn-sm" title="Quick Approve" onclick="return confirm('Quick approve this submission?')">
-                                                            <i class="fa-regular fa-check"></i>
+                                                            <i class="far fa-check"></i>
                                                         </button>
                                                     </form>
                                                     
                                                     <button type="button" class="btn btn-danger btn-sm" title="Reject with Comments" onclick="showRejectModal('{{ $approval->submission->id }}', '{{ $approval->submission->submission_code }}')">
-                                                        <i class="fa-regular fa-xmark"></i>
+                                                        <i class="far fa-xmark"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -168,11 +168,11 @@
                     <!-- No Pending Approvals -->
                     <div class="card">
                         <div class="card-body text-center py-5">
-                            <i class="fa-regular fa-circle-check text-success" style="font-size: 4rem;"></i>
+                            <i class="far fa-circle-check text-success" style="font-size: 4rem;"></i>
                             <h4 class="mt-3">All Caught Up!</h4>
                             <p class="text-muted">You have no pending approvals at the moment.</p>
                             <a href="{{ route('formsubmissions.submissions') }}" class="btn btn-primary">
-                                <i class="fa-regular fa-list"></i>&nbsp;View All Submissions
+                                <i class="far fa-list"></i>&nbsp;View All Submissions
                             </a>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
                                     <div class="modal-body">
                                         <div class="alert alert-warning alert-dismissible" role="alert">
                                             <div class="alert-icon">
-                                                <i class="fa-regular fa-triangle-exclamation"></i>
+                                                <i class="far fa-triangle-exclamation"></i>
                                             </div>
                                             <div>
                                                 <div class="alert-description">
@@ -210,7 +210,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                         <button type="submit" name="action" value="reject" class="btn btn-danger">
-                                            <i class="fa-regular fa-circle-x"></i>&nbsp;Reject Submission
+                                            <i class="far fa-circle-x"></i>&nbsp;Reject Submission
                                         </button>
                                     </div>
                                 </form>

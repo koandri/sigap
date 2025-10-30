@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create Form Request')
+@section('title', 'Edit Form Request #' . $formRequest->id)
 
 @section('content')
 <div class="page-wrapper">
@@ -8,14 +8,17 @@
         <div class="container-xl">
             <div class="row g-2 align-items-center">
                 <div class="col">
+                    <div class="page-pretitle">
+                        Edit Form Request
+                    </div>
                     <h2 class="page-title">
-                        Create Form Request
+                        Request #{{ $formRequest->id }}
                     </h2>
                 </div>
                 <div class="col-auto ms-auto d-print-none">
-                    <a href="{{ route('form-requests.index') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('form-requests.show', $formRequest) }}" class="btn btn-outline-secondary">
                         <i class="far fa-arrow-left"></i>
-                        Back to Requests
+                        Back to Request
                     </a>
                 </div>
             </div>
@@ -24,9 +27,12 @@
 
     <div class="page-body">
         <div class="container-xl">
+            @include('layouts.alerts')
+            
             @if($formDocuments->count() > 0)
-                <form method="POST" action="{{ route('form-requests.store') }}" id="formRequestForm">
+                <form method="POST" action="{{ route('form-requests.update', $formRequest) }}" id="formRequestForm">
                     @csrf
+                    @method('PUT')
                     
                     <div class="card mb-3">
                         <div class="card-header">
@@ -68,7 +74,7 @@
                         </div>
                         <div class="card-body">
                             <div id="selected-forms-container">
-                                <div class="empty" id="empty-state">
+                                <div class="empty" id="empty-state" style="display: none;">
                                     <div class="empty-icon">
                                         <i class="far fa-inbox"></i>
                                     </div>
@@ -78,7 +84,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div id="forms-list" class="table-responsive" style="display: none;">
+                            <div id="forms-list" class="table-responsive">
                                 <table class="table card-table table-vcenter">
                                     <thead>
                                         <tr>
@@ -102,11 +108,11 @@
                                     <strong>Total Quantity:</strong> <span id="total-quantity">0</span>
                                 </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                                        <i class="far fa-paper-plane"></i>
-                                        Submit Request
+                                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                                        <i class="far fa-save"></i>
+                                        Update Request
                                     </button>
-                                    <a href="{{ route('form-requests.index') }}" class="btn btn-outline-secondary">
+                                    <a href="{{ route('form-requests.show', $formRequest) }}" class="btn btn-outline-secondary">
                                         Cancel
                                     </a>
                                 </div>
@@ -195,6 +201,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Load existing form request items
+    @foreach($formRequest->items as $item)
+        selectedForms.push({
+            documentId: '{{ $item->documentVersion->document->id }}',
+            versionId: '{{ $item->document_version_id }}',
+            title: '{{ $item->documentVersion->document->title }}',
+            number: '{{ $item->documentVersion->document->document_number }}',
+            department: '{{ $item->documentVersion->document->department->name }}',
+            quantity: {{ $item->quantity }}
+        });
+    @endforeach
+    
     // Initialize Tom Select
     formSelectInstance = new TomSelect('#form-select', {
         maxOptions: null,
@@ -209,6 +227,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    // Remove already selected forms from dropdown
+    selectedForms.forEach(form => {
+        formSelectInstance.removeOption(form.documentId);
+    });
+    
+    // Render existing forms
+    rebuildFormsList();
+    updateTotals();
+    updateUI();
 });
 
 function addFormToRequest() {
@@ -361,3 +389,4 @@ function updateUI() {
 </script>
 @endpush
 @endsection
+

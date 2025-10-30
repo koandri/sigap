@@ -1,7 +1,7 @@
 @if(session()->has('success'))
                         <div class="alert alert-success alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-thumbs-up"></i>
+                                <i class="far fa-thumbs-up"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Well done!</h4>
@@ -15,7 +15,7 @@
 @if(session()->has('warning'))
                         <div class="alert alert-warning alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-triangle-exclamation"></i>
+                                <i class="far fa-triangle-exclamation"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Warning!</h4>
@@ -29,7 +29,7 @@
 @if(session()->has('error'))
                         <div class="alert alert-danger alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-octagon-exclamation"></i>
+                                <i class="far fa-octagon-exclamation"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Error!</h4>
@@ -43,7 +43,7 @@
 @if(session()->has('info'))
                         <div class="alert alert-info alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-circle-info"></i>
+                                <i class="far fa-circle-info"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Info</h4>
@@ -57,7 +57,7 @@
 @if ($errors && $errors->any())
                         <div class="alert alert-danger alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-octagon-exclamation"></i>
+                                <i class="far fa-octagon-exclamation"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Error!</h4>
@@ -75,7 +75,7 @@
 @if (session('resent'))
                         <div class="alert alert-info alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-circle-info"></i>
+                                <i class="far fa-circle-info"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Info!</h4>
@@ -90,7 +90,7 @@
 @if (session('status'))
                         <div class="alert alert-info alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="fa-regular fa-circle-info"></i>
+                                <i class="far fa-circle-info"></i>
                             </div>
                             <div>
                                 <h4 class="alert-heading">Info!</h4>

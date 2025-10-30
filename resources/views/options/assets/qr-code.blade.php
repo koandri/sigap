@@ -17,7 +17,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <button onclick="downloadQR()" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="fa-regular fa-download"></i>
+                        <i class="far fa-download"></i>
                         Download QR (PNG)
                     </button>
                     <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-outline-secondary">
@@ -44,7 +44,7 @@
                         </div>
                         @if($hasLogo)
                         <div class="text-muted mb-3">
-                            <small><i class="fas fa-check-circle text-success"></i> QR Code includes embedded logo</small>
+                            <small><i class="far fa-check-circle text-success"></i> QR Code includes embedded logo</small>
                         </div>
                         @endif
 

@@ -17,7 +17,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.item-categories.index') }}" class="btn btn-outline-secondary d-none d-sm-inline-block">
-                        <i class="fa-regular fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>
                         Back to Categories
                     </a>
                 </div>
