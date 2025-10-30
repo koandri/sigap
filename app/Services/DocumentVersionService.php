@@ -75,17 +75,40 @@ final class DocumentVersionService
     public function submitForApproval(DocumentVersion $version): void
     {
         DB::transaction(function () use ($version) {
-            // Create manager approval request
-            $version->approvals()->create([
-                'approver_id' => $version->creator->manager_id,
-                'approval_tier' => 'manager',
-                'status' => 'pending',
-            ]);
+            $creator = $version->creator;
+            
+            // Check if creator has a manager assigned
+            if ($creator->manager_id) {
+                // Create manager approval request
+                $version->approvals()->create([
+                    'approver_id' => $creator->manager_id,
+                    'approval_tier' => 'manager',
+                    'status' => 'pending',
+                ]);
 
-            // Update version status
-            $version->update([
-                'status' => DocumentVersionStatus::PendingManagerApproval,
-            ]);
+                // Update version status
+                $version->update([
+                    'status' => DocumentVersionStatus::PendingManagerApproval,
+                ]);
+            } else {
+                // No manager assigned, skip to management representative
+                $managementRep = $this->getManagementRepresentative();
+                
+                if (!$managementRep) {
+                    throw new \Exception('No manager or management representative found for approval. Please contact an administrator.');
+                }
+                
+                $version->approvals()->create([
+                    'approver_id' => $managementRep->id,
+                    'approval_tier' => 'management_representative',
+                    'status' => 'pending',
+                ]);
+
+                // Update version status
+                $version->update([
+                    'status' => DocumentVersionStatus::PendingMgmtApproval,
+                ]);
+            }
         });
     }
 
@@ -270,13 +293,15 @@ final class DocumentVersionService
         ]);
     }
 
-    private function getManagementRepresentative(): User
+    private function getManagementRepresentative(): ?User
     {
         // This should be configured in the system
-        // For now, return the first Super Admin or Owner
-        return User::whereHas('roles', function ($query) {
-            $query->whereIn('name', ['Super Admin', 'Owner']);
-        })->first();
+        // For now, return the first active Super Admin or Owner
+        return User::where('active', true)
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Super Admin', 'Owner']);
+            })
+            ->first();
     }
 
     private function getOnlyOfficeDocumentType(string $fileType): string

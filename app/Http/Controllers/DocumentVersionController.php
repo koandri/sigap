@@ -126,10 +126,20 @@ final class DocumentVersionController extends Controller
     {
         $this->authorize('edit', $version);
         
-        $this->versionService->submitForApproval($version);
-        
-        return redirect()->route('documents.show', $version->document)
-            ->with('success', 'Version submitted for approval.');
+        try {
+            $this->versionService->submitForApproval($version);
+            
+            return redirect()->route('documents.show', $version->document)
+                ->with('success', 'Version submitted for approval.');
+        } catch (\Exception $e) {
+            \Log::error('Document version submission failed', [
+                'version_id' => $version->id,
+                'error' => $e->getMessage(),
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Failed to submit for approval: ' . $e->getMessage());
+        }
     }
 
     public function viewPDF(DocumentVersion $version): RedirectResponse
