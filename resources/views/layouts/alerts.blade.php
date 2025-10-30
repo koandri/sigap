@@ -40,6 +40,20 @@
                         </div>
 @endif
 
+@if(session()->has('info'))
+                        <div class="alert alert-info alert-dismissible" role="alert">
+                            <div class="alert-icon">
+                                <i class="fa-regular fa-circle-info"></i>
+                            </div>
+                            <div>
+                                <h4 class="alert-heading">Info</h4>
+                                <div class="alert-description">
+                                    {{ Session::get('info') }}
+                                </div>
+                            </div>
+                        </div>
+@endif
+
 @if ($errors && $errors->any())
                         <div class="alert alert-danger alert-dismissible" role="alert">
                             <div class="alert-icon">
