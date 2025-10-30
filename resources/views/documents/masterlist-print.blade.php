@@ -121,13 +121,11 @@
         }
         
         .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+            margin-top: 30px;
+            padding-top: 15px;
             text-align: center;
-            font-size: 8pt;
+            font-size: 9pt;
             color: #666;
-            padding: 10px 0;
             border-top: 1px solid #ddd;
         }
         
@@ -149,10 +147,6 @@
 <body onload="window.print();">
     <div class="header">
         <h1>DOCUMENTS MASTERLIST</h1>
-        <div class="print-info">
-            Generated on: {{ now()->format('d F Y H:i:s') }} | 
-            Printed by: {{ auth()->user()->name }}
-        </div>
     </div>
 
     @if(!empty($filters['department']) || !empty($filters['type']) || !empty($filters['search']))
@@ -223,6 +217,10 @@
             <p>No documents found matching the selected filters.</p>
         </div>
     @endif
+
+    <div class="footer">
+        Generated on: {{ now()->format('d F Y H:i:s') }} | Printed by: {{ auth()->user()->name }}
+    </div>
 </body>
 </html>
 
