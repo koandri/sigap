@@ -55,7 +55,7 @@
                                                     </td>
                                                     <td>
                                                         <span class="badge bg-blue-lt">
-                                                            {{ ucwords(str_replace('_', ' ', $approval->approval_tier)) }}
+                                                            {{ $approval->approval_tier->label() }}
                                                         </span>
                                                     </td>
                                                     <td>{{ $approval->documentVersion->creator->name }}</td>
