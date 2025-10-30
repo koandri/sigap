@@ -332,11 +332,11 @@ Route::middleware(['auth'])->group(function () {
     
     // Form Requests
     Route::resource('form-requests', FormRequestController::class);
-    Route::post('form-requests/{request}/acknowledge', [FormRequestController::class, 'acknowledge'])->name('form-requests.acknowledge');
-    Route::post('form-requests/{request}/process', [FormRequestController::class, 'process'])->name('form-requests.process');
-    Route::post('form-requests/{request}/ready', [FormRequestController::class, 'markReady'])->name('form-requests.ready');
-    Route::get('form-requests/{request}/labels', [FormRequestController::class, 'printLabels'])->name('form-requests.labels');
-    Route::post('form-requests/{request}/collect', [FormRequestController::class, 'collect'])->name('form-requests.collect');
+    Route::post('form-requests/{form_request}/acknowledge', [FormRequestController::class, 'acknowledge'])->name('form-requests.acknowledge');
+    Route::post('form-requests/{form_request}/process', [FormRequestController::class, 'process'])->name('form-requests.process');
+    Route::post('form-requests/{form_request}/ready', [FormRequestController::class, 'markReady'])->name('form-requests.ready');
+    Route::get('form-requests/{form_request}/labels', [FormRequestController::class, 'printLabels'])->name('form-requests.labels');
+    Route::post('form-requests/{form_request}/collect', [FormRequestController::class, 'collect'])->name('form-requests.collect');
     
     // Printed Forms
     Route::get('printed-forms/{form}', [PrintedFormController::class, 'show'])->name('printed-forms.show');

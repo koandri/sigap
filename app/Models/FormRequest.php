@@ -59,7 +59,7 @@ final class FormRequest extends Model
 
     public function scopePending($query)
     {
-        return $query->where('status', FormRequestStatus::Pending);
+        return $query->where('status', FormRequestStatus::Requested);
     }
 
     public function scopeAcknowledged($query)
@@ -89,7 +89,7 @@ final class FormRequest extends Model
 
     public function isPending(): bool
     {
-        return $this->status === FormRequestStatus::Pending;
+        return $this->status === FormRequestStatus::Requested;
     }
 
     public function isAcknowledged(): bool

@@ -111,7 +111,14 @@ final class DocumentAccessService
 
     public function getUserAccessibleDocuments(User $user): Collection
     {
-        $query = DocumentVersion::with(['document', 'document.department'])
+        // Super Admin and Owner can see all active document versions
+        if ($user->hasRole(['Super Admin', 'Owner'])) {
+            return DocumentVersion::with(['document', 'document.department', 'accessRequests'])
+                ->whereHas('document')
+                ->get();
+        }
+
+        $query = DocumentVersion::with(['document', 'document.department', 'accessRequests'])
             ->whereHas('accessRequests', function ($q) use ($user) {
                 $q->where('user_id', $user->id)
                   ->where('status', 'approved')

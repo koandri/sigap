@@ -102,9 +102,9 @@
                                             <td>{{ $document->department->name }}</td>
                                             <td>
                                                 @if($document->activeVersion)
-                                                    <span class="badge bg-success">Active</span>
+                                                    <span class="badge bg-success text-white">Active</span>
                                                 @else
-                                                    <span class="badge bg-warning">No Active Version</span>
+                                                    <span class="badge bg-warning text-white">No Active Version</span>
                                                 @endif
                                             </td>
                                             <td>{{ $document->created_at->format('Y-m-d') }}</td>

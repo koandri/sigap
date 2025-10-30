@@ -53,11 +53,18 @@
                                             </td>
                                             <td>{{ $version->document->department->name }}</td>
                                             <td>
-                                                <span class="badge bg-info">{{ $version->accessRequests->first()->getEffectiveAccessType()->label() }}</span>
+                                                @php
+                                                    $accessRequest = $version->accessRequests->where('user_id', auth()->id())->first();
+                                                @endphp
+                                                @if($accessRequest)
+                                                    <span class="badge bg-info">{{ $accessRequest->getEffectiveAccessType()->label() }}</span>
+                                                @else
+                                                    <span class="badge bg-success">Full Access (Admin)</span>
+                                                @endif
                                             </td>
                                             <td>
-                                                @if($version->accessRequests->first()->getEffectiveExpiryDate())
-                                                    {{ $version->accessRequests->first()->getEffectiveExpiryDate()->format('Y-m-d H:i') }}
+                                                @if($accessRequest && $accessRequest->getEffectiveExpiryDate())
+                                                    {{ $accessRequest->getEffectiveExpiryDate()->format('Y-m-d H:i') }}
                                                 @else
                                                     <span class="text-muted">No expiry</span>
                                                 @endif

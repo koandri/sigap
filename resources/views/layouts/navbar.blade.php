@@ -44,14 +44,14 @@
                         </div>
                     </div>
                 </li>
-                <li class="nav-item dropdown {{ areActiveRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
+                <li class="nav-item dropdown {{ areActiveRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                             <i class="fa-regular fa-file-lines"></i>
                         </span>
                         <span class="nav-link-title">Document Management</span>
                     </a>
-                    <div class="dropdown-menu {{ areOpenRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
+                    <div class="dropdown-menu {{ areOpenRoutes(['documents.*', 'document-versions.*', 'document-approvals.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-*']) }}">
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('dms-dashboard') }}" href="{{ route('dms-dashboard') }}">

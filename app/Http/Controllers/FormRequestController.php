@@ -16,6 +16,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class FormRequestController extends Controller
 {
@@ -100,7 +101,7 @@ final class FormRequestController extends Controller
             ->with('success', 'Form request marked as ready for collection.');
     }
 
-    public function printLabels(FormRequest $formRequest): Response
+    public function printLabels(FormRequest $formRequest): StreamedResponse
     {
         $this->authorize('process', $formRequest);
         
