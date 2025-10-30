@@ -170,10 +170,6 @@
         background-color: #e9ecef !important;
         color: #212529 !important;
     }
-    
-    .empty-icon {
-        font-size: 3.5rem !important;
-    }
 </style>
 @endpush
 
