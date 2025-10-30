@@ -29,7 +29,12 @@ final class DocumentVersionApproval extends Model
 
     public function documentVersion(): BelongsTo
     {
-        return $this->belongsTo(DocumentVersion::class);
+        return $this->belongsTo(DocumentVersion::class, 'document_version_id');
+    }
+    
+    public function version(): BelongsTo
+    {
+        return $this->belongsTo(DocumentVersion::class, 'document_version_id');
     }
 
     public function approver(): BelongsTo

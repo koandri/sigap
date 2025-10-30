@@ -5,19 +5,34 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\DocumentVersionApproval;
+use App\Services\DocumentVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 final class DocumentApprovalController extends Controller
 {
+    public function __construct(
+        private readonly DocumentVersionService $versionService
+    ) {}
+
     public function index(): View
     {
         $this->authorize('viewAny', DocumentVersionApproval::class);
         
-        $pendingApprovals = DocumentVersionApproval::with(['version.document', 'approver'])
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
+        $user = Auth::user();
+        
+        // Get approvals assigned to the current user or all if admin
+        $query = DocumentVersionApproval::with(['documentVersion.document.creator', 'documentVersion.creator', 'approver'])
+            ->where('status', 'pending');
+        
+        // Filter by approver unless user is admin
+        if (!$user->hasRole(['Super Admin', 'Owner'])) {
+            $query->where('approver_id', $user->id);
+        }
+        
+        $pendingApprovals = $query->orderBy('created_at', 'desc')
             ->paginate(20);
         
         return view('document-approvals.index', compact('pendingApprovals'));
@@ -28,23 +43,27 @@ final class DocumentApprovalController extends Controller
         $this->authorize('approve', $approval);
         
         $request->validate([
-            'comments' => 'nullable|string|max:1000',
+            'notes' => 'nullable|string|max:1000',
         ]);
         
-        $approval->update([
-            'status' => 'approved',
-            'approved_at' => now(),
-            'comments' => $request->comments,
-        ]);
-        
-        // Check if all approvals are complete
-        $version = $approval->version;
-        if ($version->approvals()->where('status', 'pending')->count() === 0) {
-            $version->update(['status' => 'approved']);
+        try {
+            $this->versionService->approveVersion(
+                $approval->documentVersion, 
+                Auth::user(), 
+                $request->notes
+            );
+            
+            return redirect()->route('document-approvals.index')
+                ->with('success', 'Document version approved successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Document approval failed', [
+                'approval_id' => $approval->id,
+                'error' => $e->getMessage(),
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Failed to approve document: ' . $e->getMessage());
         }
-        
-        return redirect()->route('document-approvals.index')
-            ->with('success', 'Document version approved successfully.');
     }
 
     public function reject(Request $request, DocumentVersionApproval $approval): RedirectResponse
@@ -52,19 +71,27 @@ final class DocumentApprovalController extends Controller
         $this->authorize('reject', $approval);
         
         $request->validate([
-            'comments' => 'required|string|max:1000',
+            'notes' => 'required|string|max:1000',
         ]);
         
-        $approval->update([
-            'status' => 'rejected',
-            'approved_at' => now(),
-            'comments' => $request->comments,
-        ]);
-        
-        // Reject the version
-        $approval->version->update(['status' => 'rejected']);
-        
-        return redirect()->route('document-approvals.index')
-            ->with('success', 'Document version rejected.');
+        try {
+            $this->versionService->rejectVersion(
+                $approval->documentVersion, 
+                Auth::user(), 
+                $request->notes
+            );
+            
+            return redirect()->route('document-approvals.index')
+                ->with('success', 'Document version rejected.');
+        } catch (\Exception $e) {
+            \Log::error('Document rejection failed', [
+                'approval_id' => $approval->id,
+                'error' => $e->getMessage(),
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Failed to reject document: ' . $e->getMessage());
+        }
     }
 }
+

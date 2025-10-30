@@ -63,6 +63,18 @@
                                 <a class="dropdown-item {{ areActiveRoutes('my-document-access') }}" href="{{ route('my-document-access') }}">
                                     <i class="fa-regular fa-eye"></i> &nbsp;My Documents
                                 </a>
+                                @php
+                                    $pendingDocApprovals = auth()->user() ? 
+                                        \App\Models\DocumentVersionApproval::where('status', 'pending')
+                                            ->where('approver_id', auth()->id())
+                                            ->count() : 0;
+                                @endphp
+                                <a class="dropdown-item {{ areActiveRoutes('document-approvals.*') }}" href="{{ route('document-approvals.index') }}">
+                                    <i class="fa-regular fa-check-double"></i> &nbsp;Document Approvals
+                                    @if($pendingDocApprovals > 0)
+                                        <span class="badge badge-outline text-danger ms-1">{{ $pendingDocApprovals }}</span>
+                                    @endif
+                                </a>
                                 <a class="dropdown-item {{ areActiveRoutes('form-requests.*') }}" href="{{ route('form-requests.index') }}">
                                     <i class="fa-regular fa-file-text"></i> &nbsp;Form Requests
                                 </a>
