@@ -5,123 +5,131 @@
     <title>Form Request Labels - Request #{{ $request->id }}</title>
     <style>
         @page {
-            size: A4;
-            margin: 8mm;
+            size: 115mm 42mm; /* Paper width × Row height */
+            margin: 0;
         }
         
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            width: 115mm;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .label-row {
+            width: 115mm;
+            height: 42mm;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            page-break-after: always;
+            box-sizing: border-box;
+            padding: 2mm;
         }
         
         .label {
-            width: 63mm;
-            height: 42mm;
+            width: 35mm;
+            height: 38mm;
             border: 1px solid #000;
-            padding: 3mm;
+            padding: 1.5mm;
             box-sizing: border-box;
-            vertical-align: top;
-        }
-        
-        .label-content {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: space-between;
+        }
+        
+        .label-header {
             text-align: center;
-            height: 100%;
+            width: 100%;
         }
         
         .form-number {
             font-weight: bold;
-            font-size: 10pt;
+            font-size: 8pt;
             color: #0066cc;
-            margin-bottom: 1mm;
+            margin-bottom: 0.5mm;
             word-wrap: break-word;
-            max-width: 100%;
+            line-height: 1.1;
         }
         
         .form-name {
-            font-size: 8pt;
+            font-size: 6pt;
             font-weight: bold;
-            margin-bottom: 2mm;
-            line-height: 1.1;
+            line-height: 1;
             color: #333;
+            max-height: 8mm;
+            overflow: hidden;
+            text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
-            overflow: hidden;
-            max-width: 100%;
         }
         
         .qr-code {
-            width: 28mm;
-            height: 28mm;
-            margin: 1mm auto;
+            width: 22mm;
+            height: 22mm;
+            margin: 0.5mm 0;
         }
         
         .label-footer {
-            font-size: 7pt;
+            font-size: 5pt;
             color: #666;
-            margin-top: auto;
+            text-align: center;
+            line-height: 1;
         }
         
         .issue-date {
-            margin-bottom: 0.5mm;
+            margin-bottom: 0.3mm;
         }
         
         .request-info {
-            font-size: 6pt;
+            font-size: 4.5pt;
             color: #999;
         }
         
-        .page-break {
-            page-break-after: always;
+        /* Print-specific styles */
+        @media print {
+            body {
+                width: 115mm;
+            }
+            
+            .label-row {
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
     @php
         $labelChunks = $labels->chunk(3);
-        $totalRows = $labelChunks->count();
     @endphp
     
-    <table>
-        @foreach($labelChunks as $rowIndex => $row)
-        <tr>
-            @foreach($row as $label)
-            <td class="label">
-                <div class="label-content">
-                    <div class="form-number">{{ $label['form_number'] }}</div>
-                    <div class="form-name">{{ $label['form_name'] }}</div>
-                    <img src="{{ $label['qr_code'] }}" class="qr-code" alt="QR Code">
-                    <div class="label-footer">
-                        <div class="issue-date">{{ \Carbon\Carbon::parse($label['issue_date'])->format('d/m/Y') }}</div>
-                        <div class="request-info">Req #{{ $request->id }}</div>
-                    </div>
-                </div>
-            </td>
-            @endforeach
-            
-            {{-- Fill empty cells if row has less than 3 labels --}}
-            @if($row->count() < 3)
-                @for($i = 0; $i < 3 - $row->count(); $i++)
-                <td class="label" style="border: 1px dashed #ccc;"></td>
-                @endfor
-            @endif
-        </tr>
-        
-        {{-- Add page break after every 6 rows (18 labels per page) --}}
-        @if(($rowIndex + 1) % 6 == 0 && ($rowIndex + 1) < $totalRows)
-        <tr class="page-break"><td colspan="3"></td></tr>
-        @endif
+    @foreach($labelChunks as $row)
+    <div class="label-row">
+        @foreach($row as $label)
+        <div class="label">
+            <div class="label-header">
+                <div class="form-number">{{ $label['form_number'] }}</div>
+                <div class="form-name">{{ $label['form_name'] }}</div>
+            </div>
+            <img src="{{ $label['qr_code'] }}" class="qr-code" alt="QR Code">
+            <div class="label-footer">
+                <div class="issue-date">{{ \Carbon\Carbon::parse($label['issue_date'])->format('d/m/Y') }}</div>
+                <div class="request-info">Req #{{ $request->id }}</div>
+            </div>
+        </div>
         @endforeach
-    </table>
+        
+        {{-- Fill empty slots if row has less than 3 labels --}}
+        @if($row->count() < 3)
+            @for($i = 0; $i < 3 - $row->count(); $i++)
+            <div class="label" style="border: 1px dashed #ccc; background: transparent;"></div>
+            @endfor
+        @endif
+    </div>
+    @endforeach
 </body>
 </html>
 

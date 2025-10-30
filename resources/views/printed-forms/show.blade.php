@@ -15,12 +15,6 @@
                         Form Number: {{ $printedForm->form_number }}
                     </h2>
                 </div>
-                <div class="col-auto ms-auto d-print-none">
-                    <a href="{{ route('printed-forms.track', $printedForm->id) }}" class="btn btn-primary">
-                        <i class="far fa-qrcode"></i>
-                        Track Form
-                    </a>
-                </div>
             </div>
         </div>
     </div>
@@ -51,7 +45,7 @@
                                 </div>
                                 <div class="datagrid-item">
                                     <div class="datagrid-title">Version</div>
-                                    <div class="datagrid-content">{{ $printedForm->documentVersion->version }}</div>
+                                    <div class="datagrid-content">v{{ $printedForm->documentVersion->version_number }}</div>
                                 </div>
                                 <div class="datagrid-item">
                                     <div class="datagrid-title">Issued To</div>
@@ -126,6 +120,78 @@
                                 </div>
                                 @endif
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Timeline -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Form Timeline</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="steps steps-vertical">
+                                <li class="step-item {{ $printedForm->issued_at ? 'active' : '' }}">
+                                    <div class="h4 m-0">Form Issued</div>
+                                    @if($printedForm->issued_at)
+                                    <div class="text-muted">{{ $printedForm->issued_at->format('Y-m-d H:i') }}</div>
+                                    <div class="text-muted small">Issued to: {{ $printedForm->issuedTo->name }}</div>
+                                    @endif
+                                </li>
+
+                                @if($printedForm->status->value == 'circulating')
+                                <li class="step-item active">
+                                    <div class="h4 m-0">In Circulation</div>
+                                    <div class="text-muted">Currently being used</div>
+                                </li>
+                                @endif
+
+                                @if($printedForm->returned_at)
+                                <li class="step-item active">
+                                    <div class="h4 m-0">Form Returned</div>
+                                    <div class="text-muted">{{ $printedForm->returned_at->format('Y-m-d H:i') }}</div>
+                                    <div class="text-muted small">Status: {{ $printedForm->status->label() }}</div>
+                                </li>
+                                @endif
+
+                                @if($printedForm->received_at)
+                                <li class="step-item active">
+                                    <div class="h4 m-0">Form Received</div>
+                                    <div class="text-muted">{{ $printedForm->received_at->format('Y-m-d H:i') }}</div>
+                                    <div class="text-muted small">Received by Document Control</div>
+                                </li>
+                                @endif
+
+                                @if($printedForm->scanned_at)
+                                <li class="step-item active">
+                                    <div class="h4 m-0">Form Scanned</div>
+                                    <div class="text-muted">{{ $printedForm->scanned_at->format('Y-m-d H:i') }}</div>
+                                    <div class="text-muted small">Digital copy archived</div>
+                                </li>
+                                @endif
+
+                                @if(!$printedForm->returned_at && $printedForm->status->value != 'circulating')
+                                <li class="step-item">
+                                    <div class="h4 m-0">Pending Return</div>
+                                    <div class="text-muted">Waiting for form to be returned</div>
+                                </li>
+                                @endif
+
+                                @if($printedForm->returned_at && !$printedForm->received_at)
+                                <li class="step-item">
+                                    <div class="h4 m-0">Pending Receipt</div>
+                                    <div class="text-muted">Waiting for Document Control to receive</div>
+                                </li>
+                                @endif
+
+                                @if($printedForm->received_at && !$printedForm->scanned_at && !$printedForm->isProblematic())
+                                <li class="step-item">
+                                    <div class="h4 m-0">Pending Scanning</div>
+                                    <div class="text-muted">Waiting for document scanning</div>
+                                </li>
+                                @endif
+                            </ul>
                         </div>
                     </div>
                 </div>

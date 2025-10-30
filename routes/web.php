@@ -342,7 +342,6 @@ Route::middleware(['auth'])->group(function () {
     // Printed Forms
     Route::get('printed-forms', [PrintedFormController::class, 'index'])->name('printed-forms.index');
     Route::get('printed-forms/{printedForm}', [PrintedFormController::class, 'show'])->name('printed-forms.show');
-    Route::get('printed-forms/{printedForm}/track', [PrintedFormController::class, 'track'])->name('printed-forms.track');
     Route::post('printed-forms/{printedForm}/return', [PrintedFormController::class, 'returnForm'])->name('printed-forms.return');
     Route::post('printed-forms/{printedForm}/receive', [PrintedFormController::class, 'receive'])->name('printed-forms.receive');
     Route::post('printed-forms/{printedForm}/upload-scan', [PrintedFormController::class, 'uploadScans'])->name('printed-forms.upload-scan');

@@ -119,16 +119,10 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <div class="btn-list">
-                                                    <a href="{{ route('printed-forms.show', $printedForm->id) }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="far fa-eye"></i>
-                                                        View
-                                                    </a>
-                                                    <a href="{{ route('printed-forms.track', $printedForm->id) }}" class="btn btn-sm btn-outline-info">
-                                                        <i class="far fa-qrcode"></i>
-                                                        Track
-                                                    </a>
-                                                </div>
+                                                <a href="{{ route('printed-forms.show', $printedForm->id) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="far fa-eye"></i>
+                                                    View
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach

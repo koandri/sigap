@@ -76,13 +76,6 @@ final class PrintedFormController extends Controller
         return view('printed-forms.show', compact('printedForm'));
     }
 
-    public function track(PrintedForm $printedForm): View
-    {
-        $printedForm->load(['formRequestItem.formRequest.requester', 'documentVersion.document', 'issuedTo']);
-        
-        return view('printed-forms.track', compact('printedForm'));
-    }
-
     public function requestAccess(PrintedForm $printedForm): RedirectResponse
     {
         $user = auth()->user();
