@@ -34,10 +34,28 @@ final class DocumentService
         $document->accessibleDepartments()->sync($departmentIds);
     }
 
-    public function getDocumentMasterlist(): SupportCollection
+    public function getDocumentMasterlist(array $filters = []): SupportCollection
     {
-        return Document::with(['department', 'activeVersion', 'accessibleDepartments'])
-            ->orderBy('department_id')
+        $query = Document::with(['department', 'activeVersion', 'creator', 'accessibleDepartments']);
+
+        // Apply filters
+        if (!empty($filters['department'])) {
+            $query->where('department_id', $filters['department']);
+        }
+
+        if (!empty($filters['type'])) {
+            $query->where('document_type', $filters['type']);
+        }
+
+        if (!empty($filters['search'])) {
+            $query->where(function ($q) use ($filters) {
+                $q->where('title', 'like', '%' . $filters['search'] . '%')
+                  ->orWhere('document_number', 'like', '%' . $filters['search'] . '%')
+                  ->orWhere('description', 'like', '%' . $filters['search'] . '%');
+            });
+        }
+
+        return $query->orderBy('department_id')
             ->orderBy('document_type')
             ->orderBy('document_number')
             ->get()

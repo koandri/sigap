@@ -309,7 +309,8 @@ Route::post('document-versions/{version}/onlyoffice-callback', [DocumentVersionC
 Route::middleware(['auth'])->group(function () {
     // Documents
     Route::resource('documents', DocumentController::class);
-    Route::get('documents-masterlist', [DocumentController::class, 'masterlist'])->name('documents.masterlist');
+    Route::get('documents-masterlist', [DocumentController::class, 'masterlist'])->name('documents.masterlist')->middleware('role:Super Admin|Owner|Document Control');
+    Route::get('documents-masterlist/print', [DocumentController::class, 'masterlistPrint'])->name('documents.masterlist.print')->middleware('role:Super Admin|Owner|Document Control');
     
     // Versions
     Route::resource('documents.versions', DocumentVersionController::class);

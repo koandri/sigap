@@ -47,7 +47,7 @@
                                             <td>{{ $request->requester->name }}</td>
                                             <td>{{ $request->request_date->format('Y-m-d H:i') }}</td>
                                             <td>
-                                                <span class="badge {{ $request->isPending() ? 'bg-warning' : ($request->isCompleted() ? 'bg-success' : 'bg-info') }}">
+                                                <span class="badge {{ $request->isPending() ? 'bg-warning' : ($request->isCompleted() ? 'bg-success' : 'bg-info') }} text-white">
                                                     {{ $request->status->label() }}
                                                 </span>
                                             </td>

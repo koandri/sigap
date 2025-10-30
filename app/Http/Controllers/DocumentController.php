@@ -182,10 +182,32 @@ final class DocumentController extends Controller
             ->with('success', 'Document deleted successfully.');
     }
 
-    public function masterlist(): View
+    public function masterlist(Request $request): View
     {
-        $masterlist = $this->documentService->getDocumentMasterlist();
+        $filters = [
+            'department' => $request->get('department'),
+            'type' => $request->get('type'),
+            'search' => $request->get('search'),
+        ];
+
+        $masterlist = $this->documentService->getDocumentMasterlist($filters);
         
-        return view('documents.masterlist', compact('masterlist'));
+        $departments = Role::all();
+        $documentTypes = DocumentType::cases();
+        
+        return view('documents.masterlist', compact('masterlist', 'departments', 'documentTypes', 'filters'));
+    }
+
+    public function masterlistPrint(Request $request): View
+    {
+        $filters = [
+            'department' => $request->get('department'),
+            'type' => $request->get('type'),
+            'search' => $request->get('search'),
+        ];
+
+        $masterlist = $this->documentService->getDocumentMasterlist($filters);
+        
+        return view('documents.masterlist-print', compact('masterlist', 'filters'));
     }
 }

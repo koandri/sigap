@@ -113,7 +113,7 @@
                                                 <tr>
                                                     <td>{{ $version->version_number }}</td>
                                                     <td>
-                                                        <span class="badge {{ $version->isActive() ? 'bg-success' : ($version->isDraft() ? 'bg-warning' : 'bg-secondary') }}">
+                                                        <span class="badge {{ $version->isActive() ? 'bg-success' : ($version->isDraft() ? 'bg-warning' : 'bg-secondary') }} text-white">
                                                             {{ $version->status->label() }}
                                                         </span>
                                                     </td>

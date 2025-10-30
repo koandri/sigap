@@ -13,7 +13,7 @@
                     </h2>
                 </div>
                 <div class="col-auto ms-auto d-print-none">
-                    <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+                    <button type="button" class="btn btn-outline-primary" onclick="printMasterlist()">
                         <i class="ti ti-printer"></i>
                         Print
                     </button>
@@ -24,6 +24,53 @@
 
     <div class="page-body">
         <div class="container-xl">
+            <!-- Filters -->
+            <div class="card mb-3 d-print-none">
+                <div class="card-body">
+                    <form method="GET" action="{{ route('documents.masterlist') }}" id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Department</label>
+                                <select name="department" class="form-select">
+                                    <option value="">All Departments</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{ $department->id }}" {{ $filters['department'] == $department->id ? 'selected' : '' }}>
+                                            {{ $department->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Document Type</label>
+                                <select name="type" class="form-select">
+                                    <option value="">All Types</option>
+                                    @foreach($documentTypes as $type)
+                                        <option value="{{ $type->value }}" {{ $filters['type'] == $type->value ? 'selected' : '' }}>
+                                            {{ $type->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control" placeholder="Document number or title..." value="{{ $filters['search'] ?? '' }}">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="ti ti-filter"></i>
+                                        Filter
+                                    </button>
+                                    <a href="{{ route('documents.masterlist') }}" class="btn btn-outline-secondary">
+                                        <i class="ti ti-x"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
             <!-- Masterlist by Department and Type -->
             <div class="card">
                 <div class="card-body">
@@ -34,7 +81,7 @@
                                 
                                 @foreach($departmentDocuments as $documentType => $documents)
                                     <div class="mb-3">
-                                        <h4 class="text-muted">{{ $documentType }}</h4>
+                                        <h4 class="text-muted">{{ \App\Enums\DocumentType::from($documentType)->label() }}</h4>
                                         
                                         <div class="table-responsive">
                                             <table class="table table-vcenter">
@@ -60,9 +107,9 @@
                                                             </td>
                                                             <td>
                                                                 @if($document->activeVersion)
-                                                                    <span class="badge bg-success">Active</span>
+                                                                    <span class="badge bg-success text-white">Active</span>
                                                                 @else
-                                                                    <span class="badge bg-warning">No Active Version</span>
+                                                                    <span class="badge bg-warning text-white">No Active Version</span>
                                                                 @endif
                                                             </td>
                                                             <td>{{ $document->creator->name }}</td>
@@ -94,22 +141,27 @@
     </div>
 </div>
 
-<style>
-@media print {
-    .page-header,
-    .btn,
-    .card-footer {
-        display: none !important;
+<script>
+function printMasterlist() {
+    // Get current filter values
+    const params = new URLSearchParams();
+    const departmentSelect = document.querySelector('select[name="department"]');
+    const typeSelect = document.querySelector('select[name="type"]');
+    const searchInput = document.querySelector('input[name="search"]');
+    
+    if (departmentSelect && departmentSelect.value) {
+        params.append('department', departmentSelect.value);
+    }
+    if (typeSelect && typeSelect.value) {
+        params.append('type', typeSelect.value);
+    }
+    if (searchInput && searchInput.value) {
+        params.append('search', searchInput.value);
     }
     
-    .card {
-        border: none !important;
-        box-shadow: none !important;
-    }
-    
-    .table {
-        font-size: 12px;
-    }
+    // Open print page in new tab
+    const url = '{{ route("documents.masterlist.print") }}' + (params.toString() ? '?' + params.toString() : '');
+    window.open(url, '_blank');
 }
-</style>
+</script>
 @endsection

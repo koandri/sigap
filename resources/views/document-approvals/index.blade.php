@@ -51,7 +51,7 @@
                                                         <div class="text-muted small">{{ $approval->documentVersion->document->document_number }}</div>
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-info">v{{ $approval->documentVersion->version_number }}</span>
+                                                        <span class="badge bg-info text-white">v{{ $approval->documentVersion->version_number }}</span>
                                                     </td>
                                                     <td>
                                                         <span class="badge bg-blue-lt">
