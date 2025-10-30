@@ -36,6 +36,12 @@ final class DocumentAccessController extends Controller
     {
         $this->authorize('view', $document);
         
+        // Super Admin and Owner don't need to request access
+        if (Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            return redirect()->route('documents.show', $document)
+                ->with('info', 'You have full access to all documents as an administrator.');
+        }
+        
         $activeVersion = $document->activeVersion;
         if (!$activeVersion) {
             return redirect()->route('documents.show', $document)
@@ -50,6 +56,12 @@ final class DocumentAccessController extends Controller
     public function storeAccessRequest(Request $request, Document $document): RedirectResponse
     {
         $this->authorize('view', $document);
+        
+        // Super Admin and Owner don't need to request access
+        if (Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            return redirect()->route('documents.show', $document)
+                ->with('info', 'You have full access to all documents as an administrator.');
+        }
         
         $request->validate([
             'access_type' => 'required|string',

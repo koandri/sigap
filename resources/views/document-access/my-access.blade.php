@@ -57,9 +57,9 @@
                                                     $accessRequest = $version->accessRequests->where('user_id', auth()->id())->first();
                                                 @endphp
                                                 @if($accessRequest)
-                                                    <span class="badge bg-info">{{ $accessRequest->getEffectiveAccessType()->label() }}</span>
+                                                    <span class="badge bg-info text-white">{{ $accessRequest->getEffectiveAccessType()->label() }}</span>
                                                 @else
-                                                    <span class="badge bg-success">Full Access (Admin)</span>
+                                                    <span class="badge bg-success text-white">Full Access</span>
                                                 @endif
                                             </td>
                                             <td>

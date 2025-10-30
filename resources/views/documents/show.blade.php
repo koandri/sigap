@@ -171,7 +171,7 @@
                                 @endcan
                             @endif
                             
-                            @if($document->document_type->requiresAccessRequest())
+                            @if($document->document_type->requiresAccessRequest() && !auth()->user()->hasRole(['Super Admin', 'Owner']))
                                 <a href="{{ route('documents.request-access', $document) }}" class="btn btn-outline-info w-100 mb-2">
                                     <i class="ti ti-eye"></i>
                                     Request Access
