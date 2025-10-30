@@ -7,6 +7,7 @@
     <link href="{{ asset('assets/tabler/dist/css/tabler.min.css') }}" rel="stylesheet"/>
     <style>
         @page {
+            size: landscape;
             margin: 1cm;
         }
         
