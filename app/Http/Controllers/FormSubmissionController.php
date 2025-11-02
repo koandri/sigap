@@ -456,8 +456,6 @@ class FormSubmissionController extends Controller
                             $filePaths = array_column($storedPhotos, 'file_path');
                             $answerValue = count($filePaths) === 1 ? $filePaths[0] : json_encode($filePaths);
                             
-                            // Debug logging
-                            
                             $answer->answer_value = $answerValue;
                             
                             $answer->answer_metadata = [
@@ -1032,8 +1030,6 @@ class FormSubmissionController extends Controller
                             // Store only file paths in answer_value to keep it small
                             $filePaths = array_column($storedPhotos, 'file_path');
                             $answerValue = count($filePaths) === 1 ? $filePaths[0] : json_encode($filePaths);
-                            
-                            // Debug logging
                             
                             if ($answer) {
                                 $answer->update([

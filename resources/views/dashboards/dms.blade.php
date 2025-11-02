@@ -34,9 +34,19 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
-                                <div class="subheader">Pending Approvals</div>
+                                <div class="subheader">Pending Document Approvals</div>
                             </div>
-                            <div class="h1 mb-3">{{ $stats['pending_approvals'] }}</div>
+                            <div class="h1 mb-3">{{ $stats['pending_document_approvals'] }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="subheader">Pending Correspondence Approvals</div>
+                            </div>
+                            <div class="h1 mb-3">{{ $stats['pending_correspondence_approvals'] }}</div>
                         </div>
                     </div>
                 </div>
@@ -50,6 +60,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row row-deck row-cards mb-3">
                 <div class="col-sm-6 col-lg-3">
                     <div class="card">
                         <div class="card-body">
@@ -89,34 +101,29 @@
                                         My Documents
                                     </a>
                                 </div>
-                                @php
-                                    $pendingDocApprovals = auth()->user() ? 
-                                        \App\Models\DocumentVersionApproval::where('status', 'pending')
-                                            ->where('approver_id', auth()->id())
-                                            ->count() : 0;
-                                @endphp
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                                    <a href="{{ route('document-approvals.index') }}" class="btn btn-outline-warning w-100 position-relative">
+                                    <a href="{{ route('document-approvals.index') }}" class="btn btn-outline-warning w-100">
                                         <i class="far fa-check-double"></i>&nbsp;
                                         Document Approvals
-                                        @if($pendingDocApprovals > 0)
-                                            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">{{ $pendingDocApprovals }}</span>
-                                        @endif
                                     </a>
                                 </div>
-                                @can('approve', App\Models\DocumentAccessRequest::class)
                                 @php
-                                    $pendingAccessRequests = auth()->user() ? 
-                                        \App\Models\DocumentAccessRequest::where('status', 'pending')
-                                            ->count() : 0;
+                                    $canApproveCorrespondence = auth()->user()->can('approve', \App\Models\DocumentInstance::class);
+                                    $pendingCorrApprovals = $stats['pending_correspondence_approvals'] ?? 0;
                                 @endphp
+                                @if($pendingCorrApprovals > 0 || $canApproveCorrespondence)
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                                    <a href="{{ route('document-access-requests.pending') }}" class="btn btn-outline-danger w-100 position-relative">
+                                    <a href="{{ route('correspondences.index', ['status' => 'pending_approval']) }}" class="btn btn-outline-warning w-100">
+                                        <i class="far fa-envelope"></i>&nbsp;
+                                        Correspondence Approvals
+                                    </a>
+                                </div>
+                                @endif
+                                @can('approve', App\Models\DocumentAccessRequest::class)
+                                <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                                    <a href="{{ route('document-access-requests.pending') }}" class="btn btn-outline-danger w-100">
                                         <i class="far fa-user-lock"></i>&nbsp;
                                         Access Requests
-                                        @if($pendingAccessRequests > 0)
-                                            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">{{ $pendingAccessRequests }}</span>
-                                        @endif
                                     </a>
                                 </div>
                                 @endcan

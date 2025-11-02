@@ -7,6 +7,9 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use App\Models\FormRequest;
 use App\Models\PrintedForm;
+use App\Models\DocumentInstance;
+use App\Models\User;
+use App\Enums\DocumentInstanceStatus;
 use App\Services\FormRequestService;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +27,8 @@ final class DocumentManagementDashboardController extends Controller
         
         $stats = [
             'total_documents' => Document::count(),
-            'pending_approvals' => $this->getPendingApprovalsCount(),
+            'pending_document_approvals' => $this->getPendingDocumentApprovalsCount(),
+            'pending_correspondence_approvals' => $this->getPendingCorrespondenceApprovalsCount($user),
             'pending_form_requests' => FormRequest::where('status', 'requested')->count(),
             'circulating_forms' => PrintedForm::whereIn('status', ['issued', 'circulating'])->count(),
         ];
@@ -35,11 +39,36 @@ final class DocumentManagementDashboardController extends Controller
         return view('dashboards.dms', compact('stats', 'recentActivities', 'overdueRequests'));
     }
 
-    private function getPendingApprovalsCount(): int
+    private function getPendingDocumentApprovalsCount(): int
     {
         return DB::table('document_version_approvals')
             ->where('status', 'pending')
             ->count();
+    }
+
+    private function getPendingCorrespondenceApprovalsCount(User $user): int
+    {
+        // Get instances pending approval that the user can approve
+        $pendingInstances = DocumentInstance::where('status', DocumentInstanceStatus::PendingApproval)
+            ->with('creator')
+            ->get();
+
+        // Filter by approval policy
+        return $pendingInstances->filter(function ($instance) use ($user) {
+            // Super Admin and Owner can approve all
+            if ($user->hasRole(['Super Admin', 'Owner'])) {
+                return true;
+            }
+
+            // Check if user is the creator's manager
+            $creator = $instance->creator;
+            if ($creator && $creator->manager_id === $user->id) {
+                return true;
+            }
+
+            // Check if user has approve permission
+            return $user->hasPermissionTo('dms.instances.approve');
+        })->count();
     }
 
     private function getRecentActivities(): array

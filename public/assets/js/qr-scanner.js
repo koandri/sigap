@@ -54,8 +54,6 @@ class QRScanner {
             this.canvas.width = this.video.videoWidth;
             this.canvas.height = this.video.videoHeight;
         });
-
-        console.log('QR Scanner initialized');
     }
 
     /**
@@ -156,8 +154,6 @@ class QRScanner {
      * Handle successful QR code scan
      */
     handleScanResult(result) {
-        console.log('QR Code detected:', result);
-        
         if (this.resultElement) {
             this.resultElement.value = result.data;
             this.resultElement.classList.add('is-valid');
@@ -238,21 +234,20 @@ class QRScanner {
 
 // Initialize QR scanner when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-initialize if elements are present
-    if (document.querySelector('#qr-video')) {
-        window.qrScanner = new QRScanner({
-            onScan: function(result) {
-                console.log('QR Code scanned:', result.data);
-                // Handle the scanned QR code data
-                if (result.data.startsWith('PF-')) {
-                    // Redirect to printed form page
-                    window.location.href = `/printed-forms/${result.data}`;
+        // Auto-initialize if elements are present
+        if (document.querySelector('#qr-video')) {
+            window.qrScanner = new QRScanner({
+                onScan: function(result) {
+                    // Handle the scanned QR code data
+                    if (result.data.startsWith('PF-')) {
+                        // Redirect to printed form page
+                        window.location.href = `/printed-forms/${result.data}`;
+                    }
+                },
+                onError: function(error) {
+                    // Error handled by QRScanner.showNotification
                 }
-            },
-            onError: function(error) {
-                console.error('QR Scanner error:', error);
-            }
-        });
+            });
         
         window.qrScanner.init();
     }

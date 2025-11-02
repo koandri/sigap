@@ -12,9 +12,14 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 final class FormRequestService
 {
+    public function __construct(
+        private readonly WhatsAppService $whatsAppService,
+        private readonly PushoverService $pushoverService
+    ) {}
     public function createFormRequest(User $user, array $formData): FormRequest
     {
         return DB::transaction(function () use ($user, $formData) {
@@ -58,6 +63,8 @@ final class FormRequestService
 
     public function acknowledgeRequest(FormRequest $request, User $acknowledger): void
     {
+        $oldStatus = $request->status;
+        
         DB::transaction(function () use ($request, $acknowledger) {
             $request->update([
                 'acknowledged_at' => now(),
@@ -65,10 +72,16 @@ final class FormRequestService
                 'status' => FormRequestStatus::Acknowledged,
             ]);
         });
+
+        // Reload request with relationships and notify requester
+        $request->load(['requester', 'items.documentVersion.document']);
+        $this->notifyRequesterStatusChanged($request, $oldStatus->value, FormRequestStatus::Acknowledged->value);
     }
 
     public function processRequest(FormRequest $request): void
     {
+        $oldStatus = $request->status;
+        
         DB::transaction(function () use ($request) {
             // Generate printed form records when processing starts
             $this->generatePrintedForms($request);
@@ -77,20 +90,32 @@ final class FormRequestService
                 'status' => FormRequestStatus::Processing,
             ]);
         });
+
+        // Reload request with relationships and notify requester
+        $request->load(['requester', 'items.documentVersion.document']);
+        $this->notifyRequesterStatusChanged($request, $oldStatus->value, FormRequestStatus::Processing->value);
     }
 
     public function markReady(FormRequest $request): void
     {
+        $oldStatus = $request->status;
+        
         DB::transaction(function () use ($request) {
             $request->update([
                 'ready_at' => now(),
                 'status' => FormRequestStatus::Ready,
             ]);
         });
+
+        // Reload request with relationships and notify requester
+        $request->load(['requester', 'items.documentVersion.document']);
+        $this->notifyRequesterStatusChanged($request, $oldStatus->value, FormRequestStatus::Ready->value);
     }
 
     public function markCollected(FormRequest $request): void
     {
+        $oldStatus = $request->status;
+        
         DB::transaction(function () use ($request) {
             $request->update([
                 'collected_at' => now(),
@@ -106,6 +131,10 @@ final class FormRequestService
                 'status' => 'circulating',
             ]);
         });
+
+        // Reload request with relationships and notify requester
+        $request->load(['requester', 'items.documentVersion.document']);
+        $this->notifyRequesterStatusChanged($request, $oldStatus->value, FormRequestStatus::Collected->value);
     }
 
     public function generateFormNumbers(FormRequest $request): Collection
@@ -328,5 +357,102 @@ final class FormRequestService
                 ]);
             }
         }
+    }
+
+    /**
+     * Notify requester when form request status changes
+     */
+    private function notifyRequesterStatusChanged(FormRequest $request, string $oldStatus, string $newStatus): void
+    {
+        $requester = $request->requester;
+        
+        if (!$requester) {
+            return;
+        }
+
+        $statusLabels = [
+            'requested' => 'Requested',
+            'acknowledged' => 'Acknowledged',
+            'processing' => 'Processing',
+            'ready_for_collection' => 'Ready for Collection',
+            'collected' => 'Collected',
+            'completed' => 'Completed',
+        ];
+
+        $oldLabel = $statusLabels[$oldStatus] ?? ucfirst($oldStatus);
+        $newLabel = $statusLabels[$newStatus] ?? ucfirst($newStatus);
+
+        $message = "📋 *Form Request Status Update*\n\n";
+        $message .= "Status changed: *{$oldLabel}* → *{$newLabel}*\n";
+        $message .= "Request ID: #{$request->id}\n";
+        $message .= "Request Date: " . $request->request_date->format('d M Y') . "\n";
+
+        // Add form details
+        if ($request->items->isNotEmpty()) {
+            $message .= "\nForms:\n";
+            foreach ($request->items as $item) {
+                $message .= "• {$item->documentVersion->document->title} (Qty: {$item->quantity})\n";
+            }
+        }
+
+        // Special message for ready status
+        if ($newStatus === 'ready_for_collection') {
+            $message .= "\n✅ Your forms are ready for collection!\n";
+            $message .= "\nView request: " . route('form-requests.show', $request);
+        } else {
+            $message .= "\nView request: " . route('form-requests.show', $request);
+        }
+
+        $this->sendNotificationToUser($requester, $message, 'Form Request Status Changed');
+    }
+
+    /**
+     * Send notification to user via WhatsApp, fallback to Pushover on failure.
+     */
+    private function sendNotificationToUser(User $user, string $message, string $notificationType): bool
+    {
+        // Check if user has mobile phone number
+        if (empty($user->mobilephone_no)) {
+            Log::warning("User has no mobile phone number for WhatsApp notification", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'notification_type' => $notificationType,
+            ]);
+            
+            // Send failure notification via Pushover
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                $notificationType,
+                $user->name . ' (No Phone)',
+                $message
+            );
+            
+            return false;
+        }
+
+        // Format WhatsApp chat ID (phone number + @c.us)
+        $chatId = validateMobileNumber($user->mobilephone_no);
+
+        // Try to send via WhatsApp
+        $whatsAppSuccess = $this->whatsAppService->sendMessage($chatId, $message);
+
+        if (!$whatsAppSuccess) {
+            // WhatsApp failed, send notification via Pushover
+            Log::warning("WhatsApp notification failed, sending Pushover fallback", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'chat_id' => $chatId,
+                'notification_type' => $notificationType,
+            ]);
+
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                $notificationType,
+                $user->name . ' (' . $user->mobilephone_no . ')',
+                $message
+            );
+
+            return false;
+        }
+
+        return true;
     }
 }

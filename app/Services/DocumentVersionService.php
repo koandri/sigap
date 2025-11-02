@@ -12,9 +12,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 final class DocumentVersionService
 {
+    public function __construct(
+        private readonly WhatsAppService $whatsAppService,
+        private readonly PushoverService $pushoverService
+    ) {}
     public function createVersion(Document $document, array $data): DocumentVersion
     {
         return DB::transaction(function () use ($document, $data) {
@@ -110,11 +115,17 @@ final class DocumentVersionService
                 ]);
             }
         });
+
+        // Reload version with relationships and notify approvers
+        $version->load(['creator', 'document', 'approvals.approver']);
+        $this->notifyApprovers($version);
     }
 
     public function approveVersion(DocumentVersion $version, User $approver, ?string $notes = null): void
     {
-        DB::transaction(function () use ($version, $approver, $notes) {
+        $wasActivated = false;
+        
+        DB::transaction(function () use ($version, $approver, $notes, &$wasActivated) {
             // Update approval record
             $approval = $version->approvals()
                 ->where('approver_id', $approver->id)
@@ -132,11 +143,19 @@ final class DocumentVersionService
             // Check if all approvals are complete
             if ($this->allApprovalsComplete($version)) {
                 $this->activateVersion($version);
+                $wasActivated = true;
             } else {
                 // Move to next approval tier
                 $this->moveToNextApprovalTier($version);
             }
         });
+
+        // Reload version with relationships and notify creator
+        $version->load(['creator', 'document']);
+        
+        if ($wasActivated) {
+            $this->notifyCreatorApproved($version);
+        }
     }
 
     public function rejectVersion(DocumentVersion $version, User $approver, string $notes): void
@@ -161,6 +180,10 @@ final class DocumentVersionService
                 'status' => DocumentVersionStatus::Draft,
             ]);
         });
+
+        // Reload version with relationships and notify creator
+        $version->load(['creator', 'document']);
+        $this->notifyCreatorRejected($version, $notes);
     }
 
     public function activateVersion(DocumentVersion $version): void
@@ -287,11 +310,18 @@ final class DocumentVersionService
         ]);
 
         // Create management representative approval request
-        $version->approvals()->create([
-            'approver_id' => $this->getManagementRepresentative()->id,
-            'approval_tier' => 'management_representative',
-            'status' => 'pending',
-        ]);
+        $managementRep = $this->getManagementRepresentative();
+        if ($managementRep) {
+            $version->approvals()->create([
+                'approver_id' => $managementRep->id,
+                'approval_tier' => 'management_representative',
+                'status' => 'pending',
+            ]);
+
+            // Reload and notify new approver
+            $version->load(['creator', 'document', 'approvals.approver']);
+            $this->notifyApprovers($version);
+        }
     }
 
     private function getManagementRepresentative(): ?User
@@ -325,5 +355,137 @@ final class DocumentVersionService
                 'file_path' => $callbackData['url'],
             ]);
         }
+    }
+
+    /**
+     * Notify approvers when document version is submitted for approval
+     */
+    private function notifyApprovers(DocumentVersion $version): void
+    {
+        $approvers = collect();
+        $approverIds = [];
+        
+        // Get pending approvers from approvals
+        foreach ($version->approvals()->where('status', 'pending')->get() as $approval) {
+            $approver = $approval->approver;
+            if ($approver && !in_array($approver->id, $approverIds)) {
+                $approvers->push($approver);
+                $approverIds[] = $approver->id;
+            }
+        }
+
+        if ($approvers->isEmpty()) {
+            Log::warning("No approvers found for document version", [
+                'version_id' => $version->id,
+                'document_title' => $version->document->title,
+            ]);
+            return;
+        }
+
+        $message = "📄 *Document Version Approval Request*\n\n";
+        $message .= "Document: *{$version->document->title}*\n";
+        $message .= "Version: {$version->version_number}\n";
+        $message .= "Submitted by: {$version->creator->name}\n";
+        
+        if ($version->revision_description) {
+            $message .= "Revision: {$version->revision_description}\n";
+        }
+        
+        $message .= "\nPlease review: " . route('document-approvals.index');
+
+        foreach ($approvers as $approver) {
+            $this->sendNotificationToUser($approver, $message, 'Document Version Approval Request');
+        }
+    }
+
+    /**
+     * Notify creator when document version is approved and activated
+     */
+    private function notifyCreatorApproved(DocumentVersion $version): void
+    {
+        $creator = $version->creator;
+        
+        if (!$creator) {
+            return;
+        }
+
+        $message = "✅ *Document Version Approved*\n\n";
+        $message .= "Document: *{$version->document->title}*\n";
+        $message .= "Version: {$version->version_number}\n";
+        $message .= "\nThe document version has been approved and is now active.\n";
+        $message .= "\nView document: " . route('documents.show', $version->document);
+
+        $this->sendNotificationToUser($creator, $message, 'Document Version Approved');
+    }
+
+    /**
+     * Notify creator when document version is rejected
+     */
+    private function notifyCreatorRejected(DocumentVersion $version, string $notes): void
+    {
+        $creator = $version->creator;
+        
+        if (!$creator) {
+            return;
+        }
+
+        $message = "❌ *Document Version Rejected*\n\n";
+        $message .= "Document: *{$version->document->title}*\n";
+        $message .= "Version: {$version->version_number}\n";
+        $message .= "Reason: {$notes}\n";
+        $message .= "\nPlease review and resubmit after making corrections.\n";
+        $message .= "\nView document: " . route('documents.show', $version->document);
+
+        $this->sendNotificationToUser($creator, $message, 'Document Version Rejected');
+    }
+
+    /**
+     * Send notification to user via WhatsApp, fallback to Pushover on failure.
+     */
+    private function sendNotificationToUser(User $user, string $message, string $notificationType): bool
+    {
+        // Check if user has mobile phone number
+        if (empty($user->mobilephone_no)) {
+            Log::warning("User has no mobile phone number for WhatsApp notification", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'notification_type' => $notificationType,
+            ]);
+            
+            // Send failure notification via Pushover
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                $notificationType,
+                $user->name . ' (No Phone)',
+                $message
+            );
+            
+            return false;
+        }
+
+        // Format WhatsApp chat ID (phone number + @c.us)
+        $chatId = validateMobileNumber($user->mobilephone_no);
+
+        // Try to send via WhatsApp
+        $whatsAppSuccess = $this->whatsAppService->sendMessage($chatId, $message);
+
+        if (!$whatsAppSuccess) {
+            // WhatsApp failed, send notification via Pushover
+            Log::warning("WhatsApp notification failed, sending Pushover fallback", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'chat_id' => $chatId,
+                'notification_type' => $notificationType,
+            ]);
+
+            $this->pushoverService->sendWhatsAppFailureNotification(
+                $notificationType,
+                $user->name . ' (' . $user->mobilephone_no . ')',
+                $message
+            );
+
+            return false;
+        }
+
+        return true;
     }
 }

@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var script = document.createElement('script');
     script.src = apiScriptUrl;
     script.onload = function() {
-        console.log('OnlyOffice API loaded successfully');
         initializeEditor();
     };
     script.onerror = function() {
@@ -124,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeEditor() {
         try {
             var config = JSON.parse('{!! json_encode($editorConfig) !!}');
-            console.log('OnlyOffice config:', config);
             
             if (typeof DocsAPI !== 'undefined') {
                 new DocsAPI.DocEditor('onlyoffice-editor', config);

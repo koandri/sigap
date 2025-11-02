@@ -7,7 +7,6 @@ namespace App\Notifications;
 use App\Models\DocumentAccessRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 final class DocumentAccessProcessed extends Notification implements ShouldQueue
@@ -22,30 +21,7 @@ final class DocumentAccessProcessed extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    public function toMail($notifiable): MailMessage
-    {
-        $message = (new MailMessage)
-            ->subject('Document Access Request ' . ucfirst($this->status))
-            ->greeting('Hello!');
-
-        if ($this->status === 'approved') {
-            $message->line('Your document access request has been approved.')
-                ->line("Document: {$this->accessRequest->documentVersion->document->title}")
-                ->line("Access type: {$this->accessRequest->getEffectiveAccessType()->label()}")
-                ->action('View Document', route('documents.show', $this->accessRequest->documentVersion->document));
-        } else {
-            $message->line('Your document access request has been rejected.')
-                ->line("Document: {$this->accessRequest->documentVersion->document->title}");
-            
-            if ($this->reason) {
-                $message->line("Reason: {$this->reason}");
-            }
-        }
-
-        return $message;
+        return ['database'];
     }
 
     public function toArray($notifiable): array
@@ -59,4 +35,5 @@ final class DocumentAccessProcessed extends Notification implements ShouldQueue
         ];
     }
 }
+
 

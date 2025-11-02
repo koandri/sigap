@@ -7,7 +7,6 @@ namespace App\Notifications;
 use App\Models\DocumentAccessRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 final class DocumentAccessRequested extends Notification implements ShouldQueue
@@ -20,20 +19,7 @@ final class DocumentAccessRequested extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    public function toMail($notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('Document Access Request')
-            ->greeting('Hello!')
-            ->line('A new document access request has been submitted.')
-            ->line("Document: {$this->accessRequest->documentVersion->document->title}")
-            ->line("Requested by: {$this->accessRequest->user->name}")
-            ->line("Access type: {$this->accessRequest->access_type}")
-            ->action('Review Request', route('document-access-requests.pending'))
-            ->line('Please review and approve or reject the request.');
+        return ['database'];
     }
 
     public function toArray($notifiable): array

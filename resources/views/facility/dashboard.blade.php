@@ -14,7 +14,7 @@
                 <form method="GET" class="d-flex gap-2">
                     <input type="date" name="start_date" class="form-control" value="{{ $startDate }}" required>
                     <input type="date" name="end_date" class="form-control" value="{{ $endDate }}" required>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary flex-shrink-0 text-nowrap">
                         <i class="fa fa-filter"></i>&nbsp; Filter
                     </button>
                 </form>

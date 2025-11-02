@@ -26,6 +26,23 @@
         <div class="container-xl">
             @include('layouts.alerts')
 
+            @if(isset($pendingApprovalsCount) && $pendingApprovalsCount > 0)
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <i class="far fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-title">Pending Approvals</h4>
+                        <div class="text-secondary">
+                            You have <strong>{{ $pendingApprovalsCount }}</strong> correspondence{{ $pendingApprovalsCount > 1 ? 's' : '' }} waiting for your approval.
+                            <a href="{{ route('correspondences.index', ['status' => 'pending_approval']) }}" class="alert-link">View all pending approvals</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">My Correspondence</h3>

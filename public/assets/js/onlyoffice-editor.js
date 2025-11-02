@@ -30,7 +30,6 @@ class OnlyOfficeEditor {
             this.editor = new DocsAPI.DocEditor('onlyoffice-editor', this.config);
             
             this.isInitialized = true;
-            console.log('OnlyOffice editor initialized successfully');
             
         } catch (error) {
             console.error('Failed to initialize OnlyOffice editor:', error);
@@ -42,8 +41,6 @@ class OnlyOfficeEditor {
      * Handle editor events
      */
     onDocumentStateChange(event) {
-        console.log('Document state changed:', event);
-        
         // Handle different document states
         switch (event.data) {
             case 0: // Document not found
@@ -74,7 +71,6 @@ class OnlyOfficeEditor {
      * Handle document ready event
      */
     onDocumentReady() {
-        console.log('Document is ready');
         this.hideLoading();
     }
 
@@ -82,8 +78,6 @@ class OnlyOfficeEditor {
      * Handle document save event
      */
     onDocumentSave(event) {
-        console.log('Document saved:', event);
-        
         // Send save callback to server
         this.sendSaveCallback(event);
     }
@@ -109,7 +103,7 @@ class OnlyOfficeEditor {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Save callback response:', data);
+            // Callback processed successfully
         })
         .catch(error => {
             console.error('Error sending save callback:', error);

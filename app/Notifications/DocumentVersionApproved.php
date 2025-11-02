@@ -7,7 +7,6 @@ namespace App\Notifications;
 use App\Models\DocumentVersion;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 final class DocumentVersionApproved extends Notification implements ShouldQueue
@@ -20,18 +19,7 @@ final class DocumentVersionApproved extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    public function toMail($notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('Document Version Approved')
-            ->greeting('Hello!')
-            ->line("Document version has been approved: {$this->version->document->title}")
-            ->line("Version: {$this->version->version_number}")
-            ->action('View Document', route('documents.show', $this->version->document))
-            ->line('The document is now available for access.');
+        return ['database'];
     }
 
     public function toArray($notifiable): array
