@@ -13,6 +13,7 @@ SIGaP (Sistem Informasi Gabungan Pelaporan) is an enterprise business process au
 - **Manufacturing & Inventory** - Warehouse and inventory management
 - **Maintenance Management (CMMS)** - Asset tracking and preventive maintenance
 - **Facility Management** - Cleaning schedules and facility operations
+- **Document Management System (DMS)** - Document lifecycle management
 
 ---
 
@@ -59,7 +60,8 @@ After logging in, the dashboard shows:
 - **Manufacturing** - Inventory management
 - **Maintenance** - CMMS module
 - **Facility Management** - Cleaning schedules and operations
-- **Reports** - Asset and facility reports
+- **DMS** - Document Management System
+- **Reports** - Asset, facility, and document reports
 - **Options** - Assets, locations, categories
 - **Users & Roles** - User management (admin only)
 - **Departments** - Organization structure (admin only)
@@ -68,7 +70,7 @@ After logging in, the dashboard shows:
 
 ## System Modules
 
-SIGaP consists of five main modules. Click on the guide links below for detailed information:
+SIGaP consists of six main modules. Click on the guide links below for detailed information:
 
 ### 📋 Form Management
 
@@ -193,6 +195,30 @@ Comprehensive facility cleaning and operations management system.
 
 ---
 
+### 📄 Document Management System (DMS)
+
+Enterprise document lifecycle management with version control and access management.
+
+**Key Features:**
+- Document version control with two-tier approval (Manager → Management)
+- Access request system with watermarked PDF downloads
+- Printed form lifecycle management with QR code tracking
+- Document instances for memos and letters (template-based)
+- OnlyOffice integration for collaborative editing (DOCX/XLSX)
+- Physical location tracking (room, shelf, folder)
+- Comprehensive reports (masterlist, location, SLA dashboard)
+
+**Learn More:**
+- **[DMS Guide](./DMS_GUIDE.md)** - Complete Document Management System guide
+
+**Quick Start:**
+- **Users**: Request document access → View/download watermarked documents
+- **Document Creators**: Create document → Create version → Submit for approval
+- **Approvers**: Review pending approvals → Approve/reject versions
+- **Document Control**: Process form requests → Generate QR labels → Track printed forms
+
+---
+
 ## Administration
 
 ### User & Permission Management
@@ -248,6 +274,7 @@ Need help with day-to-day operations? Check our quick reference:
 | **[Manufacturing Guide](./MANUFACTURING_GUIDE.md)** | Inventory management | Warehouse Staff & Managers |
 | **[Maintenance Guide](./MAINTENANCE_GUIDE.md)** | CMMS operations | Technicians & Supervisors |
 | **[Cleaning Notifications Guide](./CLEANING_NOTIFICATIONS_GUIDE.md)** | Facility management | Cleaners & GA Staff |
+| **[DMS Guide](./DMS_GUIDE.md)** | Document Management System | Document Control & Users |
 | **[Admin Guide](./ADMIN_GUIDE.md)** | System administration | Administrators |
 | **[Common Tasks](./COMMON_TASKS.md)** | Quick reference | Everyone |
 | **[API Options Guide](./API_OPTIONS_GUIDE.md)** | API integration | Admins (Technical) |
@@ -437,6 +464,11 @@ SIGaP was built specifically to support our operations and streamline our busine
 - Read [Cleaning Notifications Guide](./CLEANING_NOTIFICATIONS_GUIDE.md)
 - Understand cleaner workflow
 - Learn approval and reporting system
+
+**Document Management Staff:**
+- Read [DMS Guide](./DMS_GUIDE.md)
+- Understand document version control
+- Learn access request and form request workflows
 
 ---
 

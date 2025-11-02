@@ -45,6 +45,14 @@ Built on Laravel 12 with modern best practices, SIGaP integrates four critical b
 - Daily and weekly reports with PDF export
 - Asset lifecycle management with automatic alerts
 
+**5. Document Management System (DMS)** - Enterprise document lifecycle management
+- Document version control with two-tier approval workflows
+- Access request system with version tracking and watermarked downloads
+- Printed form lifecycle management with QR code tracking
+- Document instances for memos and letters
+- Comprehensive reporting and SLA dashboards
+- OnlyOffice integration for collaborative editing
+
 This isn't just another business application - it's a **sophisticated enterprise platform** that rivals commercial ERP solutions like SAP, Oracle, or Microsoft Dynamics, but purpose-built for the food manufacturing industry with Indonesian business practices in mind.
 
 ## Core Features
@@ -349,6 +357,56 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Parts usage history per asset
   - Cost tracking per maintenance activity
 
+### 📄 Document Management System (DMS)
+- **Document Version Control**: Complete versioning system with two-tier approval workflow
+  - Manager and management representative approval tiers
+  - Draft → Pending Manager Approval → Pending Mgmt Approval → Active → Superseded
+  - Version history and revision tracking
+  - OnlyOffice integration for document editing (DOCX/XLSX)
+  - PDF conversion and watermarked viewing
+- **Document Types**: Support for 8 document types
+  - SOP (Standard Operating Procedures)
+  - Work Instructions
+  - Forms
+  - Job Descriptions
+  - Internal Memos (template-based with instances)
+  - Incoming Letters
+  - Outgoing Letters (template-based with instances)
+  - Other
+- **Access Control**: Comprehensive access request system
+  - One-time or multiple access requests
+  - Access tied to specific document versions
+  - Approval workflow with expiry dates
+  - Access logging and audit trail
+  - Watermarked PDF downloads for security
+- **Form Request Management**: Complete printed form lifecycle
+  - Request printed forms with quantities
+  - Document Control acknowledgment and processing
+  - QR code label generation for tracking
+  - Form numbering system (PF-YYMMDD-XXXX)
+  - Physical location tracking (room, shelf, folder)
+  - Status tracking: Issued → Circulating → Returned → Received → Scanned
+  - Bulk operations (return, receive, upload scans, update location)
+  - Scanned form storage and access control
+- **Document Instances**: Template-based memo and letter management
+  - Create instances from template versions
+  - Instance numbering system
+  - Approval workflow for instances
+  - Final PDF generation and storage
+- **Reports & Analytics**: Comprehensive reporting suite
+  - Documents Masterlist (grouped by department/type, exportable)
+  - Location-based reports (group by physical location)
+  - SLA Dashboard with performance metrics
+  - Form circulation reports
+  - Access request history
+- **Dashboard**: Real-time DMS overview
+  - Document statistics by type and status
+  - Pending approvals by tier
+  - Recent access requests
+  - Overdue approvals
+  - Active form requests
+  - SLA compliance metrics
+
 ### 🗺️ System Integration
 - **Cross-Module Integration**: Seamless data flow between modules
   - Facility requests create maintenance work orders
@@ -357,15 +415,7 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Shared asset and location databases
   - Unified notification system
   - Consistent permission model across modules
-
-## Future Modules (Planned)
-
-### 📄 Document Management System
-- Centralized document storage with version control
-- Document approval workflows with digital signatures
-- Advanced categorization and tagging system
-- Full-text search and retrieval capabilities
-- Integration with existing form workflows
+  - DMS documents can be attached to assets
 
 ### 🛡️ Security Officer Logs
 - Security incident reporting and tracking
@@ -643,12 +693,14 @@ config/                # Application configuration (13 files)
 ├── session.php        # Session configuration
 └── watermark.php      # Custom watermark settings
 
-guides/                # User documentation (9 comprehensive guides)
+guides/                # User documentation (11+ comprehensive guides)
 ├── USER_GUIDE.md              # System overview and quick start
 ├── FORMS_GUIDE.md             # Form management (admins and users)
 ├── WORKFLOWS_GUIDE.md         # Approval workflow configuration
 ├── MANUFACTURING_GUIDE.md     # Warehouse and inventory management
 ├── MAINTENANCE_GUIDE.md       # CMMS operations and asset management
+├── CLEANING_NOTIFICATIONS_GUIDE.md # Facility management and cleaning operations
+├── DMS_GUIDE.md              # Document Management System guide
 ├── NOTIFICATIONS_GUIDE.md     # WhatsApp and Pushover notification system
 ├── ADMIN_GUIDE.md             # User management and permissions
 ├── COMMON_TASKS.md            # Quick reference and troubleshooting
@@ -676,6 +728,11 @@ MAINTENANCE_SCHEDULING_GUIDE.md # Automatic work order generation (root level)
 - `CleaningTask`, `CleaningSubmission`, `CleaningApproval`
 - `CleaningRequest`
 
+**Document Management (8 models):**
+- `Document`, `DocumentVersion`, `DocumentVersionApproval`
+- `DocumentAccessRequest`, `DocumentAccessLog`, `DocumentInstance`
+- `FormRequest`, `FormRequestItem`, `PrintedForm`, `PrintedFormLabel`
+
 **Maintenance (CMMS - 12 models):**
 - `Asset`, `AssetCategory`, `AssetDocument`, `Location`
 - `MaintenanceSchedule`, `MaintenanceType`, `MaintenanceLog`
@@ -684,7 +741,7 @@ MAINTENANCE_SCHEDULING_GUIDE.md # Automatic work order generation (root level)
 **User Management (4 models):**
 - `User`, `Role`, `Permission`, `Department`
 
-**Total: 41 Eloquent models**
+**Total: 49+ Eloquent models**
 
 All models follow Laravel best practices:
 - Final classes to prevent inheritance
@@ -720,6 +777,31 @@ The application follows a service-oriented architecture with business logic sepa
 - Work order generation from schedules
 - Duplicate prevention logic
 - Parts inventory integration
+
+**DocumentService**: Manages document operations
+- Document creation and metadata management
+- Cross-department access assignment
+- Masterlist generation
+- Physical location formatting
+
+**DocumentVersionService**: Manages version control
+- Version creation (scratch/upload/copy)
+- Two-tier approval workflow
+- Version activation and superseding
+- OnlyOffice integration
+
+**DocumentAccessService**: Manages access control
+- Access request processing
+- Version-specific access tracking
+- Access expiry management
+- Watermarked PDF generation
+
+**FormRequestService**: Manages printed form lifecycle
+- Form request creation with version tracking
+- QR code label generation
+- Form numbering system
+- Physical location tracking
+- Bulk operations
 
 **CleaningService**: Manages facility cleaning operations
 - Daily and hourly task generation with time-based scheduling
@@ -879,6 +961,7 @@ All documentation is located in the `guides/` directory:
 - **[Manufacturing Guide](guides/MANUFACTURING_GUIDE.md)** - Warehouse and inventory management
 - **[Maintenance Guide](guides/MAINTENANCE_GUIDE.md)** - CMMS operations and asset management
 - **[Facility Cleaning Guide](guides/CLEANING_NOTIFICATIONS_GUIDE.md)** - Facility management and cleaning operations
+- **[Document Management Guide](guides/DMS_GUIDE.md)** - Document Management System operations
 - **[Notifications Guide](guides/NOTIFICATIONS_GUIDE.md)** - WhatsApp and Pushover notification system
 
 **Administration:**
