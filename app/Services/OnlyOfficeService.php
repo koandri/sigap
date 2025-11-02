@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\DocumentVersion;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 final class OnlyOfficeService
 {
@@ -119,18 +121,183 @@ final class OnlyOfficeService
 
     public function convertToPDF(DocumentVersion $version): string
     {
-        // This would typically involve calling OnlyOffice API to convert document to PDF
-        // For now, we'll return the original file path
-        // In production, you'd implement the actual conversion logic
-        
+        // Use public URL since S3 files are publicly accessible
+        $documentUrl = Storage::disk('s3')->url($version->file_path);
         $pdfPath = $this->generatePdfPath($version);
         
-        // TODO: Implement actual PDF conversion via OnlyOffice API
-        // For now, just copy the original file
-        Storage::disk('s3')->copy($version->file_path, $pdfPath);
+        // Try different converter endpoint paths
+        $baseUrl = str_replace('/onlyoffice', '', rtrim($this->documentServerUrl, '/'));
+        $possibleEndpoints = [
+            // Nextcloud Office/OnlyOffice conversion endpoint (most likely for Nextcloud integration)
+            $baseUrl . '/ocs/v2.php/apps/richdocuments/api/v1/documents/conversion',
+            // Alternative Nextcloud endpoint format
+            $baseUrl . '/index.php/apps/richdocuments/api/v1/documents/conversion',
+            // Standard Document Server endpoint (if using standalone Document Server)
+            $baseUrl . '/ConvertService.ashx',
+            // Alternative Document Server endpoint
+            rtrim($this->documentServerUrl, '/') . '/ConvertService.ashx',
+        ];
         
-        return $pdfPath;
+        // Determine if this is a Nextcloud endpoint
+        $isNextcloudEndpoint = function($url) {
+            return str_contains($url, '/ocs/') || str_contains($url, '/index.php/apps/richdocuments/');
+        };
+        
+        $lastError = null;
+        
+        // Try each endpoint
+        foreach ($possibleEndpoints as $converterUrl) {
+            try {
+                $isNextcloud = $isNextcloudEndpoint($converterUrl);
+                
+                // Prepare request data based on endpoint type
+                if ($isNextcloud) {
+                    // Nextcloud Office API format
+                    $requestData = [
+                        'fileId' => $version->id,
+                        'fileType' => $version->file_type,
+                        'outputFormat' => 'pdf',
+                        'documentUrl' => $documentUrl,
+                    ];
+                } else {
+                    // Standard OnlyOffice Document Server format
+                    $requestData = [
+                        'async' => false,
+                        'filetype' => $version->file_type,
+                        'key' => $this->generateDocumentKey($version) . '_conv',
+                        'outputtype' => 'pdf',
+                        'title' => $version->document->title,
+                        'url' => $documentUrl,
+                    ];
+                    
+                    // Add JWT token if enabled (for Document Server)
+                    if (config('dms.onlyoffice.jwt_enabled') && config('dms.onlyoffice.secret')) {
+                        $requestData['token'] = $this->generateJWT($requestData);
+                    }
+                }
+                
+                Log::info('Converting document to PDF via OnlyOffice', [
+                    'version_id' => $version->id,
+                    'converter_url' => $converterUrl,
+                    'document_url' => $documentUrl,
+                    'file_type' => $version->file_type,
+                    'is_nextcloud' => $isNextcloud,
+                ]);
+                
+                $headers = [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ];
+                
+                $response = Http::withHeaders($headers)->timeout(120)->post($converterUrl, $requestData);
+                
+                if (!$response->successful()) {
+                    $errorBody = $response->body();
+                    Log::warning('OnlyOffice conversion request failed', [
+                        'version_id' => $version->id,
+                        'converter_url' => $converterUrl,
+                        'status' => $response->status(),
+                        'response' => $errorBody,
+                    ]);
+                    $lastError = 'OnlyOffice conversion failed (HTTP ' . $response->status() . '): ' . $errorBody;
+                    continue; // Try next endpoint
+                }
+                
+                $responseData = $response->json();
+                
+                // Handle Nextcloud API response format (wrapped in ocs format)
+                if ($isNextcloud && isset($responseData['ocs'])) {
+                    $responseData = $responseData['ocs'];
+                    if (isset($responseData['data'])) {
+                        $responseData = $responseData['data'];
+                    }
+                }
+                
+                // Check for error in response
+                if (isset($responseData['error'])) {
+                    Log::warning('OnlyOffice conversion returned error', [
+                        'version_id' => $version->id,
+                        'converter_url' => $converterUrl,
+                        'error' => $responseData['error'],
+                    ]);
+                    $lastError = 'OnlyOffice conversion error: ' . $responseData['error'];
+                    continue; // Try next endpoint
+                }
+                
+                // Nextcloud might return different field names
+                $pdfUrl = $responseData['fileUrl'] ?? $responseData['url'] ?? $responseData['downloadUrl'] ?? null;
+                
+                if (!$pdfUrl) {
+                    Log::warning('OnlyOffice conversion did not return fileUrl', [
+                        'version_id' => $version->id,
+                        'converter_url' => $converterUrl,
+                        'response' => $responseData,
+                    ]);
+                    $lastError = 'OnlyOffice conversion did not return fileUrl. Response: ' . json_encode($responseData);
+                    continue; // Try next endpoint
+                }
+                
+                // For Nextcloud, the URL might be relative - make it absolute
+                if ($isNextcloud && !str_starts_with($pdfUrl, 'http')) {
+                    $baseUrl = parse_url($converterUrl, PHP_URL_SCHEME) . '://' . parse_url($converterUrl, PHP_URL_HOST);
+                    if (parse_url($converterUrl, PHP_URL_PORT)) {
+                        $baseUrl .= ':' . parse_url($converterUrl, PHP_URL_PORT);
+                    }
+                    $pdfUrl = $baseUrl . $pdfUrl;
+                }
+                
+                // Download the converted PDF
+                Log::info('Downloading converted PDF from OnlyOffice', [
+                    'version_id' => $version->id,
+                    'pdf_url' => $pdfUrl,
+                ]);
+                
+                $pdfResponse = Http::timeout(120)->get($pdfUrl);
+                
+                if (!$pdfResponse->successful()) {
+                    throw new \Exception('Failed to download converted PDF: HTTP ' . $pdfResponse->status());
+                }
+                
+                $pdfContent = $pdfResponse->body();
+                
+                // Verify it's actually PDF content
+                if (substr($pdfContent, 0, 4) !== '%PDF') {
+                    throw new \Exception('Downloaded content is not a valid PDF file');
+                }
+                
+                // Save the PDF to storage
+                Storage::disk('s3')->put($pdfPath, $pdfContent, 'public');
+                
+                Log::info('PDF conversion successful via OnlyOffice', [
+                    'version_id' => $version->id,
+                    'pdf_path' => $pdfPath,
+                    'converter_url' => $converterUrl,
+                    'pdf_size' => strlen($pdfContent),
+                ]);
+                
+                return $pdfPath;
+            } catch (\Exception $e) {
+                Log::warning('OnlyOffice conversion attempt failed', [
+                    'version_id' => $version->id,
+                    'converter_url' => $converterUrl,
+                    'error' => $e->getMessage(),
+                ]);
+                $lastError = $e->getMessage();
+                continue; // Try next endpoint
+            }
+        }
+        
+        // All endpoints failed - log and throw exception (don't fallback to PhpWord)
+        Log::error('All OnlyOffice PDF conversion endpoints failed', [
+            'version_id' => $version->id,
+            'document_url' => $documentUrl,
+            'last_error' => $lastError,
+            'attempted_endpoints' => $possibleEndpoints,
+        ]);
+        
+        throw new \Exception('PDF conversion failed: ' . ($lastError ?? 'All conversion endpoints failed. Please check OnlyOffice server configuration.'));
     }
+    
 
     public function getDocumentUrl(DocumentVersion $version): string
     {

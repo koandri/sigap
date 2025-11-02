@@ -55,7 +55,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentVersionController;
 use App\Http\Controllers\DocumentApprovalController;
 use App\Http\Controllers\DocumentAccessController;
-use App\Http\Controllers\DocumentInstanceController;
+use App\Http\Controllers\CorrespondenceController;
 use App\Http\Controllers\FormRequestController;
 use App\Http\Controllers\PrintedFormController;
 use App\Http\Controllers\DocumentManagementDashboardController;
@@ -342,15 +342,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('document-access-requests/{request}/reject', [DocumentAccessController::class, 'reject'])->name('document-access-requests.reject');
     
     // Correspondences
-    Route::get('correspondences', [DocumentInstanceController::class, 'index'])->name('correspondences.index');
-    Route::get('correspondences/create', [DocumentInstanceController::class, 'create'])->name('correspondences.create');
-    Route::post('documents/{document}/correspondences', [DocumentInstanceController::class, 'store'])->name('correspondences.store');
-    Route::get('correspondences/{instance}', [DocumentInstanceController::class, 'show'])->name('correspondences.show');
-    Route::get('correspondences/{instance}/edit', [DocumentInstanceController::class, 'edit'])->name('correspondences.edit');
-    Route::put('correspondences/{instance}', [DocumentInstanceController::class, 'update'])->name('correspondences.update');
-    Route::post('correspondences/{instance}/submit', [DocumentInstanceController::class, 'submitForApproval'])->name('correspondences.submit');
-    Route::post('correspondences/{instance}/approve', [DocumentInstanceController::class, 'approve'])->name('correspondences.approve');
-    Route::post('correspondences/{instance}/reject', [DocumentInstanceController::class, 'reject'])->name('correspondences.reject');
+    Route::get('correspondences', [CorrespondenceController::class, 'index'])->name('correspondences.index');
+    Route::get('correspondences/create', [CorrespondenceController::class, 'create'])->name('correspondences.create');
+    Route::post('documents/{document}/correspondences', [CorrespondenceController::class, 'store'])->name('correspondences.store');
+    Route::get('correspondences/{instance}', [CorrespondenceController::class, 'show'])->name('correspondences.show');
+    Route::get('correspondences/{instance}/edit', [CorrespondenceController::class, 'edit'])->name('correspondences.edit');
+    Route::put('correspondences/{instance}', [CorrespondenceController::class, 'update'])->name('correspondences.update');
+    Route::post('correspondences/{instance}/submit', [CorrespondenceController::class, 'submitForApproval'])->name('correspondences.submit');
+    Route::post('correspondences/{instance}/approve', [CorrespondenceController::class, 'approve'])->name('correspondences.approve');
+    Route::post('correspondences/{instance}/reject', [CorrespondenceController::class, 'reject'])->name('correspondences.reject');
+    Route::get('correspondences/{instance}/download-pdf', [CorrespondenceController::class, 'downloadPdf'])->name('correspondences.download-pdf');
     
     // Form Requests
     Route::resource('form-requests', FormRequestController::class);

@@ -117,6 +117,15 @@
                                     </form>
                                 @endif
                             @endcan
+
+                            @can('downloadPdf', $instance)
+                                @if($instance->isApproved())
+                                    <a href="{{ route('correspondences.download-pdf', $instance) }}" class="btn btn-info">
+                                        <i class="far fa-download"></i>&nbsp;
+                                        Download PDF
+                                    </a>
+                                @endif
+                            @endcan
                         </div>
                     </div>
                 </div>

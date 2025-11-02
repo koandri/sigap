@@ -64,5 +64,21 @@ final class DocumentInstancePolicy
 
         return $user->hasPermissionTo('dms.instances.approve');
     }
+
+    public function downloadPdf(User $user, DocumentInstance $instance): bool
+    {
+        // Creator can download
+        if ($instance->created_by === $user->id) {
+            return true;
+        }
+
+        // Super Admin and Owner can download
+        if ($user->hasRole(['Super Admin', 'Owner'])) {
+            return true;
+        }
+
+        return false;
+    }
 }
+
 
