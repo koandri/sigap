@@ -22,7 +22,7 @@ final class OnlyOfficeService
     public function createDocument(DocumentVersion $version, string $fileType = 'docx'): string
     {
         $filename = $this->generateFilename($version, $fileType);
-        $filePath = 'documents/onlyoffice/' . $filename;
+        $filePath = 'documents/versions/' . $version->document_id . '/' . $filename;
         
         // Create empty document file
         $this->createEmptyDocument($filePath, $fileType);

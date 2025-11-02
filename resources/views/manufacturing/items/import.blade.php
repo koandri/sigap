@@ -17,7 +17,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-secondary d-none d-sm-inline-block">
-                        <i class="far fa-arrow-left"></i>
+                        <i class="far fa-arrow-left"></i>&nbsp;
                         View Items
                     </a>
                 </div>
@@ -134,7 +134,7 @@
                             <div class="d-flex">
                                 <a href="{{ route('manufacturing.dashboard') }}" class="btn btn-link">Cancel</a>
                                 <button type="submit" class="btn btn-primary ms-auto">
-                                    <i class="far fa-file-import me-2"></i>
+                                    <i class="far fa-file-import me-2"></i>&nbsp;
                                     Import Excel File
                                 </button>
                             </div>

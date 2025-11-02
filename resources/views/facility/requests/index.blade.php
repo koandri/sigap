@@ -9,13 +9,13 @@
             <div class="col">
                 <div class="page-pretitle">Facility Management</div>
                 <h2 class="page-title">
-                    <i class="fa fa-clipboard-list"></i> Cleaning Requests
+                    <i class="fa fa-clipboard-list"></i>&nbsp; Cleaning Requests
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('facility.requests.guest-form') }}" class="btn btn-primary" target="_blank">
-                        <i class="fa fa-external-link-alt"></i> Open Guest Form
+                        <i class="fa fa-external-link-alt"></i>&nbsp; Open Guest Form
                     </a>
                 </div>
             </div>
@@ -53,10 +53,10 @@
                             <label class="form-label">&nbsp;</label>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fa fa-filter"></i> Filter
+                                    <i class="fa fa-filter"></i>&nbsp; Filter
                                 </button>
                                 <a href="{{ route('facility.requests.index') }}" class="btn btn-outline-secondary">
-                                    <i class="fa fa-redo"></i>
+                                    <i class="fa fa-redo"></i>&nbsp;
                                 </a>
                             </div>
                         </div>
@@ -97,18 +97,18 @@
                             <td>
                                 <div><strong>{{ $request->requester_name }}</strong></div>
                                 <small class="text-muted">
-                                    <i class="fa fa-phone"></i> {{ $request->requester_phone }}
+                                    <i class="fa fa-phone"></i>&nbsp; {{ $request->requester_phone }}
                                 </small>
                             </td>
                             <td>
-                                <i class="fa fa-map-marker-alt text-muted"></i>
+                                <i class="fa fa-map-marker-alt text-muted"></i>&nbsp;
                                 {{ $request->location->name }}
                             </td>
                             <td>
                                 @if($request->request_type === 'cleaning')
-                                    <span class="badge bg-blue"><i class="fa fa-broom"></i> Cleaning</span>
+                                    <span class="badge bg-blue"><i class="fa fa-broom"></i>&nbsp; Cleaning</span>
                                 @else
-                                    <span class="badge bg-orange"><i class="fa fa-wrench"></i> Repair</span>
+                                    <span class="badge bg-orange"><i class="fa fa-wrench"></i>&nbsp; Repair</span>
                                 @endif
                             </td>
                             <td>
@@ -117,26 +117,26 @@
                                 </div>
                                 @if($request->photo)
                                     <a href="#" class="btn btn-sm btn-link p-0" data-bs-toggle="modal" data-bs-target="#photoModal{{ $request->id }}">
-                                        <i class="fa fa-image"></i> View Photo
+                                        <i class="fa fa-image"></i>&nbsp; View Photo
                                     </a>
                                 @endif
                             </td>
                             <td>
                                 @if($request->status === 'completed')
-                                    <span class="badge bg-success"><i class="fa fa-check"></i> Completed</span>
+                                    <span class="badge bg-success"><i class="fa fa-check"></i>&nbsp; Completed</span>
                                 @else
-                                    <span class="badge bg-warning"><i class="fa fa-clock"></i> Pending</span>
+                                    <span class="badge bg-warning"><i class="fa fa-clock"></i>&nbsp; Pending</span>
                                 @endif
                             </td>
                             <td>
                                 <div class="btn-list flex-nowrap">
                                     @if($request->status === 'pending')
                                         <a href="{{ route('facility.requests.handle-form', $request) }}" class="btn btn-sm btn-primary">
-                                            <i class="fa fa-check-circle"></i> Handle
+                                            <i class="fa fa-check-circle"></i>&nbsp; Handle
                                         </a>
                                     @else
                                         <button class="btn btn-sm btn-outline-secondary" disabled>
-                                            <i class="fa fa-check"></i> Handled
+                                            <i class="fa fa-check"></i>&nbsp; Handled
                                         </button>
                                     @endif
                                 </div>
@@ -166,7 +166,7 @@
                             <td colspan="8" class="text-center text-muted py-5">
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="fa fa-inbox fa-3x"></i>
+                                        <i class="fa fa-inbox fa-3x"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No requests found</p>
                                     <p class="empty-subtitle text-muted">

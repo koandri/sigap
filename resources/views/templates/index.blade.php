@@ -58,10 +58,10 @@
                                                     <td>
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary" title="View">
-                                                                <i class="far fa-eye"></i>
+                                                                <i class="far fa-eye"></i>&nbsp;
                                                             </a>
                                                             <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-primary" title="Edit">
-                                                                <i class="far fa-pen-to-square"></i>
+                                                                <i class="far fa-pen-to-square"></i>&nbsp;
                                                             </a>
                                                         </div>
                                                     </td>

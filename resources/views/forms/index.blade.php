@@ -62,13 +62,13 @@
                                                     <td>
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             <a href="{{ route('forms.show', $form) }}" class="btn btn-outline-secondary" title="View">
-                                                                <i class="far fa-eye"></i>
+                                                                <i class="far fa-eye"></i>&nbsp;
                                                             </a>
                                                             <a href="{{ route('forms.edit', $form) }}" class="btn btn-outline-primary" title="Edit">
-                                                                <i class="far fa-pen-to-square"></i>
+                                                                <i class="far fa-pen-to-square"></i>&nbsp;
                                                             </a>
                                                             <a href="#" class="btn btn-outline-danger" onclick="confirm('Are you sure?'); event.preventDefault(); document.getElementById('delete-{{ $form->id }}').submit();" title="Delete">
-                                                                <i class="far fa-trash-can"></i>
+                                                                <i class="far fa-trash-can"></i>&nbsp;
                                                             </a>
                                                             <form id="delete-{{ $form->id }}" action="{{ route('forms.destroy', $form) }}" method="POST" style="display: none;" onsubmit="return confirm('Are you sure?')">
                                                                 @csrf

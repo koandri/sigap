@@ -14,6 +14,6 @@
 @endphp
 
 <span class="badge {{ $config['class'] }}">
-    <i class="far {{ $config['icon'] }}"></i>
+    <i class="far {{ $config['icon'] }}"></i>&nbsp;
     {{ ucfirst(str_replace('_', ' ', $status)) }}
 </span>

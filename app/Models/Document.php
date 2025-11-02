@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -34,7 +35,7 @@ final class Document extends Model
 
     public function department(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'department_id');
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     public function creator(): BelongsTo
@@ -47,15 +48,15 @@ final class Document extends Model
         return $this->hasMany(DocumentVersion::class);
     }
 
-    public function activeVersion(): BelongsTo
+    public function activeVersion(): HasOne
     {
-        return $this->belongsTo(DocumentVersion::class, 'id', 'document_id')
+        return $this->hasOne(DocumentVersion::class, 'document_id')
             ->where('status', DocumentVersionStatus::Active);
     }
 
     public function accessibleDepartments(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'document_accessible_departments', 'document_id', 'department_id');
+        return $this->belongsToMany(Department::class, 'document_accessible_departments', 'document_id', 'department_id');
     }
 
     public function instances(): HasMany
@@ -81,9 +82,15 @@ final class Document extends Model
     public function scopeAccessibleByUser($query, User $user)
     {
         return $query->where(function ($q) use ($user) {
-            $q->where('department_id', $user->role_id)
+            $q->whereHas('department', function ($deptQuery) use ($user) {
+                $deptQuery->whereHas('users', function ($userQuery) use ($user) {
+                    $userQuery->where('users.id', $user->id);
+                });
+            })
               ->orWhereHas('accessibleDepartments', function ($subQ) use ($user) {
-                  $subQ->where('department_id', $user->role_id);
+                  $subQ->whereHas('users', function ($userQuery) use ($user) {
+                      $userQuery->where('users.id', $user->id);
+                  });
               });
         });
     }

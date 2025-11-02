@@ -3,7 +3,7 @@
 @if($form->description)
 <div class="alert alert-info alert-dismissible" role="alert">
     <div class="alert-icon">
-        <i class="far fa-circle-info"></i>
+        <i class="far fa-circle-info"></i>&nbsp;
     </div>
     <div>
         <h4 class="alert-heading">Form Description</h4>
@@ -16,7 +16,7 @@
 
 <div class="alert alert-warning alert-dismissible" role="alert">
     <div class="alert-icon">
-        <i class="far fa-triangle-exclamation"></i>
+        <i class="far fa-triangle-exclamation"></i>&nbsp;
     </div>
     <div>
         <h4 class="alert-heading">Warning!</h4>

@@ -9,7 +9,7 @@
             <div class="col">
                 <div class="page-pretitle">Facility Management Reports</div>
                 <h2 class="page-title">
-                    <i class="fa fa-calendar-week"></i> Weekly Cleaning Report
+                    <i class="fa fa-calendar-week"></i>&nbsp; Weekly Cleaning Report
                 </h2>
             </div>
         </div>
@@ -30,7 +30,7 @@
                             <label class="form-label required">Week Starting (Monday)</label>
                             <div class="input-group">
                                 <span class="input-group-text">
-                                    <i class="fa fa-calendar"></i>
+                                    <i class="fa fa-calendar"></i>&nbsp;
                                 </span>
                                 <input type="text" 
                                        name="date" 
@@ -57,7 +57,7 @@
                         <div class="col-md-2">
                             <label class="form-label">&nbsp;</label>
                             <button type="submit" class="btn btn-primary w-100">
-                                <i class="fa fa-search"></i> View
+                                <i class="fa fa-search"></i>&nbsp; View
                             </button>
                         </div>
                     </div>
@@ -69,14 +69,14 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fa fa-calendar-week"></i> Weekly Report
+                    <i class="fa fa-calendar-week"></i>&nbsp; Weekly Report
                 </h3>
                 <div class="card-actions">
                     <a href="{{ route('reports.facility.weekly-pdf', ['date' => $weekStart->toDateString(), 'locations' => $locationIds]) }}" 
                        class="btn btn-primary btn-sm" 
                        target="_blank"
                        title="Open print-friendly view. Use your browser's print function (Ctrl+P / Cmd+P) to save as PDF">
-                        <i class="fa fa-print"></i> Print / Export PDF
+                        <i class="fa fa-print"></i>&nbsp; Print / Export PDF
                     </a>
                 </div>
             </div>
@@ -169,7 +169,7 @@
                             <td colspan="8" class="text-center text-muted py-5">
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="fa fa-inbox fa-3x"></i>
+                                        <i class="fa fa-inbox fa-3x"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No locations found</p>
                                     <p class="empty-subtitle text-muted">
@@ -356,7 +356,7 @@ function showCellDetails(date, locationId, locationName) {
             if (data.tasks.length === 0) {
                 body.innerHTML = `
                     <div class="empty">
-                        <div class="empty-icon"><i class="fa fa-inbox fa-2x"></i></div>
+                        <div class="empty-icon"><i class="fa fa-inbox fa-2x"></i>&nbsp;</div>
                         <p class="empty-title">No tasks found</p>
                     </div>
                 `;
@@ -401,7 +401,7 @@ function showCellDetails(date, locationId, locationName) {
         .catch(error => {
             body.innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fa fa-exclamation-triangle"></i> Failed to load task details.
+                    <i class="fa fa-exclamation-triangle"></i>&nbsp; Failed to load task details.
                 </div>
             `;
         });

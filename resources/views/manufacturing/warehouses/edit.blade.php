@@ -129,7 +129,7 @@
                             <div class="d-flex">
                                 <a href="{{ route('manufacturing.warehouses.show', $warehouse) }}" class="btn btn-outline-secondary me-auto">Cancel</a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="far fa-pen"></i>
+                                    <i class="far fa-pen"></i>&nbsp;
                                     Update Warehouse
                                 </button>
                             </div>

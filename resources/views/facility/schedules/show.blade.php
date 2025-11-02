@@ -13,11 +13,11 @@
             <div class="col-auto ms-auto d-print-none">
                 @can('facility.schedules.edit')
                     <a href="{{ route('facility.schedules.edit', $schedule) }}" class="btn btn-primary">
-                        <i class="fa fa-edit"></i> Edit Schedule
+                        <i class="fa fa-edit"></i>&nbsp; Edit Schedule
                     </a>
                 @endcan
                 <a href="{{ route('facility.schedules.index') }}" class="btn btn-outline-primary">
-                    <i class="fa fa-arrow-left"></i> Back to List
+                    <i class="fa fa-arrow-left"></i>&nbsp; Back to List
                 </a>
             </div>
         </div>
@@ -52,7 +52,7 @@
                             <div class="col-md-8">
                                 <label class="form-label text-muted">Frequency</label>
                                 <div class="fw-bold">
-                                    <i class="fa fa-clock me-1"></i>
+                                    <i class="fa fa-clock me-1"></i>&nbsp;
                                     {{ $schedule->frequency_description }}
                                 </div>
                             </div>
@@ -72,7 +72,7 @@
                     <div class="card mb-3">
                         <div class="card-header bg-warning-lt">
                             <h3 class="card-title">
-                                <i class="fa fa-exclamation-triangle"></i> Active Alerts
+                                <i class="fa fa-exclamation-triangle"></i>&nbsp; Active Alerts
                             </h3>
                         </div>
                         <div class="card-body">
@@ -80,7 +80,7 @@
                                 <div class="alert alert-warning mb-2">
                                     <div class="d-flex">
                                         <div>
-                                            <i class="fa fa-exclamation-circle"></i>
+                                            <i class="fa fa-exclamation-circle"></i>&nbsp;
                                         </div>
                                         <div class="ms-2">
                                             <strong>{{ $alert->alert_type === 'asset_inactive' ? 'Asset Inactive' : 'Asset Disposed' }}</strong>
@@ -95,7 +95,7 @@
                                 </div>
                             @endforeach
                             <p class="text-muted small mb-0">
-                                <i class="fa fa-info-circle"></i> 
+                                <i class="fa fa-info-circle"></i>&nbsp; 
                                 These alerts indicate issues with assets linked to this schedule. 
                                 Tasks for these items will be automatically skipped until resolved.
                             </p>
@@ -123,7 +123,7 @@
                                         @if($item->asset)
                                             <div class="mt-1">
                                                 <span class="badge bg-blue-lt">
-                                                    <i class="fa fa-box"></i> 
+                                                    <i class="fa fa-box"></i>&nbsp; 
                                                     {{ $item->asset->code }} - {{ $item->asset->name }}
                                                 </span>
                                                 @if(!$item->asset->is_active)
@@ -195,7 +195,7 @@
                     @else
                         <div class="card-body">
                             <div class="text-center text-muted py-4">
-                                <i class="fa fa-inbox fa-3x mb-3"></i>
+                                <i class="fa fa-inbox fa-3x mb-3"></i>&nbsp;
                                 <p>No tasks have been generated yet for this schedule.</p>
                                 <small>Tasks are automatically generated daily at midnight based on the frequency settings.</small>
                             </div>
@@ -238,7 +238,7 @@
                 <div class="card mb-3">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fa fa-calendar-plus"></i> Task Generation
+                            <i class="fa fa-calendar-plus"></i>&nbsp; Task Generation
                         </h3>
                     </div>
                     <div class="card-body">
@@ -270,12 +270,12 @@
                         <div class="d-grid gap-2">
                             @can('facility.schedules.edit')
                                 <a href="{{ route('facility.schedules.edit', $schedule) }}" class="btn btn-primary">
-                                    <i class="fa fa-edit"></i> Edit Schedule
+                                    <i class="fa fa-edit"></i>&nbsp; Edit Schedule
                                 </a>
                             @endcan
                             @can('facility.tasks.view')
                                 <a href="{{ route('facility.tasks.index') }}?schedule={{ $schedule->id }}" class="btn btn-outline-primary">
-                                    <i class="fa fa-list"></i> View All Tasks
+                                    <i class="fa fa-list"></i>&nbsp; View All Tasks
                                 </a>
                             @endcan
                             @can('facility.schedules.delete')
@@ -284,7 +284,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger w-100">
-                                        <i class="fa fa-trash"></i> Delete Schedule
+                                        <i class="fa fa-trash"></i>&nbsp; Delete Schedule
                                     </button>
                                 </form>
                             @endcan

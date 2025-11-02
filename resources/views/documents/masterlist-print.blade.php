@@ -153,7 +153,7 @@
         <div class="filters-applied">
             <strong>Filters Applied:</strong>
             @if(!empty($filters['department']))
-                Department: <strong>{{ \App\Models\Role::find($filters['department'])->name ?? 'N/A' }}</strong>
+                Department: <strong>{{ \App\Models\Department::find($filters['department'])?->name ?? 'N/A' }}</strong>
             @endif
             @if(!empty($filters['type']))
                 | Type: <strong>{{ \App\Enums\DocumentType::from($filters['type'])->label() }}</strong>

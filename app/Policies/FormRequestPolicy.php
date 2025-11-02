@@ -85,8 +85,9 @@ final class FormRequestPolicy
             return true;
         }
 
-        // Document Control can collect any form request
-        if ($user->hasRole('Document Control')) {
+        // User's manager can collect form requests
+        $requester = $formRequest->requester;
+        if ($requester && $requester->manager_id === $user->id) {
             return true;
         }
 
@@ -98,7 +99,7 @@ final class FormRequestPolicy
      */
     public function update(User $user, FormRequest $formRequest): bool
     {
-        // Only allow editing if status is 'Requested'
+        // Only allow editing if status is 'Requested' (not Acknowledged or later)
         if (!$formRequest->isPending()) {
             return false;
         }

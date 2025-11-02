@@ -50,7 +50,7 @@
                         @if($field->answers->count() > 0)
                         <div class="alert alert-secondary alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="far fa-database"></i>
+                                <i class="far fa-database"></i>&nbsp;
                             </div>
                             <div>
                                 <h4 class="alert-heading">Info!</h4>

@@ -29,10 +29,10 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <div class="card card-link">
-                            <a href="{{ route('maintenance.reports.assets-by-location') }}" class="text-decoration-none text-reset">
+                            <a href="{{ route('reports.assets.by-location') }}" class="text-decoration-none text-reset">
                                 <div class="card-body text-center">
                                     <div class="text-primary mb-3">
-                                        <i class="fa fa-map-marker-alt fa-3x"></i>
+                                        <i class="fa fa-map-marker-alt fa-3x"></i>&nbsp;
                                     </div>
                                     <h3 class="card-title mb-2">Assets by Location</h3>
                                     <p class="text-secondary mb-0">View active and inactive assets grouped by location</p>
@@ -42,10 +42,10 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card card-link">
-                            <a href="{{ route('maintenance.reports.assets-by-category') }}" class="text-decoration-none text-reset">
+                            <a href="{{ route('reports.assets.by-category') }}" class="text-decoration-none text-reset">
                                 <div class="card-body text-center">
                                     <div class="text-success mb-3">
-                                        <i class="fa fa-tags fa-3x"></i>
+                                        <i class="fa fa-tags fa-3x"></i>&nbsp;
                                     </div>
                                     <h3 class="card-title mb-2">Assets by Category</h3>
                                     <p class="text-secondary mb-0">View all assets filtered by category</p>
@@ -55,10 +55,10 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card card-link">
-                            <a href="{{ route('maintenance.reports.assets-by-category-location') }}" class="text-decoration-none text-reset">
+                            <a href="{{ route('reports.assets.by-category-location') }}" class="text-decoration-none text-reset">
                                 <div class="card-body text-center">
                                     <div class="text-info mb-3">
-                                        <i class="fa fa-layer-group fa-3x"></i>
+                                        <i class="fa fa-layer-group fa-3x"></i>&nbsp;
                                     </div>
                                     <h3 class="card-title mb-2">Assets by Category & Location</h3>
                                     <p class="text-secondary mb-0">View assets by category across multiple locations</p>
@@ -70,10 +70,10 @@
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
                         <div class="card card-link">
-                            <a href="{{ route('maintenance.reports.assets-by-department') }}" class="text-decoration-none text-reset">
+                            <a href="{{ route('reports.assets.by-department') }}" class="text-decoration-none text-reset">
                                 <div class="card-body text-center">
                                     <div class="text-purple mb-3">
-                                        <i class="fa fa-building fa-3x"></i>
+                                        <i class="fa fa-building fa-3x"></i>&nbsp;
                                     </div>
                                     <h3 class="card-title mb-2">Assets by Department</h3>
                                     <p class="text-secondary mb-0">View all assets grouped by department</p>
@@ -83,10 +83,10 @@
                     </div>
                     <div class="col-md-6">
                         <div class="card card-link">
-                            <a href="{{ route('maintenance.reports.assets-by-user') }}" class="text-decoration-none text-reset">
+                            <a href="{{ route('reports.assets.by-user') }}" class="text-decoration-none text-reset">
                                 <div class="card-body text-center">
                                     <div class="text-orange mb-3">
-                                        <i class="fa fa-user fa-3x"></i>
+                                        <i class="fa fa-user fa-3x"></i>&nbsp;
                                     </div>
                                     <h3 class="card-title mb-2">Assets by Assigned User</h3>
                                     <p class="text-secondary mb-0">View assets assigned to specific users</p>
@@ -259,7 +259,7 @@
                 @else
                     <div class="empty">
                         <div class="empty-icon">
-                            <i class="far fa-clipboard icon"></i>
+                            <i class="far fa-clipboard icon"></i>&nbsp;
                         </div>
                         <p class="empty-title">No work orders found</p>
                         <p class="empty-subtitle text-muted">

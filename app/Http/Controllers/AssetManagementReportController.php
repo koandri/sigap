@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Reports;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\AssetCategory;
 use App\Models\Department;
@@ -13,13 +12,15 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final class AssetReportController extends Controller
+final class AssetManagementReportController extends Controller
 {
     /**
      * Display assets by location report.
      */
     public function assetsByLocation(Request $request): View
     {
+        $this->authorize('asset.reports.view');
+        
         $locationId = $request->get('location_id');
         
         $locations = Location::active()->orderBy('name')->get();
@@ -57,6 +58,8 @@ final class AssetReportController extends Controller
      */
     public function assetsByCategory(Request $request): View
     {
+        $this->authorize('asset.reports.view');
+        
         $categoryId = $request->get('category_id');
         
         $categories = AssetCategory::orderBy('name')->get();
@@ -86,6 +89,8 @@ final class AssetReportController extends Controller
      */
     public function assetsByCategoryAndLocation(Request $request): View
     {
+        $this->authorize('asset.reports.view');
+        
         $categoryId = $request->get('category_id');
         $locationIds = $request->get('location_ids', []);
         
@@ -133,6 +138,8 @@ final class AssetReportController extends Controller
      */
     public function assetsByDepartment(Request $request): View
     {
+        $this->authorize('asset.reports.view');
+        
         $departmentId = $request->get('department_id');
         
         $departments = Department::orderBy('name')->get();
@@ -170,6 +177,8 @@ final class AssetReportController extends Controller
      */
     public function assetsByUser(Request $request): View
     {
+        $this->authorize('asset.reports.view');
+        
         $userId = $request->get('user_id');
         
         $users = User::where('active', true)->orderBy('name')->get();
@@ -202,3 +211,4 @@ final class AssetReportController extends Controller
         ));
     }
 }
+

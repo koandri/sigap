@@ -9,7 +9,7 @@
             <div class="col">
                 <div class="page-pretitle">Facility Management</div>
                 <h2 class="page-title">
-                    <i class="fa fa-tasks"></i> My Tasks - {{ now()->format('l, F d, Y') }}
+                    <i class="fa fa-tasks"></i>&nbsp; My Tasks - {{ now()->format('l, F d, Y') }}
                 </h2>
             </div>
         </div>
@@ -34,15 +34,15 @@
                         <div class="row align-items-center">
                             <div class="col-auto">
                                 @if($task->status === 'completed')
-                                    <span class="badge bg-success"><i class="fa fa-check"></i></span>
+                                    <span class="badge bg-success"><i class="fa fa-check"></i>&nbsp;</span>
                                 @elseif($task->status === 'in-progress')
-                                    <span class="badge bg-info"><i class="fa fa-spinner"></i></span>
+                                    <span class="badge bg-info"><i class="fa fa-spinner"></i>&nbsp;</span>
                                 @elseif($task->status === 'approved')
-                                    <span class="badge bg-success"><i class="fa fa-check-double"></i></span>
+                                    <span class="badge bg-success"><i class="fa fa-check-double"></i>&nbsp;</span>
                                 @elseif($task->status === 'rejected')
-                                    <span class="badge bg-danger"><i class="fa fa-times"></i></span>
+                                    <span class="badge bg-danger"><i class="fa fa-times"></i>&nbsp;</span>
                                 @else
-                                    <span class="badge bg-secondary"><i class="fa fa-clock"></i></span>
+                                    <span class="badge bg-secondary"><i class="fa fa-clock"></i>&nbsp;</span>
                                 @endif
                             </div>
                             <div class="col">
@@ -55,19 +55,19 @@
                                     </div>
                                 </div>
                                 <div class="text-muted small">
-                                    <i class="fa fa-map-marker-alt"></i> {{ $task->location->name }}
+                                    <i class="fa fa-map-marker-alt"></i>&nbsp; {{ $task->location->name }}
                                     @if($task->item_description)
                                         <br>{{ $task->item_description }}
                                     @endif
                                 </div>
                                 @if($task->status === 'in-progress' && $task->started_by === auth()->id())
                                     <div class="text-warning small">
-                                        <i class="fa fa-clock"></i> Started {{ $task->started_at->diffForHumans() }}
+                                        <i class="fa fa-clock"></i>&nbsp; Started {{ $task->started_at->diffForHumans() }}
                                     </div>
                                 @endif
                                 @if($task->status === 'completed' || $task->status === 'approved')
                                     <div class="text-success small">
-                                        <i class="fa fa-check"></i> Completed {{ $task->completed_at->diffForHumans() }}
+                                        <i class="fa fa-check"></i>&nbsp; Completed {{ $task->completed_at->diffForHumans() }}
                                     </div>
                                 @endif
                             </div>
@@ -76,16 +76,16 @@
                                     <form action="{{ route('facility.tasks.start', $task) }}" method="POST" style="display: inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-play"></i> Start Task
+                                            <i class="fa fa-play"></i>&nbsp; Start Task
                                         </button>
                                     </form>
                                 @elseif($task->status === 'in-progress' && $task->started_by === auth()->id())
                                     <a href="{{ route('facility.tasks.submit', $task) }}" class="btn btn-success btn-sm">
-                                        <i class="fa fa-camera"></i> Submit
+                                        <i class="fa fa-camera"></i>&nbsp; Submit
                                     </a>
                                 @elseif($task->status === 'completed' || $task->status === 'approved')
                                     <a href="{{ route('facility.tasks.show', $task) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fa fa-eye"></i> View
+                                        <i class="fa fa-eye"></i>&nbsp; View
                                     </a>
                                 @elseif($task->status === 'in-progress')
                                     <span class="text-muted small">In progress by another cleaner</span>
@@ -98,7 +98,7 @@
                 @else
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="fa fa-check-circle fa-3x text-success"></i>
+                        <i class="fa fa-check-circle fa-3x text-success"></i>&nbsp;
                     </div>
                     <p class="empty-title">No assigned tasks</p>
                     <p class="empty-subtitle text-muted">
@@ -120,7 +120,7 @@
                 @foreach($otherTasks as $locationName => $tasks)
                 <div class="mb-3">
                     <div class="list-group-header sticky-top">
-                        <strong><i class="fa fa-map-marker-alt"></i> {{ $locationName }}</strong>
+                        <strong><i class="fa fa-map-marker-alt"></i>&nbsp; {{ $locationName }}</strong>
                         <span class="badge bg-secondary ms-2">{{ $tasks->count() }}</span>
                     </div>
                     <div class="list-group list-group-flush">
@@ -144,7 +144,7 @@
                                         <form action="{{ route('facility.tasks.start', $task) }}" method="POST">
                                             @csrf
                                             <button type="submit" class="btn btn-outline-primary btn-sm">
-                                                <i class="fa fa-hand-paper"></i> I'll Do This
+                                                <i class="fa fa-hand-paper"></i>&nbsp; I'll Do This
                                             </button>
                                         </form>
                                     @else
@@ -164,7 +164,7 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="fa fa-check-circle fa-3x text-success"></i>
+                        <i class="fa fa-check-circle fa-3x text-success"></i>&nbsp;
                     </div>
                     <p class="empty-title">All tasks covered!</p>
                     <p class="empty-subtitle text-muted">

@@ -81,7 +81,7 @@
 @if($field && in_array($field->field_type, ['calculated', 'hidden']))
 <div class="alert alert-info alert-dismissible" role="alert">
     <div class="alert-icon">
-        <i class="far fa-circle-info"></i>
+        <i class="far fa-circle-info"></i>&nbsp;
     </div>
     <div>
         <h4 class="alert-heading">{{ ucfirst($field->field_type) }} Field</h4>

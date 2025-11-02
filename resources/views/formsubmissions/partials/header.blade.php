@@ -4,7 +4,7 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                <i class="far fa-file-lines"></i>
+                <i class="far fa-file-lines"></i>&nbsp;
                 Submission Details
             </h3>
             <div class="card-actions">

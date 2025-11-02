@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreVersionRequest;
 use App\Models\Document;
 use App\Models\DocumentVersion;
 use App\Services\DocumentVersionService;
 use App\Services\OnlyOfficeService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
@@ -31,31 +31,10 @@ final class DocumentVersionController extends Controller
         return view('document-versions.create', compact('document', 'versions'));
     }
 
-    public function store(Request $request, Document $document): RedirectResponse
+    public function store(StoreVersionRequest $request, Document $document): RedirectResponse
     {
-        $this->authorize('create', [DocumentVersion::class, $document]);
-        
-        $request->validate([
-            'creation_method' => 'required|in:upload,copy',
-            'source_file' => 'required_if:creation_method,upload|file|mimes:docx,xlsx,pdf,jpg,jpeg,png',
-            'source_version_id' => [
-                'required_if:creation_method,copy',
-                function ($attribute, $value, $fail) use ($document, $request) {
-                    // Only validate if creation_method is 'copy' and value is not empty
-                    if ($request->creation_method === 'copy' && !empty($value)) {
-                        if (!DocumentVersion::where('id', $value)
-                            ->where('document_id', $document->id)
-                            ->exists()) {
-                            $fail('The selected source version is invalid.');
-                        }
-                    }
-                }
-            ],
-            'revision_description' => 'nullable|string|max:1000',
-            'is_ncr_paper' => 'nullable|boolean',
-        ]);
-
         $version = match ($request->creation_method) {
+            'scratch' => $this->versionService->createVersionFromScratch($document, $request->file_type),
             'upload' => $this->handleFileUpload($document, $request),
             'copy' => $this->versionService->createVersionFromCopy($document, DocumentVersion::find($request->source_version_id)),
         };
@@ -78,17 +57,30 @@ final class DocumentVersionController extends Controller
     {
         $this->authorize('edit', $version);
         
-        // Check if the file exists in storage
-        try {
-            if (!Storage::disk('s3')->exists($version->file_path)) {
+        // If file_path is empty (created from scratch), create the initial empty document
+        if (empty($version->file_path)) {
+            try {
+                $this->onlyOfficeService->createDocument($version, $version->file_type);
+                // Refresh the version to get the updated file_path
+                $version->refresh();
+            } catch (\Exception $e) {
                 return redirect()
                     ->route('documents.show', $version->document)
-                    ->with('error', 'The document file does not exist in storage. The file may have been deleted or moved.');
+                    ->with('error', 'Unable to create initial document. Error: ' . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            return redirect()
-                ->route('documents.show', $version->document)
-                ->with('error', 'Unable to access storage. Please check your S3 configuration. Error: ' . $e->getMessage());
+        } else {
+            // Check if the file exists in storage
+            try {
+                if (!Storage::disk('s3')->exists($version->file_path)) {
+                    return redirect()
+                        ->route('documents.show', $version->document)
+                        ->with('error', 'The document file does not exist in storage. The file may have been deleted or moved.');
+                }
+            } catch (\Exception $e) {
+                return redirect()
+                    ->route('documents.show', $version->document)
+                    ->with('error', 'Unable to access storage. Please check your S3 configuration. Error: ' . $e->getMessage());
+            }
         }
         
         $editorConfig = $this->onlyOfficeService->getEditorConfig($version);
@@ -178,21 +170,10 @@ final class DocumentVersionController extends Controller
     {
         $file = $request->file('source_file');
         $fileType = $file->getClientOriginalExtension();
-        $filePath = $file->store('documents/versions', 's3');
+        $filePath = $file->store('documents/versions/' . $document->id, 's3');
         
         return $this->versionService->createVersionFromUpload($document, $filePath, $fileType);
     }
 
 
-    private function getMimeType(string $fileType): string
-    {
-        return match ($fileType) {
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'pdf' => 'application/pdf',
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            default => 'application/octet-stream',
-        };
-    }
 }

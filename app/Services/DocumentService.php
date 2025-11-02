@@ -59,7 +59,9 @@ final class DocumentService
             ->orderBy('document_type')
             ->orderBy('document_number')
             ->get()
-            ->groupBy(['department.name', 'document_type']);
+            ->groupBy(function ($document) {
+                return ($document->department?->name ?? 'N/A') . '|' . $document->document_type->value;
+            });
     }
 
     public function checkUserCanAccess(User $user, Document $document): bool
@@ -69,9 +71,11 @@ final class DocumentService
             return true;
         }
 
-        // Check if user's department has access
-        $hasDepartmentAccess = $document->department_id === $user->role_id ||
-            $document->accessibleDepartments()->where('department_id', $user->role_id)->exists();
+        // Check if user's departments have access
+        $userDepartmentIds = $user->departments->pluck('id')->toArray();
+        
+        $hasDepartmentAccess = in_array($document->department_id, $userDepartmentIds) ||
+            $document->accessibleDepartments()->whereIn('departments.id', $userDepartmentIds)->exists();
 
         if (!$hasDepartmentAccess) {
             return false;
@@ -117,10 +121,12 @@ final class DocumentService
         }
 
         // Filter by department access
-        return $query->where(function ($q) use ($user) {
-            $q->where('department_id', $user->role_id)
-              ->orWhereHas('accessibleDepartments', function ($subQ) use ($user) {
-                  $subQ->where('department_id', $user->role_id);
+        $userDepartmentIds = $user->departments->pluck('id')->toArray();
+        
+        return $query->where(function ($q) use ($userDepartmentIds) {
+            $q->whereIn('department_id', $userDepartmentIds)
+              ->orWhereHas('accessibleDepartments', function ($subQ) use ($userDepartmentIds) {
+                  $subQ->whereIn('departments.id', $userDepartmentIds);
               });
         })->get();
     }

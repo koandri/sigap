@@ -199,7 +199,7 @@
             <div class="col-sm-2"></div>
             <div class="col-sm-10">
                 <button type="button" class="btn btn-outline-info" id="test-formula">
-                    <i class="far fa-flask"></i> Test Formula
+                    <i class="far fa-flask"></i>&nbsp; Test Formula
                 </button>
                 <span id="formula-test-result" class="ms-2"></span>
             </div>

@@ -60,10 +60,10 @@
                                                         <td>{{ $version->created_on->format('d M Y') }}</td>
                                                         <td>
                                                             <div class="btn-group btn-group-sm">
-                                                                <a href="{{ route('formversions.show', [$form, $version]) }}" class="btn btn-outline-info btn-sm" title="View Details"><i class="far fa-eye"></i></a>
+                                                                <a href="{{ route('formversions.show', [$form, $version]) }}" class="btn btn-outline-info btn-sm" title="View Details"><i class="far fa-eye"></i>&nbsp;</a>
                                                                 
                                                                 @if(!$version->is_active && $version->fields->count() > 0)
-                                                                <a href="#" class="btn btn-outline-info btn-sm" onclick="confirm('Activate this version?'); ; event.preventDefault(); document.getElementById('activate-version-{{ $version->id }}').submit();"><i class="far fa-circle-check"></i></a>
+                                                                <a href="#" class="btn btn-outline-info btn-sm" onclick="confirm('Activate this version?'); ; event.preventDefault(); document.getElementById('activate-version-{{ $version->id }}').submit();"><i class="far fa-circle-check"></i>&nbsp;</a>
                                                                 <form action="{{ route('formversions.activate', [$form, $version]) }}" method="POST" class="d-inline" id="activate-version-{{ $version->id }}" style="display: none;">
                                                                     @csrf
                                                                     @method('PUT')
@@ -71,7 +71,7 @@
                                                                 @endif
                                                                 
                                                                 @if(!$version->is_active && $version->submissions->count() == 0 && $versions->count() > 1)
-                                                                <a href="#" class="btn btn-outline-info btn-sm" onclick="confirm('Delete this version?'); ; event.preventDefault(); document.getElementById('delete-version-{{ $version->id }}').submit();"><i class="far fa-circle-check"></i></a>
+                                                                <a href="#" class="btn btn-outline-info btn-sm" onclick="confirm('Delete this version?'); ; event.preventDefault(); document.getElementById('delete-version-{{ $version->id }}').submit();"><i class="far fa-circle-check"></i>&nbsp;</a>
                                                                 <form action="{{ route('formversions.destroy', [$form, $version]) }}" method="POST" class="d-inline" id="delete-version-{{ $version->id }}" style="display: none;">
                                                                     @csrf
                                                                     @method('DELETE')

@@ -9,13 +9,13 @@
             <div class="col">
                 <div class="page-pretitle">Facility Management</div>
                 <h2 class="page-title">
-                    <i class="fa fa-tasks"></i> All Cleaning Tasks
+                    <i class="fa fa-tasks"></i>&nbsp; All Cleaning Tasks
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('facility.schedules.index') }}" class="btn btn-primary">
-                        <i class="fa fa-calendar"></i> Manage Schedules
+                        <i class="fa fa-calendar"></i>&nbsp; Manage Schedules
                     </a>
                 </div>
             </div>
@@ -65,10 +65,10 @@
                             <label class="form-label">&nbsp;</label>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fa fa-filter"></i> Filter
+                                    <i class="fa fa-filter"></i>&nbsp; Filter
                                 </button>
                                 <a href="{{ route('facility.tasks.index') }}" class="btn btn-outline-secondary">
-                                    <i class="fa fa-redo"></i>
+                                    <i class="fa fa-redo"></i>&nbsp;
                                 </a>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                                 </a>
                             </td>
                             <td>
-                                <i class="fa fa-map-marker-alt text-muted"></i>
+                                <i class="fa fa-map-marker-alt text-muted"></i>&nbsp;
                                 {{ $task->location->name }}
                             </td>
                             <td>
@@ -183,23 +183,23 @@
                             </td>
                             <td>
                                 @if($task->status === 'completed' || $task->status === 'approved')
-                                    <span class="badge bg-success"><i class="fa fa-check"></i> {{ ucfirst($task->status) }}</span>
+                                    <span class="badge bg-success"><i class="fa fa-check"></i>&nbsp; {{ ucfirst($task->status) }}</span>
                                 @elseif($task->status === 'in-progress')
-                                    <span class="badge bg-info"><i class="fa fa-spinner"></i> In Progress</span>
+                                    <span class="badge bg-info"><i class="fa fa-spinner"></i>&nbsp; In Progress</span>
                                 @elseif($task->status === 'pending')
-                                    <span class="badge bg-warning"><i class="fa fa-clock"></i> Pending</span>
+                                    <span class="badge bg-warning"><i class="fa fa-clock"></i>&nbsp; Pending</span>
                                 @elseif($task->status === 'missed')
-                                    <span class="badge bg-danger"><i class="fa fa-exclamation-triangle"></i> Missed</span>
+                                    <span class="badge bg-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp; Missed</span>
                                 @elseif($task->status === 'rejected')
-                                    <span class="badge bg-danger"><i class="fa fa-times"></i> Rejected</span>
+                                    <span class="badge bg-danger"><i class="fa fa-times"></i>&nbsp; Rejected</span>
                                 @elseif($task->status === 'skipped')
-                                    <span class="badge bg-secondary"><i class="fa fa-forward"></i> Skipped</span>
+                                    <span class="badge bg-secondary"><i class="fa fa-forward"></i>&nbsp; Skipped</span>
                                 @endif
                             </td>
                             <td>
                                 <div class="btn-list flex-nowrap">
                                     <a href="{{ route('facility.tasks.show', $task) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fa fa-eye"></i> View
+                                        <i class="fa fa-eye"></i>&nbsp; View
                                     </a>
                                 </div>
                             </td>
@@ -209,7 +209,7 @@
                             <td colspan="7" class="text-center text-muted py-5">
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="fa fa-inbox fa-3x"></i>
+                                        <i class="fa fa-inbox fa-3x"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No tasks found</p>
                                     <p class="empty-subtitle text-muted">

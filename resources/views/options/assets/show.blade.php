@@ -18,17 +18,17 @@
                 <div class="btn-list">
                     @can('maintenance.work-orders.create')
                     <a href="{{ route('maintenance.work-orders.create', ['asset_id' => $asset->id]) }}" class="btn btn-primary">
-                        <i class="far fa-plus"></i>
+                        <i class="far fa-plus"></i>&nbsp;
                         Create Work Order
                     </a>
                     @endcan
                     @can('maintenance.assets.manage')
                     <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-outline-secondary">
-                        <i class="far fa-pen"></i>
+                        <i class="far fa-pen"></i>&nbsp;
                         Edit
                     </a>
                     <a href="{{ route('options.assets.qr-code', $asset) }}" class="btn btn-outline-secondary">
-                        <i class="far fa-qrcode"></i>
+                        <i class="far fa-qrcode"></i>&nbsp;
                         QR Code
                     </a>
                     @endcan
@@ -307,7 +307,7 @@
                                 @else
                                     <div class="empty">
                                         <div class="empty-icon">
-                                            <i class="far fa-clipboard icon"></i>
+                                            <i class="far fa-clipboard icon"></i>&nbsp;
                                         </div>
                                         <p class="empty-title">No pending work orders</p>
                                         <p class="empty-subtitle text-muted">
@@ -371,7 +371,7 @@
                                 @else
                                     <div class="empty">
                                         <div class="empty-icon">
-                                            <i class="far fa-clipboard icon"></i>
+                                            <i class="far fa-clipboard icon"></i>&nbsp;
                                         </div>
                                         <p class="empty-title">No completed work orders</p>
                                         <p class="empty-subtitle text-muted">
@@ -422,7 +422,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="far fa-clock icon"></i>
+                                    <i class="far fa-clock icon"></i>&nbsp;
                                 </div>
                                 <p class="empty-title">No maintenance schedules</p>
                                 <p class="empty-subtitle text-muted">
@@ -465,7 +465,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="far fa-clipboard icon"></i>
+                                    <i class="far fa-clipboard icon"></i>&nbsp;
                                 </div>
                                 <p class="empty-title">No maintenance history</p>
                                 <p class="empty-subtitle text-muted">

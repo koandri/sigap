@@ -39,7 +39,7 @@
             @if (session('status'))
             <div class="alert alert-info alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <h5><i class="icon far fa-info"></i> &nbsp;Alert!</h5>
+                <h5><i class="icon far fa-info"></i>&nbsp; &nbsp;Alert!</h5>
                 {{ session('status') }}
             </div>
             @endif

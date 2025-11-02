@@ -60,7 +60,7 @@ final class DocumentVersionService
         $versionNumber = $this->generateNextVersionNumber($document);
         
         // Copy the file
-        $newFilePath = $this->copyFile($sourceVersion->file_path);
+        $newFilePath = $this->copyFile($document->id, $sourceVersion->file_path);
         
         return $this->createVersion($document, [
             'version_number' => $versionNumber,
@@ -262,10 +262,11 @@ final class DocumentVersionService
         return (int) $latestVersion->version_number + 1;
     }
 
-    private function copyFile(string $sourcePath): string
+    private function copyFile(int $documentId, string $sourcePath): string
     {
         $extension = pathinfo($sourcePath, PATHINFO_EXTENSION);
-        $newPath = 'documents/' . uniqid() . '.' . $extension;
+        $filename = uniqid() . '.' . $extension;
+        $newPath = 'documents/versions/' . $documentId . '/' . $filename;
         
         Storage::disk('s3')->copy($sourcePath, $newPath);
         

@@ -13,7 +13,7 @@
             <div class="col-auto ms-auto d-print-none">
                 @can('facility.schedules.create')
                 <a href="{{ route('facility.schedules.create') }}" class="btn btn-primary">
-                    <i class="fa fa-plus"></i> Create Schedule
+                    <i class="fa fa-plus"></i>&nbsp; Create Schedule
                 </a>
                 @endcan
             </div>
@@ -50,7 +50,7 @@
                                 @endif
                             </td>
                             <td>
-                                <i class="fa fa-map-marker-alt text-muted"></i>
+                                <i class="fa fa-map-marker-alt text-muted"></i>&nbsp;
                                 {{ $schedule->location->name }}
                             </td>
                             <td>
@@ -79,7 +79,7 @@
                                 @endphp
                                 @if($unresolvedAlerts > 0)
                                     <span class="badge bg-warning">
-                                        <i class="fa fa-exclamation-triangle"></i> {{ $unresolvedAlerts }}
+                                        <i class="fa fa-exclamation-triangle"></i>&nbsp; {{ $unresolvedAlerts }}
                                     </span>
                                 @else
                                     <span class="text-muted">-</span>
@@ -89,12 +89,12 @@
                                 <div class="btn-list flex-nowrap">
                                     <a href="{{ route('facility.schedules.show', $schedule) }}" 
                                        class="btn btn-sm btn-outline-primary">
-                                        <i class="fa fa-eye"></i>
+                                        <i class="fa fa-eye"></i>&nbsp;
                                     </a>
                                     @can('facility.schedules.edit')
                                     <a href="{{ route('facility.schedules.edit', $schedule) }}" 
                                        class="btn btn-sm btn-outline-warning">
-                                        <i class="fa fa-edit"></i>
+                                        <i class="fa fa-edit"></i>&nbsp;
                                     </a>
                                     @endcan
                                     @can('facility.schedules.delete')
@@ -105,7 +105,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="fa fa-trash"></i>
+                                            <i class="fa fa-trash"></i>&nbsp;
                                         </button>
                                     </form>
                                     @endcan
@@ -117,7 +117,7 @@
                             <td colspan="7">
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="fa fa-calendar fa-3x text-muted"></i>
+                                        <i class="fa fa-calendar fa-3x text-muted"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No cleaning schedules</p>
                                     <p class="empty-subtitle text-muted">
@@ -126,7 +126,7 @@
                                     @can('facility.schedules.create')
                                     <div class="empty-action">
                                         <a href="{{ route('facility.schedules.create') }}" class="btn btn-primary">
-                                            <i class="fa fa-plus"></i> Create Schedule
+                                            <i class="fa fa-plus"></i>&nbsp; Create Schedule
                                         </a>
                                     </div>
                                     @endcan
@@ -148,7 +148,7 @@
         <div class="alert alert-info mt-3">
             <div class="d-flex">
                 <div>
-                    <i class="fa fa-info-circle fa-2x"></i>
+                    <i class="fa fa-info-circle fa-2x"></i>&nbsp;
                 </div>
                 <div class="ms-3">
                     <h4 class="alert-title">About Cleaning Schedules</h4>

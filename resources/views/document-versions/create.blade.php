@@ -12,7 +12,7 @@
             </div>
             <div class="col-auto">
                 <a href="{{ route('documents.show', $document) }}" class="btn btn-outline-secondary">
-                    <i class="far fa-arrow-left"></i>
+                    <i class="far fa-arrow-left"></i>&nbsp;
                     Back to Document
                 </a>
             </div>
@@ -42,12 +42,26 @@
                                 <label class="form-label required">Creation Method</label>
                                 <select name="creation_method" id="creation_method" class="form-select" required>
                                     <option value="">Select method...</option>
+                                    <option value="scratch">Create from scratch</option>
                                     <option value="upload">Upload existing file</option>
                                     @if($versions->count() > 0)
                                     <option value="copy">Copy from existing version</option>
                                     @endif
                                 </select>
                                 @error('creation_method')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="mb-3" id="file_type_group" style="display: none;">
+                                <label class="form-label required">File Type</label>
+                                <select name="file_type" id="file_type" class="form-select">
+                                    <option value="">Select file type...</option>
+                                    <option value="docx">Word Document (DOCX)</option>
+                                    <option value="xlsx">Excel Spreadsheet (XLSX)</option>
+                                </select>
+                                <div class="form-hint">Select the type of document you want to create</div>
+                                @error('file_type')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -66,7 +80,7 @@
                                 <select name="source_version_id" id="source_version_id" class="form-select">
                                     <option value="">Select version...</option>
                                     @foreach($versions as $version)
-                                    <option value="{{ $version->id }}">v{{ $version->version_number }} - {{ $version->created_at->format('d M Y') }}</option>
+                                    <option value="{{ $version->id }}">v{{ $version->version_number }} - {{ formatDate($version->created_at, 'd M Y') }}</option>
                                     @endforeach
                                 </select>
                                 @error('source_version_id')
@@ -89,7 +103,7 @@
                                            name="is_ncr_paper" value="1"
                                            {{ old('is_ncr_paper') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="is_ncr_paper">
-                                        <i class="far fa-copy me-1"></i>
+                                        <i class="far fa-copy me-1"></i>&nbsp;
                                         3-Ply NCR Paper (prints 3 labels)
                                     </label>
                                     <div class="form-text">
@@ -104,7 +118,7 @@
                             
                             <div class="form-footer">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="far fa-plus"></i>
+                                    <i class="far fa-plus"></i>&nbsp;
                                     Create Version
                                 </button>
                                 <a href="{{ route('documents.show', $document) }}" class="btn btn-outline-secondary">Cancel</a>
@@ -123,16 +137,21 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const creationMethod = document.getElementById('creation_method');
+    const fileTypeGroup = document.getElementById('file_type_group');
     const sourceFileGroup = document.getElementById('source_file_group');
     const sourceVersionGroup = document.getElementById('source_version_group');
     
     creationMethod.addEventListener('change', function() {
         // Hide all groups first
+        fileTypeGroup.style.display = 'none';
         sourceFileGroup.style.display = 'none';
         sourceVersionGroup.style.display = 'none';
         
         // Show relevant group based on selection
         switch(this.value) {
+            case 'scratch':
+                fileTypeGroup.style.display = 'block';
+                break;
             case 'upload':
                 sourceFileGroup.style.display = 'block';
                 break;

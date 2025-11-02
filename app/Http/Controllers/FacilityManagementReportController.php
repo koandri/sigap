@@ -7,10 +7,9 @@ namespace App\Http\Controllers;
 use App\Models\CleaningTask;
 use App\Models\Location;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\View\View;
 
-final class CleaningReportController extends Controller
+final class FacilityManagementReportController extends Controller
 {
     /**
      * Display daily report for selected locations.
@@ -258,3 +257,4 @@ final class CleaningReportController extends Controller
         return $gridData;
     }
 }
+

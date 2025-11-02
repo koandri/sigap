@@ -18,7 +18,7 @@
                 @can('maintenance.assets.manage')
                 <div class="btn-list">
                     <a href="{{ route('options.locations.edit', $location) }}" class="btn btn-primary">
-                        <i class="far fa-pen"></i>
+                        <i class="far fa-pen"></i>&nbsp;
                         Edit Location
                     </a>
                 </div>
@@ -109,7 +109,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="far fa-clipboard icon"></i>
+                                    <i class="far fa-clipboard icon"></i>&nbsp;
                                 </div>
                                 <p class="empty-title">No assets at this location</p>
                                 <p class="empty-subtitle text-muted">

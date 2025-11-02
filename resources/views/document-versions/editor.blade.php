@@ -28,14 +28,14 @@
             <div class="col-auto">
                 <div class="btn-list">
                     <a href="{{ route('documents.show', $version->document) }}" class="btn btn-outline-secondary">
-                        <i class="far fa-arrow-left"></i>
+                        <i class="far fa-arrow-left"></i>&nbsp;
                         Back to Document
                     </a>
                     @if($version->canBeSubmitted())
                     <form action="{{ route('document-versions.submit', $version) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-primary" onclick="return confirm('Submit this version for approval?')">
-                            <i class="far fa-paper-plane"></i>
+                            <i class="far fa-paper-plane"></i>&nbsp;
                             Submit for Approval
                         </button>
                     </form>

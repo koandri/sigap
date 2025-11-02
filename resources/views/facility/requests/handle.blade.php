@@ -9,13 +9,13 @@
             <div class="col">
                 <div class="page-pretitle">Facility Management</div>
                 <h2 class="page-title">
-                    <i class="fa fa-check-circle"></i> Handle Request
+                    <i class="fa fa-check-circle"></i>&nbsp; Handle Request
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('facility.requests.index') }}" class="btn btn-outline-secondary">
-                        <i class="fa fa-arrow-left"></i> Back to Requests
+                        <i class="fa fa-arrow-left"></i>&nbsp; Back to Requests
                     </a>
                 </div>
             </div>
@@ -44,9 +44,9 @@
                             <label class="form-label text-muted">Request Type</label>
                             <div>
                                 @if($cleaningRequest->request_type === 'cleaning')
-                                    <span class="badge bg-blue"><i class="fa fa-broom"></i> Cleaning</span>
+                                    <span class="badge bg-blue"><i class="fa fa-broom"></i>&nbsp; Cleaning</span>
                                 @else
-                                    <span class="badge bg-orange"><i class="fa fa-wrench"></i> Repair</span>
+                                    <span class="badge bg-orange"><i class="fa fa-wrench"></i>&nbsp; Repair</span>
                                 @endif
                             </div>
                         </div>
@@ -54,13 +54,13 @@
                             <label class="form-label text-muted">Requester</label>
                             <div><strong>{{ $cleaningRequest->requester_name }}</strong></div>
                             <small class="text-muted">
-                                <i class="fa fa-phone"></i> {{ $cleaningRequest->requester_phone }}
+                                <i class="fa fa-phone"></i>&nbsp; {{ $cleaningRequest->requester_phone }}
                             </small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-muted">Location</label>
                             <div>
-                                <i class="fa fa-map-marker-alt text-muted"></i>
+                                <i class="fa fa-map-marker-alt text-muted"></i>&nbsp;
                                 {{ $cleaningRequest->location->name }}
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                             @if($cleaningRequest->request_type === 'cleaning')
                                 <!-- Cleaning Request Handling -->
                                 <div class="alert alert-blue">
-                                    <i class="fa fa-info-circle"></i>
+                                    <i class="fa fa-info-circle"></i>&nbsp;
                                     This will create a new cleaning task assigned to the selected cleaner.
                                 </div>
 
@@ -152,7 +152,7 @@
                             @else
                                 <!-- Repair Request Handling -->
                                 <div class="alert alert-orange">
-                                    <i class="fa fa-info-circle"></i>
+                                    <i class="fa fa-info-circle"></i>&nbsp;
                                     This will create a new work order in the Maintenance module.
                                 </div>
 
@@ -200,7 +200,7 @@
                             <div class="d-flex">
                                 <a href="{{ route('facility.requests.index') }}" class="btn btn-link">Cancel</a>
                                 <button type="submit" class="btn btn-primary ms-auto">
-                                    <i class="fa fa-check"></i>
+                                    <i class="fa fa-check"></i>&nbsp;
                                     @if($cleaningRequest->request_type === 'cleaning')
                                         Create Cleaning Task
                                     @else

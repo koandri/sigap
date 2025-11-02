@@ -28,7 +28,7 @@
                         @if(!$form->requires_approval)
                         <div class="alert alert-warning alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="far fa-triangle-exclamation"></i>
+                                <i class="far fa-triangle-exclamation"></i>&nbsp;
                             </div>
                             <div>
                                 <h4 class="alert-heading">Approval Not Required</h4>
@@ -100,7 +100,7 @@
                                                             <small class="text-muted">
                                                                 <strong>Created by:</strong> {{ $workflow->creator?->name ?? '-' }}
                                                                 <br>
-                                                                <strong>Created:</strong> {{ $workflow->created_at->timezone('Asia/Jakarta')->format('d M Y') }} WIB
+                                                                <strong>Created:</strong> {{ formatDate($workflow->created_at, 'd M Y') }} WIB
                                                             </small>
                                                         </div>
                                                         
@@ -159,7 +159,7 @@
                                     @else
                                     <!-- No Workflows -->
                                     <div class="card-body text-center py-5">
-                                        <i class="far fa-diagram-project display-1 text-muted"></i>
+                                        <i class="far fa-diagram-project display-1 text-muted"></i>&nbsp;
                                         <h4 class="mt-3">No Approval Workflows</h4>
                                         <p class="text-muted">Create an approval workflow to define how submissions should be reviewed.</p>
                                         <a href="{{ route('approval-workflows.create', $form) }}" class="btn btn-primary">

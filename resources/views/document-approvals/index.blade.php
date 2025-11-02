@@ -73,7 +73,7 @@
                                                                        class="btn btn-sm btn-outline-primary" 
                                                                        target="_blank"
                                                                        title="View Document">
-                                                                        <i class="far fa-eye"></i>
+                                                                        <i class="far fa-eye"></i>&nbsp;
                                                                         View
                                                                     </a>
                                                                 @endif
@@ -83,7 +83,7 @@
                                                                         class="btn btn-sm btn-success" 
                                                                         data-bs-toggle="modal" 
                                                                         data-bs-target="#approveModal{{ $approval->id }}">
-                                                                    <i class="far fa-check"></i>
+                                                                    <i class="far fa-check"></i>&nbsp;
                                                                     Approve
                                                                 </button>
                                                                 
@@ -92,7 +92,7 @@
                                                                         class="btn btn-sm btn-danger" 
                                                                         data-bs-toggle="modal" 
                                                                         data-bs-target="#rejectModal{{ $approval->id }}">
-                                                                    <i class="far fa-times"></i>
+                                                                    <i class="far fa-times"></i>&nbsp;
                                                                     Reject
                                                                 </button>
                                                             @endcan
@@ -123,7 +123,7 @@
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                                                     <button type="submit" class="btn btn-success">
-                                                                        <i class="far fa-check"></i>
+                                                                        <i class="far fa-check"></i>&nbsp;
                                                                         Approve
                                                                     </button>
                                                                 </div>
@@ -159,7 +159,7 @@
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                                                     <button type="submit" class="btn btn-danger">
-                                                                        <i class="far fa-times"></i>
+                                                                        <i class="far fa-times"></i>&nbsp;
                                                                         Reject
                                                                     </button>
                                                                 </div>
@@ -179,7 +179,7 @@
                             @else
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="far fa-check-circle"></i>
+                                        <i class="far fa-check-circle"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No pending approvals</p>
                                     <p class="empty-subtitle text-muted">

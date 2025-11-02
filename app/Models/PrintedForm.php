@@ -24,6 +24,8 @@ final class PrintedForm extends Model
         'received_at',
         'scanned_at',
         'scanned_file_path',
+        'physical_location',
+        'notes',
     ];
 
     protected $casts = [
@@ -32,6 +34,7 @@ final class PrintedForm extends Model
         'returned_at' => 'datetime',
         'received_at' => 'datetime',
         'scanned_at' => 'datetime',
+        'physical_location' => 'array',
     ];
 
     public function formRequestItem(): BelongsTo
@@ -130,5 +133,20 @@ final class PrintedForm extends Model
     public function getIssueDateAttribute(): string
     {
         return $this->issued_at->format('Y-m-d');
+    }
+
+    public function getPhysicalLocationStringAttribute(): string
+    {
+        if (!$this->physical_location) {
+            return 'Not specified';
+        }
+
+        $location = $this->physical_location;
+        return sprintf(
+            'Room: %s, Cabinet: %s, Shelf: %s',
+            $location['room_no'] ?? 'N/A',
+            $location['cabinet_no'] ?? 'N/A',
+            $location['shelf_no'] ?? 'N/A'
+        );
     }
 }

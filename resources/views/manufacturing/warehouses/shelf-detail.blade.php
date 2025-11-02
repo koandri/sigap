@@ -135,7 +135,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.shelf-inventory', $warehouse) }}" class="btn">
-                        <i class="far fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>&nbsp;
                         Back to Shelf Inventory
                     </a>
                 </div>
@@ -198,7 +198,7 @@
                 <h3 class="card-title">Shelf Positions</h3>
                 <div class="card-actions">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
-                        <i class="far fa-plus me-2"></i>
+                        <i class="far fa-plus me-2"></i>&nbsp;
                         Add Item to Position
                     </button>
                 </div>
@@ -249,14 +249,14 @@
                                             data-quantity="{{ $item->quantity }}"
                                             data-expiry="{{ $item->expiry_date ? $item->expiry_date->format('Y-m-d') : '' }}"
                                             data-notes="{{ $item->notes }}">
-                                        <i class="far fa-edit me-1"></i>
+                                        <i class="far fa-edit me-1"></i>&nbsp;
                                         Edit
                                     </button>
                                     <button class="btn btn-sm btn-outline-info move-item-btn" 
                                             data-item-id="{{ $item->id }}"
                                             data-position-id="{{ $position->id }}"
                                             data-quantity="{{ $item->quantity }}">
-                                        <i class="far fa-arrows-up-down-left-right me-1"></i>
+                                        <i class="far fa-arrows-up-down-left-right me-1"></i>&nbsp;
                                         Move
                                     </button>
                                     <form action="{{ route('manufacturing.warehouses.position-item.remove', [$warehouse, $item]) }}" 
@@ -265,18 +265,18 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="far fa-trash me-1"></i>
+                                            <i class="far fa-trash me-1"></i>&nbsp;
                                             Remove
                                         </button>
                                     </form>
                                 </div>
                             @else
                                 <div class="empty-position">
-                                    <i class="far fa-square text-muted" style="font-size: 48px;"></i>
+                                    <i class="far fa-square text-muted" style="font-size: 48px;"></i>&nbsp;
                                     <div class="mt-2">
                                         <button class="btn btn-outline-success add-item-to-position-btn" 
                                                 data-position-id="{{ $position->id }}">
-                                            <i class="far fa-plus me-2"></i>
+                                            <i class="far fa-plus me-2"></i>&nbsp;
                                             Add Item
                                         </button>
                                     </div>
@@ -361,7 +361,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="far fa-plus me-2"></i>
+                        <i class="far fa-plus me-2"></i>&nbsp;
                         Add Item to Position
                     </button>
                 </div>
@@ -429,14 +429,14 @@
                         <div class="form-text">Enter the quantity to move (minimum 0.001)</div>
                     </div>
                     <div class="alert alert-info">
-                        <i class="far fa-info-circle me-2"></i>
+                        <i class="far fa-info-circle me-2"></i>&nbsp;
                         <strong>Note:</strong> The remaining quantity will stay in the current position.
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="far fa-arrows-up-down-left-right me-2"></i>
+                        <i class="far fa-arrows-up-down-left-right me-2"></i>&nbsp;
                         Move Item
                     </button>
                 </div>

@@ -28,17 +28,17 @@
                             <!-- File icon -->
                             <div class="card-img-top text-center py-4" style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center;">
                                 @if($isPdf)
-                                    <i class="far fa-file-pdf text-danger" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-pdf text-danger" style="font-size: 4rem;"></i>&nbsp;
                                 @elseif(in_array($extension, ['doc', 'docx']))
-                                    <i class="far fa-file-word text-primary" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-word text-primary" style="font-size: 4rem;"></i>&nbsp;
                                 @elseif(in_array($extension, ['xls', 'xlsx']))
-                                    <i class="far fa-file-excel text-success" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-excel text-success" style="font-size: 4rem;"></i>&nbsp;
                                 @elseif(in_array($extension, ['ppt', 'pptx']))
-                                    <i class="far fa-file-ppt text-danger" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-ppt text-danger" style="font-size: 4rem;"></i>&nbsp;
                                 @elseif(in_array($extension, ['zip', 'rar', '7z']))
-                                    <i class="far fa-file-zip text-warning" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file-zip text-warning" style="font-size: 4rem;"></i>&nbsp;
                                 @else
-                                    <i class="far fa-file text-secondary" style="font-size: 4rem;"></i>
+                                    <i class="far fa-file text-secondary" style="font-size: 4rem;"></i>&nbsp;
                                 @endif
                             </div>
                         @endif
@@ -85,7 +85,7 @@
         <!-- Gallery info -->
         <div class="text-center mt-2">
             <small class="text-muted">
-                <i class="far fa-circle-info"></i>
+                <i class="far fa-circle-info"></i>&nbsp;
                 Total: {{ count($metadata['files']) }} file(s) uploaded
                 @php
                     $imageCount = collect($metadata['files'])->filter(function($file) {
@@ -137,15 +137,15 @@
             <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
                 <div>
                     @if($isPdf)
-                        <i class="far fa-file-pdf text-danger me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-pdf text-danger me-2" style="font-size: 1.5rem;"></i>&nbsp;
                     @elseif($isImage)
-                        <i class="far fa-file-image text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-image text-primary me-2" style="font-size: 1.5rem;"></i>&nbsp;
                     @elseif(in_array($extension, ['doc', 'docx']))
-                        <i class="far fa-file-word text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-word text-primary me-2" style="font-size: 1.5rem;"></i>&nbsp;
                     @elseif(in_array($extension, ['xls', 'xlsx']))
-                        <i class="far fa-file-excel text-success me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file-excel text-success me-2" style="font-size: 1.5rem;"></i>&nbsp;
                     @else
-                        <i class="far fa-file text-secondary me-2" style="font-size: 1.5rem;"></i>
+                        <i class="far fa-file text-secondary me-2" style="font-size: 1.5rem;"></i>&nbsp;
                     @endif
                     
                     <span>

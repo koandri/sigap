@@ -29,14 +29,14 @@
                         </nav>
                     </div>
                     <h2 class="page-title">
-                        <i class="far fa-edit me-2"></i>
+                        <i class="far fa-edit me-2"></i>&nbsp;
                         Bulk Edit Inventory
                     </h2>
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <div class="btn-list">
                         <a href="{{ route('manufacturing.warehouses.show', $warehouse) }}" class="btn btn-outline-secondary">
-                            <i class="far fa-arrow-left me-2"></i>
+                            <i class="far fa-arrow-left me-2"></i>&nbsp;
                             Back to Warehouse
                         </a>
                     </div>
@@ -50,7 +50,7 @@
             <div class="alert alert-success alert-dismissible" role="alert">
                 <div class="d-flex">
                     <div>
-                        <i class="fa fa-check-circle me-2"></i>
+                        <i class="fa fa-check-circle me-2"></i>&nbsp;
                         {{ session('success') }}
                     </div>
                 </div>
@@ -64,7 +64,7 @@
             <div class="alert alert-danger alert-dismissible" role="alert">
                 <div class="d-flex">
                     <div>
-                        <i class="fa fa-exclamation-circle me-2"></i>
+                        <i class="fa fa-exclamation-circle me-2"></i>&nbsp;
                         {{ session('error') }}
                     </div>
                 </div>
@@ -78,7 +78,7 @@
             <div class="alert alert-danger alert-dismissible" role="alert">
                 <div class="d-flex">
                     <div>
-                        <i class="fa fa-exclamation-circle me-2"></i>
+                        <i class="fa fa-exclamation-circle me-2"></i>&nbsp;
                         <strong>Please fix the following errors:</strong>
                         <ul class="mb-0 mt-2">
                             @foreach($errors->all() as $error)
@@ -132,7 +132,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="far fa-layer-group me-2"></i>
+                                <i class="far fa-layer-group me-2"></i>&nbsp;
                                 Aisle Navigation
                             </h3>
                         </div>
@@ -143,7 +143,7 @@
                                     <button type="button" class="btn btn-outline-primary aisle-nav-btn {{ $aisles->has($aisle) ? 'active' : '' }}" 
                                             data-aisle="{{ $aisle }}" 
                                             id="aisle-btn-{{ $aisle }}">
-                                        <i class="far fa-layer-group me-1"></i>
+                                        <i class="far fa-layer-group me-1"></i>&nbsp;
                                         Aisle {{ $aisle }}
                                         <span class="badge bg-blue-lt ms-1" id="aisle-count-{{ $aisle }}">-</span>
                                     </button>
@@ -190,11 +190,11 @@
                                     <label class="form-label">&nbsp;</label>
                                     <div class="d-flex gap-2">
                                         <button type="button" class="btn btn-outline-primary" id="apply-filters">
-                                            <i class="far fa-filter me-1"></i>
+                                            <i class="far fa-filter me-1"></i>&nbsp;
                                             Filter
                                         </button>
                                         <button type="button" class="btn btn-outline-secondary" id="clear-filters">
-                                            <i class="far fa-times me-1"></i>
+                                            <i class="far fa-times me-1"></i>&nbsp;
                                             Clear
                                         </button>
                                     </div>
@@ -241,7 +241,7 @@
                                     </div>
                                     <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary" id="execute-bulk-action">
-                                            <i class="far fa-play me-1"></i>
+                                            <i class="far fa-play me-1"></i>&nbsp;
                                             Execute
                                         </button>
                                     </div>
@@ -263,7 +263,7 @@
                             <div class="row align-items-center">
                                 <div class="col">
                                     <h3 class="card-title">
-                                        <i class="far fa-layer-group me-2"></i>
+                                        <i class="far fa-layer-group me-2"></i>&nbsp;
                                         Aisle {{ $aisle }}
                                         <span class="badge bg-blue-lt ms-2" id="aisle-count-badge-{{ $aisle }}">{{ $positions->count() }} positions</span>
                                     </h3>
@@ -297,7 +297,7 @@
                                             <!-- Shelf Header Row -->
                                             <tr class="shelf-header-row bg-light">
                                                 <td colspan="8" class="fw-bold text-primary">
-                                                    <i class="far fa-layer-group me-2"></i>
+                                                    <i class="far fa-layer-group me-2"></i>&nbsp;
                                                     Shelf {{ $shelfCode }} ({{ $shelfPositions->count() }} positions)
                                                 </td>
                                             </tr>
@@ -354,7 +354,7 @@
                                                         <input type="hidden" name="position_ids[]" value="{{ $position->id }}">
                                                         <button type="submit" class="btn btn-sm btn-outline-warning" 
                                                                 title="Clear position data">
-                                                            <i class="far fa-broom"></i>
+                                                            <i class="far fa-broom"></i>&nbsp;
                                                         </button>
                                                     </form>
                                                 </td>
@@ -389,7 +389,7 @@
             <div class="col-12">
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-success btn-lg" id="save-all-btn" disabled>
-                        <i class="far fa-save me-2"></i>
+                        <i class="far fa-save me-2"></i>&nbsp;
                         Save All Changes
                     </button>
                 </div>
@@ -588,7 +588,7 @@ $(document).ready(function() {
         const originalText = button.html();
         
         // Show loading state
-        button.prop('disabled', true).html('<i class="far fa-spinner fa-spin me-1"></i>Loading...');
+        button.prop('disabled', true).html('<i class="far fa-spinner fa-spin me-1"></i>&nbsp;Loading...');
         $('#aisle-loading-placeholder').show();
 
         const url = '{{ url("manufacturing/warehouses/{$warehouse->id}/aisle-positions") }}/' + aisle;
@@ -651,7 +651,7 @@ $(document).ready(function() {
                 const shelfHeaderHtml = `
                     <tr class="shelf-header-row bg-light">
                         <td colspan="8" class="fw-bold text-primary">
-                            <i class="far fa-layer-group me-2"></i>
+                            <i class="far fa-layer-group me-2"></i>&nbsp;
                             Shelf ${shelfCode} (${shelfPositions.length} positions)
                         </td>
                     </tr>
@@ -702,7 +702,7 @@ $(document).ready(function() {
                         <div class="row align-items-center">
                             <div class="col">
                                 <h3 class="card-title">
-                                    <i class="far fa-layer-group me-2"></i>
+                                    <i class="far fa-layer-group me-2"></i>&nbsp;
                                     Aisle ${aisle}
                                     <span class="badge bg-blue-lt ms-2" id="aisle-count-badge-${aisle}">${positions.length} positions</span>
                                 </h3>
@@ -788,7 +788,7 @@ $(document).ready(function() {
                         <input type="hidden" name="position_ids[]" value="${position.id}">
                         <button type="submit" class="btn btn-sm btn-outline-warning" 
                                 title="Clear position data">
-                            <i class="far fa-broom"></i>
+                            <i class="far fa-broom"></i>&nbsp;
                         </button>
                     </form>
                 </td>

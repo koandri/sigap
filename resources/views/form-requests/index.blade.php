@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <a href="{{ route('form-requests.create') }}" class="btn btn-primary">
-                        <i class="far fa-plus"></i>
+                        <i class="far fa-plus"></i>&nbsp;
                         New Request
                     </a>
                 </div>
@@ -65,11 +65,11 @@
                                 <label class="form-label">&nbsp;</label>
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary w-100">
-                                        <i class="far fa-filter"></i>
+                                        <i class="far fa-filter"></i>&nbsp;
                                         Filter
                                     </button>
                                     <a href="{{ route('form-requests.index') }}" class="btn btn-outline-secondary">
-                                        <i class="far fa-times"></i>
+                                        <i class="far fa-times"></i>&nbsp;
                                     </a>
                                 </div>
                             </div>
@@ -99,7 +99,7 @@
                                         <tr>
                                             <td>{{ $request->id }}</td>
                                             <td>{{ $request->requester->name }}</td>
-                                            <td>{{ $request->request_date->format('Y-m-d H:i') }}</td>
+                                            <td>{{ formatDate($request->request_date) }}</td>
                                             <td>
                                                 <span class="badge {{ $request->isPending() ? 'bg-warning' : ($request->isCompleted() ? 'bg-success' : 'bg-info') }} text-white">
                                                     {{ $request->status->label() }}
@@ -113,20 +113,22 @@
                                             <td>
                                                 <div class="btn-list">
                                                     <a href="{{ route('form-requests.show', $request) }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="far fa-eye"></i>
+                                                        <i class="far fa-eye"></i>&nbsp;
                                                         View
                                                     </a>
                                                     @can('update', $request)
-                                                        <a href="{{ route('form-requests.edit', $request) }}" class="btn btn-sm btn-outline-info">
-                                                            <i class="far fa-edit"></i>
-                                                            Edit
-                                                        </a>
+                                                        @if($request->isPending())
+                                                            <a href="{{ route('form-requests.edit', $request) }}" class="btn btn-sm btn-outline-info">
+                                                                <i class="far fa-edit"></i>&nbsp;
+                                                                Edit
+                                                            </a>
+                                                        @endif
                                                     @endcan
                                                     @if($request->isPending() && auth()->user()->hasRole(['Super Admin', 'Owner', 'Document Control']))
                                                         <form method="POST" action="{{ route('form-requests.acknowledge', $request) }}" class="d-inline">
                                                             @csrf
                                                             <button type="submit" class="btn btn-sm btn-outline-success">
-                                                                <i class="far fa-check"></i>
+                                                                <i class="far fa-check"></i>&nbsp;
                                                                 Acknowledge
                                                             </button>
                                                         </form>
@@ -138,10 +140,16 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                        @if($formRequests->hasPages())
+                        <div class="mt-3">
+                            {{ $formRequests->links() }}
+                        </div>
+                        @endif
                     @else
                         <div class="empty">
                             <div class="empty-icon">
-                                <i class="far fa-file-alt"></i>
+                                <i class="far fa-file-alt"></i>&nbsp;
                             </div>
                             <p class="empty-title">No form requests found</p>
                             <p class="empty-subtitle text-muted">
@@ -149,7 +157,7 @@
                             </p>
                             <div class="empty-action">
                                 <a href="{{ route('form-requests.create') }}" class="btn btn-primary">
-                                    <i class="far fa-plus"></i>
+                                    <i class="far fa-plus"></i>&nbsp;
                                     Create Request
                                 </a>
                             </div>

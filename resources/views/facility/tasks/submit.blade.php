@@ -57,7 +57,7 @@
                 <div class="page-pretitle">Task Submission</div>
                 <h2 class="page-title">{{ $task->item_name }}</h2>
                 <div class="text-muted">
-                    <i class="fa fa-map-marker-alt"></i> {{ $task->location->name }}
+                    <i class="fa fa-map-marker-alt"></i>&nbsp; {{ $task->location->name }}
                     @if($task->asset)
                         • Asset: {{ $task->asset->code }}
                     @endif
@@ -81,19 +81,19 @@
                     <div class="row text-center">
                         <div class="col-4">
                             <div class="step-indicator" id="step1-indicator">
-                                <i class="fa fa-camera fa-2x mb-2"></i>
+                                <i class="fa fa-camera fa-2x mb-2"></i>&nbsp;
                                 <div>Before Photo</div>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="step-indicator" id="step2-indicator">
-                                <i class="fa fa-broom fa-2x mb-2"></i>
+                                <i class="fa fa-broom fa-2x mb-2"></i>&nbsp;
                                 <div>Complete Task</div>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="step-indicator" id="step3-indicator">
-                                <i class="fa fa-camera fa-2x mb-2"></i>
+                                <i class="fa fa-camera fa-2x mb-2"></i>&nbsp;
                                 <div>After Photo</div>
                             </div>
                         </div>
@@ -105,12 +105,12 @@
             <div class="card mb-3" id="beforePhotoSection">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fa fa-camera"></i> Step 1: Take Before Photo
+                        <i class="fa fa-camera"></i>&nbsp; Step 1: Take Before Photo
                     </h3>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <i class="fa fa-info-circle"></i> Take a photo showing the area BEFORE you start cleaning.
+                        <i class="fa fa-info-circle"></i>&nbsp; Take a photo showing the area BEFORE you start cleaning.
                     </div>
 
                     <div class="camera-preview" id="beforeCameraPreview" style="display: none;">
@@ -124,19 +124,19 @@
 
                     <div class="text-center mt-3">
                         <button type="button" class="btn btn-primary btn-lg-mobile" id="startBeforeCameraBtn">
-                            <i class="fa fa-camera"></i> Start Camera
+                            <i class="fa fa-camera"></i>&nbsp; Start Camera
                         </button>
                         <button type="button" class="btn btn-success btn-lg-mobile" id="captureBeforeBtn" style="display: none;">
-                            <i class="fa fa-camera-retro"></i> Capture Photo
+                            <i class="fa fa-camera-retro"></i>&nbsp; Capture Photo
                         </button>
                         <button type="button" class="btn btn-secondary" id="retakeBeforeBtn" style="display: none;">
-                            <i class="fa fa-redo"></i> Retake
+                            <i class="fa fa-redo"></i>&nbsp; Retake
                         </button>
                     </div>
 
                     <div class="mt-2 text-center" id="gpsStatusBefore" style="display: none;">
                         <small class="text-success">
-                            <i class="fa fa-map-marker-alt"></i> <span id="gpsTextBefore">GPS active</span>
+                            <i class="fa fa-map-marker-alt"></i>&nbsp; <span id="gpsTextBefore">GPS active</span>
                         </small>
                     </div>
 
@@ -150,12 +150,12 @@
             <div class="card mb-3" id="afterPhotoSection" style="display: none;">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fa fa-camera"></i> Step 2: Take After Photo
+                        <i class="fa fa-camera"></i>&nbsp; Step 2: Take After Photo
                     </h3>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-success">
-                        <i class="fa fa-check-circle"></i> Take a photo showing the area AFTER cleaning.
+                        <i class="fa fa-check-circle"></i>&nbsp; Take a photo showing the area AFTER cleaning.
                     </div>
 
                     <div class="camera-preview" id="afterCameraPreview" style="display: none;">
@@ -169,19 +169,19 @@
 
                     <div class="text-center mt-3">
                         <button type="button" class="btn btn-primary btn-lg-mobile" id="startAfterCameraBtn">
-                            <i class="fa fa-camera"></i> Start Camera
+                            <i class="fa fa-camera"></i>&nbsp; Start Camera
                         </button>
                         <button type="button" class="btn btn-success btn-lg-mobile" id="captureAfterBtn" style="display: none;">
-                            <i class="fa fa-camera-retro"></i> Capture Photo
+                            <i class="fa fa-camera-retro"></i>&nbsp; Capture Photo
                         </button>
                         <button type="button" class="btn btn-secondary" id="retakeAfterBtn" style="display: none;">
-                            <i class="fa fa-redo"></i> Retake
+                            <i class="fa fa-redo"></i>&nbsp; Retake
                         </button>
                     </div>
 
                     <div class="mt-2 text-center" id="gpsStatusAfter" style="display: none;">
                         <small class="text-success">
-                            <i class="fa fa-map-marker-alt"></i> <span id="gpsTextAfter">GPS active</span>
+                            <i class="fa fa-map-marker-alt"></i>&nbsp; <span id="gpsTextAfter">GPS active</span>
                         </small>
                     </div>
 
@@ -195,7 +195,7 @@
             <div class="card mb-3" id="notesSection" style="display: none;">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fa fa-sticky-note"></i> Step 3: Add Notes (Optional)
+                        <i class="fa fa-sticky-note"></i>&nbsp; Step 3: Add Notes (Optional)
                     </h3>
                 </div>
                 <div class="card-body">
@@ -206,7 +206,7 @@
             <!-- Submit Button -->
             <div class="text-center mb-3" id="submitSection" style="display: none;">
                 <button type="submit" class="btn btn-success btn-lg">
-                    <i class="fa fa-check"></i> Submit Task
+                    <i class="fa fa-check"></i>&nbsp; Submit Task
                 </button>
             </div>
 

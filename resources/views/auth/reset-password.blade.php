@@ -19,7 +19,7 @@
                                 <input type="password" id="password" name="password" class="form-control" placeholder="Your new password" required autocomplete="off" />
                                 <span class="input-group-text">
                                     <a href="#" class="link-secondary" title="Show password" onclick="showPassword()">
-                                        <i class="far fa-eye"></i>
+                                        <i class="far fa-eye"></i>&nbsp;
                                     </a>
                                 </span>
                             </div>
@@ -32,7 +32,7 @@
                                 <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="Confirm your new password" required autocomplete="off" />
                                 <span class="input-group-text">
                                     <a href="#" class="link-secondary" title="Show password" onclick="showPassword2()">
-                                        <i class="far fa-eye"></i>
+                                        <i class="far fa-eye"></i>&nbsp;
                                     </a>
                                 </span>
                             </div>

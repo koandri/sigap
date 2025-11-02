@@ -26,7 +26,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.item-categories.edit', $itemCategory) }}" class="btn btn-primary">
-                        <i class="far fa-edit me-2"></i>
+                        <i class="far fa-edit me-2"></i>&nbsp;
                         Edit Category
                     </a>
                 </div>
@@ -91,19 +91,19 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <a href="{{ route('manufacturing.items.index') }}?category={{ $itemCategory->id }}" class="btn btn-outline-primary w-100">
-                                    <i class="far fa-list"></i>
+                                    <i class="far fa-list"></i>&nbsp;
                                     View All Items
                                 </a>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <a href="{{ route('manufacturing.item-categories.edit', $itemCategory) }}" class="btn btn-outline-secondary w-100">
-                                    <i class="far fa-edit"></i>
+                                    <i class="far fa-edit"></i>&nbsp;
                                     Edit Category
                                 </a>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <a href="{{ route('manufacturing.item-categories.index') }}" class="btn btn-outline-secondary w-100">
-                                    <i class="far fa-arrow-left"></i>
+                                    <i class="far fa-arrow-left"></i>&nbsp;
                                     Back to Categories
                                 </a>
                             </div>
@@ -184,13 +184,13 @@
                         <div class="text-center py-4 text-muted">
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="far fa-list-alt" style="font-size: 48px; color: #ccc;"></i>
+                                    <i class="far fa-list-alt" style="font-size: 48px; color: #ccc;"></i>&nbsp;
                                 </div>
                                 <p class="empty-title">No items in this category</p>
                                 <p class="empty-subtitle text-muted">Items can only be added via Excel import.</p>
                                 <div class="empty-action">
                                     <a href="{{ route('manufacturing.items.import') }}" class="btn btn-primary">
-                                        <i class="far fa-file-arrow-up me-2"></i>
+                                        <i class="far fa-file-arrow-up me-2"></i>&nbsp;
                                         Import Items
                                     </a>
                                 </div>
@@ -209,12 +209,12 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="{{ route('manufacturing.item-categories.index') }}" class="btn btn-outline-secondary">
-                                <i class="far fa-arrow-left me-2"></i>
+                                <i class="far fa-arrow-left me-2"></i>&nbsp;
                                 Back to Categories
                             </a>
                             <div class="btn-list">
                                 <a href="{{ route('manufacturing.item-categories.edit', $itemCategory) }}" class="btn btn-primary">
-                                    <i class="far fa-edit me-2"></i>
+                                    <i class="far fa-edit me-2"></i>&nbsp;
                                     Edit Category
                                 </a>
                             </div>

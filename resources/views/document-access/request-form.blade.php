@@ -64,7 +64,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label">Department</label>
-                                        <div class="form-control-plaintext">{{ $document->department->name }}</div>
+                                        <div class="form-control-plaintext">{{ $document->department?->name ?? 'N/A' }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -142,11 +142,11 @@
 
                                 <div class="form-footer">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="far fa-paper-plane"></i>
+                                        <i class="far fa-paper-plane"></i>&nbsp;
                                         Submit Access Request
                                     </button>
                                     <a href="{{ route('documents.show', $document) }}" class="btn btn-secondary">
-                                        <i class="far fa-arrow-left"></i>
+                                        <i class="far fa-arrow-left"></i>&nbsp;
                                         Cancel
                                     </a>
                                 </div>
@@ -202,7 +202,7 @@
                         </div>
                         <div class="card-body">
                             <div class="alert alert-info">
-                                <i class="far fa-info-circle"></i>
+                                <i class="far fa-info-circle"></i>&nbsp;
                                 <strong>Access Control Required</strong><br>
                                 This document requires approval before access is granted. Your request will be reviewed by the document owner or department head.
                             </div>

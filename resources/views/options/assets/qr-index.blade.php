@@ -103,7 +103,7 @@
                                         
                                         @if($asset->location)
                                             <small class="text-muted d-block mb-3">
-                                                <i class="far fa-map-marker-alt"></i> {{ $asset->location->name }}
+                                                <i class="far fa-map-marker-alt"></i>&nbsp; {{ $asset->location->name }}
                                             </small>
                                         @endif
                                         
@@ -111,12 +111,12 @@
                                         <div class="btn-list justify-content-center">
                                             <a href="{{ route('options.assets.qr-code', $asset) }}" 
                                                class="btn btn-sm btn-outline-primary">
-                                                <i class="far fa-eye"></i> View
+                                                <i class="far fa-eye"></i>&nbsp; View
                                             </a>
                                             <a href="{{ asset($asset->qr_code_path) }}" 
                                                download="qr-{{ $asset->code }}.png"
                                                class="btn btn-sm btn-primary">
-                                                <i class="far fa-download"></i> Download
+                                                <i class="far fa-download"></i>&nbsp; Download
                                             </a>
                                         </div>
                                     </div>

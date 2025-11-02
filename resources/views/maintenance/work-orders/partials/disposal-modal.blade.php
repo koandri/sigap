@@ -55,7 +55,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fa fa-trash"></i> Confirm Disposal
+                        <i class="fa fa-trash"></i>&nbsp; Confirm Disposal
                     </button>
                 </div>
             </form>

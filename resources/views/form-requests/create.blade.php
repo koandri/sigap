@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <a href="{{ route('form-requests.index') }}" class="btn btn-outline-secondary">
-                        <i class="far fa-arrow-left"></i>
+                        <i class="far fa-arrow-left"></i>&nbsp;
                         Back to Requests
                     </a>
                 </div>
@@ -42,7 +42,7 @@
                                             <option value="{{ $document->id }}" 
                                                     data-version-id="{{ $document->activeVersion->id }}"
                                                     data-number="{{ $document->document_number }}"
-                                                    data-department="{{ $document->department->name }}">
+                                                    data-department="{{ $document->department?->name ?? 'N/A' }}">
                                                 {{ $document->title }} ({{ $document->document_number }})
                                             </option>
                                         @endforeach
@@ -55,7 +55,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label">&nbsp;</label>
                                     <button type="button" class="btn btn-primary w-100" onclick="addFormToRequest()">
-                                        <i class="far fa-plus"></i> Add
+                                        <i class="far fa-plus"></i>&nbsp; Add
                                     </button>
                                 </div>
                             </div>
@@ -70,7 +70,7 @@
                             <div id="selected-forms-container">
                                 <div class="empty" id="empty-state">
                                     <div class="empty-icon">
-                                        <i class="far fa-inbox"></i>
+                                        <i class="far fa-inbox"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No forms selected</p>
                                     <p class="empty-subtitle text-muted">
@@ -103,7 +103,7 @@
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                                        <i class="far fa-paper-plane"></i>
+                                        <i class="far fa-paper-plane"></i>&nbsp;
                                         Submit Request
                                     </button>
                                     <a href="{{ route('form-requests.index') }}" class="btn btn-outline-secondary">
@@ -119,7 +119,7 @@
                     <div class="card-body">
                         <div class="empty">
                             <div class="empty-icon">
-                                <i class="far fa-file-alt"></i>
+                                <i class="far fa-file-alt"></i>&nbsp;
                             </div>
                             <p class="empty-title">No form documents available</p>
                             <p class="empty-subtitle text-muted">
@@ -284,7 +284,7 @@ function addFormRow(index) {
         </td>
         <td>
             <button type="button" class="btn btn-sm btn-danger" onclick="removeForm(${index})">
-                <i class="far fa-trash-alt"></i>
+                <i class="far fa-trash-alt"></i>&nbsp;
             </button>
         </td>
     `;

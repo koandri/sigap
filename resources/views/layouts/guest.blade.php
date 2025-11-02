@@ -41,11 +41,11 @@
                 <div class="navbar-nav flex-row order-md-last">
                     @auth
                         <a href="{{ url('/home') }}" class="btn btn-white">
-                            <i class="fa fa-home"></i> Dashboard
+                            <i class="fa fa-home"></i>&nbsp; Dashboard
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-white">
-                            <i class="fa fa-sign-in-alt"></i> Login
+                            <i class="fa fa-sign-in-alt"></i>&nbsp; Login
                         </a>
                     @endauth
                 </div>

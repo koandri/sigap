@@ -60,7 +60,7 @@
 
                         <div class="alert alert-info alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="far fa-circle-info"></i>
+                                <i class="far fa-circle-info"></i>&nbsp;
                             </div>
                             <div>
                                 <h4 class="alert-heading">Info!</h4>
@@ -150,7 +150,7 @@
                                                         <div class="mt-1">
                                                             @foreach($stepSim['approvers'] as $approver)
                                                                 <div class="d-flex align-items-center mb-1">
-                                                                    <i class="far fa-circle-user"></i>
+                                                                    <i class="far fa-circle-user"></i>&nbsp;
                                                                     <div>
                                                                         <strong>{{ $approver['name'] }}</strong>
                                                                         <br>
@@ -167,7 +167,7 @@
                                                         @else
                                                         <div class="alert alert-warning alert-dismissible" role="alert">
                                                             <div class="alert-icon">
-                                                                <i class="far fa-triangle-exclamation"></i>
+                                                                <i class="far fa-triangle-exclamation"></i>&nbsp;
                                                             </div>
                                                             <div>
                                                                 <h4 class="alert-heading">Warning!</h4>
@@ -198,7 +198,7 @@
                                     <!-- Simulation Results -->
                                     <div class="alert alert-success alert-dismissible mt-4" role="alert">
                                         <div class="alert-icon">
-                                            <i class="far fa-circle-check"></i>
+                                            <i class="far fa-circle-check"></i>&nbsp;
                                         </div>
                                         <div>
                                             <h4 class="alert-heading">Simulation Results</h4>
@@ -229,7 +229,7 @@
                                     @if(collect($simulation['steps'])->contains(function($step) { return empty($step['approvers']); }))
                                     <div class="alert alert-danger alert-dismissible" role="alert">
                                         <div class="alert-icon">
-                                            <i class="far fa-octagon-exclamation"></i>
+                                            <i class="far fa-octagon-exclamation"></i>&nbsp;
                                         </div>
                                         <div>
                                             <h4 class="alert-heading">Configuration Issues</h4>
@@ -248,7 +248,7 @@
                                     @endif
                                 @else
                                 <div class="text-center py-4">
-                                    <i class="far fa-triangle-exclamation display-1 text-warning"></i>
+                                    <i class="far fa-triangle-exclamation display-1 text-warning"></i>&nbsp;
                                     <h4 class="mt-3">No Steps Defined</h4>
                                     <p class="text-muted">Add steps to this workflow before testing</p>
                                     <a href="{{ route('approval-workflows.edit', [$form, $workflow]) }}" class="btn btn-primary">

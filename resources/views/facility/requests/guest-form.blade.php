@@ -31,7 +31,7 @@
             <div class="col-lg-8">
                 <div class="text-center">
                     <h2 class="page-title">
-                        <i class="fa fa-clipboard-list"></i> Submit Request
+                        <i class="fa fa-clipboard-list"></i>&nbsp; Submit Request
                     </h2>
                     <p class="text-muted">
                         Report a cleaning issue or request a repair
@@ -100,7 +100,7 @@
                                             </div>
                                             <div>
                                                 <div class="font-weight-medium">
-                                                    <i class="fa fa-broom text-primary"></i> Cleaning Request
+                                                    <i class="fa fa-broom text-primary"></i>&nbsp; Cleaning Request
                                                 </div>
                                                 <div class="text-muted">Area needs cleaning or maintenance</div>
                                             </div>
@@ -116,7 +116,7 @@
                                             </div>
                                             <div>
                                                 <div class="font-weight-medium">
-                                                    <i class="fa fa-tools text-warning"></i> Repair Request
+                                                    <i class="fa fa-tools text-warning"></i>&nbsp; Repair Request
                                                 </div>
                                                 <div class="text-muted">Equipment or facility needs repair</div>
                                             </div>
@@ -158,7 +158,7 @@
                             <div class="alert alert-info">
                                 <div class="d-flex">
                                     <div>
-                                        <i class="fa fa-info-circle fa-2x"></i>
+                                        <i class="fa fa-info-circle fa-2x"></i>&nbsp;
                                     </div>
                                     <div class="ms-3">
                                         <h4 class="alert-title">What happens next?</h4>
@@ -172,7 +172,7 @@
 
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg flex-fill">
-                                    <i class="fa fa-paper-plane"></i> Submit Request
+                                    <i class="fa fa-paper-plane"></i>&nbsp; Submit Request
                                 </button>
                             </div>
                         </form>

@@ -119,7 +119,7 @@
                                                     <td>{{ $form->issuedTo->name }}</td>
                                                     <td>{{ $form->issue_date }}</td>
                                                     <td>
-                                                        <span class="badge bg-info">{{ $form->status->label() }}</span>
+                                                        <span class="badge bg-info text-white">{{ $form->status->label() }}</span>
                                                     </td>
                                                     <td>
                                                         {{ $form->issued_at->diffForHumans() }}
@@ -132,7 +132,7 @@
                             @else
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="far fa-file-alt"></i>
+                                        <i class="far fa-file-alt"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No circulating forms</p>
                                     <p class="empty-subtitle text-muted">
@@ -152,7 +152,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title text-warning">
-                                <i class="far fa-exclamation-triangle"></i>
+                                <i class="far fa-exclamation-triangle"></i>&nbsp;
                                 Overdue Requests
                             </h3>
                         </div>
@@ -174,7 +174,7 @@
                                             <tr>
                                                 <td>{{ $request->id }}</td>
                                                 <td>{{ $request->requester->name }}</td>
-                                                <td>{{ $request->request_date->format('Y-m-d H:i') }}</td>
+                                                <td>{{ formatDate($request->request_date) }}</td>
                                                 <td>
                                                     <span class="badge bg-warning">{{ $request->status->label() }}</span>
                                                 </td>

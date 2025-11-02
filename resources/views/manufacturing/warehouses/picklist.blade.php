@@ -231,7 +231,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.index') }}" class="btn btn-outline-secondary">
-                        <i class="far fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>&nbsp;
                         Back to Warehouses
                     </a>
                 </div>
@@ -249,7 +249,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h1>
-                        <i class="far fa-list-check me-3"></i>
+                        <i class="far fa-list-check me-3"></i>&nbsp;
                         Generate Global Picklist
                     </h1>
                     <div class="subtitle">
@@ -271,7 +271,7 @@
             <!-- Item Selector -->
             <div class="item-selector">
                 <h3 class="mb-3">
-                    <i class="far fa-plus-circle me-2"></i>
+                    <i class="far fa-plus-circle me-2"></i>&nbsp;
                     Add Items to Picklist
                 </h3>
                 
@@ -326,14 +326,14 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="far fa-list me-2"></i>
+                        <i class="far fa-list me-2"></i>&nbsp;
                         Selected Items for Picklist
                     </h3>
                 </div>
                 <div class="card-body">
                     <div id="selectedItems">
                         <div class="text-center text-muted py-4" id="emptyState">
-                            <i class="far fa-inbox fa-3x mb-3 opacity-50"></i>
+                            <i class="far fa-inbox fa-3x mb-3 opacity-50"></i>&nbsp;
                             <p>No items selected yet. Click on items above to add them to your picklist.</p>
                         </div>
                     </div>
@@ -345,7 +345,7 @@
                 <div class="col-md-8">
                     <div class="summary-card">
                         <h4 class="mb-3">
-                            <i class="far fa-chart-pie me-2"></i>
+                            <i class="far fa-chart-pie me-2"></i>&nbsp;
                             Picklist Summary
                         </h4>
                         <div class="summary-stats" id="summaryStats">
@@ -362,7 +362,7 @@
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn generate-btn w-100" id="generateBtn" disabled>
-                        <i class="far fa-magic-wand me-2"></i>
+                        <i class="far fa-magic-wand me-2"></i>&nbsp;
                         Generate Picklist
                     </button>
                 </div>
@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                data-index="${index}">
                         <input type="hidden" name="items[${index}][item_id]" value="${item.item_id}">
                         <button type="button" class="btn remove-item-btn" data-index="${index}">
-                            <i class="far fa-trash"></i>
+                            <i class="far fa-trash"></i>&nbsp;
                         </button>
                     </div>
                 </div>

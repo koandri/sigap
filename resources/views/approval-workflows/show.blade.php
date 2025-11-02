@@ -134,11 +134,11 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Created At:</th>
-                                                    <td>{{ $workflow->created_at->timezone('Asia/Jakarta')->format('d M Y H:i') }} WIB</td>
+                                                    <td>{{ formatDate($workflow->created_at, 'd M Y H:i') }} WIB</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Last Updated:</th>
-                                                    <td>{{ $workflow->updated_at->timezone('Asia/Jakarta')->format('d M Y H:i') }} WIB</td>
+                                                    <td>{{ formatDate($workflow->updated_at, 'd M Y H:i') }} WIB</td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -184,7 +184,7 @@
                                     @if($stats['overdue'] > 0)
                                     <div class="alert alert-danger alert-dismissible" role="alert">
                                         <div class="alert-icon">
-                                            <i class="far fa-octagon-exclamation"></i>
+                                            <i class="far fa-octagon-exclamation"></i>&nbsp;
                                         </div>
                                         <div>
                                             <div class="alert-description">
@@ -272,18 +272,18 @@
                                                             <div class="row mt-1">
                                                                 <div class="col-6">
                                                                     <div class="border rounded py-1">
-                                                                        <small class="text-success"><i class="far fa-thumbs-up"></i> &nbsp;{{ $stepStats['approved'] }}</small>
+                                                                        <small class="text-success"><i class="far fa-thumbs-up"></i>&nbsp; &nbsp;{{ $stepStats['approved'] }}</small>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-6">
                                                                     <div class="border rounded py-1">
-                                                                        <small class="text-danger"><i class="far fa-hand"></i> &nbsp;{{ $stepStats['rejected'] }}</small>
+                                                                        <small class="text-danger"><i class="far fa-hand"></i>&nbsp; &nbsp;{{ $stepStats['rejected'] }}</small>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             @if($stepStats['pending'] > 0)
                                                             <div class="mt-1">
-                                                                <small class="text-warning"><i class="far fa-hourglass-clock"></i> &nbsp;{{ $stepStats['pending'] }} pending</small>
+                                                                <small class="text-warning"><i class="far fa-hourglass-clock"></i>&nbsp; &nbsp;{{ $stepStats['pending'] }} pending</small>
                                                             </div>
                                                             @endif
                                                         </div>
@@ -295,7 +295,7 @@
                                     </div>
                                     @else
                                     <div class="text-center py-4">
-                                        <i class="far fa-diagram-project display-1 text-muted"></i>
+                                        <i class="far fa-diagram-project display-1 text-muted"></i>&nbsp;
                                         <p class="mt-3 text-muted">No steps defined for this workflow</p>
                                         <a href="{{ route('approval-workflows.edit', [$form, $workflow]) }}" class="btn btn-primary">
                                             <i class="far fa-circle-plus"></i>&nbsp;Add Steps
@@ -314,12 +314,12 @@
                                         <div>
                                             @if(!$workflow->is_active)
                                                 <span class="text-warning">
-                                                    <i class="far fa-circle-exclamation"></i>
+                                                    <i class="far fa-circle-exclamation"></i>&nbsp;
                                                     This workflow is inactive. Activate it to use for form approvals.
                                                 </span>
                                             @else
                                                 <span class="text-success">
-                                                    <i class="far fa-circle-check"></i>
+                                                    <i class="far fa-circle-check"></i>&nbsp;
                                                     This workflow is active and will be used for new submissions.
                                                 </span>
                                             @endif

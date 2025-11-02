@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <button type="button" class="btn btn-outline-primary" onclick="printMasterlist()">
-                        <i class="far fa-print"></i>
+                        <i class="far fa-print"></i>&nbsp;
                         Print
                     </button>
                 </div>
@@ -27,7 +27,7 @@
             <!-- Filters -->
             <div class="card mb-3 d-print-none">
                 <div class="card-body">
-                    <form method="GET" action="{{ route('documents.masterlist') }}" id="filterForm">
+                    <form method="GET" action="{{ route('reports.document-management.masterlist') }}" id="filterForm">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Department</label>
@@ -59,11 +59,11 @@
                                 <label class="form-label">&nbsp;</label>
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary w-100">
-                                        <i class="far fa-filter"></i>
+                                        <i class="far fa-filter"></i>&nbsp;
                                         Filter
                                     </button>
-                                    <a href="{{ route('documents.masterlist') }}" class="btn btn-outline-secondary">
-                                        <i class="far fa-times"></i>
+                                    <a href="{{ route('reports.document-management.masterlist') }}" class="btn btn-outline-secondary">
+                                        <i class="far fa-times"></i>&nbsp;
                                     </a>
                                 </div>
                             </div>
@@ -127,7 +127,7 @@
                     @else
                         <div class="empty">
                             <div class="empty-icon">
-                                <i class="far fa-list"></i>
+                                <i class="far fa-list"></i>&nbsp;
                             </div>
                             <p class="empty-title">No documents found</p>
                             <p class="empty-subtitle text-muted">
@@ -160,7 +160,7 @@ function printMasterlist() {
     }
     
     // Open print page in new tab
-    const url = '{{ route("documents.masterlist.print") }}' + (params.toString() ? '?' + params.toString() : '');
+    const url = '{{ route("reports.document-management.masterlist.print") }}' + (params.toString() ? '?' + params.toString() : '');
     window.open(url, '_blank');
 }
 </script>

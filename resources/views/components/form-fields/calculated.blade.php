@@ -13,7 +13,7 @@
     <div class="input-group">
         <input type="text" class="form-control" id="{{ $field->field_code }}" name="fields[{{ $field->field_code }}]" value="{{ $formattedValue }}" readonly style="background-color: #f8f9fa;">
         <span class="input-group-text">
-            <i class="far fa-calculator"></i>
+            <i class="far fa-calculator"></i>&nbsp;
         </span>
     </div>
     <div class="form-check-description mt-1">

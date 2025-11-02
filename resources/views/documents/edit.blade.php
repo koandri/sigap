@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-auto ms-auto d-print-none">
                     <a href="{{ route('documents.show', $document) }}" class="btn btn-outline-secondary">
-                        <i class="far fa-arrow-left"></i>
+                        <i class="far fa-arrow-left"></i>&nbsp;
                         Back to Document
                     </a>
                 </div>
@@ -150,7 +150,7 @@
                             <div class="row">
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="far fa-save"></i>
+                                        <i class="far fa-save"></i>&nbsp;
                                         Update Document
                                     </button>
                                     <a href="{{ route('documents.show', $document) }}" class="btn btn-outline-secondary">

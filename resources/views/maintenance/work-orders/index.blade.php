@@ -18,7 +18,7 @@
                 @can('create', App\Models\WorkOrder::class)
                 <div class="btn-list">
                     <a href="{{ route('maintenance.work-orders.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="far fa-plus"></i>
+                        <i class="far fa-plus"></i>&nbsp;
                         Create Work Order
                     </a>
                 </div>
@@ -35,7 +35,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="far fa-calendar-alt me-2"></i>Upcoming Maintenance Schedules (Next 14 Days)
+                    <i class="far fa-calendar-alt me-2"></i>&nbsp;Upcoming Maintenance Schedules (Next 14 Days)
                 </h3>
                 <div class="card-actions">
                     <small class="text-muted">{{ $upcomingSchedules->count() }} schedule(s) due soon</small>
@@ -115,7 +115,7 @@
                                             <form action="{{ route('maintenance.schedules.trigger', $schedule) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-primary" title="Generate Work Order Now">
-                                                    <i class="far fa-plus me-1"></i>Create WO
+                                                    <i class="far fa-plus me-1"></i>&nbsp;Create WO
                                                 </button>
                                             </form>
                                             @endcan
@@ -125,7 +125,7 @@
                                             </a>
                                         @endif
                                         <a href="{{ route('maintenance.schedules.show', $schedule) }}" class="btn btn-sm btn-outline-secondary" title="View Schedule Details">
-                                            <i class="far fa-eye"></i>
+                                            <i class="far fa-eye"></i>&nbsp;
                                         </a>
                                     </div>
                                 </td>
@@ -142,7 +142,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="far fa-filter me-2"></i>Filter Work Orders
+                    <i class="far fa-filter me-2"></i>&nbsp;Filter Work Orders
                 </h3>
             </div>
             <div class="card-body">
@@ -213,11 +213,11 @@
                             <label class="form-label d-none d-lg-block">&nbsp;</label>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary flex-fill">
-                                    <i class="far fa-search me-1"></i>
+                                    <i class="far fa-search me-1"></i>&nbsp;
                                     Apply Filters
                                 </button>
                                 <a href="{{ route('maintenance.work-orders.index') }}" class="btn btn-outline-secondary">
-                                    <i class="far fa-times"></i>
+                                    <i class="far fa-times"></i>&nbsp;
                                 </a>
                             </div>
                         </div>
@@ -317,7 +317,7 @@
                 @else
                     <div class="empty">
                         <div class="empty-icon">
-                            <i class="far fa-clipboard icon"></i>
+                            <i class="far fa-clipboard icon"></i>&nbsp;
                         </div>
                         <p class="empty-title">No work orders found</p>
                         <p class="empty-subtitle text-muted">
@@ -326,7 +326,7 @@
                         @can('create', App\Models\WorkOrder::class)
                         <div class="empty-action">
                             <a href="{{ route('maintenance.work-orders.create') }}" class="btn btn-primary">
-                                <i class="far fa-plus"></i>
+                                <i class="far fa-plus"></i>&nbsp;
                                 Create Work Order
                             </a>
                         </div>

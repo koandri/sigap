@@ -41,7 +41,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.items.edit', $item) }}" class="btn btn-primary">
-                        <i class="far fa-edit me-2"></i>
+                        <i class="far fa-edit me-2"></i>&nbsp;
                         Edit Item
                     </a>
                 </div>
@@ -165,7 +165,7 @@
                         <div class="text-center py-4 text-muted">
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="far fa-building" style="font-size: 48px; color: #ccc;"></i>
+                                    <i class="far fa-building" style="font-size: 48px; color: #ccc;"></i>&nbsp;
                                 </div>
                                 <p class="empty-title">No inventory positions</p>
                                 <p class="empty-subtitle text-muted">This item has not been assigned to any warehouse shelf positions yet.</p>
@@ -188,19 +188,19 @@
                         <div class="row">
                             <div class="col-md-4 mb-4">
                                 <a href="{{ route('manufacturing.items.edit', $item) }}" class="btn btn-outline-primary w-100">
-                                    <i class="far fa-edit"></i>
+                                    <i class="far fa-edit"></i>&nbsp;
                                     Edit Item
                                 </a>
                             </div>
                             <div class="col-md-4 mb-4">
                                 <a href="{{ route('manufacturing.items.index', ['category' => $item->item_category_id]) }}" class="btn btn-outline-info w-100">
-                                    <i class="far fa-layer-group"></i>
+                                    <i class="far fa-layer-group"></i>&nbsp;
                                     Similar Items
                                 </a>
                             </div>
                             <div class="col-md-4 mb-4">
                                 <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-secondary w-100">
-                                    <i class="far fa-arrow-left"></i>
+                                    <i class="far fa-arrow-left"></i>&nbsp;
                                     Back to List
                                 </a>
                             </div>

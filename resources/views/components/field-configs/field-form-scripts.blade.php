@@ -405,7 +405,7 @@
     function testApiConfiguration() {
         const resultSpan = document.getElementById('testApiResult');
         if (resultSpan) {
-            resultSpan.innerHTML = '<i class="far fa-spinner fa-spin"></i> &nbsp;Testing...';
+            resultSpan.innerHTML = '<i class="far fa-spinner fa-spin"></i>&nbsp; &nbsp;Testing...';
         }
         
         const apiConfig = buildApiConfig();
@@ -423,15 +423,15 @@
         .then(data => {
             if (resultSpan) {
                 if (data.success) {
-                    resultSpan.innerHTML = `<span class="text-success"><i class="far fa-check"></i> &nbsp;Found ${data.options_count} options</span>`;
+                    resultSpan.innerHTML = `<span class="text-success"><i class="far fa-check"></i>&nbsp; &nbsp;Found ${data.options_count} options</span>`;
                 } else {
-                    resultSpan.innerHTML = `<span class="text-danger"><i class="far fa-xmark"></i> &nbsp;${data.message}</span>`;
+                    resultSpan.innerHTML = `<span class="text-danger"><i class="far fa-xmark"></i>&nbsp; &nbsp;${data.message}</span>`;
                 }
             }
         })
         .catch(error => {
             if (resultSpan) {
-                resultSpan.innerHTML = `<span class="text-danger"><i class="far fa-xmark"></i> &nbsp;Error: ${error.message}</span>`;
+                resultSpan.innerHTML = `<span class="text-danger"><i class="far fa-xmark"></i>&nbsp; &nbsp;Error: ${error.message}</span>`;
             }
         });
     }
@@ -512,7 +512,7 @@
             container.innerHTML = `
                 <div class="alert alert-warning alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="far fa-triangle-exclamation"></i>
+                        <i class="far fa-triangle-exclamation"></i>&nbsp;
                     </div>
                     <div>
                         <h4 class="alert-heading">Warning!</h4>
@@ -534,7 +534,7 @@
             container.innerHTML = `
                 <div class="alert alert-info alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="far fa-circle-info"></i>
+                        <i class="far fa-circle-info"></i>&nbsp;
                     </div>
                     <div>
                         <h4 class="alert-heading">Info!</h4>
@@ -606,9 +606,9 @@
             currentDeps.forEach(dep => {
                 const field = fields.find(f => f.field_code === dep);
                 if (field) {
-                    html += `<span class="badge badge-outline text-success me-1">${dep} <i class="far fa-check"></i></span>`;
+                    html += `<span class="badge badge-outline text-success me-1">${dep} <i class="far fa-check"></i>&nbsp;</span>`;
                 } else {
-                    html += `<span class="badge badge-outline text-danger me-1">${dep} <i class="far fa-xmark"></i></span>`;
+                    html += `<span class="badge badge-outline text-danger me-1">${dep} <i class="far fa-xmark"></i>&nbsp;</span>`;
                 }
             });
             

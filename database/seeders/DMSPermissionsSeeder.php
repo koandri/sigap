@@ -40,6 +40,11 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.admin',
             'dms.outgoing_letters.create',
             'dms.internal_memos.create',
+
+            // Reports
+            'dms.sla.report.view',
+            'dms.reports.view',
+            'asset.reports.view',
         ];
 
         foreach ($permissions as $permission) {

@@ -34,19 +34,19 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.shelf-inventory', $warehouse) }}" class="btn btn-outline-success">
-                        <i class="far fa-th-large me-2"></i>
+                        <i class="far fa-th-large me-2"></i>&nbsp;
                         Manage Inventory
                     </a>
                     <a href="{{ route('manufacturing.warehouses.bulk-edit', $warehouse) }}" class="btn btn-outline-warning">
-                        <i class="far fa-edit me-2"></i>
+                        <i class="far fa-edit me-2"></i>&nbsp;
                         Bulk Edit
                     </a>
                     <a href="{{ route('manufacturing.warehouses.shelf-management', $warehouse) }}" class="btn btn-outline-info">
-                        <i class="far fa-layer-group me-2"></i>
+                        <i class="far fa-layer-group me-2"></i>&nbsp;
                         Manage Shelves
                     </a>
                     <a href="{{ route('manufacturing.warehouses.edit', $warehouse) }}" class="btn btn-primary">
-                        <i class="far fa-edit me-2"></i>
+                        <i class="far fa-edit me-2"></i>&nbsp;
                         Edit Warehouse
                     </a>
                 </div>
@@ -117,7 +117,7 @@
                         <h3 class="card-title">Inventory Summary</h3>
                         <div class="card-actions">
                             <a href="{{ route('manufacturing.warehouses.shelf-inventory', $warehouse) }}" class="btn btn-primary btn-sm">
-                                <i class="far fa-th-large me-2"></i>
+                                <i class="far fa-th-large me-2"></i>&nbsp;
                                 Manage Inventory
                             </a>
                         </div>
@@ -195,25 +195,25 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.shelf-inventory', $warehouse) }}" class="btn btn-outline-primary w-100">
-                                    <i class="far fa-th-large"></i>
+                                    <i class="far fa-th-large"></i>&nbsp;
                                     Manage Inventory
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.bulk-edit', $warehouse) }}" class="btn btn-outline-warning w-100">
-                                    <i class="far fa-edit"></i>
+                                    <i class="far fa-edit"></i>&nbsp;
                                     Bulk Edit
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.edit', $warehouse) }}" class="btn btn-outline-secondary w-100">
-                                    <i class="far fa-edit"></i>
+                                    <i class="far fa-edit"></i>&nbsp;
                                     Edit Warehouse
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <a href="{{ route('manufacturing.warehouses.index') }}" class="btn btn-outline-secondary w-100">
-                                    <i class="far fa-arrow-left"></i>
+                                    <i class="far fa-arrow-left"></i>&nbsp;
                                     Back to List
                                 </a>
                             </div>

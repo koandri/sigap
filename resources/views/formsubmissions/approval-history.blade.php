@@ -132,19 +132,19 @@
                                                             <td style="text-align: center;">
                                                                 @switch($log->status)
                                                                     @case('approved')
-                                                                        <i class="far fa-circle-check text-success" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle-check text-success" style="font-size: 2rem;"></i>&nbsp;
                                                                         @break
                                                                     @case('rejected')
-                                                                        <i class="far fa-circle-x text-danger" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle-x text-danger" style="font-size: 2rem;"></i>&nbsp;
                                                                         @break
                                                                     @case('pending')
-                                                                        <i class="far fa-clock text-warning" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-clock text-warning" style="font-size: 2rem;"></i>&nbsp;
                                                                         @break
                                                                     @case('escalated')
-                                                                        <i class="far fa-circle-arrow-up text-info" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle-arrow-up text-info" style="font-size: 2rem;"></i>&nbsp;
                                                                         @break
                                                                     @default
-                                                                        <i class="far fa-circle text-secondary" style="font-size: 2rem;"></i>
+                                                                        <i class="far fa-circle text-secondary" style="font-size: 2rem;"></i>&nbsp;
                                                                 @endswitch
                                                                 @if($index < $submission->approvalHistory->count() - 1)
                                                                     <div class="timeline-line"></div>
@@ -162,17 +162,17 @@
                                                                 <div class="row text-muted small">
                                                                     <div class="col-md-6">
                                                                         @if($log->assigned_at)
-                                                                        <i class="far fa-user-tag"></i>
-                                                                        Assigned: {{ $log->assigned_at->format('d M Y H:i') }}
+                                                                        <i class="far fa-user-tag"></i>&nbsp;
+                                                                        Assigned: {{ formatDate($log->assigned_at, 'd M Y H:i') }}
                                                                         @endif
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         @if($log->action_at)
-                                                                        <i class="far fa-calendar-check"></i>
-                                                                        {{ ucfirst($log->status) }}: {{ $log->action_at->format('d M Y H:i') }}
+                                                                        <i class="far fa-calendar-check"></i>&nbsp;
+                                                                        {{ ucfirst($log->status) }}: {{ formatDate($log->action_at, 'd M Y H:i') }}
                                                                         @elseif($log->due_at)
-                                                                        <i class="far fa-calendar-xmark"></i>
-                                                                        Due: {{ $log->due_at->format('d M Y H:i') }}
+                                                                        <i class="far fa-calendar-xmark"></i>&nbsp;
+                                                                        Due: {{ formatDate($log->due_at, 'd M Y H:i') }}
                                                                         @if($log->isOverdue())
                                                                         <span class="text-danger">(Overdue)</span>
                                                                         @endif
@@ -208,7 +208,7 @@
                                             </div>
                                             @else
                                             <div class="text-center py-4">
-                                                <i class="far fa-clock-rotate-left display-4 text-muted"></i>
+                                                <i class="far fa-clock-rotate-left display-4 text-muted"></i>&nbsp;
                                                 <p class="mt-3 text-muted">No approval history available</p>
                                             </div>
                                             @endif
@@ -293,7 +293,7 @@
                 <div class="modal-body">
                     <div class="alert alert-warning alert-dismissible" role="alert">
                         <div class="alert-icon">
-                            <i class="far fa-triangle-exclamation"></i>
+                            <i class="far fa-triangle-exclamation"></i>&nbsp;
                         </div>
                         <div>
                             <div class="alert-description">

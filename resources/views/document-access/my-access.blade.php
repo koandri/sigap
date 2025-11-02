@@ -18,6 +18,60 @@
 
     <div class="page-body">
         <div class="container-xl">
+            <!-- Filters -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <form method="GET" action="{{ route('my-document-access') }}">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label class="form-label">Document Type</label>
+                                <select name="document_type" class="form-select">
+                                    <option value="">All Types</option>
+                                    @foreach($documentTypes as $type)
+                                        <option value="{{ $type->value }}" {{ $filters['document_type'] == $type->value ? 'selected' : '' }}>
+                                            {{ $type->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Department</label>
+                                <select name="department" class="form-select">
+                                    <option value="">All Departments</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{ $department->id }}" {{ $filters['department'] == $department->id ? 'selected' : '' }}>
+                                            {{ $department->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Access Type</label>
+                                <select name="access_type" class="form-select">
+                                    <option value="">All Access Types</option>
+                                    <option value="full" {{ $filters['access_type'] == 'full' ? 'selected' : '' }}>Full Access</option>
+                                    @foreach($accessTypes as $accessType)
+                                        <option value="{{ $accessType->value }}" {{ $filters['access_type'] == $accessType->value ? 'selected' : '' }}>
+                                            {{ $accessType->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control" placeholder="Search documents..." value="{{ $filters['search'] }}">
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-outline-primary w-100">
+                                    <i class="far fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Accessible Documents -->
             <div class="card">
                 <div class="card-header">
@@ -51,7 +105,7 @@
                                             <td>
                                                 <span class="badge bg-blue-lt">{{ $version->document->document_type->label() }}</span>
                                             </td>
-                                            <td>{{ $version->document->department->name }}</td>
+                                            <td>{{ $version->document->department?->name ?? 'N/A' }}</td>
                                             <td>
                                                 @php
                                                     $accessRequest = $version->accessRequests->where('user_id', auth()->id())->first();
@@ -71,7 +125,7 @@
                                             </td>
                                             <td>
                                                 <a href="{{ route('document-versions.view', $version) }}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="far fa-eye"></i>
+                                                    <i class="far fa-eye"></i>&nbsp;
                                                     View
                                                 </a>
                                             </td>
@@ -80,6 +134,12 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                        @if($accessibleDocuments->hasPages())
+                        <div class="mt-3">
+                            {{ $accessibleDocuments->links() }}
+                        </div>
+                        @endif
                     @else
                         <div class="empty">
                             <div class="empty-icon">

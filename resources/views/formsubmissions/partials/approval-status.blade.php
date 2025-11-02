@@ -57,7 +57,7 @@
                 @if($approvalSummary['current_step'])
                     <div class="alert alert-info alert-dismissible mt-3" role="alert">
                         <div class="alert-icon">
-                            <i class="far fa-clock"></i>
+                            <i class="far fa-clock"></i>&nbsp;
                         </div>
                         <div>
                             <div class="alert-description">
@@ -88,7 +88,7 @@
                 <!-- Workflow Not Started Alert -->
                 <div class="alert alert-warning alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="far fa-triangle-exclamation"></i>
+                        <i class="far fa-triangle-exclamation"></i>&nbsp;
                     </div>
                     <div>
                         <h4 class="alert-heading">Approval Workflow Not Started</h4>
@@ -114,7 +114,7 @@
             @else
                 <div class="alert alert-info alert-dismissible" role="alert">
                     <div class="alert-icon">
-                        <i class="far fa-circle-info"></i>
+                        <i class="far fa-circle-info"></i>&nbsp;
                     </div>
                     <div>
                         <div class="alert-description">

@@ -147,12 +147,12 @@
                                                     <form action="{{ route('formsubmissions.approve', $approval->submission) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         <button type="submit" name="action" value="approve" class="btn btn-success btn-sm" title="Quick Approve" onclick="return confirm('Quick approve this submission?')">
-                                                            <i class="far fa-check"></i>
+                                                            <i class="far fa-check"></i>&nbsp;
                                                         </button>
                                                     </form>
                                                     
                                                     <button type="button" class="btn btn-danger btn-sm" title="Reject with Comments" onclick="showRejectModal('{{ $approval->submission->id }}', '{{ $approval->submission->submission_code }}')">
-                                                        <i class="far fa-xmark"></i>
+                                                        <i class="far fa-xmark"></i>&nbsp;
                                                     </button>
                                                 </div>
                                             </td>
@@ -168,7 +168,7 @@
                     <!-- No Pending Approvals -->
                     <div class="card">
                         <div class="card-body text-center py-5">
-                            <i class="far fa-circle-check text-success" style="font-size: 4rem;"></i>
+                            <i class="far fa-circle-check text-success" style="font-size: 4rem;"></i>&nbsp;
                             <h4 class="mt-3">All Caught Up!</h4>
                             <p class="text-muted">You have no pending approvals at the moment.</p>
                             <a href="{{ route('formsubmissions.submissions') }}" class="btn btn-primary">
@@ -191,7 +191,7 @@
                                     <div class="modal-body">
                                         <div class="alert alert-warning alert-dismissible" role="alert">
                                             <div class="alert-icon">
-                                                <i class="far fa-triangle-exclamation"></i>
+                                                <i class="far fa-triangle-exclamation"></i>&nbsp;
                                             </div>
                                             <div>
                                                 <div class="alert-description">

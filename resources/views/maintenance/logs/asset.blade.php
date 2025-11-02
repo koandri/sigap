@@ -17,7 +17,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-secondary">
-                        <i class="far fa-arrow-left me-1"></i> Back to Asset
+                        <i class="far fa-arrow-left me-1"></i>&nbsp; Back to Asset
                     </a>
                 </div>
             </div>
@@ -31,7 +31,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="far fa-info-circle me-2"></i>Asset Information
+                    <i class="far fa-info-circle me-2"></i>&nbsp;Asset Information
                 </h3>
             </div>
             <div class="card-body">
@@ -60,7 +60,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="far fa-history me-2"></i>Maintenance History
+                    <i class="far fa-history me-2"></i>&nbsp;Maintenance History
                 </h3>
                 <div class="card-actions">
                     <span class="text-muted">{{ $logs->total() }} total log(s)</span>
@@ -146,7 +146,7 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="far fa-clipboard-list fa-3x text-muted"></i>
+                        <i class="far fa-clipboard-list fa-3x text-muted"></i>&nbsp;
                     </div>
                     <p class="empty-title">No maintenance history</p>
                     <p class="empty-subtitle text-muted">

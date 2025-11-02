@@ -57,20 +57,20 @@
     
     <div class="photo-controls">
         <button type="button" class="btn btn-primary" id="start-camera-{{ $field->field_code }}">
-            <i class="fa-solid fa-camera"></i> Start Camera
+            <i class="fa-solid fa-camera"></i>&nbsp; Start Camera
         </button>
         <button type="button" class="btn btn-success" id="capture-photo-{{ $field->field_code }}" style="display: none;">
-            <i class="fa-solid fa-camera-retro"></i> Capture Photo
+            <i class="fa-solid fa-camera-retro"></i>&nbsp; Capture Photo
         </button>
         <button type="button" class="btn btn-secondary" id="retake-photo-{{ $field->field_code }}" style="display: none;">
-            <i class="fa-solid fa-redo"></i> Retake
+            <i class="fa-solid fa-redo"></i>&nbsp; Retake
         </button>
     </div>
     
     <!-- GPS Status Indicator -->
     <div class="gps-status mt-2" id="gps-status-{{ $field->field_code }}" style="display: none;">
         <small class="text-muted">
-            <i class="fa-solid fa-location-dot text-success"></i>
+            <i class="fa-solid fa-location-dot text-success"></i>&nbsp;
             <span id="gps-status-text-{{ $field->field_code }}">GPS permission granted</span>
         </small>
     </div>
@@ -283,8 +283,8 @@ window.addEventListener('load', function() {
         
         const imageSrc = typeof photoData === 'string' ? photoData : photoData.image;
         const gpsInfo = typeof photoData === 'object' && photoData.gps ? 
-            `<br><small class="text-success"><i class="fa-solid fa-location-dot"></i> GPS: ${photoData.gps.latitude.toFixed(6)}, ${photoData.gps.longitude.toFixed(6)}</small>` : 
-            '<br><small class="text-warning"><i class="fa-solid fa-location-slash"></i> No GPS data</small>';
+            `<br><small class="text-success"><i class="fa-solid fa-location-dot"></i>&nbsp; GPS: ${photoData.gps.latitude.toFixed(6)}, ${photoData.gps.longitude.toFixed(6)}</small>` : 
+            '<br><small class="text-warning"><i class="fa-solid fa-location-slash"></i>&nbsp; No GPS data</small>';
         
         photoDiv.innerHTML = `
             <img src="${imageSrc}" alt="Captured Photo" class="img-fluid rounded">

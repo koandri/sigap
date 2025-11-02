@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\DocumentType;
+use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\Document;
-use App\Models\Role;
+use App\Models\Department;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -30,12 +31,17 @@ final class DocumentController extends Controller
             'search' => $request->get('search'),
         ];
 
+        // Apply filters
         if ($filters['department']) {
-            $documents = $documents->where('department_id', $filters['department']);
+            $documents = $documents->filter(function ($document) use ($filters) {
+                return $document->department_id == $filters['department'];
+            });
         }
 
         if ($filters['type']) {
-            $documents = $documents->where('document_type', $filters['type']);
+            $documents = $documents->filter(function ($document) use ($filters) {
+                return $document->document_type->value === $filters['type'];
+            });
         }
 
         if ($filters['search']) {
@@ -45,7 +51,22 @@ final class DocumentController extends Controller
             });
         }
 
-        $departments = Role::all();
+        // Convert to paginated collection
+        $perPage = 20;
+        $currentPage = $request->get('page', 1);
+        $items = $documents->values();
+        $total = $items->count();
+        $paginatedItems = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        
+        $documents = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedItems,
+            $total,
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $departments = Department::all();
         $documentTypes = DocumentType::cases();
 
         return view('documents.index', compact('documents', 'departments', 'documentTypes', 'filters'));
@@ -55,37 +76,29 @@ final class DocumentController extends Controller
     {
         $this->authorize('create', Document::class);
         
-        $departments = Role::whereNotIn('name', [
-            'Super Admin',
-            'Owner',
-            'Engineering Operator',
-            'User',
-            'Manager',
-            'Cleaner'
-        ])->get();
+        $user = auth()->user();
+        
+        $departments = Department::all();
         $documentTypes = DocumentType::cases();
         
-        return view('documents.create', compact('departments', 'documentTypes'));
+        // Get available correspondence templates (InternalMemo and OutgoingLetter with active versions)
+        $correspondenceTemplates = Document::whereIn('document_type', [
+            DocumentType::InternalMemo,
+            DocumentType::OutgoingLetter,
+        ])
+            ->whereHas('activeVersion')
+            ->with(['activeVersion', 'department', 'creator'])
+            ->get()
+            ->filter(function ($document) use ($user) {
+                return $this->documentService->checkUserCanAccess($user, $document);
+            })
+            ->values();
+        
+        return view('documents.create', compact('departments', 'documentTypes', 'correspondenceTemplates'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreDocumentRequest $request): RedirectResponse
     {
-        $this->authorize('create', Document::class);
-        
-        $request->validate([
-            'document_number' => 'required|string|unique:documents,document_number',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'document_type' => 'required|string',
-            'department_id' => 'required|exists:roles,id',
-            'physical_location' => 'nullable|array',
-            'physical_location.room_no' => 'nullable|string',
-            'physical_location.shelf_no' => 'nullable|string',
-            'physical_location.folder_no' => 'nullable|string',
-            'accessible_departments' => 'nullable|array',
-            'accessible_departments.*' => 'exists:roles,id',
-        ]);
-
         $data = $request->only([
             'document_number',
             'title',
@@ -124,36 +137,14 @@ final class DocumentController extends Controller
     {
         $this->authorize('update', $document);
         
-        $departments = Role::whereNotIn('name', [
-            'Super Admin',
-            'Owner',
-            'Engineering Operator',
-            'User',
-            'Manager',
-            'Cleaner'
-        ])->get();
+        $departments = Department::all();
         $documentTypes = DocumentType::cases();
         
         return view('documents.edit', compact('document', 'departments', 'documentTypes'));
     }
 
-    public function update(Request $request, Document $document): RedirectResponse
+    public function update(UpdateDocumentRequest $request, Document $document): RedirectResponse
     {
-        $this->authorize('update', $document);
-        
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'document_type' => 'required|string',
-            'department_id' => 'required|exists:roles,id',
-            'physical_location' => 'nullable|array',
-            'physical_location.room_no' => 'nullable|string',
-            'physical_location.shelf_no' => 'nullable|string',
-            'physical_location.folder_no' => 'nullable|string',
-            'accessible_departments' => 'nullable|array',
-            'accessible_departments.*' => 'exists:roles,id',
-        ]);
-
         $data = $request->only([
             'title',
             'description',
@@ -180,34 +171,5 @@ final class DocumentController extends Controller
 
         return redirect()->route('documents.index')
             ->with('success', 'Document deleted successfully.');
-    }
-
-    public function masterlist(Request $request): View
-    {
-        $filters = [
-            'department' => $request->get('department'),
-            'type' => $request->get('type'),
-            'search' => $request->get('search'),
-        ];
-
-        $masterlist = $this->documentService->getDocumentMasterlist($filters);
-        
-        $departments = Role::all();
-        $documentTypes = DocumentType::cases();
-        
-        return view('documents.masterlist', compact('masterlist', 'departments', 'documentTypes', 'filters'));
-    }
-
-    public function masterlistPrint(Request $request): View
-    {
-        $filters = [
-            'department' => $request->get('department'),
-            'type' => $request->get('type'),
-            'search' => $request->get('search'),
-        ];
-
-        $masterlist = $this->documentService->getDocumentMasterlist($filters);
-        
-        return view('documents.masterlist-print', compact('masterlist', 'filters'));
     }
 }

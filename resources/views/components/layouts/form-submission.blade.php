@@ -60,7 +60,7 @@
                                 <div class="col">
                                     <a href="{{ $submission ? route('formsubmissions.show', $submission) : route('formsubmissions.submissions') }}" 
                                        class="btn btn-secondary">
-                                        <i class="far fa-arrow-left"></i>
+                                        <i class="far fa-arrow-left"></i>&nbsp;
                                         Cancel
                                     </a>
                                 </div>
@@ -70,7 +70,7 @@
                                             <i class="far fa-save"></i>&nbsp;Save Draft
                                         </button>
                                         <button type="submit" name="action" value="submit" class="btn btn-primary">
-                                            <i class="far fa-paper-plane"></i>
+                                            <i class="far fa-paper-plane"></i>&nbsp;
                                             {{ $submission ? 'Update & Submit' : 'Submit Form' }}
                                         </button>
                                     </div>

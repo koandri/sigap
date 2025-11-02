@@ -68,3 +68,19 @@ Artisan::command('inspire', function () {
 //     ->onFailure(function () {
 //         Log::error('Cleaning task reminder sending failed');
 //     });
+
+/**
+ * Schedule cleanup of expired document access requests.
+ * Runs daily at 01:00 Asia/Jakarta timezone to revoke expired access grants.
+ */
+Schedule::command('dms:cleanup-expired-access')
+    ->dailyAt('01:00')
+    ->timezone('Asia/Jakarta')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onSuccess(function () {
+        Log::info('Document access cleanup completed successfully');
+    })
+    ->onFailure(function () {
+        Log::error('Document access cleanup failed');
+    });

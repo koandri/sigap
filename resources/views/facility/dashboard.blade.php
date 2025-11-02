@@ -15,7 +15,7 @@
                     <input type="date" name="start_date" class="form-control" value="{{ $startDate }}" required>
                     <input type="date" name="end_date" class="form-control" value="{{ $endDate }}" required>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-filter"></i> Filter
+                        <i class="fa fa-filter"></i>&nbsp; Filter
                     </button>
                 </form>
             </div>
@@ -116,7 +116,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fa fa-exclamation-triangle text-warning"></i> Schedule Maintenance Required
+                            <i class="fa fa-exclamation-triangle text-warning"></i>&nbsp; Schedule Maintenance Required
                         </h3>
                     </div>
                     <div class="card-body p-0">
@@ -173,7 +173,7 @@
                                 <tr>
                                     <td>
                                         @if($index === 0)
-                                            <i class="fa fa-trophy text-warning"></i>
+                                            <i class="fa fa-trophy text-warning"></i>&nbsp;
                                         @else
                                             {{ $index + 1 }}
                                         @endif
@@ -269,7 +269,7 @@
                                     <td>
                                         {{ $approval['task_number'] }}
                                         @if($approval['is_flagged'])
-                                            <i class="fa fa-star text-warning" title="Flagged for review"></i>
+                                            <i class="fa fa-star text-warning" title="Flagged for review"></i>&nbsp;
                                         @endif
                                     </td>
                                     <td>{{ $approval['location'] }}</td>

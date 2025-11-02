@@ -108,13 +108,13 @@
                 <div class="info-item">
                     <span class="info-label">Submitted At:</span>
                     <span class="info-value">
-                        {{ $submission->submitted_at ? $submission->submitted_at->timezone('Asia/Jakarta')->format('d M Y H:i') . ' WIB' : '-' }}
+                        {{ formatDate($submission->submitted_at, 'd M Y H:i') . ' WIB' }}
                     </span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Completed At:</span>
                     <span class="info-value">
-                        {{ $submission->completed_at ? $submission->completed_at->timezone('Asia/Jakarta')->format('d M Y H:i') . ' WIB' : '-' }}
+                        {{ formatDate($submission->completed_at, 'd M Y H:i') . ' WIB' }}
                     </span>
                 </div>
             </div>
@@ -199,7 +199,7 @@
                                             <div style="margin-top: 10px; font-size: 12px; color: #666;">
                                                 <strong>Digital Signature</strong><br>
                                                 Signed by: {{ $answer->answer_metadata['signed_by'] ?? 'Unknown' }}<br>
-                                                Date: {{ isset($answer->answer_metadata['signed_at']) ? \Carbon\Carbon::parse($answer->answer_metadata['signed_at'])->format('d M Y H:i') : 'Unknown' }}
+                                                Date: {{ isset($answer->answer_metadata['signed_at']) ? formatDate(\Carbon\Carbon::parse($answer->answer_metadata['signed_at']), 'd M Y H:i') : 'Unknown' }}
                                             </div>
                                         </div>
                                     @else
@@ -233,7 +233,7 @@
                                                             <div style="margin-top: 10px; font-size: 12px; color: #666;">
                                                                 <strong>Live Photo {{ $index + 1 }}</strong><br>
                                                                 Captured by: {{ $photo['user_name'] ?? 'Unknown User' }}<br>
-                                                                Date: {{ isset($photo['captured_at']) ? \Carbon\Carbon::parse($photo['captured_at'])->format('d M Y H:i') : 'Unknown' }}<br>
+                                                                Date: {{ isset($photo['captured_at']) ? formatDate(\Carbon\Carbon::parse($photo['captured_at']), 'd M Y H:i') : 'Unknown' }}<br>
                                                                 Camera: {{ $photo['camera_type'] ?? 'Rear' }} Camera
                                                             </div>
                                                         </div>
@@ -300,7 +300,7 @@
                 </div>
                 <p style="margin: 0; font-weight: bold;">{{ $submission->submitter->name }}</p>
                 <p style="margin: 0; font-size: 12px; color: #666;">
-                    {{ $submission->submitted_at ? $submission->submitted_at->format('d M Y H:i') : '' }}
+                    {{ formatDate($submission->submitted_at, 'd M Y H:i') }}
                 </p>
             </div>
             
@@ -321,7 +321,7 @@
                     {{ $finalApproval?->approver->name ?? '_____________________' }}
                 </p>
                 <p style="margin: 0; font-size: 12px; color: #666;">
-                    {{ $finalApproval?->action_at ? $finalApproval->action_at->format('d M Y H:i') : 'Date: _______________' }}
+                    {{ $finalApproval?->action_at ? formatDate($finalApproval->action_at, 'd M Y H:i') : 'Date: _______________' }}
                 </p>
             </div>
         </div>
@@ -340,7 +340,7 @@
                         <p style="margin: 0; font-size: 11px; font-weight: bold;">{{ $approval->step->step_name }}</p>
                         <div style="border-bottom: 1px solid #666; margin: 8px 0; height: 30px;"></div>
                         <p style="margin: 0; font-size: 10px; font-weight: bold;">{{ $approval->approver->name }}</p>
-                        <p style="margin: 0; font-size: 9px; color: #666;">{{ $approval->action_at->format('d M Y') }}</p>
+                        <p style="margin: 0; font-size: 9px; color: #666;">{{ formatDate($approval->action_at, 'd M Y') }}</p>
                     </div>
                 @endforeach
             </div>
@@ -390,13 +390,13 @@
                         </span>
                     </td>
                     <td style="border: 1px solid #dee2e6; padding: 6px; text-align: center;">
-                        {{ $log->assigned_at ? $log->assigned_at->format('d/m/Y H:i') : '-' }}
+                        {{ formatDate($log->assigned_at, 'd/m/Y H:i') }}
                     </td>
                     <td style="border: 1px solid #dee2e6; padding: 6px; text-align: center;">
-                        {{ $log->action_at ? $log->action_at->format('d/m/Y H:i') : '-' }}
+                        {{ formatDate($log->action_at, 'd/m/Y H:i') }}
                         @if($log->due_at && $log->status === 'pending')
                             <br><small style="color: {{ $log->due_at < now() ? '#dc3545' : '#666' }};">
-                                Due: {{ $log->due_at->format('d/m H:i') }}
+                                Due: {{ formatDate($log->due_at, 'd/m H:i') }}
                             </small>
                         @endif
                     </td>
@@ -425,7 +425,7 @@
 
     <!-- Footer -->
     <div class="footer">
-        <p>This document was generated for {{ auth()->user()->name }} on {{ now()->timezone('Asia/Jakarta')->format('d M Y H:i:s') }} WIB</p>
+        <p>This document was generated for {{ auth()->user()->name }} on {{ formatDate(now(), 'd M Y H:i:s') }} WIB</p>
         <p>PT. Surya Inti Aneka Pangan - SIGaP</p>
     </div>
 </body>

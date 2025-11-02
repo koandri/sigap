@@ -96,6 +96,15 @@ final class FormRequestService
                 'collected_at' => now(),
                 'status' => FormRequestStatus::Collected,
             ]);
+
+            // Update all PrintedForms in this request from "Issued" to "Circulating"
+            PrintedForm::whereHas('formRequestItem', function ($query) use ($request) {
+                $query->where('form_request_id', $request->id);
+            })
+            ->where('status', 'issued')
+            ->update([
+                'status' => 'circulating',
+            ]);
         });
     }
 
@@ -258,7 +267,7 @@ final class FormRequestService
             ->get(['id', 'name']);
     }
 
-    private function applyFilters($query, array $filters): void
+    public function applyFiltersToQuery($query, array $filters): void
     {
         // Filter by status
         if (!empty($filters['status'])) {
@@ -278,6 +287,11 @@ final class FormRequestService
         if (!empty($filters['date_to'])) {
             $query->whereDate('request_date', '<=', $filters['date_to']);
         }
+    }
+
+    private function applyFilters($query, array $filters): void
+    {
+        $this->applyFiltersToQuery($query, $filters);
     }
 
     private function generateFormNumber(): string

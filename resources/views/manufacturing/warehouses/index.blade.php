@@ -17,15 +17,15 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.picklist') }}" class="btn btn-outline-success d-none d-sm-inline-block">
-                        <i class="far fa-list-check me-2"></i>
+                        <i class="far fa-list-check me-2"></i>&nbsp;
                         Generate Picklist
                     </a>
                     <a href="{{ route('manufacturing.warehouses.overview-report') }}" class="btn btn-outline-info d-none d-sm-inline-block">
-                        <i class="far fa-chart-line me-2"></i>
+                        <i class="far fa-chart-line me-2"></i>&nbsp;
                         Overview Report
                     </a>
                     <a href="{{ route('manufacturing.warehouses.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="far fa-plus me-2"></i>
+                        <i class="far fa-plus me-2"></i>&nbsp;
                         New Warehouse
                     </a>
                 </div>
@@ -87,15 +87,15 @@
                                                 View
                                             </a>
                                             <a href="{{ route('manufacturing.warehouses.shelf-inventory', $warehouse) }}" class="btn btn-sm btn-outline-success">
-                                                <i class="far fa-th-large me-1"></i>
+                                                <i class="far fa-th-large me-1"></i>&nbsp;
                                                 Inventory
                                             </a>
                                             <a href="{{ route('manufacturing.warehouses.bulk-edit', $warehouse) }}" class="btn btn-sm btn-outline-warning">
-                                                <i class="far fa-edit me-1"></i>
+                                                <i class="far fa-edit me-1"></i>&nbsp;
                                                 Bulk Edit
                                             </a>
                                             <a href="{{ route('manufacturing.warehouses.shelf-management', $warehouse) }}" class="btn btn-sm btn-outline-info">
-                                                <i class="far fa-layer-group me-1"></i>
+                                                <i class="far fa-layer-group me-1"></i>&nbsp;
                                                 Shelves
                                             </a>
                                             <a href="{{ route('manufacturing.warehouses.edit', $warehouse) }}" class="btn btn-sm btn-outline-secondary">
@@ -115,7 +115,7 @@
                                             </p>
                                             <div class="empty-action">
                                                 <a href="{{ route('manufacturing.warehouses.create') }}" class="btn btn-primary">
-                                                    <i class="far fa-plus me-2"></i>
+                                                    <i class="far fa-plus me-2"></i>&nbsp;
                                                     Create Warehouse
                                                 </a>
                                             </div>

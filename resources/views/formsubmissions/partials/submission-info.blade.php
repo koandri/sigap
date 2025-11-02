@@ -34,11 +34,11 @@
                         </tr>
                         <tr>
                             <th>Submitted At:</th>
-                            <td>{{ $submission->submitted_at ? $submission->submitted_at->timezone('Asia/Jakarta')->format('d M Y H:i') : '-' }}</td>
+                            <td>{{ formatDate($submission->submitted_at, 'd M Y H:i') }}</td>
                         </tr>
                         <tr>
                             <th>Completed At:</th>
-                            <td>{{ $submission->completed_at ? $submission->completed_at->timezone('Asia/Jakarta')->format('d M Y H:i') : '-' }}</td>
+                            <td>{{ formatDate($submission->completed_at, 'd M Y H:i') }}</td>
                         </tr>
                         <tr>
                             <th>Submission Code:</th>

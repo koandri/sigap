@@ -20,7 +20,7 @@
                                 <input type="password" id="password" name="password" class="form-control" placeholder="Your password" required autocomplete="off" />
                                 <span class="input-group-text">
                                     <a href="#" class="link-secondary" title="Show password" onclick="showPassword()">
-                                        <i class="far fa-eye"></i>
+                                        <i class="far fa-eye"></i>&nbsp;
                                     </a>
                                 </span>
                             </div>
@@ -41,7 +41,7 @@
                     <div class="row">
                         <div class="col">
                             <a href="{{ route('keycloak.login') }}" class="btn btn-4 w-100">
-                                <i class="fa-kit fa-keycloak"></i> &nbsp;Login with Keycloak
+                                <i class="fa-kit fa-keycloak"></i>&nbsp; &nbsp;Login with Keycloak
                             </a>
                         </div>
                     </div>

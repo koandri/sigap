@@ -61,11 +61,11 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Created At:</th>
-                                                    <td>{{ $form->created_at->timezone('Asia/Jakarta')->format('d M Y H:i') }}</td>
+                                                    <td>{{ formatDate($form->created_at, 'd M Y H:i') }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Last Updated:</th>
-                                                    <td>{{ $form->updated_at->timezone('Asia/Jakarta')->format('d M Y H:i') }}</td>
+                                                    <td>{{ formatDate($form->updated_at, 'd M Y H:i') }}</td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -102,7 +102,7 @@
                                     @if($activeWorkflow)
                                         <div class="alert alert-success alert-dismissible" role="alert">
                                             <div class="alert-icon">
-                                                <i class="far fa-circle-check"></i>
+                                                <i class="far fa-circle-check"></i>&nbsp;
                                             </div>
                                             <div>
                                                 <h4 class="alert-heading">Active Workflow: {{ $activeWorkflow->workflow_name }}</h4>
@@ -161,7 +161,7 @@
                                         @endif
                                     @else
                                         <div class="text-center text-muted py-4">
-                                            <i class="far fa-circle-info fa-2x mb-2"></i>
+                                            <i class="far fa-circle-info fa-2x mb-2"></i>&nbsp;
                                             <p>No active workflow configured</p>
                                             <p>This form requires approval but has no active workflow.<br/>
                                                 Submissions will be auto-approved until a workflow is activated.
@@ -215,12 +215,12 @@
                                                         <td>{{ $version->created_on->format('d M Y H:i') }}</td>
                                                         <td>
                                                             <div class="btn-group btn-group-sm">
-                                                                <a href="{{ route('formversions.show', [$form, $version]) }}" class="btn btn-outline-secondary" title="Manage Fields"><i class="far fa-list-ul"></i></a>
+                                                                <a href="{{ route('formversions.show', [$form, $version]) }}" class="btn btn-outline-secondary" title="Manage Fields"><i class="far fa-list-ul"></i>&nbsp;</a>
                                                                 @if(!$version->is_active)
-                                                                <a class="btn btn-outline-success" title="Activate Version" onclick="activateVersion({{ $version->id }})"><i class="far fa-circle-check"></i></a>
+                                                                <a class="btn btn-outline-success" title="Activate Version" onclick="activateVersion({{ $version->id }})"><i class="far fa-circle-check"></i>&nbsp;</a>
                                                                 @endif
                                                                 @if($version->submissions->count() == 0)
-                                                                <a class="btn btn-outline-danger" title="Delete Version" onclick="deleteVersion({{ $version->id }})"><i class="far fa-trash-can"></i></a>
+                                                                <a class="btn btn-outline-danger" title="Delete Version" onclick="deleteVersion({{ $version->id }})"><i class="far fa-trash-can"></i>&nbsp;</a>
                                                                 @endif
                                                             </div>
                                                         </td>

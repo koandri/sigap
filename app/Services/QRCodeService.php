@@ -64,6 +64,10 @@ final class QRCodeService
     {
         $url = route('printed-forms.show', $printedForm);
         
+        // Check if logo exists
+        $logoPath = public_path('imgs/qr_logo.png');
+        $hasLogo = file_exists($logoPath);
+        
         $builder = new Builder(
             writer: new PngWriter(),
             writerOptions: [],
@@ -74,6 +78,9 @@ final class QRCodeService
             size: 200,
             margin: 10,
             roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            logoPath: $hasLogo ? $logoPath : null,
+            logoResizeToWidth: $hasLogo ? 40 : null,
+            logoPunchoutBackground: $hasLogo
         );
         
         $result = $builder->build();
@@ -83,6 +90,10 @@ final class QRCodeService
 
     public function generateQRCodeForUrl(string $url): string
     {
+        // Check if logo exists
+        $logoPath = public_path('imgs/qr_logo.png');
+        $hasLogo = file_exists($logoPath);
+        
         $builder = new Builder(
             writer: new PngWriter(),
             writerOptions: [],
@@ -93,6 +104,9 @@ final class QRCodeService
             size: 200,
             margin: 10,
             roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            logoPath: $hasLogo ? $logoPath : null,
+            logoResizeToWidth: $hasLogo ? 40 : null,
+            logoPunchoutBackground: $hasLogo
         );
         
         $result = $builder->build();

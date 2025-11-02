@@ -9,13 +9,13 @@
             <div class="col">
                 <div class="page-pretitle">Facility Management</div>
                 <h2 class="page-title">
-                    <i class="fa fa-tasks"></i> Task Details
+                    <i class="fa fa-tasks"></i>&nbsp; Task Details
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('facility.tasks.index') }}" class="btn btn-outline-secondary">
-                        <i class="fa fa-arrow-left"></i> Back to Tasks
+                        <i class="fa fa-arrow-left"></i>&nbsp; Back to Tasks
                     </a>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                                 <div class="mb-3">
                                     <label class="form-label text-muted">Location</label>
                                     <div>
-                                        <i class="fa fa-map-marker-alt text-muted"></i>
+                                        <i class="fa fa-map-marker-alt text-muted"></i>&nbsp;
                                         {{ $task->location->name }}
                                     </div>
                                 </div>
@@ -91,7 +91,7 @@
                                 <div class="mb-3">
                                     <label class="form-label text-muted">Skip Reason</label>
                                     <div class="alert alert-warning mb-0">
-                                        <i class="fa fa-exclamation-triangle"></i> {{ $task->skip_reason }}
+                                        <i class="fa fa-exclamation-triangle"></i>&nbsp; {{ $task->skip_reason }}
                                     </div>
                                 </div>
                                 @endif
@@ -171,7 +171,7 @@
                                 </a>
                                 @if(isset($task->submission->before_photo['gps_data']))
                                 <div class="text-muted small mt-1">
-                                    <i class="fa fa-map-marker-alt"></i>
+                                    <i class="fa fa-map-marker-alt"></i>&nbsp;
                                     GPS: {{ $task->submission->before_photo['gps_data']['latitude'] ?? 'N/A' }}, 
                                     {{ $task->submission->before_photo['gps_data']['longitude'] ?? 'N/A' }}
                                 </div>
@@ -189,7 +189,7 @@
                                 </a>
                                 @if(isset($task->submission->after_photo['gps_data']))
                                 <div class="text-muted small mt-1">
-                                    <i class="fa fa-map-marker-alt"></i>
+                                    <i class="fa fa-map-marker-alt"></i>&nbsp;
                                     GPS: {{ $task->submission->after_photo['gps_data']['latitude'] ?? 'N/A' }}, 
                                     {{ $task->submission->after_photo['gps_data']['longitude'] ?? 'N/A' }}
                                 </div>
@@ -221,14 +221,14 @@
                                     <label class="form-label text-muted">Status</label>
                                     <div>
                                         @if($task->submission->approval->status === 'approved')
-                                            <span class="badge bg-success"><i class="fa fa-check"></i> Approved</span>
+                                            <span class="badge bg-success"><i class="fa fa-check"></i>&nbsp; Approved</span>
                                         @elseif($task->submission->approval->status === 'rejected')
-                                            <span class="badge bg-danger"><i class="fa fa-times"></i> Rejected</span>
+                                            <span class="badge bg-danger"><i class="fa fa-times"></i>&nbsp; Rejected</span>
                                         @else
-                                            <span class="badge bg-warning"><i class="fa fa-clock"></i> Pending</span>
+                                            <span class="badge bg-warning"><i class="fa fa-clock"></i>&nbsp; Pending</span>
                                         @endif
                                         @if($task->submission->approval->is_flagged_for_review)
-                                            <span class="badge bg-orange ms-1"><i class="fa fa-flag"></i> Flagged for Review</span>
+                                            <span class="badge bg-orange ms-1"><i class="fa fa-flag"></i>&nbsp; Flagged for Review</span>
                                         @endif
                                     </div>
                                 </div>
@@ -270,7 +270,7 @@
                         <hr>
                         <div class="text-center">
                             <a href="{{ route('facility.approvals.review', $task->submission->approval) }}" class="btn btn-primary">
-                                <i class="fa fa-eye"></i> Review Submission
+                                <i class="fa fa-eye"></i>&nbsp; Review Submission
                             </a>
                         </div>
                         @endif
@@ -291,27 +291,27 @@
                         <div class="text-center mb-3">
                             @if($task->status === 'completed' || $task->status === 'approved')
                                 <span class="badge bg-success" style="font-size: 1.5rem; padding: 0.5rem 1rem;">
-                                    <i class="fa fa-check"></i> {{ ucfirst($task->status) }}
+                                    <i class="fa fa-check"></i>&nbsp; {{ ucfirst($task->status) }}
                                 </span>
                             @elseif($task->status === 'in-progress')
                                 <span class="badge bg-info" style="font-size: 1.5rem; padding: 0.5rem 1rem;">
-                                    <i class="fa fa-spinner"></i> In Progress
+                                    <i class="fa fa-spinner"></i>&nbsp; In Progress
                                 </span>
                             @elseif($task->status === 'pending')
                                 <span class="badge bg-warning" style="font-size: 1.5rem; padding: 0.5rem 1rem;">
-                                    <i class="fa fa-clock"></i> Pending
+                                    <i class="fa fa-clock"></i>&nbsp; Pending
                                 </span>
                             @elseif($task->status === 'missed')
                                 <span class="badge bg-danger" style="font-size: 1.5rem; padding: 0.5rem 1rem;">
-                                    <i class="fa fa-exclamation-triangle"></i> Missed
+                                    <i class="fa fa-exclamation-triangle"></i>&nbsp; Missed
                                 </span>
                             @elseif($task->status === 'rejected')
                                 <span class="badge bg-danger" style="font-size: 1.5rem; padding: 0.5rem 1rem;">
-                                    <i class="fa fa-times"></i> Rejected
+                                    <i class="fa fa-times"></i>&nbsp; Rejected
                                 </span>
                             @elseif($task->status === 'skipped')
                                 <span class="badge bg-secondary" style="font-size: 1.5rem; padding: 0.5rem 1rem;">
-                                    <i class="fa fa-forward"></i> Skipped
+                                    <i class="fa fa-forward"></i>&nbsp; Skipped
                                 </span>
                             @endif
                         </div>

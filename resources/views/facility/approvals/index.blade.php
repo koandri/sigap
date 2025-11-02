@@ -17,12 +17,12 @@
                     <input type="hidden" name="date" value="{{ $date }}">
                     @if($batchCheck['can_approve'])
                         <button type="submit" class="btn btn-success">
-                            <i class="fa fa-check-double"></i> Mass Approve ({{ $totalPending }})
+                            <i class="fa fa-check-double"></i>&nbsp; Mass Approve ({{ $totalPending }})
                         </button>
                     @else
                         <button type="button" class="btn btn-secondary" disabled 
                                 title="{{ $batchCheck['message'] }}">
-                            <i class="fa fa-lock"></i> Mass Approve
+                            <i class="fa fa-lock"></i>&nbsp; Mass Approve
                         </button>
                     @endif
                 </form>
@@ -66,7 +66,7 @@
                     <div class="col-md-3">
                         <label class="form-label">&nbsp;</label>
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="fa fa-filter"></i> Filter
+                            <i class="fa fa-filter"></i>&nbsp; Filter
                         </button>
                     </div>
                 </form>
@@ -83,10 +83,10 @@
                 </div>
                 <div class="ms-auto">
                     @if($batchCheck['can_approve'])
-                        <span class="badge bg-success"><i class="fa fa-check"></i> Can Mass Approve</span>
+                        <span class="badge bg-success"><i class="fa fa-check"></i>&nbsp; Can Mass Approve</span>
                     @else
                         <span class="badge bg-warning">
-                            <i class="fa fa-exclamation-triangle"></i> Need {{ ceil($flaggedCount * 0.1) - $reviewedFlagged }} more review(s)
+                            <i class="fa fa-exclamation-triangle"></i>&nbsp; Need {{ ceil($flaggedCount * 0.1) - $reviewedFlagged }} more review(s)
                         </span>
                     @endif
                 </div>
@@ -123,7 +123,7 @@
                         <tr class="{{ $approval->is_flagged_for_review ? 'table-warning' : '' }}">
                             <td>
                                 @if($approval->is_flagged_for_review)
-                                    <i class="fa fa-star text-warning" title="Flagged for mandatory review"></i>
+                                    <i class="fa fa-star text-warning" title="Flagged for mandatory review"></i>&nbsp;
                                 @endif
                             </td>
                             <td>
@@ -144,7 +144,7 @@
                             </td>
                             <td>
                                 <a href="{{ route('facility.approvals.review', $approval) }}" class="btn btn-sm btn-primary">
-                                    <i class="fa fa-eye"></i> Review
+                                    <i class="fa fa-eye"></i>&nbsp; Review
                                 </a>
                             </td>
                         </tr>
@@ -156,7 +156,7 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="fa fa-check-circle fa-3x text-success"></i>
+                        <i class="fa fa-check-circle fa-3x text-success"></i>&nbsp;
                     </div>
                     <p class="empty-title">No pending approvals</p>
                     <p class="empty-subtitle text-muted">

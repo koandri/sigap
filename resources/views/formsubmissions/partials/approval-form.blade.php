@@ -3,7 +3,7 @@
 <div class="card mt-3">
     <div class="card-header">
         <h4 class="card-title">
-            <i class="far fa-gavel"></i>
+            <i class="far fa-gavel"></i>&nbsp;
             Approval Action Required
         </h4>
     </div>
@@ -21,14 +21,14 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="decision" id="approve" value="approve" required>
                         <label class="form-check-label text-success" for="approve">
-                            <i class="far fa-check-circle"></i>
+                            <i class="far fa-check-circle"></i>&nbsp;
                             <strong>Approve</strong>
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="decision" id="reject" value="reject" required>
                         <label class="form-check-label text-danger" for="reject">
-                            <i class="far fa-times-circle"></i>
+                            <i class="far fa-times-circle"></i>&nbsp;
                             <strong>Reject</strong>
                         </label>
                     </div>
@@ -129,7 +129,7 @@ window.addEventListener('load', function() {
         
         // Disable submit button and show loading
         submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="far fa-spinner fa-spin"></i> &nbsp;Processing...';
+        submitButton.innerHTML = '<i class="far fa-spinner fa-spin"></i>&nbsp; &nbsp;Processing...';
         
         // Submit form
         fetch(this.action, {

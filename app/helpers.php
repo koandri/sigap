@@ -91,3 +91,25 @@ if (! function_exists('sanitize')) {
         return is_string($value) ? strip_tags(trim($value)) : $value; // Basic sanitasi, tambah regex kalau perlu
     }
 }
+
+if (! function_exists('formatDate')) {
+    /**
+     * Format a date/datetime to Asia/Jakarta timezone
+     *
+     * @param \Carbon\Carbon|\DateTime|string|null $date
+     * @param string $format
+     * @return string
+     */
+    function formatDate($date, string $format = 'Y-m-d H:i'): string
+    {
+        if (!$date) {
+            return '-';
+        }
+
+        if (is_string($date)) {
+            $date = \Carbon\Carbon::parse($date);
+        }
+
+        return $date->timezone('Asia/Jakarta')->format($format);
+    }
+}

@@ -79,7 +79,7 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.items.import') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="far fa-file-arrow-up me-2"></i>
+                        <i class="far fa-file-arrow-up me-2"></i>&nbsp;
                         Import from Excel
                     </a>
                 </div>
@@ -228,7 +228,7 @@
                                             </p>
                                             <div class="empty-action">
                                                 <a href="{{ route('manufacturing.items.import') }}" class="btn btn-primary">
-                                                    <i class="far fa-file-arrow-up me-2"></i>
+                                                    <i class="far fa-file-arrow-up me-2"></i>&nbsp;
                                                     Import Items
                                                 </a>
                                             </div>

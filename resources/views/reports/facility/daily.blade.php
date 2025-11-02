@@ -49,14 +49,14 @@
             <div class="col">
                 <div class="page-pretitle">Facility Management Reports</div>
                 <h2 class="page-title">
-                    <i class="fa fa-calendar-day"></i> Daily Cleaning Report
+                    <i class="fa fa-calendar-day"></i>&nbsp; Daily Cleaning Report
                 </h2>
             </div>
             @if($selectedLocations->isNotEmpty())
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <button type="button" class="btn btn-primary" onclick="window.print()">
-                        <i class="fa fa-print"></i> Print Report
+                        <i class="fa fa-print"></i>&nbsp; Print Report
                     </button>
                 </div>
             </div>
@@ -92,7 +92,7 @@
                         <div class="col-md-2">
                             <label class="form-label">&nbsp;</label>
                             <button type="submit" class="btn btn-primary w-100">
-                                <i class="fa fa-search"></i> View Report
+                                <i class="fa fa-search"></i>&nbsp; View Report
                             </button>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fa fa-map-marker-alt"></i> {{ $data['location']->name }} - {{ \Carbon\Carbon::parse($date)->format('l, F d, Y') }}
+                    <i class="fa fa-map-marker-alt"></i>&nbsp; {{ $data['location']->name }} - {{ \Carbon\Carbon::parse($date)->format('l, F d, Y') }}
                 </h3>
                 <div class="card-actions">
                     <span class="badge bg-blue text-white">{{ $data['stats']['total'] }} Tasks</span>
@@ -225,13 +225,13 @@
                             </td>
                             <td>
                                 @if($task->status === 'completed' || $task->status === 'approved')
-                                    <span class="badge bg-success text-white"><i class="fa fa-check"></i> {{ ucfirst($task->status) }}</span>
+                                    <span class="badge bg-success text-white"><i class="fa fa-check"></i>&nbsp; {{ ucfirst($task->status) }}</span>
                                 @elseif($task->status === 'in-progress')
-                                    <span class="badge bg-info text-white"><i class="fa fa-spinner"></i> In Progress</span>
+                                    <span class="badge bg-info text-white"><i class="fa fa-spinner"></i>&nbsp; In Progress</span>
                                 @elseif($task->status === 'pending')
-                                    <span class="badge bg-warning text-white"><i class="fa fa-clock"></i> Pending</span>
+                                    <span class="badge bg-warning text-white"><i class="fa fa-clock"></i>&nbsp; Pending</span>
                                 @elseif($task->status === 'missed')
-                                    <span class="badge bg-danger text-white"><i class="fa fa-exclamation-triangle"></i> Missed</span>
+                                    <span class="badge bg-danger text-white"><i class="fa fa-exclamation-triangle"></i>&nbsp; Missed</span>
                                 @else
                                     <span class="badge bg-secondary text-white">{{ ucfirst($task->status) }}</span>
                                 @endif
@@ -239,7 +239,7 @@
                             <td>
                                 @if($task->submission)
                                     <a href="#" class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#photoModal{{ $task->id }}">
-                                        <i class="fa fa-image"></i> View Photos
+                                        <i class="fa fa-image"></i>&nbsp; View Photos
                                     </a>
                                 @else
                                     <span class="text-muted">-</span>
@@ -296,7 +296,7 @@
                         <tr>
                             <td colspan="7" class="text-center text-muted py-4">
                                 <div class="text-muted">
-                                    <i class="fa fa-inbox"></i> No cleaning tasks scheduled for this location on the selected date.
+                                    <i class="fa fa-inbox"></i>&nbsp; No cleaning tasks scheduled for this location on the selected date.
                                 </div>
                             </td>
                         </tr>
@@ -310,7 +310,7 @@
         <!-- No Location Selected -->
         <div class="empty">
             <div class="empty-icon">
-                <i class="fa fa-file-alt fa-3x"></i>
+                <i class="fa fa-file-alt fa-3x"></i>&nbsp;
             </div>
             <p class="empty-title">Select Locations and Date</p>
             <p class="empty-subtitle text-muted">

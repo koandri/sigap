@@ -59,14 +59,14 @@
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             @canBeImpersonated($user)
                                                             <a href="{{ route('impersonate', $user->id) }}" class="btn btn-outline-warning" title="Impersonate">
-                                                                <i class="far fa-user-dashed"></i> &nbsp;   
+                                                                <i class="far fa-user-dashed"></i>&nbsp; &nbsp;   
                                                             </a>
                                                             @endCanBeImpersonated
                                                             <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary" title="View">
-                                                                <i class="far fa-eye"></i>
+                                                                <i class="far fa-eye"></i>&nbsp;
                                                             </a>
                                                             <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-primary" title="Edit">
-                                                                <i class="far fa-pen-to-square"></i>
+                                                                <i class="far fa-pen-to-square"></i>&nbsp;
                                                             </a>
                                                         </div>
                                                     </td>

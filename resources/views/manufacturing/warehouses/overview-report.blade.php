@@ -242,11 +242,11 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('manufacturing.warehouses.overview-report-print', request()->query()) }}" target="_blank" class="btn btn-primary print-button">
-                        <i class="far fa-print me-2"></i>
+                        <i class="far fa-print me-2"></i>&nbsp;
                         Print Report
                     </a>
                     <a href="{{ route('manufacturing.warehouses.index') }}" class="btn btn-outline-secondary">
-                        <i class="far fa-arrow-left me-2"></i>
+                        <i class="far fa-arrow-left me-2"></i>&nbsp;
                         Back to Warehouses
                     </a>
                 </div>
@@ -264,7 +264,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h1>
-                        <i class="far fa-chart-line me-3"></i>
+                        <i class="far fa-chart-line me-3"></i>&nbsp;
                         Warehouse Overview Report
                     </h1>
                     <div class="subtitle">
@@ -303,7 +303,7 @@
         <!-- Filters -->
         <div class="filter-section">
             <h3>
-                <i class="far fa-filter me-2"></i>
+                <i class="far fa-filter me-2"></i>&nbsp;
                 Filters
             </h3>
             <form method="GET" action="{{ route('manufacturing.warehouses.overview-report') }}" class="row g-3">
@@ -354,11 +354,11 @@
                     <label class="form-label">&nbsp;</label>
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="far fa-search me-2"></i>
+                            <i class="far fa-search me-2"></i>&nbsp;
                             Apply Filters
                         </button>
                         <a href="{{ route('manufacturing.warehouses.overview-report') }}" class="btn btn-outline-secondary">
-                            <i class="far fa-times me-2"></i>
+                            <i class="far fa-times me-2"></i>&nbsp;
                             Clear Filters
                         </a>
                     </div>
@@ -369,7 +369,7 @@
         <!-- Items Table -->
         <div class="report-section">
             <h3>
-                <i class="far fa-list me-2"></i>
+                <i class="far fa-list me-2"></i>&nbsp;
                 Inventory Items
                 <span class="badge bg-primary text-white ms-2">{{ $items->total() }} items</span>
             </h3>

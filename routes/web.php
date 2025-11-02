@@ -39,9 +39,8 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MaintenanceScheduleController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\MaintenanceLogController;
-use App\Http\Controllers\MaintenanceReportController;
 use App\Http\Controllers\MaintenanceCalendarController;
-use App\Http\Controllers\Reports\AssetReportController;
+use App\Http\Controllers\AssetManagementReportController;
 
 // Facility Management Routes
 use App\Http\Controllers\FacilityDashboardController;
@@ -49,16 +48,20 @@ use App\Http\Controllers\CleaningScheduleController;
 use App\Http\Controllers\CleaningTaskController;
 use App\Http\Controllers\CleaningApprovalController;
 use App\Http\Controllers\CleaningRequestController;
-use App\Http\Controllers\CleaningReportController;
+use App\Http\Controllers\FacilityManagementReportController;
 
 // Document Management System Routes
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentVersionController;
 use App\Http\Controllers\DocumentApprovalController;
 use App\Http\Controllers\DocumentAccessController;
+use App\Http\Controllers\DocumentInstanceController;
 use App\Http\Controllers\FormRequestController;
 use App\Http\Controllers\PrintedFormController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentManagementDashboardController;
+use App\Http\Controllers\DocumentManagementLocationReportController;
+use App\Http\Controllers\DocumentManagementMasterlistReportController;
+use App\Http\Controllers\DocumentManagementSlaReportController;
 
 //Basic
 Route::get('/', [HomeController::class, 'index'])->name('home')->middleware(['auth', 'verified']);
@@ -289,18 +292,27 @@ Route::prefix('facility')->name('facility.')->middleware(['auth'])->group(functi
 // Reports Routes
 Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function () {
     // Asset Reports
-    Route::get('assets/by-location', [AssetReportController::class, 'assetsByLocation'])->name('assets.by-location');
-    Route::get('assets/by-category', [AssetReportController::class, 'assetsByCategory'])->name('assets.by-category');
-    Route::get('assets/by-category-location', [AssetReportController::class, 'assetsByCategoryAndLocation'])->name('assets.by-category-location');
-    Route::get('assets/by-department', [AssetReportController::class, 'assetsByDepartment'])->name('assets.by-department');
-    Route::get('assets/by-user', [AssetReportController::class, 'assetsByUser'])->name('assets.by-user');
+    Route::get('assets/by-location', [AssetManagementReportController::class, 'assetsByLocation'])->name('assets.by-location');
+    Route::get('assets/by-category', [AssetManagementReportController::class, 'assetsByCategory'])->name('assets.by-category');
+    Route::get('assets/by-category-location', [AssetManagementReportController::class, 'assetsByCategoryAndLocation'])->name('assets.by-category-location');
+    Route::get('assets/by-department', [AssetManagementReportController::class, 'assetsByDepartment'])->name('assets.by-department');
+    Route::get('assets/by-user', [AssetManagementReportController::class, 'assetsByUser'])->name('assets.by-user');
     
     // Facility Management Reports
-    Route::get('facility/daily', [CleaningReportController::class, 'dailyReport'])->name('facility.daily');
-    Route::get('facility/daily/pdf', [CleaningReportController::class, 'dailyReportPdf'])->name('facility.daily-pdf');
-    Route::get('facility/weekly', [CleaningReportController::class, 'weeklyReport'])->name('facility.weekly');
-    Route::get('facility/weekly/pdf', [CleaningReportController::class, 'weeklyReportPdf'])->name('facility.weekly-pdf');
-    Route::get('facility/cell-details', [CleaningReportController::class, 'cellDetails'])->name('facility.cell-details');
+    Route::get('facility/daily', [FacilityManagementReportController::class, 'dailyReport'])->name('facility.daily');
+    Route::get('facility/daily/pdf', [FacilityManagementReportController::class, 'dailyReportPdf'])->name('facility.daily-pdf');
+    Route::get('facility/weekly', [FacilityManagementReportController::class, 'weeklyReport'])->name('facility.weekly');
+    Route::get('facility/weekly/pdf', [FacilityManagementReportController::class, 'weeklyReportPdf'])->name('facility.weekly-pdf');
+    Route::get('facility/cell-details', [FacilityManagementReportController::class, 'cellDetails'])->name('facility.cell-details');
+    
+    // Document Management Reports
+    Route::prefix('document-management')->name('document-management.')->group(function () {
+        Route::get('locations', [DocumentManagementLocationReportController::class, 'index'])->name('locations.index');
+        Route::get('locations/group-by-location', [DocumentManagementLocationReportController::class, 'groupByLocation'])->name('locations.group-by-location');
+        Route::get('masterlist', [DocumentManagementMasterlistReportController::class, 'index'])->name('masterlist');
+        Route::get('masterlist/print', [DocumentManagementMasterlistReportController::class, 'print'])->name('masterlist.print');
+        Route::get('sla', [DocumentManagementSlaReportController::class, 'index'])->name('sla');
+    });
 });
 
 // OnlyOffice Callback (no auth/CSRF required - uses JWT verification)
@@ -309,8 +321,6 @@ Route::post('document-versions/{version}/onlyoffice-callback', [DocumentVersionC
 Route::middleware(['auth'])->group(function () {
     // Documents
     Route::resource('documents', DocumentController::class);
-    Route::get('documents-masterlist', [DocumentController::class, 'masterlist'])->name('documents.masterlist')->middleware('role:Super Admin|Owner|Document Control');
-    Route::get('documents-masterlist/print', [DocumentController::class, 'masterlistPrint'])->name('documents.masterlist.print')->middleware('role:Super Admin|Owner|Document Control');
     
     // Versions
     Route::resource('documents.versions', DocumentVersionController::class);
@@ -331,6 +341,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('document-access-requests/{request}/approve', [DocumentAccessController::class, 'approve'])->name('document-access-requests.approve');
     Route::post('document-access-requests/{request}/reject', [DocumentAccessController::class, 'reject'])->name('document-access-requests.reject');
     
+    // Correspondences
+    Route::get('correspondences', [DocumentInstanceController::class, 'index'])->name('correspondences.index');
+    Route::get('correspondences/create', [DocumentInstanceController::class, 'create'])->name('correspondences.create');
+    Route::post('documents/{document}/correspondences', [DocumentInstanceController::class, 'store'])->name('correspondences.store');
+    Route::get('correspondences/{instance}', [DocumentInstanceController::class, 'show'])->name('correspondences.show');
+    Route::get('correspondences/{instance}/edit', [DocumentInstanceController::class, 'edit'])->name('correspondences.edit');
+    Route::put('correspondences/{instance}', [DocumentInstanceController::class, 'update'])->name('correspondences.update');
+    Route::post('correspondences/{instance}/submit', [DocumentInstanceController::class, 'submitForApproval'])->name('correspondences.submit');
+    Route::post('correspondences/{instance}/approve', [DocumentInstanceController::class, 'approve'])->name('correspondences.approve');
+    Route::post('correspondences/{instance}/reject', [DocumentInstanceController::class, 'reject'])->name('correspondences.reject');
+    
     // Form Requests
     Route::resource('form-requests', FormRequestController::class);
     Route::post('form-requests/{form_request}/acknowledge', [FormRequestController::class, 'acknowledge'])->name('form-requests.acknowledge');
@@ -343,13 +364,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('printed-forms', [PrintedFormController::class, 'index'])->name('printed-forms.index');
     Route::get('printed-forms/{printedForm}', [PrintedFormController::class, 'show'])->name('printed-forms.show');
     Route::post('printed-forms/{printedForm}/return', [PrintedFormController::class, 'returnForm'])->name('printed-forms.return');
+    Route::post('printed-forms/bulk-return', [PrintedFormController::class, 'bulkReturn'])->name('printed-forms.bulk-return');
+    Route::post('printed-forms/bulk-receive', [PrintedFormController::class, 'bulkReceive'])->name('printed-forms.bulk-receive');
+    Route::post('printed-forms/bulk-upload-scans', [PrintedFormController::class, 'bulkUploadScans'])->name('printed-forms.bulk-upload-scans');
+    Route::post('printed-forms/bulk-update-location', [PrintedFormController::class, 'bulkUpdatePhysicalLocation'])->name('printed-forms.bulk-update-location');
     Route::post('printed-forms/{printedForm}/receive', [PrintedFormController::class, 'receive'])->name('printed-forms.receive');
     Route::post('printed-forms/{printedForm}/upload-scan', [PrintedFormController::class, 'uploadScans'])->name('printed-forms.upload-scan');
+    Route::post('printed-forms/{printedForm}/update-location', [PrintedFormController::class, 'updatePhysicalLocation'])->name('printed-forms.update-location');
     Route::get('printed-forms/{printedForm}/view-scanned', [PrintedFormController::class, 'viewScanned'])->name('printed-forms.view-scanned');
     
-    // Dashboard
-    Route::get('dms-dashboard', [DashboardController::class, 'index'])->name('dms-dashboard');
-    Route::get('dms-sla', [DashboardController::class, 'sla'])->name('dms-sla');
+    // Document Management Dashboard
+    Route::get('dms-dashboard', [DocumentManagementDashboardController::class, 'index'])->name('dms-dashboard');
 });
 
 // API Routes for Form Field Options

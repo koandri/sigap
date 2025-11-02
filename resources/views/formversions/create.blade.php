@@ -21,7 +21,7 @@
                         @include('layouts.alerts')
                         <div class="alert alert-info alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="far fa-circle-info"></i>
+                                <i class="far fa-circle-info"></i>&nbsp;
                             </div>
                             <div>
                                 <div class="alert-description">
@@ -32,7 +32,7 @@
                         @if($activeVersion)
                         <div class="alert alert-warning alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="far fa-triangle-exclamation"></i>
+                                <i class="far fa-triangle-exclamation"></i>&nbsp;
                             </div>
                             <div>
                                 <div class="alert-description">

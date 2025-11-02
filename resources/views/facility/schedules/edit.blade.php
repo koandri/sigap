@@ -12,7 +12,7 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <a href="{{ route('facility.schedules.index') }}" class="btn btn-outline-primary">
-                    <i class="fa fa-arrow-left"></i> Back to List
+                    <i class="fa fa-arrow-left"></i>&nbsp; Back to List
                 </a>
             </div>
         </div>
@@ -79,7 +79,7 @@
                         </div>
                         <div class="card-body">
                             <div class="alert alert-info">
-                                <i class="fa fa-info-circle"></i> 
+                                <i class="fa fa-info-circle"></i>&nbsp; 
                                 <strong>Note:</strong> Changing frequency settings will only affect new tasks generated after saving. Existing tasks will not be modified.
                             </div>
 
@@ -135,7 +135,7 @@
                                     </div>
                                 </div>
                                 <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i> 
+                                    <i class="fa fa-info-circle"></i>&nbsp; 
                                     Example: Every 2 hours from 8:00 AM to 6:00 PM will generate tasks at: 8am, 10am, 12pm, 2pm, 4pm, 6pm
                                 </div>
                             </div>
@@ -240,7 +240,7 @@
                                     
                                     <div id="monthlyWarning" class="alert alert-warning" style="display: none;">
                                         <div class="d-flex">
-                                            <div><i class="fa fa-exclamation-triangle"></i></div>
+                                            <div><i class="fa fa-exclamation-triangle"></i>&nbsp;</div>
                                             <div class="ms-2">
                                                 <strong>Important:</strong>
                                                 <ul class="mb-0 mt-1" id="monthlyWarningList"></ul>
@@ -295,7 +295,7 @@
                                     <small class="form-hint">Specific time for yearly task (e.g., 10:00 AM). Leave empty for any time.</small>
                                 </div>
                                 <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i> 
+                                    <i class="fa fa-info-circle"></i>&nbsp; 
                                     Task will be generated once per year on the selected date.
                                 </div>
                             </div>
@@ -308,7 +308,7 @@
                             <h3 class="card-title">Cleaning Items</h3>
                             <div class="card-actions">
                                 <button type="button" class="btn btn-primary btn-sm" onclick="addScheduleItem()">
-                                    <i class="fa fa-plus"></i> Add Item
+                                    <i class="fa fa-plus"></i>&nbsp; Add Item
                                 </button>
                             </div>
                         </div>
@@ -348,7 +348,7 @@
                                                     <input type="hidden" name="existing_items[{{ $item->id }}][_delete]" value="0" id="delete-{{ $item->id }}">
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
                                                             onclick="markItemForDeletion({{ $item->id }})">
-                                                        <i class="fa fa-trash"></i> Remove Item
+                                                        <i class="fa fa-trash"></i>&nbsp; Remove Item
                                                     </button>
                                                 </div>
                                             </div>
@@ -356,7 +356,7 @@
                                     </div>
                                 @empty
                                     <div class="alert alert-info">
-                                        <i class="fa fa-info-circle"></i> Click "Add Item" to add cleaning items to this schedule.
+                                        <i class="fa fa-info-circle"></i>&nbsp; Click "Add Item" to add cleaning items to this schedule.
                                     </div>
                                 @endforelse
                             </div>
@@ -384,7 +384,7 @@
 
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-save"></i> Update Schedule
+                                    <i class="fa fa-save"></i>&nbsp; Update Schedule
                                 </button>
                                 <a href="{{ route('facility.schedules.index') }}" class="btn btn-outline-secondary">
                                     Cancel
@@ -397,7 +397,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fa fa-info-circle"></i> Help
+                                <i class="fa fa-info-circle"></i>&nbsp; Help
                             </h3>
                         </div>
                         <div class="card-body">
@@ -538,7 +538,7 @@ function addScheduleItem() {
                     <div class="col-md-12">
                         <button type="button" class="btn btn-sm btn-outline-danger" 
                                 onclick="removeScheduleItem(${itemCounter})">
-                            <i class="fa fa-trash"></i> Remove Item
+                            <i class="fa fa-trash"></i>&nbsp; Remove Item
                         </button>
                     </div>
                 </div>

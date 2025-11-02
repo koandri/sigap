@@ -73,31 +73,62 @@
                             <div class="row g-2">
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('documents.create') }}" class="btn btn-outline-primary w-100">
-                                        <i class="far fa-plus"></i>
+                                        <i class="far fa-plus"></i>&nbsp;
                                         New Document
                                     </a>
                                 </div>
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('form-requests.create') }}" class="btn btn-outline-success w-100">
-                                        <i class="far fa-file-alt"></i>
+                                        <i class="far fa-file-alt"></i>&nbsp;
                                         Request Forms
                                     </a>
                                 </div>
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('my-document-access') }}" class="btn btn-outline-info w-100">
-                                        <i class="far fa-eye"></i>
+                                        <i class="far fa-eye"></i>&nbsp;
                                         My Documents
                                     </a>
                                 </div>
+                                @php
+                                    $pendingDocApprovals = auth()->user() ? 
+                                        \App\Models\DocumentVersionApproval::where('status', 'pending')
+                                            ->where('approver_id', auth()->id())
+                                            ->count() : 0;
+                                @endphp
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                                    <a href="{{ route('documents.masterlist') }}" class="btn btn-outline-secondary w-100">
-                                        <i class="far fa-list"></i>
+                                    <a href="{{ route('document-approvals.index') }}" class="btn btn-outline-warning w-100 position-relative">
+                                        <i class="far fa-check-double"></i>&nbsp;
+                                        Document Approvals
+                                        @if($pendingDocApprovals > 0)
+                                            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">{{ $pendingDocApprovals }}</span>
+                                        @endif
+                                    </a>
+                                </div>
+                                @can('approve', App\Models\DocumentAccessRequest::class)
+                                @php
+                                    $pendingAccessRequests = auth()->user() ? 
+                                        \App\Models\DocumentAccessRequest::where('status', 'pending')
+                                            ->count() : 0;
+                                @endphp
+                                <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                                    <a href="{{ route('document-access-requests.pending') }}" class="btn btn-outline-danger w-100 position-relative">
+                                        <i class="far fa-user-lock"></i>&nbsp;
+                                        Access Requests
+                                        @if($pendingAccessRequests > 0)
+                                            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">{{ $pendingAccessRequests }}</span>
+                                        @endif
+                                    </a>
+                                </div>
+                                @endcan
+                                <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                                    <a href="{{ route('reports.document-management.masterlist') }}" class="btn btn-outline-secondary w-100">
+                                        <i class="far fa-list"></i>&nbsp;
                                         Masterlist
                                     </a>
                                 </div>
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                                    <a href="{{ route('dms-sla') }}" class="btn btn-outline-warning w-100">
-                                        <i class="far fa-chart-line"></i>
+                                    <a href="{{ route('reports.document-management.sla') }}" class="btn btn-outline-secondary w-100">
+                                        <i class="far fa-chart-line"></i>&nbsp;
                                         SLA Report
                                     </a>
                                 </div>
@@ -123,16 +154,11 @@
                                     @foreach($recentActivities as $activity)
                                         <div class="list-group-item list-group-item-action">
                                             <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="avatar bg-blue-lt">
-                                                        <i class="far fa-bell"></i>
-                                                    </span>
-                                                </div>
                                                 <div class="col">
                                                     <div class="text-body">{{ $activity['message'] }}</div>
                                                     <div class="text-muted mt-1">
                                                         <small>
-                                                            <i class="far fa-clock me-1"></i>
+                                                            <i class="far fa-clock me-1"></i>&nbsp;
                                                             {{ \Carbon\Carbon::parse($activity['timestamp'])->diffForHumans() }}
                                                         </small>
                                                     </div>
@@ -144,7 +170,7 @@
                             @else
                                 <div class="empty py-5">
                                     <div class="empty-icon">
-                                        <i class="far fa-chart-line"></i>
+                                        <i class="far fa-chart-line"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No recent activities</p>
                                     <p class="empty-subtitle text-muted">
@@ -164,7 +190,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title text-warning">
-                                <i class="far fa-exclamation-triangle"></i>
+                                <i class="far fa-exclamation-triangle"></i>&nbsp;
                                 Overdue Requests
                             </h3>
                         </div>
@@ -185,7 +211,7 @@
                                             <tr>
                                                 <td>{{ $request->id }}</td>
                                                 <td>{{ $request->requester->name }}</td>
-                                                <td>{{ $request->request_date->format('Y-m-d H:i') }}</td>
+                                                <td>{{ formatDate($request->request_date) }}</td>
                                                 <td>
                                                     <span class="badge bg-warning">{{ $request->status->label() }}</span>
                                                 </td>

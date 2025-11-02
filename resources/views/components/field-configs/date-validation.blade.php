@@ -8,7 +8,7 @@
     @if($hasSubmissions && $field && in_array($field->field_type, ['date', 'datetime']))
         <div class="alert alert-warning alert-dismissible" role="alert">
             <div class="alert-icon">
-                <i class="far fa-triangle-exclamation"></i>
+                <i class="far fa-triangle-exclamation"></i>&nbsp;
             </div>
             <div>
                 <h4 class="alert-heading">Info!</h4>
@@ -92,7 +92,7 @@
                 @if($hasSubmissions)
                     <div class="alert alert-warning alert-dismissible" role="alert">
                         <div class="alert-icon">
-                            <i class="far fa-triangle-exclamation"></i>
+                            <i class="far fa-triangle-exclamation"></i>&nbsp;
                         </div>
                         <div>
                             <div class="alert-description">

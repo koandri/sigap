@@ -23,7 +23,7 @@
                         @if($hasUsage)
                         <div class="alert alert-warning alert-dismissible" role="alert">
                             <div class="alert-icon">
-                                <i class="far fa-triangle-exclamation"></i>
+                                <i class="far fa-triangle-exclamation"></i>&nbsp;
                             </div>
                             <div>
                                 <h4 class="alert-heading">Limited Editing</h4>
@@ -149,12 +149,12 @@
                                     </div>
                                     <div>
                                         <small class="text-muted">
-                                            <i class="far fa-clock"></i>&nbsp;Created: {{ $workflow->created_at->format('d M Y H:i') }}
+                                            <i class="far fa-clock"></i>&nbsp;Created: {{ formatDate($workflow->created_at, 'd M Y H:i') }}
                                             @if($workflow->creator)
                                                 by {{ $workflow->creator->name }}
                                             @endif
                                             <br>
-                                            <i class="far fa-clock-rotate-left"></i>&nbsp;Last updated: {{ $workflow->updated_at->format('d M Y H:i') }}
+                                            <i class="far fa-clock-rotate-left"></i>&nbsp;Last updated: {{ formatDate($workflow->updated_at, 'd M Y H:i') }}
                                         </small>
                                     </div>
                                 </div>

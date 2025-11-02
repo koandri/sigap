@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\AccessType;
+use App\Enums\DocumentType;
+use App\Helpers\MimeTypeHelper;
+use App\Http\Requests\ApproveAccessRequest;
+use App\Http\Requests\RequestAccessRequest;
 use App\Models\Document;
 use App\Models\DocumentAccessRequest;
 use App\Models\DocumentVersion;
+use App\Models\Department;
 use App\Services\DocumentAccessService;
 use App\Services\WatermarkService;
 use Illuminate\Http\Request;
@@ -24,12 +29,70 @@ final class DocumentAccessController extends Controller
         private readonly WatermarkService $watermarkService
     ) {}
 
-    public function myAccess(): View
+    public function myAccess(Request $request): View
     {
         $user = Auth::user();
         $accessibleDocuments = $this->accessService->getUserAccessibleDocuments($user);
         
-        return view('document-access.my-access', compact('accessibleDocuments'));
+        // Get filters from request
+        $filters = [
+            'document_type' => $request->input('document_type'),
+            'department' => $request->input('department'),
+            'access_type' => $request->input('access_type'),
+            'search' => $request->input('search'),
+        ];
+
+        // Apply filters
+        if ($filters['document_type']) {
+            $accessibleDocuments = $accessibleDocuments->filter(function ($version) use ($filters) {
+                return $version->document->document_type->value === $filters['document_type'];
+            });
+        }
+
+        if ($filters['department']) {
+            $accessibleDocuments = $accessibleDocuments->filter(function ($version) use ($filters) {
+                return $version->document->department_id == $filters['department'];
+            });
+        }
+
+        if ($filters['access_type']) {
+            $accessibleDocuments = $accessibleDocuments->filter(function ($version) use ($filters, $user) {
+                $accessRequest = $version->accessRequests->where('user_id', $user->id)->first();
+                if (!$accessRequest) {
+                    return $filters['access_type'] === 'full';
+                }
+                return $accessRequest->getEffectiveAccessType()->value === $filters['access_type'];
+            });
+        }
+
+        if ($filters['search']) {
+            $accessibleDocuments = $accessibleDocuments->filter(function ($version) use ($filters) {
+                return stripos($version->document->title, $filters['search']) !== false ||
+                       stripos($version->document->document_number, $filters['search']) !== false;
+            });
+        }
+
+        // Convert to paginated collection
+        $perPage = 20;
+        $currentPage = $request->get('page', 1);
+        $items = $accessibleDocuments->values();
+        $total = $items->count();
+        $paginatedItems = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        
+        $accessibleDocuments = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedItems,
+            $total,
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+        
+        // Get filter options
+        $documentTypes = DocumentType::cases();
+        $departments = Department::orderBy('name')->get();
+        $accessTypes = AccessType::cases();
+        
+        return view('document-access.my-access', compact('accessibleDocuments', 'filters', 'documentTypes', 'departments', 'accessTypes'));
     }
 
     public function requestAccess(Document $document): View|RedirectResponse
@@ -53,21 +116,13 @@ final class DocumentAccessController extends Controller
         return view('document-access.request-form', compact('document', 'activeVersion', 'accessTypes'));
     }
 
-    public function storeAccessRequest(Request $request, Document $document): RedirectResponse
+    public function storeAccessRequest(RequestAccessRequest $request, Document $document): RedirectResponse
     {
-        $this->authorize('view', $document);
-        
         // Super Admin and Owner don't need to request access
         if (Auth::user()->hasRole(['Super Admin', 'Owner'])) {
             return redirect()->route('documents.show', $document)
                 ->with('info', 'You have full access to all documents as an administrator.');
         }
-        
-        $request->validate([
-            'access_type' => 'required|string',
-            'requested_expiry_date' => 'nullable|date|after:now',
-            'reason' => 'required|string|max:1000',
-        ]);
 
         $activeVersion = $document->activeVersion;
         if (!$activeVersion) {
@@ -90,16 +145,8 @@ final class DocumentAccessController extends Controller
         return view('document-access.pending', compact('pendingRequests'));
     }
 
-    public function approve(Request $request, DocumentAccessRequest $accessRequest): RedirectResponse
+    public function approve(ApproveAccessRequest $request, DocumentAccessRequest $accessRequest): RedirectResponse
     {
-        $this->authorize('approve', $accessRequest);
-        
-        $request->validate([
-            'approved_access_type' => 'required|string',
-            'approved_expiry_date' => 'nullable|date|after:now',
-            'notes' => 'nullable|string|max:1000',
-        ]);
-
         $modifications = [
             'access_type' => $request->approved_access_type,
             'expiry_date' => $request->approved_expiry_date,
@@ -151,22 +198,10 @@ final class DocumentAccessController extends Controller
             $content = Storage::disk('s3')->get($filePath);
         }
 
-        $mimeType = $this->getMimeType($version->file_type);
+        $mimeType = MimeTypeHelper::getMimeType($version->file_type);
         
         return response($content)
             ->header('Content-Type', $mimeType)
             ->header('Content-Disposition', 'inline; filename="' . $version->document->title . '.' . $version->file_type . '"');
-    }
-
-    private function getMimeType(string $fileType): string
-    {
-        return match ($fileType) {
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'pdf' => 'application/pdf',
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            default => 'application/octet-stream',
-        };
     }
 }

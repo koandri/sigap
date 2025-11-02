@@ -18,7 +18,7 @@
                 @can('maintenance.assets.manage')
                 <div class="btn-list">
                     <a href="{{ route('options.asset-categories.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="far fa-plus"></i>
+                        <i class="far fa-plus"></i>&nbsp;
                         Add Category
                     </a>
                 </div>
@@ -119,7 +119,7 @@
                 @else
                     <div class="empty">
                         <div class="empty-icon">
-                            <i class="far fa-folder-open icon"></i>
+                            <i class="far fa-folder-open icon"></i>&nbsp;
                         </div>
                         <p class="empty-title">No asset categories found</p>
                         <p class="empty-subtitle text-muted">
@@ -128,7 +128,7 @@
                         @can('maintenance.assets.manage')
                         <div class="empty-action">
                             <a href="{{ route('options.asset-categories.create') }}" class="btn btn-primary">
-                                <i class="far fa-plus"></i>
+                                <i class="far fa-plus"></i>&nbsp;
                                 Add Category
                             </a>
                         </div>

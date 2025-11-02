@@ -69,7 +69,7 @@
             
         @default
             <div class="alert alert-warning">
-                <i class="far fa-exclamation-triangle"></i>
+                <i class="far fa-exclamation-triangle"></i>&nbsp;
                 Unknown field type: {{ $field->field_type }}
             </div>
     @endswitch

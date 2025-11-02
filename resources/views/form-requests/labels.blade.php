@@ -2,99 +2,150 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Request Labels - Request #{{ $request->id }}</title>
     <style>
-        @page {
-            size: 115mm 42mm; /* Paper width × Row height */
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            width: 115mm;
+            background: #f5f5f5;
+            padding: 10px;
+        }
+        
+        .print-info {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .print-info h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .print-info p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .print-button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .print-button:hover {
+            background: #0052a3;
         }
         
         .label-row {
             width: 115mm;
             height: 42mm;
             display: flex;
-            justify-content: space-evenly;
+            justify-content: space-around;
             align-items: center;
+            background: white;
+            margin-bottom: 10px;
             page-break-after: always;
-            box-sizing: border-box;
-            padding: 2mm;
+            page-break-inside: avoid;
         }
         
         .label {
             width: 35mm;
             height: 38mm;
-            border: 1px solid #000;
-            padding: 1.5mm;
-            box-sizing: border-box;
+            border: 2px solid #000;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
+            position: relative;
         }
         
-        .label-header {
+        .label.empty {
+            border: 1px dashed #ccc;
+            visibility: hidden;
+        }
+        
+        .form-name-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-bottom: 1px solid #000;
+            padding: 0.5mm 0.5mm;
+            font-size: 5pt;
+            font-weight: bold;
             text-align: center;
+            color: #333;
+            line-height: 1;
+            max-height: 5mm;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            z-index: 1;
+        }
+        
+        .label-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5mm;
+            margin-top: 2mm;
             width: 100%;
+        }
+        
+        .qr-code {
+            width: 31mm;
+            height: 31mm;
+            margin: 0 auto;
+            display: block;
         }
         
         .form-number {
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 7pt;
             color: #0066cc;
-            margin-bottom: 0.5mm;
-            word-wrap: break-word;
-            line-height: 1.1;
-        }
-        
-        .form-name {
-            font-size: 6pt;
-            font-weight: bold;
-            line-height: 1;
-            color: #333;
-            max-height: 8mm;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-        
-        .qr-code {
-            width: 22mm;
-            height: 22mm;
-            margin: 0.5mm 0;
-        }
-        
-        .label-footer {
-            font-size: 5pt;
-            color: #666;
             text-align: center;
-            line-height: 1;
+            padding-bottom: 0.5mm;
         }
         
-        .issue-date {
-            margin-bottom: 0.3mm;
-        }
-        
-        .request-info {
-            font-size: 4.5pt;
-            color: #999;
-        }
-        
-        /* Print-specific styles */
+        /* Print styles */
         @media print {
+            @page {
+                size: 115mm 42mm;
+                margin: 0;
+            }
+            
             body {
-                width: 115mm;
+                background: white;
+                padding: 0;
+            }
+            
+            .print-info {
+                display: none;
             }
             
             .label-row {
+                margin: 0;
                 page-break-after: always;
                 page-break-inside: avoid;
             }
@@ -102,6 +153,23 @@
     </style>
 </head>
 <body>
+    <div class="print-info">
+        <h2>Print Labels - Request #{{ $request->id }}</h2>
+        <p><strong>Total Labels:</strong> {{ $labels->count() }}</p>
+        <p><strong>Rows:</strong> {{ ceil($labels->count() / 3) }}</p>
+        <p><strong>Instructions:</strong></p>
+        <ul>
+            <li>Click the Print button below</li>
+            <li>Select your label printer</li>
+            <li>Set paper size to: <strong>115mm × 42mm</strong> (or Custom)</li>
+            <li>Set margins to: <strong>None</strong></li>
+            <li>Print!</li>
+        </ul>
+        <button class="print-button" onclick="window.print()">
+            🖨️ Print Labels
+        </button>
+    </div>
+    
     @php
         $labelChunks = $labels->chunk(3);
     @endphp
@@ -110,14 +178,10 @@
     <div class="label-row">
         @foreach($row as $label)
         <div class="label">
-            <div class="label-header">
+            <div class="form-name-border">{{ $label['form_name'] ?? 'N/A' }}</div>
+            <div class="label-content">
+                <img src="{{ $label['qr_code'] }}" class="qr-code" alt="QR Code">
                 <div class="form-number">{{ $label['form_number'] }}</div>
-                <div class="form-name">{{ $label['form_name'] }}</div>
-            </div>
-            <img src="{{ $label['qr_code'] }}" class="qr-code" alt="QR Code">
-            <div class="label-footer">
-                <div class="issue-date">{{ \Carbon\Carbon::parse($label['issue_date'])->format('d/m/Y') }}</div>
-                <div class="request-info">Req #{{ $request->id }}</div>
             </div>
         </div>
         @endforeach
@@ -125,7 +189,7 @@
         {{-- Fill empty slots if row has less than 3 labels --}}
         @if($row->count() < 3)
             @for($i = 0; $i < 3 - $row->count(); $i++)
-            <div class="label" style="border: 1px dashed #ccc; background: transparent;"></div>
+            <div class="label empty"></div>
             @endfor
         @endif
     </div>

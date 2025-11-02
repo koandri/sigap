@@ -86,7 +86,7 @@
                     <td>{{ $document->document_number }}</td>
                     <td>{{ $document->title }}</td>
                     <td>{{ $document->document_type }}</td>
-                    <td>{{ $document->department->name }}</td>
+                    <td>{{ $document->department?->name ?? 'N/A' }}</td>
                     <td>{{ $document->activeVersion?->version_number ?? 'N/A' }}</td>
                     <td>
                         <span class="status {{ $document->activeVersion?->status ?? 'draft' }}">

@@ -12,7 +12,7 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <a href="{{ route('facility.approvals.index') }}" class="btn btn-outline-primary">
-                    <i class="fa fa-arrow-left"></i> Back to List
+                    <i class="fa fa-arrow-left"></i>&nbsp; Back to List
                 </a>
             </div>
         </div>
@@ -31,7 +31,7 @@
                 @if($approval->is_flagged_for_review)
                     <div class="card-actions">
                         <span class="badge bg-warning">
-                            <i class="fa fa-star"></i> Flagged for Mandatory Review
+                            <i class="fa fa-star"></i>&nbsp; Flagged for Mandatory Review
                         </span>
                     </div>
                 @endif
@@ -99,7 +99,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fa fa-camera"></i> Before Photo
+                            <i class="fa fa-camera"></i>&nbsp; Before Photo
                         </h3>
                     </div>
                     <div class="card-body text-center">
@@ -118,7 +118,7 @@
                             
                             @if(isset($beforePhoto['gps_data']) && !empty($beforePhoto['gps_data']))
                             <div class="mt-2 text-muted small">
-                                <i class="fa fa-map-marker-alt"></i>
+                                <i class="fa fa-map-marker-alt"></i>&nbsp;
                                 GPS: {{ $beforePhoto['gps_data']['latitude'] ?? 'N/A' }}, 
                                 {{ $beforePhoto['gps_data']['longitude'] ?? 'N/A' }}
                             </div>
@@ -126,7 +126,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="fa fa-image fa-2x text-muted"></i>
+                                    <i class="fa fa-image fa-2x text-muted"></i>&nbsp;
                                 </div>
                                 <p class="empty-title">No photo available</p>
                             </div>
@@ -140,7 +140,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fa fa-camera"></i> After Photo
+                            <i class="fa fa-camera"></i>&nbsp; After Photo
                         </h3>
                     </div>
                     <div class="card-body text-center">
@@ -159,7 +159,7 @@
                             
                             @if(isset($afterPhoto['gps_data']) && !empty($afterPhoto['gps_data']))
                             <div class="mt-2 text-muted small">
-                                <i class="fa fa-map-marker-alt"></i>
+                                <i class="fa fa-map-marker-alt"></i>&nbsp;
                                 GPS: {{ $afterPhoto['gps_data']['latitude'] ?? 'N/A' }}, 
                                 {{ $afterPhoto['gps_data']['longitude'] ?? 'N/A' }}
                             </div>
@@ -167,7 +167,7 @@
                         @else
                             <div class="empty">
                                 <div class="empty-icon">
-                                    <i class="fa fa-image fa-2x text-muted"></i>
+                                    <i class="fa fa-image fa-2x text-muted"></i>&nbsp;
                                 </div>
                                 <p class="empty-title">No photo available</p>
                             </div>
@@ -185,7 +185,7 @@
                 <div class="card">
                     <div class="card-header bg-success-lt">
                         <h3 class="card-title">
-                            <i class="fa fa-check"></i> Approve Submission
+                            <i class="fa fa-check"></i>&nbsp; Approve Submission
                         </h3>
                     </div>
                     <div class="card-body">
@@ -197,7 +197,7 @@
                                           placeholder="Any comments or observations..."></textarea>
                             </div>
                             <button type="submit" class="btn btn-success w-100">
-                                <i class="fa fa-check"></i> Approve
+                                <i class="fa fa-check"></i>&nbsp; Approve
                             </button>
                         </form>
                     </div>
@@ -209,7 +209,7 @@
                 <div class="card">
                     <div class="card-header bg-danger-lt">
                         <h3 class="card-title">
-                            <i class="fa fa-times"></i> Reject Submission
+                            <i class="fa fa-times"></i>&nbsp; Reject Submission
                         </h3>
                     </div>
                     <div class="card-body">
@@ -222,7 +222,7 @@
                                           placeholder="Please provide a reason for rejection..." required></textarea>
                             </div>
                             <button type="submit" class="btn btn-danger w-100">
-                                <i class="fa fa-times"></i> Reject
+                                <i class="fa fa-times"></i>&nbsp; Reject
                             </button>
                         </form>
                     </div>
@@ -232,7 +232,7 @@
         @else
         <div class="alert alert-{{ $approval->status === 'approved' ? 'success' : 'danger' }}">
             <h4 class="alert-title">
-                <i class="fa fa-{{ $approval->status === 'approved' ? 'check-circle' : 'times-circle' }}"></i>
+                <i class="fa fa-{{ $approval->status === 'approved' ? 'check-circle' : 'times-circle' }}"></i>&nbsp;
                 {{ ucfirst($approval->status) }}
             </h4>
             <p class="mb-0">

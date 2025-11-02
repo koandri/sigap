@@ -15,7 +15,7 @@
                 <div class="col-auto ms-auto d-print-none">
                     @can('create', App\Models\Document::class)
                         <a href="{{ route('documents.create') }}" class="btn btn-primary">
-                            <i class="far fa-plus"></i>
+                            <i class="far fa-plus"></i>&nbsp;
                             New Document
                         </a>
                     @endcan
@@ -56,7 +56,7 @@
                             </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-outline-primary w-100">
-                                    <i class="far fa-search"></i>
+                                    <i class="far fa-search"></i>&nbsp;
                                     Search
                                 </button>
                             </div>
@@ -99,7 +99,7 @@
                                             <td>
                                                 <span class="badge bg-blue-lt">{{ $document->document_type->label() }}</span>
                                             </td>
-                                            <td>{{ $document->department->name }}</td>
+                                            <td>{{ $document->department?->name ?? 'N/A' }}</td>
                                             <td>
                                                 @if($document->activeVersion)
                                                     <span class="badge bg-success text-white">Active</span>
@@ -111,12 +111,12 @@
                                             <td>
                                                 <div class="btn-list">
                                                     <a href="{{ route('documents.show', $document) }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="far fa-eye"></i>
+                                                        <i class="far fa-eye"></i>&nbsp;
                                                         View
                                                     </a>
                                                     @can('update', $document)
                                                         <a href="{{ route('documents.edit', $document) }}" class="btn btn-sm btn-outline-secondary">
-                                                            <i class="far fa-edit"></i>
+                                                            <i class="far fa-edit"></i>&nbsp;
                                                             Edit
                                                         </a>
                                                     @endcan
@@ -127,10 +127,16 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                        @if($documents->hasPages())
+                        <div class="mt-3">
+                            {{ $documents->links() }}
+                        </div>
+                        @endif
                     @else
                         <div class="empty">
                             <div class="empty-icon">
-                                <i class="far fa-file-alt"></i>
+                                <i class="far fa-file-alt"></i>&nbsp;
                             </div>
                             <p class="empty-title">No documents found</p>
                             <p class="empty-subtitle text-muted">
@@ -138,7 +144,7 @@
                             </p>
                             <div class="empty-action">
                                 <a href="{{ route('documents.create') }}" class="btn btn-primary">
-                                    <i class="far fa-plus"></i>
+                                    <i class="far fa-plus"></i>&nbsp;
                                     Create Document
                                 </a>
                             </div>

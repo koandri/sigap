@@ -17,12 +17,12 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <a href="{{ route('maintenance.dashboard') }}" class="btn">
-                        <i class="fa fa-arrow-left me-2"></i>
+                        <i class="fa fa-arrow-left me-2"></i>&nbsp;
                         Back to Dashboard
                     </a>
                     @if($selectedLocation)
                     <button onclick="window.print()" class="btn btn-primary">
-                        <i class="fa fa-print me-2"></i>
+                        <i class="fa fa-print me-2"></i>&nbsp;
                         Print Report
                     </button>
                     @endif
@@ -52,7 +52,7 @@
                     <div class="col-md-2">
                         <label class="form-label">&nbsp;</label>
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="fa fa-search me-2"></i>
+                            <i class="fa fa-search me-2"></i>&nbsp;
                             Generate Report
                         </button>
                     </div>
@@ -171,7 +171,7 @@
                             <td>{{ $asset->user->name ?? '-' }}</td>
                             <td class="d-print-none">
                                 <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-sm btn-primary">
-                                    <i class="fa fa-eye"></i>
+                                    <i class="fa fa-eye"></i>&nbsp;
                                 </a>
                             </td>
                         </tr>
@@ -229,7 +229,7 @@
                             <td>{{ $asset->user->name ?? '-' }}</td>
                             <td class="d-print-none">
                                 <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-sm btn-primary">
-                                    <i class="fa fa-eye"></i>
+                                    <i class="fa fa-eye"></i>&nbsp;
                                 </a>
                             </td>
                         </tr>

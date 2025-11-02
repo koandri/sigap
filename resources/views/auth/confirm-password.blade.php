@@ -15,7 +15,7 @@
                                 <input type="password" id="password" name="password" class="form-control" placeholder="Your password" required autocomplete="off" />
                                 <span class="input-group-text">
                                     <a href="#" class="link-secondary" title="Show password" onclick="showPassword()">
-                                        <i class="far fa-eye"></i>
+                                        <i class="far fa-eye"></i>&nbsp;
                                     </a>
                                 </span>
                             </div>

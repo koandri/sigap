@@ -13,7 +13,7 @@
 
 <div class="mt-2">
     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSignature('{{ $field->field_code }}')">
-        <i class="far fa-eraser"></i> &nbsp;Clear
+        <i class="far fa-eraser"></i>&nbsp; &nbsp;Clear
     </button>
 </div>
 

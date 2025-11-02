@@ -18,7 +18,7 @@
                 <div class="btn-list">
                     @can('manufacturing.bom.create')
                     <a href="{{ route('manufacturing.bom.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                        <i class="far fa-plus"></i>
+                        <i class="far fa-plus"></i>&nbsp;
                         Create BoM Template
                     </a>
                     @endcan
@@ -150,7 +150,7 @@
                                             
                                             @can('manufacturing.bom.create')
                                             <a href="{{ route('manufacturing.bom.copy', $template) }}" class="btn btn-sm btn-outline-info" title="Copy Template">
-                                                <i class="far fa-copy"></i>
+                                                <i class="far fa-copy"></i>&nbsp;
                                             </a>
                                             @endcan
                                         </div>
@@ -161,7 +161,7 @@
                                     <td colspan="8" class="text-center text-muted py-5">
                                         <div class="empty">
                                             <div class="empty-icon">
-                                                <i class="far fa-clipboard icon"></i>
+                                                <i class="far fa-clipboard icon"></i>&nbsp;
                                             </div>
                                             <p class="empty-title">No BoM templates found</p>
                                             <p class="empty-subtitle text-muted">
