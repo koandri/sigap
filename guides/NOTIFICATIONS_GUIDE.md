@@ -2,8 +2,6 @@
 
 ## Overview
 
-![Notifications Guide](/guides-imgs/notifications-guide.png)
-
 SIGAP uses a dual-channel notification system for reliable message delivery:
 1. **WhatsApp** (Primary) - Instant notifications via WAHA API
 2. **Pushover** (Fallback) - High-priority alerts when WhatsApp fails
