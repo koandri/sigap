@@ -370,6 +370,8 @@ Result: "Yearly on June 15th"
 
 ## Work Orders
 
+![Work Orders List](/guides-imgs/maintenance-work-orders.png)
+
 ### Work Order Lifecycle
 
 Work orders flow through these statuses:
