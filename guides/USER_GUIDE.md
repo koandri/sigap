@@ -38,6 +38,8 @@ This guide provides an overview of SIGaP and directs you to detailed documentati
 3. Enter your **password**
 4. Click **"Login"**
 
+![Login Page](/guides-imgs/user-guide-login.png)
+
 **First Time Login:**
 - You'll receive initial credentials from your administrator
 - Change your password on first login
@@ -45,9 +47,9 @@ This guide provides an overview of SIGaP and directs you to detailed documentati
 
 ### Dashboard Overview
 
-![User Guide Overview](/guides-imgs/user-guide.png)
-
 After logging in, the dashboard shows:
+
+![Dashboard Overview](/guides-imgs/user-guide-dashboard.png)
 
 **Quick Stats:**
 - Recent form submissions

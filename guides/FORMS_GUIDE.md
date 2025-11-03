@@ -18,8 +18,6 @@
 
 ## Overview
 
-![Forms Guide](/guides-imgs/forms-guide.png)
-
 The Form Management module allows administrators to create dynamic forms with various field types, version control, and department-based access. This guide covers both creating forms (for administrators) and submitting forms (for users).
 
 ### Key Features
@@ -37,6 +35,9 @@ The Form Management module allows administrators to create dynamic forms with va
 ### Step 1: Create a New Form
 
 1. Navigate to **Forms** in the sidebar
+
+![Forms List](/guides-imgs/forms-list.png)
+
 2. Click **"Create New Form"**
 3. Fill in the form details:
    - **Form Number**: Unique identifier (e.g., `FORM-001`)
@@ -336,6 +337,9 @@ IF(
 ### Viewing Available Forms
 
 1. Navigate to **Form Submissions > Submit New**
+
+![Form Submissions List](/guides-imgs/forms-submissions-list.png)
+
 2. You'll see all forms available to your department
 3. Click on a form to start filling it out
 

@@ -18,8 +18,6 @@
 
 ## Overview
 
-![Maintenance Guide](/guides-imgs/maintenance-guide.png)
-
 The Computerized Maintenance Management System (CMMS) module manages assets, schedules preventive maintenance, tracks work orders, and maintains complete maintenance history.
 
 ### Key Features
@@ -60,6 +58,8 @@ The Computerized Maintenance Management System (CMMS) module manages assets, sch
 - Electrical Systems
 
 ### Adding Assets
+
+![Assets List](/guides-imgs/maintenance-assets.png)
 
 #### Creating an Asset
 

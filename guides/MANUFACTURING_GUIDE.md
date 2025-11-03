@@ -19,8 +19,6 @@
 
 ## Overview
 
-![Manufacturing Guide](/guides-imgs/manufacturing-guide.png)
-
 The Manufacturing module provides comprehensive warehouse and inventory management with shelf-based organization, Bill of Materials (BoM), and advanced inventory tracking.
 
 ### Key Features
@@ -42,6 +40,9 @@ The Manufacturing module provides comprehensive warehouse and inventory manageme
 ### Creating a Warehouse
 
 1. Navigate to **Manufacturing > Warehouses**
+
+![Warehouses List](/guides-imgs/manufacturing-warehouses.png)
+
 2. Click **"Create Warehouse"**
 3. Fill in details:
    - **Code**: Short code (e.g., `WH-01`, `COLD-01`)
@@ -125,6 +126,8 @@ The system provides visual representations:
 - Spare Parts
 
 ### Adding Items
+
+![Items List](/guides-imgs/manufacturing-items.png)
 
 #### Manual Entry
 
