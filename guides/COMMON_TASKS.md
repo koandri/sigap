@@ -16,6 +16,8 @@
 
 ## Common Tasks
 
+![Common Tasks Guide](/guides-imgs/common-tasks-guide.png)
+
 ### Changing Your Password
 
 1. Click your name in the top-right corner

@@ -18,6 +18,8 @@
 
 ## Overview
 
+![Forms Guide](/guides-imgs/forms-guide.png)
+
 The Form Management module allows administrators to create dynamic forms with various field types, version control, and department-based access. This guide covers both creating forms (for administrators) and submitting forms (for users).
 
 ### Key Features

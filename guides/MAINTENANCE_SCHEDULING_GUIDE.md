@@ -2,6 +2,8 @@
 
 ## Overview
 
+![Maintenance Scheduling Guide](/guides-imgs/maintenance-scheduling-guide.png)
+
 This system provides automatic and manual work order generation from maintenance schedules, with visibility into upcoming scheduled maintenance.
 
 ---

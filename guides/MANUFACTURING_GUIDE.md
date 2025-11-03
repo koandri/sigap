@@ -19,6 +19,8 @@
 
 ## Overview
 
+![Manufacturing Guide](/guides-imgs/manufacturing-guide.png)
+
 The Manufacturing module provides comprehensive warehouse and inventory management with shelf-based organization, Bill of Materials (BoM), and advanced inventory tracking.
 
 ### Key Features

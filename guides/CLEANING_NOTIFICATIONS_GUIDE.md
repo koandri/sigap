@@ -2,6 +2,8 @@
 
 ## Overview
 
+![Cleaning Notifications Guide](/guides-imgs/cleaning-notifications-guide.png)
+
 The Facility Management Cleaning System includes a comprehensive notification system that sends alerts via **WhatsApp** with automatic **Pushover fallback** when WhatsApp delivery fails.
 
 ## Notification Flow

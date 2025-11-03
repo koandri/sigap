@@ -126,6 +126,7 @@
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
     font-size: 0.9em;
+    color: #000;
 }
 
 .guide-content pre {
@@ -134,11 +135,13 @@
     border-radius: 0.5rem;
     overflow-x: auto;
     margin-bottom: 1rem;
+    color: #000;
 }
 
 .guide-content pre code {
     background-color: transparent;
     padding: 0;
+    color: #000;
 }
 
 .guide-content table {

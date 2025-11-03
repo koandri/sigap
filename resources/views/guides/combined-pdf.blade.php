@@ -147,6 +147,7 @@
             border-radius: 3px;
             font-size: 10pt;
             font-family: 'Courier New', monospace;
+            color: #000;
         }
 
         .guide-body pre {
@@ -157,6 +158,13 @@
             margin-bottom: 12px;
             font-family: 'Courier New', monospace;
             font-size: 10pt;
+            color: #000;
+        }
+
+        .guide-body pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #000;
         }
 
         .guide-body table {

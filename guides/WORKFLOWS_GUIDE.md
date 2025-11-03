@@ -17,6 +17,8 @@
 
 ## Overview
 
+![Workflows Guide](/guides-imgs/workflows-guide.png)
+
 Approval workflows enable multi-level approval processes for form submissions. Workflows can be sequential (one after another) or parallel (simultaneous approvals).
 
 ### Key Features

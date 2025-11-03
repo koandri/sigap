@@ -7,10 +7,17 @@ namespace App\Services;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use League\CommonMark\MarkdownConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\MarkdownConverter;
+use League\CommonMark\Node\Node;
+use League\CommonMark\Normalizer\SlugNormalizer;
+use League\CommonMark\Renderer\ChildNodeRendererInterface;
+use League\CommonMark\Renderer\NodeRendererInterface;
+use League\CommonMark\Util\HtmlElement;
+use League\CommonMark\Xml\XmlNodeRendererInterface;
 
 final class GuideService
 {
@@ -29,6 +36,80 @@ final class GuideService
         $environment = new Environment($config);
         $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
+
+        // Add custom heading renderer with IDs
+        $slugNormalizer = new SlugNormalizer();
+        $environment->addRenderer(
+            Heading::class,
+            new class($slugNormalizer) implements NodeRendererInterface, XmlNodeRendererInterface
+            {
+                public function __construct(
+                    private readonly SlugNormalizer $slugNormalizer
+                ) {
+                }
+
+                public function render(Node $node, ChildNodeRendererInterface $childRenderer): \Stringable|string|null
+                {
+                    if (!($node instanceof Heading)) {
+                        throw new \InvalidArgumentException('Incompatible node type: ' . get_class($node));
+                    }
+
+                    $tag = 'h' . $node->getLevel();
+                    $attrs = $node->data->get('attributes', []);
+                    
+                    // Ensure attrs is an array
+                    if (!is_array($attrs)) {
+                        $attrs = [];
+                    }
+
+                    // Render children once
+                    $renderedChildren = $childRenderer->renderNodes($node->children());
+
+                    // Generate ID from heading text if not already set
+                    if (empty($attrs['id'])) {
+                        $headingTextPlain = strip_tags((string) $renderedChildren);
+                        $id = $this->slugNormalizer->normalize($headingTextPlain);
+
+                        if (!empty($id)) {
+                            $attrs['id'] = $id;
+                        }
+                    }
+
+                    return new HtmlElement($tag, $attrs, $renderedChildren);
+                }
+
+                public function getXmlTagName(Node $node): string
+                {
+                    return 'heading';
+                }
+
+                public function getXmlAttributes(Node $node): array
+                {
+                    if (!($node instanceof Heading)) {
+                        throw new \InvalidArgumentException('Incompatible node type: ' . get_class($node));
+                    }
+
+                    $attrs = ['level' => (string) $node->getLevel()];
+
+                    // Generate ID from heading text for XML too
+                    $headingText = '';
+                    foreach ($node->children() as $child) {
+                        if (method_exists($child, 'getLiteral')) {
+                            $headingText .= $child->getLiteral();
+                        }
+                    }
+
+                    if (!empty($headingText)) {
+                        $id = $this->slugNormalizer->normalize($headingText);
+                        if (!empty($id)) {
+                            $attrs['id'] = $id;
+                        }
+                    }
+
+                    return $attrs;
+                }
+            }
+        );
 
         $this->markdownConverter = new MarkdownConverter($environment);
     }

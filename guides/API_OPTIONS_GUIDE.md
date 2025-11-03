@@ -4,6 +4,8 @@ This guide explains how to configure form fields to populate their options from 
 
 ## Overview
 
+![API Options Guide](/guides-imgs/api-options-guide.png)
+
 The system now supports populating select fields (`select_single` and `select_multiple`) with options from external APIs. This is useful for scenarios like:
 
 - Employee selection from HR systems

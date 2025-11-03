@@ -55,6 +55,9 @@ SIGaP supports 8 document types:
 #### Step 1: Create Document Record
 
 1. Navigate to **DMS > Documents**
+
+![Documents List Page](/guides-imgs/dms-documents-list.png)
+
 2. Click **"Create Document"**
 3. Fill in document details:
 
@@ -72,6 +75,8 @@ SIGaP supports 8 document types:
 
 4. Click **"Create"**
 
+![Create Document Form](/guides-imgs/dms-create-document-form.png)
+
 #### Step 2: Create First Version
 
 After creating a document, you'll be prompted to create the first version:
@@ -82,6 +87,8 @@ After creating a document, you'll be prompted to create the first version:
    - **Upload File** - Upload existing document (DOCX, XLSX, PDF, JPG)
    - **Copy from Existing** - Copy content from another document version
 3. Follow the prompts to create/edit your document
+
+![Create Version Options](/guides-imgs/dms-create-version-options.png)
 
 ### Document Access Control
 
@@ -175,6 +182,8 @@ Draft → Pending Manager Approval → Pending Mgmt Approval → Active → Supe
 4. Click **"Approve"** or **"Reject"**
 5. Add approval notes (optional)
 
+![Document Approvals Page](/guides-imgs/dms-approval-page.png)
+
 **If Approved:**
 - Version moves to **Pending Mgmt Approval**
 
@@ -221,6 +230,8 @@ Users need explicit access to view/download document versions.
 3. Search and select document
 4. System automatically captures **active version** at time of request
 5. Fill in request details:
+
+![My Document Access Page](/guides-imgs/dms-my-document-access.png)
    - **Access Type**: 
      - **One-Time** - Single download allowed
      - **Multiple** - Unlimited access until expiry
@@ -289,6 +300,8 @@ Form requests allow users to request printed copies of form documents.
 1. Navigate to **DMS > Form Requests**
 2. Click **"Create Request"**
 3. Select forms to request:
+
+![Form Requests List](/guides-imgs/dms-form-requests-list.png)
    - Only documents with type **"Form"** are available
    - Select multiple forms
    - Enter **quantity** for each form
@@ -400,6 +413,8 @@ Issued → Circulating → Returned/Lost/Spoilt → Received → Scanned
    - Document
    - Date range
 3. Click form number to view details
+
+![Printed Forms List](/guides-imgs/dms-printed-forms-list.png)
 
 ### Returning Forms
 
@@ -601,6 +616,8 @@ View Service Level Agreement metrics:
 ### DMS Dashboard Overview
 
 Navigate to **DMS > Dashboard** to see:
+
+![DMS Dashboard](/guides-imgs/dms-dashboard.png)
 
 #### Statistics Widgets
 

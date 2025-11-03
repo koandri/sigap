@@ -45,6 +45,8 @@ This guide provides an overview of SIGaP and directs you to detailed documentati
 
 ### Dashboard Overview
 
+![User Guide Overview](/guides-imgs/user-guide.png)
+
 After logging in, the dashboard shows:
 
 **Quick Stats:**

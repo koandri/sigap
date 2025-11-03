@@ -17,6 +17,8 @@
 
 ## Overview
 
+![Administrator Guide](/guides-imgs/admin-guide.png)
+
 This guide is for system administrators responsible for managing users, roles, permissions, and system configuration.
 
 ### Administrator Responsibilities
