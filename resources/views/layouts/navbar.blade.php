@@ -100,9 +100,6 @@
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.warehouses.*') }}" href="{{ route('manufacturing.warehouses.index') }}">
                                     <i class="far fa-warehouse"></i>&nbsp; &nbsp;Warehouses
                                 </a>
-                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.bom.*') }}" href="{{ route('manufacturing.bom.index') }}">
-                                    <i class="far fa-sitemap"></i>&nbsp; &nbsp;Bill of Materials
-                                </a>
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header">Coming Soon</h6>
                                 <a class="dropdown-item disabled">
@@ -250,6 +247,14 @@
                             
                         </div>
                     </div>
+                </li>
+                <li class="nav-item {{ areActiveRoutes('guides.*') }}">
+                    <a class="nav-link" href="{{ route('guides.index') }}">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="far fa-book-open"></i>&nbsp;
+                        </span>
+                        <span class="nav-link-title">Guides</span>
+                    </a>
                 </li>
                 <li class="nav-item dropdown {{ areActiveRoutes(['options.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">

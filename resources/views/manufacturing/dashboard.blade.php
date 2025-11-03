@@ -218,20 +218,6 @@
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
-                                @can('manufacturing.bom.view')
-                                <a href="{{ route('manufacturing.bom.index') }}" class="btn btn-outline-primary w-100">
-                                @else
-                                <div class="btn btn-outline-secondary w-100 disabled">
-                                @endcan
-                                    <i class="far fa-clipboard-list icon mb-2"></i>&nbsp;
-                                    <br>Bill of Materials
-                                @can('manufacturing.bom.view')
-                                </a>
-                                @else
-                                </div>
-                                @endcan
-                            </div>
-                            <div class="col-md-3 mb-3">
                                 <div class="btn btn-outline-secondary w-100 disabled">
                                     <i class="far fa-terminal icon mb-2"></i>&nbsp;
                                     <br>Production (Coming Soon)

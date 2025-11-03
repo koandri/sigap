@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             AssetCategorySeeder::class,
             MaintenanceTypeSeeder::class,
-            BomTypeSeeder::class,
             WarehouseShelfSeeder::class,
             ShelfPositionSeeder::class,
             AssetSeeder::class,

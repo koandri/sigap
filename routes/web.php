@@ -24,7 +24,6 @@ use App\Http\Controllers\ManufacturingController;
 use App\Http\Controllers\ItemCategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\WarehouseController;
-use App\Http\Controllers\BomController;
 use App\Http\Controllers\ShelfInventoryController;
 use App\Http\Controllers\ShelfManagementController;
 use App\Http\Controllers\BulkInventoryController;
@@ -58,6 +57,7 @@ use App\Http\Controllers\DocumentAccessController;
 use App\Http\Controllers\CorrespondenceController;
 use App\Http\Controllers\FormRequestController;
 use App\Http\Controllers\PrintedFormController;
+use App\Http\Controllers\GuideController;
 use App\Http\Controllers\DocumentManagementDashboardController;
 use App\Http\Controllers\DocumentManagementLocationReportController;
 use App\Http\Controllers\DocumentManagementMasterlistReportController;
@@ -164,7 +164,7 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     
     // Item Categories
     Route::resource('item-categories', ItemCategoryController::class)->except(['destroy']);
-    Route::delete('item-categories/{itemCategory}', [ItemCategoryController::class, 'destroy'])->name('item-categories.destroy')->middleware('permission:manufacturing.bom');
+    Route::delete('item-categories/{itemCategory}', [ItemCategoryController::class, 'destroy'])->name('item-categories.destroy')->middleware('permission:manufacturing.categories.delete');
     
     // Item Import from Excel (MUST be before resource routes)
     Route::get('items/import', [ItemController::class, 'showImport'])->name('items.import');
@@ -172,7 +172,7 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     
     // Items
     Route::resource('items', ItemController::class)->except(['create', 'store', 'destroy']);
-    Route::delete('items/{item}', [ItemController::class, 'destroy'])->name('items.destroy')->middleware('permission:manufacturing.bom');
+    Route::delete('items/{item}', [ItemController::class, 'destroy'])->name('items.destroy')->middleware('permission:manufacturing.items.delete');
     
     // Global Warehouse Routes (must come before resource routes)
     Route::get('warehouses/picklist', [PicklistController::class, 'index'])->name('warehouses.picklist');
@@ -216,13 +216,6 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::post('warehouses/{warehouse}/bulk-operations', [BulkInventoryController::class, 'bulkUpdate'])->name('warehouses.bulk-operations');
     Route::get('warehouses/{warehouse}/export', [BulkInventoryController::class, 'export'])->name('warehouses.export');
     
-    // Bill of Materials (BoM)
-    Route::resource('bom', BomController::class)->except(['destroy']);
-    Route::delete('bom/{bomTemplate}', [BomController::class, 'destroy'])->name('bom.destroy')->middleware('permission:manufacturing.bom.delete');
-    Route::post('bom/{bomTemplate}/submit-approval', [BomController::class, 'submitForApproval'])->name('bom.submit-approval');
-    Route::post('bom/{bomTemplate}/approve', [BomController::class, 'approve'])->name('bom.approve');
-    Route::post('bom/{bomTemplate}/reject', [BomController::class, 'reject'])->name('bom.reject');
-    Route::get('bom/{bomTemplate}/copy', [BomController::class, 'copy'])->name('bom.copy');
 });
 
 // Options Routes
@@ -376,6 +369,14 @@ Route::middleware(['auth'])->group(function () {
     
     // Document Management Dashboard
     Route::get('dms-dashboard', [DocumentManagementDashboardController::class, 'index'])->name('dms-dashboard');
+    
+    // User Guides
+    Route::prefix('guides')->name('guides.')->group(function () {
+        Route::get('/', [GuideController::class, 'index'])->name('index');
+        Route::get('download/combined-handbook', [GuideController::class, 'downloadCombinedPdf'])->name('download-combined');
+        Route::get('{filename}/pdf', [GuideController::class, 'downloadPdf'])->name('download-pdf');
+        Route::get('{filename}', [GuideController::class, 'show'])->name('show');
+    });
 });
 
 // API Routes for Form Field Options

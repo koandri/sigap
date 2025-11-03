@@ -41,13 +41,6 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.categories.edit',
             'manufacturing.categories.delete',
             
-            // Bill of Materials (BoM)
-            'manufacturing.bom.view',
-            'manufacturing.bom.create',
-            'manufacturing.bom.edit',
-            'manufacturing.bom.delete',
-            'manufacturing.bom.approve',
-            
             // Production Planning
             'manufacturing.planning.view',
             'manufacturing.planning.create',
@@ -111,9 +104,6 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.warehouses.view',
             'manufacturing.warehouses.create',
             'manufacturing.warehouses.edit',
-            'manufacturing.bom.view',
-            'manufacturing.bom.create',
-            'manufacturing.bom.edit',
             'manufacturing.planning.view',
             'manufacturing.planning.create',
             'manufacturing.planning.edit',
@@ -131,10 +121,6 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.dashboard.view',
             'manufacturing.items.view',
             'manufacturing.categories.view',
-            'manufacturing.bom.view',
-            'manufacturing.bom.create',
-            'manufacturing.bom.edit',
-            'manufacturing.bom.approve',
             'manufacturing.materials.view',
             'manufacturing.materials.record',
             'manufacturing.materials.edit',
@@ -148,7 +134,6 @@ final class ManufacturingPermissionSeeder extends Seeder
         $productionRole->givePermissionTo([
             'manufacturing.dashboard.view',
             'manufacturing.items.view',
-            'manufacturing.bom.view',
             'manufacturing.production.view',
             'manufacturing.production.record',
             'manufacturing.production.day1',
@@ -163,7 +148,6 @@ final class ManufacturingPermissionSeeder extends Seeder
         $qcRole->givePermissionTo([
             'manufacturing.dashboard.view',
             'manufacturing.items.view',
-            'manufacturing.bom.view',
             'manufacturing.production.view',
             'manufacturing.qc.view',
             'manufacturing.qc.record',
@@ -196,7 +180,6 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.items.view',
             'manufacturing.categories.view',
             'manufacturing.warehouses.view',
-            'manufacturing.bom.view',
             'manufacturing.planning.view',
             'manufacturing.production.view',
             'manufacturing.materials.view',
