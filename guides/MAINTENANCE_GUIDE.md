@@ -59,12 +59,13 @@ The Computerized Maintenance Management System (CMMS) module manages assets, sch
 
 ### Adding Assets
 
-![Assets List](/guides-imgs/maintenance-assets.png)
-
 #### Creating an Asset
 
 1. Navigate to **Maintenance > Assets**
 2. Click **"Create Asset"**
+
+![Create Asset Form](/guides-imgs/maintenance-create-asset.png)
+
 3. Fill in asset details:
 
 **Identification:**

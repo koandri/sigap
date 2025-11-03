@@ -2,8 +2,6 @@
 
 ## Overview
 
-![Maintenance Scheduling Guide](/guides-imgs/maintenance-scheduling-guide.png)
-
 This system provides automatic and manual work order generation from maintenance schedules, with visibility into upcoming scheduled maintenance.
 
 ---
@@ -53,6 +51,8 @@ php artisan maintenance:generate-work-orders
 
 The Work Orders page displays upcoming maintenance schedules at the top - showing what's coming in the next 14 days.
 
+![Work Orders Page with Upcoming Schedules](/guides-imgs/maintenance-work-orders-upcoming.png)
+
 **What it shows:**
 - Schedules due in the next **14 days**
 - Due date with visual badges (Overdue, Today, Tomorrow, X days)
@@ -95,7 +95,10 @@ The Work Orders page displays upcoming maintenance schedules at the top - showin
 - Work order created and schedule updated immediately
 
 **Option 2: From Schedule Detail Page**
-- Go to Maintenance Schedules
+- Go to **Maintenance > Schedules**
+
+![Maintenance Schedules List](/guides-imgs/maintenance-schedules-list.png)
+
 - Find specific schedule
 - Click "Trigger" button
 - Work order created immediately
@@ -108,6 +111,14 @@ php artisan maintenance:generate-work-orders
 ---
 
 ## Schedule Configuration
+
+### Creating a Schedule
+
+1. Navigate to **Maintenance > Schedules**
+2. Click **"Add Schedule"**
+3. Fill in schedule details
+
+![Create Maintenance Schedule](/guides-imgs/maintenance-create-schedule.png)
 
 ### Frequency Types Supported
 
