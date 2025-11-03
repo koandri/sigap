@@ -17,8 +17,6 @@
 
 ## Overview
 
-![Administrator Guide](/guides-imgs/admin-guide.png)
-
 This guide is for system administrators responsible for managing users, roles, permissions, and system configuration.
 
 ### Administrator Responsibilities
@@ -37,6 +35,9 @@ This guide is for system administrators responsible for managing users, roles, p
 ### Creating Users
 
 1. Navigate to **Users** in the sidebar
+
+![Users List](/guides-imgs/admin-users-list.png)
+
 2. Click **"Create User"**
 3. Fill in user details:
 
@@ -55,6 +56,8 @@ This guide is for system administrators responsible for managing users, roles, p
   - Used for escalations
 
 4. Click **"Create User"**
+
+![Create User Form](/guides-imgs/admin-create-user.png)
 
 ### Assigning Roles
 
@@ -181,6 +184,9 @@ SIGaP uses Role-Based Access Control (RBAC):
 ### Creating Custom Roles
 
 1. Navigate to **Roles**
+
+![Roles List](/guides-imgs/admin-roles-list.png)
+
 2. Click **"Create Role"**
 3. Enter role name (e.g., "Quality Inspector")
 4. Select permissions
@@ -208,15 +214,15 @@ SIGaP uses Role-Based Access Control (RBAC):
 - `manufacturing.inventory.view` - View inventory
 - `manufacturing.inventory.create` - Add inventory
 - `manufacturing.inventory.edit` - Update inventory
-- `manufacturing.bom.view` - View BoM
-- `manufacturing.bom.create` - Create BoM
-- `manufacturing.bom.approve` - Approve BoM
+- `manufacturing.recipes.view` - View recipes
+- `manufacturing.recipes.create` - Create recipes
+- `manufacturing.recipes.edit` - Edit recipes
 
 **Maintenance:**
 - `maintenance.dashboard.view` - View dashboard
 - `maintenance.assets.view` - View assets
-- `options.assets.create` - Create assets
-- `options.assets.edit` - Edit assets
+- `maintenance.assets.create` - Create assets
+- `maintenance.assets.edit` - Edit assets
 - `maintenance.schedules.manage` - Manage schedules
 - `maintenance.workorders.view` - View work orders
 - `maintenance.workorders.create` - Create work orders
@@ -273,6 +279,9 @@ SIGaP uses Role-Based Access Control (RBAC):
 ### Creating Departments
 
 1. Navigate to **Departments**
+
+![Departments List](/guides-imgs/admin-departments-list.png)
+
 2. Click **"Create Department"**
 3. Fill in details:
    - **Code**: Short code (e.g., `PROD`, `QC`, `HR`)
