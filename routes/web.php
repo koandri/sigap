@@ -29,6 +29,8 @@ use App\Http\Controllers\ShelfManagementController;
 use App\Http\Controllers\BulkInventoryController;
 use App\Http\Controllers\PicklistController;
 use App\Http\Controllers\WarehouseOverviewController;
+use App\Http\Controllers\ProductionPlanController;
+use App\Http\Controllers\ProductionPlanStepController;
 
 // Maintenance Controllers
 use App\Http\Controllers\MaintenanceDashboardController;
@@ -215,6 +217,19 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::post('warehouses/{warehouse}/bulk-update', [BulkInventoryController::class, 'bulkUpdate'])->name('warehouses.bulk-update');
     Route::post('warehouses/{warehouse}/bulk-operations', [BulkInventoryController::class, 'bulkUpdate'])->name('warehouses.bulk-operations');
     Route::get('warehouses/{warehouse}/export', [BulkInventoryController::class, 'export'])->name('warehouses.export');
+    
+    // Production Planning
+    Route::resource('production-plans', ProductionPlanController::class);
+    Route::post('production-plans/{productionPlan}/approve', [ProductionPlanController::class, 'approve'])->name('production-plans.approve');
+    Route::get('production-plans/recipes', [ProductionPlanController::class, 'getRecipes'])->name('production-plans.recipes');
+    
+    // Production Plan Steps
+    Route::get('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'step2'])->name('production-plans.step2');
+    Route::post('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'storeStep2'])->name('production-plans.step2.store');
+    Route::get('production-plans/{productionPlan}/step3', [ProductionPlanStepController::class, 'step3'])->name('production-plans.step3');
+    Route::post('production-plans/{productionPlan}/step3', [ProductionPlanStepController::class, 'storeStep3'])->name('production-plans.step3.store');
+    Route::get('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'step4'])->name('production-plans.step4');
+    Route::post('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'storeStep4'])->name('production-plans.step4.store');
     
 });
 

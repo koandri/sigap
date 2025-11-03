@@ -101,8 +101,7 @@
                                     <i class="far fa-warehouse"></i>&nbsp; &nbsp;Warehouses
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <h6 class="dropdown-header">Coming Soon</h6>
-                                <a class="dropdown-item disabled">
+                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.production-plans.*') }}" href="{{ route('manufacturing.production-plans.index') }}">
                                     <i class="far fa-calendar-check"></i>&nbsp; &nbsp;Production Planning
                                 </a>
                                 <a class="dropdown-item disabled">
