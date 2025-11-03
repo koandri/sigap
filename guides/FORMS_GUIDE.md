@@ -336,9 +336,9 @@ IF(
 
 ### Viewing Available Forms
 
-1. Navigate to **Form Submissions > Submit New**
+1. Navigate to **Form Submissions > Fill Form**
 
-![Form Submissions List](/guides-imgs/forms-submissions-list.png)
+![Fill Forms Page](/guides-imgs/forms-submit-new.png)
 
 2. You'll see all forms available to your department
 3. Click on a form to start filling it out
