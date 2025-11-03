@@ -17,8 +17,6 @@
 
 ## Overview
 
-![Workflows Guide](/guides-imgs/workflows-guide.png)
-
 Approval workflows enable multi-level approval processes for form submissions. Workflows can be sequential (one after another) or parallel (simultaneous approvals).
 
 ### Key Features
@@ -62,11 +60,10 @@ Each workflow consists of one or more approval steps.
 
 **Approver Configuration:**
 - **Approver Type**: 
-  - Specific User
-  - Any user with Role
-  - Department Head
-  - Form Creator's Manager
-- **Approver**: Select user or role
+  - **User** - Specific user (select individual)
+  - **Role** - Any user with specific role
+  - **Department** - Department head or members
+- **Approver**: Select user, role, or department based on type
 
 **Requirements:**
 - **Required**: Is this step mandatory?
@@ -137,6 +134,9 @@ Before activating:
 #### Detailed View
 
 1. Navigate to **Form Submissions > Pending Approvals**
+
+![Pending Approvals Page](/guides-imgs/workflows-pending-approvals.png)
+
 2. See all submissions awaiting your approval
 3. Organized by:
    - Priority (if set)

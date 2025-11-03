@@ -16,22 +16,22 @@
 
 ## Common Tasks
 
-![Common Tasks Guide](/guides-imgs/common-tasks-guide.png)
-
 ### Changing Your Password
 
 1. Click your name in the top-right corner
 2. Select **"Edit My Profile"**
+
+![Edit My Profile Page](/guides-imgs/common-tasks-edit-profile.png)
+
 3. Enter your current password
 4. Enter new password
 5. Confirm new password
-6. Click **"Update Password"**
+6. Click **"Save"** in the Change Password section
 
 **Password Requirements:**
-- Minimum 8 characters
-- Mix of uppercase and lowercase
-- At least one number
-- At least one special character
+- 8-20 characters long
+- Must contain letters and numbers
+- No spaces, special characters, or emoji
 
 ### Updating Your Profile
 
