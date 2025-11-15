@@ -30,10 +30,10 @@ final class ProductionPlanStep1 extends Model
 
     protected $casts = [
         'recipe_date' => 'date',
-        'qty_gl1' => 'decimal:3',
-        'qty_gl2' => 'decimal:3',
-        'qty_ta' => 'decimal:3',
-        'qty_bl' => 'decimal:3',
+        'qty_gl1' => 'integer',
+        'qty_gl2' => 'integer',
+        'qty_ta' => 'integer',
+        'qty_bl' => 'integer',
         'is_custom_recipe' => 'boolean',
     ];
 

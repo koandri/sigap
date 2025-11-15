@@ -101,8 +101,14 @@
                                     <i class="far fa-warehouse"></i>&nbsp; &nbsp;Warehouses
                                 </a>
                                 <div class="dropdown-divider"></div>
+                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.recipes.*') }}" href="{{ route('manufacturing.recipes.index') }}">
+                                    <i class="far fa-book"></i>&nbsp; &nbsp;Recipes
+                                </a>
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.production-plans.*') }}" href="{{ route('manufacturing.production-plans.index') }}">
                                     <i class="far fa-calendar-check"></i>&nbsp; &nbsp;Production Planning
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.yield-guidelines.*') }}" href="{{ route('manufacturing.yield-guidelines.index') }}">
+                                    <i class="far fa-chart-line"></i>&nbsp; &nbsp;Yield Guidelines
                                 </a>
                                 <a class="dropdown-item disabled">
                                     <i class="far fa-gears"></i>&nbsp; &nbsp;Production Execution

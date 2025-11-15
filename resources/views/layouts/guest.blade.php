@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="/assets/css/custom.css" />
     <!-- Lightbox2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+    @include('layouts.partials.litepicker-styles')
     @stack('css')
     @turnstileScripts()
 </head>
@@ -38,17 +39,6 @@
                         <img src="/imgs/logo.png" width="110" height="32" alt="SIGaP" class="navbar-brand-image">
                     </a>
                 </h1>
-                <div class="navbar-nav flex-row order-md-last">
-                    @auth
-                        <a href="{{ url('/home') }}" class="btn btn-white">
-                            <i class="fa fa-home"></i>&nbsp; Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="btn btn-white">
-                            <i class="fa fa-sign-in-alt"></i>&nbsp; Login
-                        </a>
-                    @endauth
-                </div>
             </div>
         </header>
         
@@ -87,6 +77,7 @@
         });
     </script>
     
+    @include('layouts.partials.litepicker-scripts')
     @stack('scripts')
 </body>
 

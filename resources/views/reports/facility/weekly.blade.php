@@ -32,13 +32,14 @@
                                 <span class="input-group-text">
                                     <i class="fa fa-calendar"></i>&nbsp;
                                 </span>
-                                <input type="text" 
+                                <input type="date" 
                                        name="date" 
                                        id="weekDate"
                                        class="form-control" 
                                        value="{{ $weekStart->toDateString() }}" 
                                        placeholder="Select a Monday"
                                        autocomplete="off"
+                                       data-litepicker-manual="true"
                                        required>
                             </div>
                             <small class="form-hint">Select the Monday for the week you want to view</small>
@@ -207,7 +208,6 @@
 </div>
 
 @push('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
 <link rel="stylesheet" href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}">
 <style>
     .ts-control {
@@ -258,7 +258,6 @@
 
 @push('scripts')
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

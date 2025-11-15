@@ -23,7 +23,7 @@ final class ProductionPlanStepController extends Controller
         private readonly ProductionPlanCalculationService $calculationService
     ) {
         $this->middleware('can:manufacturing.production-plans.view')->only(['step2', 'step3', 'step4']);
-        $this->middleware('can:manufacturing.production-plans.edit')->only(['storeStep2', 'storeStep3', 'storeStep4']);
+        $this->middleware('can:manufacturing.production-plans.edit')->only(['storeStep2', 'storeStep3', 'storeStep4', 'deleteStep2', 'deleteStep3', 'deleteStep4']);
     }
 
     /**
@@ -38,10 +38,10 @@ final class ProductionPlanStepController extends Controller
                 ->with('error', 'Please complete Step 1 first.');
         }
 
-        if (!$productionPlan->canBeEdited()) {
+        if (!$productionPlan->canEditStep(2)) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
-                ->with('error', 'Cannot edit production plan that is not in draft status.');
+                ->with('error', 'Cannot edit Step 2. Please delete Step 3 first.');
         }
 
         $productionPlan->load(['step1.doughItem', 'step2.adonanItem', 'step2.gelondonganItem']);
@@ -60,10 +60,10 @@ final class ProductionPlanStepController extends Controller
      */
     public function storeStep2(Request $request, ProductionPlan $productionPlan): RedirectResponse
     {
-        if (!$productionPlan->canBeEdited()) {
+        if (!$productionPlan->canEditStep(2)) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
-                ->with('error', 'Cannot edit production plan that is not in draft status.');
+                ->with('error', 'Cannot edit Step 2. Please delete Step 3 first.');
         }
 
         $validated = $request->validate([
@@ -105,10 +105,10 @@ final class ProductionPlanStepController extends Controller
                 ->with('error', 'Please complete Step 2 first.');
         }
 
-        if (!$productionPlan->canBeEdited()) {
+        if (!$productionPlan->canEditStep(3)) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
-                ->with('error', 'Cannot edit production plan that is not in draft status.');
+                ->with('error', 'Cannot edit Step 3. Please delete Step 4 first.');
         }
 
         $productionPlan->load(['step2.gelondonganItem', 'step3.gelondonganItem', 'step3.kerupukKeringItem']);
@@ -127,10 +127,10 @@ final class ProductionPlanStepController extends Controller
      */
     public function storeStep3(Request $request, ProductionPlan $productionPlan): RedirectResponse
     {
-        if (!$productionPlan->canBeEdited()) {
+        if (!$productionPlan->canEditStep(3)) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
-                ->with('error', 'Cannot edit production plan that is not in draft status.');
+                ->with('error', 'Cannot edit Step 3. Please delete Step 4 first.');
         }
 
         $validated = $request->validate([
@@ -227,5 +227,86 @@ final class ProductionPlanStepController extends Controller
             ->route('manufacturing.production-plans.show', $productionPlan)
             ->with('success', 'Step 4 (Packing Planning) saved successfully.');
     }
+
+    /**
+     * Delete Step 2 and all subsequent steps.
+     */
+    public function deleteStep2(ProductionPlan $productionPlan): RedirectResponse
+    {
+        if (!$productionPlan->canBeEdited()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot delete steps. Production plan is not in draft status.');
+        }
+
+        if ($productionPlan->step3()->exists() || $productionPlan->step4()->exists()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot delete Step 2 while later steps exist. Please delete Step 3 (and Step 4) first.');
+        }
+
+        $productionPlan->step2()->delete();
+
+        return redirect()
+            ->route('manufacturing.production-plans.show', $productionPlan)
+            ->with('success', 'Step 2 has been deleted. You can now edit Step 1.');
+    }
+
+    /**
+     * Delete Step 3 and all subsequent steps.
+     */
+    public function deleteStep3(ProductionPlan $productionPlan): RedirectResponse
+    {
+        if (!$productionPlan->canBeEdited()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot delete steps. Production plan is not in draft status.');
+        }
+
+        if ($productionPlan->step4()->exists()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot delete Step 3 while Step 4 exists. Please delete Step 4 first.');
+        }
+
+        $productionPlan->step3()->delete();
+
+        return redirect()
+            ->route('manufacturing.production-plans.show', $productionPlan)
+            ->with('success', 'Step 3 has been deleted. You can now edit Step 2.');
+    }
+
+    /**
+     * Delete Step 4.
+     */
+    public function deleteStep4(ProductionPlan $productionPlan): RedirectResponse
+    {
+        if (!$productionPlan->canBeEdited()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot delete steps. Production plan is not in draft status.');
+        }
+
+        $productionPlan->step4()->delete();
+
+        return redirect()
+            ->route('manufacturing.production-plans.show', $productionPlan)
+            ->with('success', 'Step 4 has been deleted. You can now edit Step 3.');
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

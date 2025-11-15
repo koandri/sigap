@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Step 2: Gelondongan Planning')
+@section('title', 'Step 2: Gld Planning')
 
 @section('content')
 <div class="page-header d-print-none">
@@ -16,7 +16,7 @@
                     </ol>
                 </nav>
                 <h2 class="page-title">
-                    Step 2: Gelondongan Production Planning
+                    Step 2: Gld Production Planning
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
@@ -40,7 +40,7 @@
             
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Step 2: Gelondongan Planning from Adonan</h3>
+                    <h3 class="card-title">Step 2: Gld Planning from Adn</h3>
                     <div class="card-actions">
                         <button type="button" class="btn btn-sm btn-primary" onclick="addStep2Row()">
                             <i class="far fa-plus"></i>&nbsp;Add Row
@@ -50,7 +50,7 @@
                 <div class="card-body">
                     <div class="alert alert-info">
                         <i class="far fa-info-circle me-2"></i>
-                        This step converts Adonan quantities to Gelondongan quantities using yield guidelines. 
+                        <strong>Important:</strong> Each Adn item MUST produce at least one Gld item. This step converts Adn quantities to Gld quantities using yield guidelines. 
                         @if(count($calculatedData) > 0)
                         Auto-calculated values are pre-filled below. You can adjust them as needed.
                         @endif
@@ -60,17 +60,16 @@
                         <table class="table table-vcenter" id="step2-table">
                             <thead>
                                 <tr>
-                                    <th>Adonan Item</th>
-                                    <th>Gelondongan Item</th>
-                                    <th>GL1 Adonan</th>
-                                    <th>GL1 Gelondongan</th>
-                                    <th>GL2 Adonan</th>
-                                    <th>GL2 Gelondongan</th>
-                                    <th>TA Adonan</th>
-                                    <th>TA Gelondongan</th>
-                                    <th>BL Adonan</th>
-                                    <th>BL Gelondongan</th>
-                                    <th class="w-1"></th>
+                                    <th>Adn Item</th>
+                                    <th>Gld Item</th>
+                                    <th width="120">GL1 Adn</th>
+                                    <th width="120">GL1 Gld</th>
+                                    <th width="120">GL2 Adn</th>
+                                    <th width="120">GL2 Gld</th>
+                                    <th width="120">TA Adn</th>
+                                    <th width="120">TA Gld</th>
+                                    <th width="120">BL Adn</th>
+                                    <th width="120">BL Gld</th>
                                 </tr>
                             </thead>
                             <tbody id="step2-tbody">
@@ -79,7 +78,7 @@
                                     <tr class="step2-row">
                                         <td>
                                             <select name="step2[{{ $index }}][adonan_item_id]" class="form-select" required>
-                                                <option value="">Select Adonan</option>
+                                                <option value="">Select Adn</option>
                                                 @foreach($productionPlan->step1 as $step1)
                                                 <option value="{{ $step1->dough_item_id }}" {{ $data['adonan_item_id'] == $step1->dough_item_id ? 'selected' : '' }}>
                                                     {{ $step1->doughItem->name ?? 'N/A' }}
@@ -89,7 +88,7 @@
                                         </td>
                                         <td>
                                             <select name="step2[{{ $index }}][gelondongan_item_id]" class="form-select" required>
-                                                <option value="">Select Gelondongan</option>
+                                                <option value="">Select Gld</option>
                                                 @php
                                                     $gelondonganItems = \App\Models\Item::whereHas('itemCategory', function($q) {
                                                         $q->where('name', 'like', '%Gelondongan%');
@@ -134,11 +133,6 @@
                                             <input type="number" name="step2[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" 
                                                    value="{{ $data['qty_bl_gelondongan'] ?? 0 }}" required>
                                         </td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
-                                                <i class="far fa-trash"></i>
-                                            </button>
-                                        </td>
                                     </tr>
                                     @endforeach
                                 @else
@@ -146,7 +140,7 @@
                                     <tr class="step2-row">
                                         <td>
                                             <select name="step2[{{ $index }}][adonan_item_id]" class="form-select" required>
-                                                <option value="">Select Adonan</option>
+                                                <option value="">Select Adn</option>
                                                 @foreach($productionPlan->step1 as $step1)
                                                 <option value="{{ $step1->dough_item_id }}" {{ $step2->adonan_item_id == $step1->dough_item_id ? 'selected' : '' }}>
                                                     {{ $step1->doughItem->name ?? 'N/A' }}
@@ -156,7 +150,7 @@
                                         </td>
                                         <td>
                                             <select name="step2[{{ $index }}][gelondongan_item_id]" class="form-select" required>
-                                                <option value="">Select Gelondongan</option>
+                                                <option value="">Select Gld</option>
                                                 @php
                                                     $gelondonganItems = \App\Models\Item::whereHas('itemCategory', function($q) {
                                                         $q->where('name', 'like', '%Gelondongan%');
@@ -201,16 +195,11 @@
                                             <input type="number" name="step2[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" 
                                                    value="{{ $step2->qty_bl_gelondongan }}" required>
                                         </td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
-                                                <i class="far fa-trash"></i>
-                                            </button>
-                                        </td>
                                     </tr>
                                     @endforeach
                                     @if($productionPlan->step2->count() === 0)
                                     <tr class="step2-row">
-                                        <td colspan="11" class="text-center text-muted">
+                                        <td colspan="10" class="text-center text-muted">
                                             Click "Add Row" to add Step 2 data
                                         </td>
                                     </tr>
@@ -265,12 +254,12 @@ function createEmptyRow() {
     row.innerHTML = `
         <td>
             <select name="step2[0][adonan_item_id]" class="form-select" required>
-                <option value="">Select Adonan</option>
+                <option value="">Select Adn</option>
             </select>
         </td>
         <td>
             <select name="step2[0][gelondongan_item_id]" class="form-select" required>
-                <option value="">Select Gelondongan</option>
+                <option value="">Select Gld</option>
             </select>
         </td>
         <td><input type="number" name="step2[0][qty_gl1_adonan]" class="form-control" step="0.001" min="0" value="0" required></td>
@@ -281,23 +270,26 @@ function createEmptyRow() {
         <td><input type="number" name="step2[0][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td>
         <td><input type="number" name="step2[0][qty_bl_adonan]" class="form-control" step="0.001" min="0" value="0" required></td>
         <td><input type="number" name="step2[0][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td>
-        <td>
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
-                <i class="far fa-trash"></i>
-            </button>
-        </td>
     `;
     return row;
 }
 
-function removeRow(button) {
-    if (document.getElementById('step2-tbody').querySelectorAll('.step2-row').length > 1) {
-        button.closest('.step2-row').remove();
-    } else {
-        alert('At least one row is required.');
-    }
-}
 </script>
 @endpush
 @endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -64,6 +64,14 @@ final class Item extends Model
     }
 
     /**
+     * Get recipes for this dough item.
+     */
+    public function recipes(): HasMany
+    {
+        return $this->hasMany(Recipe::class, 'dough_item_id');
+    }
+
+    /**
      * Scope to get only active items.
      */
     public function scopeActive($query)

@@ -31,6 +31,8 @@ use App\Http\Controllers\PicklistController;
 use App\Http\Controllers\WarehouseOverviewController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionPlanStepController;
+use App\Http\Controllers\YieldGuidelineController;
+use App\Http\Controllers\RecipeController;
 
 // Maintenance Controllers
 use App\Http\Controllers\MaintenanceDashboardController;
@@ -219,17 +221,28 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::get('warehouses/{warehouse}/export', [BulkInventoryController::class, 'export'])->name('warehouses.export');
     
     // Production Planning
+    Route::get('production-plans/recipes', [ProductionPlanController::class, 'getRecipes'])->name('production-plans.recipes');
+    Route::get('production-plans/recipe-ingredients', [ProductionPlanController::class, 'getRecipeIngredients'])->name('production-plans.recipe-ingredients');
     Route::resource('production-plans', ProductionPlanController::class);
     Route::post('production-plans/{productionPlan}/approve', [ProductionPlanController::class, 'approve'])->name('production-plans.approve');
-    Route::get('production-plans/recipes', [ProductionPlanController::class, 'getRecipes'])->name('production-plans.recipes');
+    
+    // Yield Guidelines Management
+    Route::resource('yield-guidelines', YieldGuidelineController::class);
+    Route::get('yield-guidelines/items', [YieldGuidelineController::class, 'getItemsForStage'])->name('yield-guidelines.items');
     
     // Production Plan Steps
     Route::get('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'step2'])->name('production-plans.step2');
     Route::post('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'storeStep2'])->name('production-plans.step2.store');
+    Route::delete('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'deleteStep2'])->name('production-plans.step2.delete');
     Route::get('production-plans/{productionPlan}/step3', [ProductionPlanStepController::class, 'step3'])->name('production-plans.step3');
     Route::post('production-plans/{productionPlan}/step3', [ProductionPlanStepController::class, 'storeStep3'])->name('production-plans.step3.store');
+    Route::delete('production-plans/{productionPlan}/step3', [ProductionPlanStepController::class, 'deleteStep3'])->name('production-plans.step3.delete');
     Route::get('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'step4'])->name('production-plans.step4');
     Route::post('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'storeStep4'])->name('production-plans.step4.store');
+    Route::delete('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'deleteStep4'])->name('production-plans.step4.delete');
+    
+    // Recipes
+    Route::resource('recipes', RecipeController::class);
     
 });
 

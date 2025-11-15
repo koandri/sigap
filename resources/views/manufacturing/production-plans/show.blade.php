@@ -3,6 +3,35 @@
 @section('title', 'Production Plan: ' . $productionPlan->plan_date->format('M d, Y'))
 
 @section('content')
+@php
+    $createStepNumber = null;
+    $createStepRoute = null;
+
+    if ($productionPlan->canBeEdited()) {
+        $nextStepCandidate = $highestStep < 4 ? max(1, $highestStep + 1) : null;
+
+        if ($nextStepCandidate) {
+            $canCreateStep = match ($nextStepCandidate) {
+                1 => $productionPlan->canEditStep(1),
+                2 => $productionPlan->canEditStep(2),
+                3 => $productionPlan->canEditStep(3),
+                4 => $productionPlan->canEditStep(4),
+                default => false,
+            };
+
+            if ($canCreateStep) {
+                $createStepNumber = $nextStepCandidate;
+                $createStepRoute = match ($nextStepCandidate) {
+                    1 => route('manufacturing.production-plans.edit', $productionPlan),
+                    2 => route('manufacturing.production-plans.step2', $productionPlan),
+                    3 => route('manufacturing.production-plans.step3', $productionPlan),
+                    4 => route('manufacturing.production-plans.step4', $productionPlan),
+                    default => null,
+                };
+            }
+        }
+    }
+@endphp
 <div class="page-header d-print-none">
     <div class="container-xl">
         <div class="row g-2 align-items-center">
@@ -20,10 +49,16 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    @if($productionPlan->canBeEdited())
+                    @if($productionPlan->canBeEdited() && $productionPlan->canEditStep(1))
                     <a href="{{ route('manufacturing.production-plans.edit', $productionPlan) }}" class="btn btn-primary">
                         <i class="far fa-edit me-2"></i>&nbsp;
                         Edit Plan
+                    </a>
+                    @endif
+                    @if($createStepNumber && $createStepRoute)
+                    <a href="{{ $createStepRoute }}" class="btn btn-success">
+                        <i class="far fa-plus me-2"></i>&nbsp;
+                        Create Step {{ $createStepNumber }}
                     </a>
                     @endif
                     @if($productionPlan->isDraft() && $isComplete)
@@ -131,37 +166,37 @@
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link {{ !request('step') || request('step') == '1' ? 'active' : '' }}" href="#step1" data-bs-toggle="tab">
+                                <a class="nav-link {{ $activeStep === 1 ? 'active' : '' }}" href="#step1" data-bs-toggle="tab">
                                     Step 1: Dough Planning
                                     @if($productionPlan->step1->count() > 0)
-                                        <span class="badge bg-success ms-1">{{ $productionPlan->step1->count() }}</span>
+                                        <span class="badge bg-success text-white ms-1">{{ $productionPlan->step1->count() }}</span>
                                     @endif
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request('step') == '2' ? 'active' : '' }} {{ !$productionPlan->step1()->exists() ? 'disabled' : '' }}" 
+                                <a class="nav-link {{ $activeStep === 2 ? 'active' : '' }} {{ !$productionPlan->step1()->exists() ? 'disabled' : '' }}" 
                                    href="#step2" data-bs-toggle="tab" {{ !$productionPlan->step1()->exists() ? 'onclick="return false;"' : '' }}>
-                                    Step 2: Gelondongan Planning
+                                    Step 2: Gld Planning
                                     @if($productionPlan->step2->count() > 0)
-                                        <span class="badge bg-success ms-1">{{ $productionPlan->step2->count() }}</span>
+                                        <span class="badge bg-success text-white ms-1">{{ $productionPlan->step2->count() }}</span>
                                     @endif
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request('step') == '3' ? 'active' : '' }} {{ !$productionPlan->step2()->exists() ? 'disabled' : '' }}" 
+                                <a class="nav-link {{ $activeStep === 3 ? 'active' : '' }} {{ !$productionPlan->step2()->exists() ? 'disabled' : '' }}" 
                                    href="#step3" data-bs-toggle="tab" {{ !$productionPlan->step2()->exists() ? 'onclick="return false;"' : '' }}>
                                     Step 3: Kerupuk Kering Planning
                                     @if($productionPlan->step3->count() > 0)
-                                        <span class="badge bg-success ms-1">{{ $productionPlan->step3->count() }}</span>
+                                        <span class="badge bg-success text-white ms-1">{{ $productionPlan->step3->count() }}</span>
                                     @endif
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request('step') == '4' ? 'active' : '' }} {{ !$productionPlan->step3()->exists() ? 'disabled' : '' }}" 
+                                <a class="nav-link {{ $activeStep === 4 ? 'active' : '' }} {{ !$productionPlan->step3()->exists() ? 'disabled' : '' }}" 
                                    href="#step4" data-bs-toggle="tab" {{ !$productionPlan->step3()->exists() ? 'onclick="return false;"' : '' }}>
                                     Step 4: Packing Planning
                                     @if($productionPlan->step4->count() > 0)
-                                        <span class="badge bg-success ms-1">{{ $productionPlan->step4->count() }}</span>
+                                        <span class="badge bg-success text-white ms-1">{{ $productionPlan->step4->count() }}</span>
                                     @endif
                                 </a>
                             </li>
@@ -170,71 +205,132 @@
                     <div class="card-body">
                         <div class="tab-content">
                             <!-- Step 1 Tab -->
-                            <div class="tab-pane {{ !request('step') || request('step') == '1' ? 'active' : '' }}" id="step1">
-                                <h4 class="mb-3">Step 1: Dough Production Planning (Adonan)</h4>
+                            <div class="tab-pane {{ $activeStep === 1 ? 'active' : '' }}" id="step1">
+                                <h4 class="mb-3">Step 1: Dough Production Planning (Adn)</h4>
                                 @if($productionPlan->step1->count() > 0)
                                 <div class="table-responsive">
-                                    <table class="table table-vcenter">
+                                    <table class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Dough Item</th>
-                                                <th>Recipe</th>
-                                                <th>Recipe Date</th>
-                                                <th>Qty GL1</th>
-                                                <th>Qty GL2</th>
-                                                <th>Qty TA</th>
-                                                <th>Qty BL</th>
-                                                <th>Total</th>
+                                                <th class="align-top">Dough Item</th>
+                                                <th class="align-top">Recipe Details</th>
+                                                <th class="align-top text-end">Qty GL1</th>
+                                                <th class="align-top text-end">Qty GL2</th>
+                                                <th class="align-top text-end">Qty TA</th>
+                                                <th class="align-top text-end">Qty BL</th>
+                                                <th class="align-top text-end">Total</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($productionPlan->step1 as $step1)
-                                            <tr>
-                                                <td>{{ $step1->doughItem->name ?? 'N/A' }}</td>
-                                                <td>
-                                                    {{ $step1->recipe_name }}
-                                                    @if($step1->is_custom_recipe)
-                                                        <span class="badge bg-info">Custom</span>
+                                            @foreach($productionPlan->step1 as $index => $step1)
+                                            @php
+                                                $recipeName = $step1->recipe_name ?? $step1->recipe->name ?? 'N/A';
+                                                $recipeDate = $step1->recipe_date
+                                                    ? $step1->recipe_date->format('M d, Y')
+                                                    : ($step1->recipe && $step1->recipe->recipe_date
+                                                        ? $step1->recipe->recipe_date->format('M d, Y')
+                                                        : null);
+                                                $ingredients = $step1->recipeIngredients->count() > 0
+                                                    ? $step1->recipeIngredients
+                                                    : ($step1->recipe?->ingredients ?? collect());
+                                            @endphp
+                                            <tr class="align-top">
+                                                <td class="align-top">{{ $step1->doughItem->name ?? 'N/A' }}</td>
+                                                <td class="align-top">
+                                                    <div><strong>Recipe Name:</strong> {{ $recipeName }}</div>
+                                                    @if($recipeDate)
+                                                        <div><strong>Recipe Date:</strong> {{ $recipeDate }}</div>
                                                     @endif
+                                                    <div class="mt-2 d-flex flex-column gap-2">
+                                                        <div>
+                                                            <strong>Ingredients</strong>
+                                                            <small class="text-muted">(per batch vs total required)</small>
+                                                        </div>
+                                                        @if($ingredients->count() > 0)
+                                                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#ingredients-{{ $index }}" aria-expanded="false" aria-controls="ingredients-{{ $index }}">
+                                                                <i class="far fa-list me-1"></i> View Ingredients
+                                                            </button>
+                                                            <div class="collapse mt-2" id="ingredients-{{ $index }}">
+                                                                <div class="card card-sm">
+                                                                    <div class="card-body p-0">
+                                                                        <div class="table-responsive">
+                                                                            <table class="table table-sm table-bordered mb-0">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Ingredient</th>
+                                                                                        <th class="text-end">Per Batch</th>
+                                                                                        <th class="text-end">Total Required</th>
+                                                                                        <th>Unit</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    @foreach($ingredients as $ingredient)
+                                                                                        @php
+                                                                                            $perBatchQty = (float) $ingredient->quantity;
+                                                                                            $totalAdonan = (float) $step1->total_quantity;
+                                                                                            $totalRequired = $perBatchQty * $totalAdonan;
+                                                                                            $unit = $ingredient->unit ?? $ingredient->ingredientItem?->unit ?? '-';
+                                                                                        @endphp
+                                                                                        <tr>
+                                                                                            <td>{{ $ingredient->ingredientItem->name ?? 'N/A' }}</td>
+                                                                                            <td class="text-end">{{ number_format($perBatchQty, 3) }}</td>
+                                                                                            <td class="text-end"><strong>{{ number_format($totalRequired, 3) }}</strong></td>
+                                                                                            <td>{{ $unit }}</td>
+                                                                                        </tr>
+                                                                                    @endforeach
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-muted small">No ingredients recorded.</span>
+                                                        @endif
+                                                    </div>
                                                 </td>
-                                                <td>{{ $step1->recipe_date->format('M d, Y') }}</td>
-                                                <td>{{ number_format($step1->qty_gl1, 3) }}</td>
-                                                <td>{{ number_format($step1->qty_gl2, 3) }}</td>
-                                                <td>{{ number_format($step1->qty_ta, 3) }}</td>
-                                                <td>{{ number_format($step1->qty_bl, 3) }}</td>
-                                                <td><strong>{{ number_format($step1->total_quantity, 3) }}</strong></td>
+                                                <td class="align-top text-end">{{ number_format($step1->qty_gl1, 0) }}</td>
+                                                <td class="align-top text-end">{{ number_format($step1->qty_gl2, 0) }}</td>
+                                                <td class="align-top text-end">{{ number_format($step1->qty_ta, 0) }}</td>
+                                                <td class="align-top text-end">{{ number_format($step1->qty_bl, 0) }}</td>
+                                                <td class="align-top text-end"><strong>{{ number_format($step1->total_quantity, 0) }}</strong></td>
                                             </tr>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="3">Totals:</th>
-                                                <th>{{ number_format($totals['step1']['qty_gl1'], 3) }}</th>
-                                                <th>{{ number_format($totals['step1']['qty_gl2'], 3) }}</th>
-                                                <th>{{ number_format($totals['step1']['qty_ta'], 3) }}</th>
-                                                <th>{{ number_format($totals['step1']['qty_bl'], 3) }}</th>
-                                                <th><strong>{{ number_format(array_sum($totals['step1']), 3) }}</strong></th>
+                                                <th colspan="2">Totals:</th>
+                                                <th class="text-end">{{ number_format($totals['step1']['qty_gl1'], 0) }}</th>
+                                                <th class="text-end">{{ number_format($totals['step1']['qty_gl2'], 0) }}</th>
+                                                <th class="text-end">{{ number_format($totals['step1']['qty_ta'], 0) }}</th>
+                                                <th class="text-end">{{ number_format($totals['step1']['qty_bl'], 0) }}</th>
+                                                <th class="text-end"><strong>{{ number_format(array_sum($totals['step1']), 0) }}</strong></th>
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
                                 @else
                                 <div class="alert alert-info">
-                                    No Step 1 data. <a href="{{ route('manufacturing.production-plans.edit', $productionPlan) }}">Edit the plan to add Step 1 data.</a>
+                                    No Step 1 data. 
+                                    @if($productionPlan->canEditStep(1))
+                                    <a href="{{ route('manufacturing.production-plans.edit', $productionPlan) }}">Edit the plan to add Step 1 data.</a>
+                                    @else
+                                    <span class="text-muted">Step 1 is locked. Please delete Step 2 first.</span>
+                                    @endif
                                 </div>
                                 @endif
                             </div>
 
                             <!-- Step 2 Tab -->
-                            <div class="tab-pane {{ request('step') == '2' ? 'active' : '' }}" id="step2">
-                                <h4 class="mb-3">Step 2: Gelondongan Production Planning</h4>
+                            <div class="tab-pane {{ $activeStep === 2 ? 'active' : '' }}" id="step2">
+                                <h4 class="mb-3">Step 2: Gld Production Planning</h4>
                                 @if($productionPlan->step2->count() > 0)
                                 <div class="table-responsive">
                                     <table class="table table-vcenter">
                                         <thead>
                                             <tr>
-                                                <th>Adonan Item</th>
-                                                <th>Gelondongan Item</th>
+                                                <th>Adn Item</th>
+                                                <th>Gld Item</th>
                                                 <th colspan="2">GL1</th>
                                                 <th colspan="2">GL2</th>
                                                 <th colspan="2">TA</th>
@@ -243,14 +339,14 @@
                                             <tr>
                                                 <th></th>
                                                 <th></th>
-                                                <th>Adonan</th>
-                                                <th>Gelondongan</th>
-                                                <th>Adonan</th>
-                                                <th>Gelondongan</th>
-                                                <th>Adonan</th>
-                                                <th>Gelondongan</th>
-                                                <th>Adonan</th>
-                                                <th>Gelondongan</th>
+                                                <th>Adn</th>
+                                                <th>Gld</th>
+                                                <th>Adn</th>
+                                                <th>Gld</th>
+                                                <th>Adn</th>
+                                                <th>Gld</th>
+                                                <th>Adn</th>
+                                                <th>Gld</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -285,10 +381,25 @@
                                     </table>
                                 </div>
                                 @if($productionPlan->canBeEdited())
-                                <div class="mt-3">
+                                <div class="mt-3 d-flex flex-wrap gap-2 align-items-start">
+                                    @if($productionPlan->canEditStep(2))
                                     <a href="{{ route('manufacturing.production-plans.step2', $productionPlan) }}" class="btn btn-primary">
                                         <i class="far fa-edit me-2"></i>&nbsp;Edit Step 2
                                     </a>
+                                    @else
+                                    <div class="alert alert-warning mb-2">
+                                        <i class="far fa-lock me-2"></i>Step 2 is locked. Delete Step 3 first.
+                                    </div>
+                                    @endif
+                                    @if($highestStep === 2)
+                                    <form method="POST" action="{{ route('manufacturing.production-plans.step2.delete', $productionPlan) }}" onsubmit="return confirm('Are you sure you want to delete Step 2?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="far fa-trash me-2"></i>&nbsp;Delete Step 2
+                                        </button>
+                                    </form>
+                                    @endif
                                 </div>
                                 @endif
                                 @else
@@ -299,14 +410,14 @@
                             </div>
 
                             <!-- Step 3 Tab -->
-                            <div class="tab-pane {{ request('step') == '3' ? 'active' : '' }}" id="step3">
+                            <div class="tab-pane {{ $activeStep === 3 ? 'active' : '' }}" id="step3">
                                 <h4 class="mb-3">Step 3: Kerupuk Kering Production Planning</h4>
                                 @if($productionPlan->step3->count() > 0)
                                 <div class="table-responsive">
                                     <table class="table table-vcenter">
                                         <thead>
                                             <tr>
-                                                <th>Gelondongan Item</th>
+                                                <th>Gld Item</th>
                                                 <th>Kerupuk Kering Item</th>
                                                 <th colspan="2">GL1</th>
                                                 <th colspan="2">GL2</th>
@@ -316,13 +427,13 @@
                                             <tr>
                                                 <th></th>
                                                 <th></th>
-                                                <th>Gelondongan</th>
+                                                <th>Gld</th>
                                                 <th>Kg</th>
-                                                <th>Gelondongan</th>
+                                                <th>Gld</th>
                                                 <th>Kg</th>
-                                                <th>Gelondongan</th>
+                                                <th>Gld</th>
                                                 <th>Kg</th>
-                                                <th>Gelondongan</th>
+                                                <th>Gld</th>
                                                 <th>Kg</th>
                                             </tr>
                                         </thead>
@@ -358,10 +469,25 @@
                                     </table>
                                 </div>
                                 @if($productionPlan->canBeEdited())
-                                <div class="mt-3">
+                                <div class="mt-3 d-flex flex-wrap gap-2 align-items-start">
+                                    @if($productionPlan->canEditStep(3))
                                     <a href="{{ route('manufacturing.production-plans.step3', $productionPlan) }}" class="btn btn-primary">
                                         <i class="far fa-edit me-2"></i>&nbsp;Edit Step 3
                                     </a>
+                                    @else
+                                    <div class="alert alert-warning mb-2">
+                                        <i class="far fa-lock me-2"></i>Step 3 is locked. Delete Step 4 first.
+                                    </div>
+                                    @endif
+                                    @if($highestStep === 3)
+                                    <form method="POST" action="{{ route('manufacturing.production-plans.step3.delete', $productionPlan) }}" onsubmit="return confirm('Are you sure you want to delete Step 3?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="far fa-trash me-2"></i>&nbsp;Delete Step 3
+                                        </button>
+                                    </form>
+                                    @endif
                                 </div>
                                 @endif
                                 @else
@@ -372,7 +498,7 @@
                             </div>
 
                             <!-- Step 4 Tab -->
-                            <div class="tab-pane {{ request('step') == '4' ? 'active' : '' }}" id="step4">
+                            <div class="tab-pane {{ $activeStep === 4 ? 'active' : '' }}" id="step4">
                                 <h4 class="mb-3">Step 4: Packing Planning</h4>
                                 @if($productionPlan->step4->count() > 0)
                                 <div class="table-responsive">
@@ -434,10 +560,21 @@
                                     </table>
                                 </div>
                                 @if($productionPlan->canBeEdited())
-                                <div class="mt-3">
+                                <div class="mt-3 d-flex flex-wrap gap-2 align-items-start">
+                                    @if($productionPlan->canEditStep(4))
                                     <a href="{{ route('manufacturing.production-plans.step4', $productionPlan) }}" class="btn btn-primary">
                                         <i class="far fa-edit me-2"></i>&nbsp;Edit Step 4
                                     </a>
+                                    @endif
+                                    @if($highestStep === 4)
+                                    <form method="POST" action="{{ route('manufacturing.production-plans.step4.delete', $productionPlan) }}" onsubmit="return confirm('Are you sure you want to delete Step 4?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="far fa-trash me-2"></i>&nbsp;Delete Step 4
+                                        </button>
+                                    </form>
+                                    @endif
                                 </div>
                                 @endif
                                 @else
@@ -454,4 +591,18 @@
     </div>
 </div>
 @endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

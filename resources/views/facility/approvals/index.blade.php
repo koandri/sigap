@@ -156,7 +156,7 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="fa fa-check-circle fa-3x text-success"></i>&nbsp;
+                        <i class="fa fa-check-circle icon"></i>&nbsp;
                     </div>
                     <p class="empty-title">No pending approvals</p>
                     <p class="empty-subtitle text-muted">

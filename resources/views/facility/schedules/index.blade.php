@@ -55,7 +55,7 @@
                             </td>
                             <td>
                                 <span class="badge bg-info">
-                                    {{ ucfirst($schedule->frequency_type) }}
+                                    {{ $schedule->frequency_type->label() }}
                                 </span>
                                 <div class="small text-muted">
                                     {{ $schedule->frequency_description }}

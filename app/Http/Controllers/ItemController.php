@@ -131,6 +131,9 @@ final class ItemController extends Controller
      */
     public function import(Request $request): RedirectResponse
     {
+        // Increase execution time for large imports
+        set_time_limit(300); // 5 minutes
+        
         $validated = $request->validate([
             'excel_file' => 'required|file|mimes:xlsx,xls|max:10240', // 10MB max
         ]);
@@ -144,13 +147,23 @@ final class ItemController extends Controller
             // Skip header row
             $dataRows = array_slice($rows, 1);
             
+            // Pre-load all existing categories into a map for O(1) lookup
+            $existingCategories = ItemCategory::pluck('id', 'name')->toArray();
+            
+            // Pre-load all existing items by accurate_id for O(1) lookup
+            $existingItems = Item::pluck('id', 'accurate_id')->toArray();
+            
             $importStats = [
                 'categories_created' => 0,
                 'categories_skipped' => 0,
                 'items_created' => 0,
-                'items_skipped' => 0,
+                'items_updated' => 0,
                 'errors' => []
             ];
+
+            $categoriesToCreate = [];
+            $itemsToCreate = [];
+            $itemsToUpdate = [];
 
             foreach ($dataRows as $rowIndex => $row) {
                 $actualRowNumber = $rowIndex + 2; // +2 because we skip header and array is 0-indexed
@@ -169,47 +182,55 @@ final class ItemController extends Controller
                         continue;
                     }
                     
-                    // Process Item Category
-                    $category = null;
+                    // Handle category
                     if (!empty($categoryName)) {
-                        $category = ItemCategory::where('name', $categoryName)->first();
-                        
-                        if (!$category) {
-                            $category = ItemCategory::create([
-                                'name' => $categoryName,
-                                'description' => "Imported from Excel"
-                            ]);
-                            $importStats['categories_created']++;
-                        } else {
+                        if (isset($existingCategories[$categoryName])) {
                             $importStats['categories_skipped']++;
+                        } else {
+                            // Only add if not already queued for creation
+                            if (!isset($categoriesToCreate[$categoryName])) {
+                                $categoriesToCreate[$categoryName] = [
+                                    'name' => $categoryName,
+                                    'description' => "Imported from Excel",
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ];
+                            }
                         }
                     }
                     
-                    // Process Item (only if we have required data)
-                    if (!empty($accurateId) && !empty($itemName) && $category) {
-                        $existingItem = Item::where('accurate_id', $accurateId)->first();
-                        
+                    // Handle item (only if we have required data)
+                    if (!empty($accurateId) && !empty($itemName) && !empty($categoryName)) {
                         $itemData = [
-                            'accurate_id' => $accurateId,
                             'shortname' => !empty($shortname) ? $shortname : null,
                             'name' => $itemName,
-                            'item_category_id' => $category->id,
                             'unit' => !empty($unit) ? $unit : null,
                             'merk' => !empty($merk) ? $merk : null,
                             'qty_kg_per_pack' => 1, // Default value
                             'is_active' => true, // Default value
+                            'updated_at' => now(),
                         ];
                         
-                        if (!$existingItem) {
-                            // Create new item
-                            Item::create($itemData);
-                            $importStats['items_created']++;
+                        if (isset($existingItems[$accurateId])) {
+                            // Item exists - prepare for update
+                            $itemsToUpdate[$existingItems[$accurateId]] = array_merge(
+                                $itemData,
+                                ['category_name' => $categoryName]
+                            );
                         } else {
-                            // Update existing item (exclude accurate_id from update)
-                            $updateData = $itemData;
-                            unset($updateData['accurate_id']); // Don't update the reference field
-                            $existingItem->update($updateData);
-                            $importStats['items_updated'] = ($importStats['items_updated'] ?? 0) + 1;
+                            // Item doesn't exist - prepare for creation
+                            $itemsToCreate[] = array_merge([
+                                'accurate_id' => $accurateId,
+                                'shortname' => !empty($shortname) ? $shortname : null,
+                                'name' => $itemName,
+                                'unit' => !empty($unit) ? $unit : null,
+                                'merk' => !empty($merk) ? $merk : null,
+                                'qty_kg_per_pack' => 1, // Default value
+                                'is_active' => true, // Default value
+                                'category_name' => $categoryName,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
                         }
                     }
                     
@@ -218,14 +239,59 @@ final class ItemController extends Controller
                 }
             }
 
+            // Bulk create categories
+            if (!empty($categoriesToCreate)) {
+                ItemCategory::insert(array_values($categoriesToCreate));
+                
+                // Refresh the category map with newly created ones
+                $newCategories = ItemCategory::whereIn('name', array_keys($categoriesToCreate))
+                    ->pluck('id', 'name')->toArray();
+                $existingCategories = array_merge($existingCategories, $newCategories);
+                $importStats['categories_created'] = count($categoriesToCreate);
+            }
+
+            // Resolve category IDs for items to create
+            foreach ($itemsToCreate as &$item) {
+                $item['item_category_id'] = $existingCategories[$item['category_name']] ?? null;
+                unset($item['category_name']);
+            }
+
+            // Resolve category IDs for items to update
+            foreach ($itemsToUpdate as &$item) {
+                $item['item_category_id'] = $existingCategories[$item['category_name']] ?? null;
+                unset($item['category_name']);
+            }
+
+            // Bulk create items in chunks (500 per chunk to avoid memory issues)
+            if (!empty($itemsToCreate)) {
+                // Filter out items with invalid category references
+                $validItemsToCreate = array_filter($itemsToCreate, function ($item) {
+                    return !empty($item['item_category_id']);
+                });
+                
+                foreach (array_chunk($validItemsToCreate, 500) as $chunk) {
+                    Item::insert($chunk);
+                }
+                $importStats['items_created'] = count($validItemsToCreate);
+            }
+
+            // Batch update items
+            if (!empty($itemsToUpdate)) {
+                foreach ($itemsToUpdate as $itemId => $itemData) {
+                    if (!empty($itemData['item_category_id'])) {
+                        Item::where('id', $itemId)->update($itemData);
+                    }
+                }
+                $importStats['items_updated'] = count($itemsToUpdate);
+            }
+
             // Prepare success message
-            $updatedCount = $importStats['items_updated'] ?? 0;
             $message = sprintf(
                 'Import completed! Categories: %d created, %d skipped. Items: %d created, %d updated.',
                 $importStats['categories_created'],
                 $importStats['categories_skipped'],
                 $importStats['items_created'],
-                $updatedCount
+                $importStats['items_updated']
             );
             
             if (!empty($importStats['errors'])) {

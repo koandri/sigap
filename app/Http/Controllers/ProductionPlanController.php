@@ -60,16 +60,26 @@ final class ProductionPlanController extends Controller
      */
     public function create(): View
     {
-        // Get dough items (Adonan) from ItemCategory
+        // Get dough items (Adonan) from ItemCategory that have recipes
         $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
         $doughItems = $doughCategory
             ? Item::where('item_category_id', $doughCategory->id)
                 ->where('is_active', true)
+                ->whereHas('recipes', function ($query) {
+                    $query->where('is_active', true);
+                })
                 ->orderBy('name')
                 ->get()
             : collect([]);
 
-        return view('manufacturing.production-plans.create', compact('doughItems'));
+        // Get ingredient items from specific categories (only active items)
+        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
+        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view('manufacturing.production-plans.create', compact('doughItems', 'ingredientItems'));
     }
 
     /**
@@ -99,6 +109,8 @@ final class ProductionPlanController extends Controller
             'approvedBy',
             'step1.doughItem',
             'step1.recipe',
+            'step1.recipeIngredients.ingredientItem',
+            'step1.recipe.ingredients.ingredientItem',
             'step2.adonanItem',
             'step2.gelondonganItem',
             'step3.gelondonganItem',
@@ -110,18 +122,26 @@ final class ProductionPlanController extends Controller
 
         $totals = $this->planningService->getTotalQuantities($productionPlan);
         $isComplete = $this->planningService->isComplete($productionPlan);
+        $highestStep = $productionPlan->getHighestStep();
+
+        $requestedStep = (int) request()->input('step', 0);
+        $activeStep = in_array($requestedStep, [1, 2, 3, 4], true)
+            ? $requestedStep
+            : max(1, $highestStep ?: 1);
 
         return view('manufacturing.production-plans.show', compact(
             'productionPlan',
             'totals',
-            'isComplete'
+            'isComplete',
+            'highestStep',
+            'activeStep'
         ));
     }
 
     /**
      * Show the form for editing the specified production plan.
      */
-    public function edit(ProductionPlan $productionPlan): View
+    public function edit(ProductionPlan $productionPlan): View|RedirectResponse
     {
         if (!$productionPlan->canBeEdited()) {
             return redirect()
@@ -129,18 +149,38 @@ final class ProductionPlanController extends Controller
                 ->with('error', 'Cannot edit production plan that is not in draft status.');
         }
 
-        $productionPlan->load(['step1.doughItem', 'step1.recipe']);
+        if (!$productionPlan->canEditStep(1)) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot edit Step 1. Please delete Step 2 first.');
+        }
 
-        // Get dough items
+        $productionPlan->load([
+            'step1.doughItem',
+            'step1.recipe',
+            'step1.recipeIngredients.ingredientItem',
+        ]);
+
+        // Get dough items that have recipes
         $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
         $doughItems = $doughCategory
             ? Item::where('item_category_id', $doughCategory->id)
                 ->where('is_active', true)
+                ->whereHas('recipes', function ($query) {
+                    $query->where('is_active', true);
+                })
                 ->orderBy('name')
                 ->get()
             : collect([]);
 
-        return view('manufacturing.production-plans.edit', compact('productionPlan', 'doughItems'));
+        // Get ingredient items from specific categories (only active items)
+        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
+        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view('manufacturing.production-plans.edit', compact('productionPlan', 'doughItems', 'ingredientItems'));
     }
 
     /**
@@ -207,33 +247,48 @@ final class ProductionPlanController extends Controller
             }
 
             $doughItem = Item::findOrFail($data['dough_item_id']);
-            $recipe = null;
-            $recipeName = null;
-            $recipeDate = null;
-            $isCustomRecipe = false;
+            $recipe = Recipe::with('ingredients')->findOrFail($data['recipe_id']);
+            $recipeName = $recipe->name;
+            $recipeDate = $recipe->recipe_date;
 
-            // Handle recipe selection
-            if (!empty($data['recipe_id'])) {
-                $recipe = Recipe::findOrFail($data['recipe_id']);
-                $recipeName = $recipe->name;
-                $recipeDate = $recipe->recipe_date;
-            } elseif (!empty($data['is_custom_recipe'])) {
-                $isCustomRecipe = true;
-                $recipeName = $data['recipe_name'] ?? $doughItem->name;
-                $recipeDate = $data['recipe_date'] ?? now()->toDateString();
-            }
-
-            $plan->step1()->create([
+            $step1 = $plan->step1()->create([
                 'dough_item_id' => $doughItem->id,
                 'recipe_id' => $recipe?->id,
                 'recipe_name' => $recipeName,
                 'recipe_date' => $recipeDate,
-                'qty_gl1' => $data['qty_gl1'] ?? 0,
-                'qty_gl2' => $data['qty_gl2'] ?? 0,
-                'qty_ta' => $data['qty_ta'] ?? 0,
-                'qty_bl' => $data['qty_bl'] ?? 0,
-                'is_custom_recipe' => $isCustomRecipe,
+                'qty_gl1' => (int) ($data['qty_gl1'] ?? 0),
+                'qty_gl2' => (int) ($data['qty_gl2'] ?? 0),
+                'qty_ta' => (int) ($data['qty_ta'] ?? 0),
+                'qty_bl' => (int) ($data['qty_bl'] ?? 0),
+                'is_custom_recipe' => false,
             ]);
+
+            // Handle recipe ingredients
+            $ingredientPayload = collect($data['ingredients'] ?? [])
+                ->filter(fn ($ingredient) => !empty($ingredient['ingredient_item_id']));
+
+            if ($ingredientPayload->isNotEmpty()) {
+                foreach ($ingredientPayload as $index => $ingredient) {
+                    $ingredientItem = Item::find($ingredient['ingredient_item_id']);
+                    $unit = $ingredient['unit'] ?? $ingredientItem?->unit ?? null;
+
+                    $step1->recipeIngredients()->create([
+                        'ingredient_item_id' => $ingredient['ingredient_item_id'],
+                        'quantity' => $ingredient['quantity'] ?? 0,
+                        'unit' => $unit,
+                        'sort_order' => $index,
+                    ]);
+                }
+            } else {
+                foreach ($recipe->ingredients as $ingredient) {
+                    $step1->recipeIngredients()->create([
+                        'ingredient_item_id' => $ingredient->ingredient_item_id,
+                        'quantity' => $ingredient->quantity,
+                        'unit' => $ingredient->unit,
+                        'sort_order' => $ingredient->sort_order,
+                    ]);
+                }
+            }
         }
     }
 
@@ -252,7 +307,7 @@ final class ProductionPlanController extends Controller
     /**
      * Get recipes for a dough item (AJAX).
      */
-    public function getRecipes(Request $request, ?ProductionPlan $productionPlan = null): \Illuminate\Http\JsonResponse
+    public function getRecipes(Request $request): \Illuminate\Http\JsonResponse
     {
         $doughItemId = $request->input('dough_item_id');
 
@@ -263,9 +318,45 @@ final class ProductionPlanController extends Controller
         $recipes = Recipe::forDough((int) $doughItemId)
             ->active()
             ->orderBy('recipe_date', 'desc')
-            ->get(['id', 'name', 'recipe_date']);
+            ->get(['id', 'name', 'recipe_date'])
+            ->map(function ($recipe) {
+                return [
+                    'id' => $recipe->id,
+                    'name' => $recipe->name,
+                    'recipe_date' => $recipe->recipe_date->format('Y-m-d'),
+                ];
+            });
 
         return response()->json($recipes);
+    }
+
+    /**
+     * Get recipe ingredients for a recipe (AJAX).
+     */
+    public function getRecipeIngredients(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $recipeId = $request->input('recipe_id');
+
+        if (!$recipeId) {
+            return response()->json([]);
+        }
+
+        $recipe = Recipe::with('ingredients.ingredientItem')->findOrFail($recipeId);
+
+        return response()->json(
+            $recipe->ingredients->map(function ($ingredient) {
+                // Use the item's default unit if unit is not set in the ingredient
+                $unit = $ingredient->unit ?? $ingredient->ingredientItem?->unit ?? null;
+                
+                return [
+                    'ingredient_item_id' => $ingredient->ingredient_item_id,
+                    'ingredient_item_name' => $ingredient->ingredientItem->name ?? 'N/A',
+                    'quantity' => $ingredient->quantity,
+                    'unit' => $unit,
+                    'sort_order' => $ingredient->sort_order,
+                ];
+            })
+        );
     }
 }
 

@@ -310,7 +310,7 @@
         <!-- No Location Selected -->
         <div class="empty">
             <div class="empty-icon">
-                <i class="fa fa-file-alt fa-3x"></i>&nbsp;
+                <i class="fa fa-file-alt icon"></i>&nbsp;
             </div>
             <p class="empty-title">Select Locations and Date</p>
             <p class="empty-subtitle text-muted">

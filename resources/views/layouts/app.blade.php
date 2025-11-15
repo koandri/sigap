@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="/assets/css/custom.css" />
     <!-- Lightbox2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+    @include('layouts.partials.litepicker-styles')
     @stack('css')
 </head>
 
@@ -66,6 +67,7 @@
         });
     </script>
     
+    @include('layouts.partials.litepicker-scripts')
     @stack('scripts')
 </body>
 

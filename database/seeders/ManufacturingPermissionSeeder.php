@@ -48,6 +48,12 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.production-plans.delete',
             'manufacturing.production-plans.approve',
             
+            // Yield Guidelines Management
+            'manufacturing.yield-guidelines.view',
+            'manufacturing.yield-guidelines.create',
+            'manufacturing.yield-guidelines.edit',
+            'manufacturing.yield-guidelines.delete',
+            
             // Production Execution
             'manufacturing.production.view',
             'manufacturing.production.record',
@@ -108,6 +114,9 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.production-plans.create',
             'manufacturing.production-plans.edit',
             'manufacturing.production-plans.approve',
+            'manufacturing.yield-guidelines.view',
+            'manufacturing.yield-guidelines.create',
+            'manufacturing.yield-guidelines.edit',
             'manufacturing.production.view',
             'manufacturing.production.record',
             'manufacturing.reports.view',
@@ -181,6 +190,7 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.categories.view',
             'manufacturing.warehouses.view',
             'manufacturing.production-plans.view',
+            'manufacturing.yield-guidelines.view',
             'manufacturing.production.view',
             'manufacturing.materials.view',
             'manufacturing.qc.view',

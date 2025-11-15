@@ -67,8 +67,7 @@ final class YieldGuidelineSeeder extends Seeder
                             $gelondonganItem->id,
                             'adonan',
                             'gelondongan',
-                            $this->getAdonanToGelondonganYield($type),
-                            'Gelondongan'
+                            $this->getAdonanToGelondonganYield($type)
                         );
 
                         if ($result) {
@@ -103,8 +102,7 @@ final class YieldGuidelineSeeder extends Seeder
                             $kerupukItem->id,
                             'gelondongan',
                             'kerupuk_kg',
-                            $this->getGelondonganToKgYield($type),
-                            'Kg'
+                            $this->getGelondonganToKgYield($type)
                         );
 
                         if ($result) {
@@ -155,8 +153,7 @@ final class YieldGuidelineSeeder extends Seeder
                     $packedItem->id,
                     'kerupuk_kg',
                     'packing',
-                    $yieldPerKg,
-                    'Packing'
+                    $yieldPerKg
                 );
 
                 if ($result) {
@@ -178,8 +175,7 @@ final class YieldGuidelineSeeder extends Seeder
         int $toItemId,
         string $fromStage,
         string $toStage,
-        float $yieldQuantity,
-        string $unit
+        float $yieldQuantity
     ): bool {
         $exists = YieldGuideline::where('from_item_id', $fromItemId)
             ->where('to_item_id', $toItemId)
@@ -195,8 +191,6 @@ final class YieldGuidelineSeeder extends Seeder
             'from_stage' => $fromStage,
             'to_stage' => $toStage,
             'yield_quantity' => $yieldQuantity,
-            'unit' => $unit,
-            'is_active' => true,
         ]);
 
         return true;

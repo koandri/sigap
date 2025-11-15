@@ -18,13 +18,10 @@ final class YieldGuideline extends Model
         'from_stage',
         'to_stage',
         'yield_quantity',
-        'unit',
-        'is_active',
     ];
 
     protected $casts = [
         'yield_quantity' => 'decimal:3',
-        'is_active' => 'boolean',
     ];
 
     public function fromItem(): BelongsTo
@@ -37,15 +34,9 @@ final class YieldGuideline extends Model
         return $this->belongsTo(Item::class, 'to_item_id');
     }
 
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
     public function scopeForConversion($query, int $fromItemId, int $toItemId)
     {
         return $query->where('from_item_id', $fromItemId)
-            ->where('to_item_id', $toItemId)
-            ->where('is_active', true);
+            ->where('to_item_id', $toItemId);
     }
 }

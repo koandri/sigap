@@ -75,6 +75,7 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             font-size: 9pt;
+            table-layout: fixed;
         }
         
         table thead tr {
@@ -156,7 +157,16 @@
                 Department: <strong>{{ \App\Models\Department::find($filters['department'])?->name ?? 'N/A' }}</strong>
             @endif
             @if(!empty($filters['type']))
-                | Type: <strong>{{ \App\Enums\DocumentType::from($filters['type'])->label() }}</strong>
+                | Type: <strong>
+                    @php
+                        try {
+                            $filterTypeLabel = \App\Enums\DocumentType::from($filters['type'])->label();
+                        } catch (\ValueError $e) {
+                            $filterTypeLabel = 'Unknown Type';
+                        }
+                    @endphp
+                    {{ $filterTypeLabel }}
+                </strong>
             @endif
             @if(!empty($filters['search']))
                 | Search: <strong>{{ $filters['search'] }}</strong>
@@ -171,17 +181,34 @@
                 
                 @foreach($departmentDocuments as $documentType => $documents)
                     <div class="type-section">
-                        <div class="type-title">{{ \App\Enums\DocumentType::from($documentType)->label() }}</div>
+                        <div class="type-title">
+                            @php
+                                try {
+                                    $typeLabel = \App\Enums\DocumentType::from($documentType)->label();
+                                } catch (\ValueError $e) {
+                                    $typeLabel = 'Unknown Type (' . $documentType . ')';
+                                }
+                            @endphp
+                            {{ $typeLabel }}
+                        </div>
                         
                         <table>
+                            <colgroup>
+                                <col style="width: 12%;">
+                                <col style="width: 30%;">
+                                <col style="width: 10%;">
+                                <col style="width: 18%;">
+                                <col style="width: 12%;">
+                                <col style="width: 18%;">
+                            </colgroup>
                             <thead>
                                 <tr>
-                                    <th style="width: 15%;">Document Number</th>
-                                    <th style="width: 30%;">Title</th>
-                                    <th style="width: 10%;">Status</th>
-                                    <th style="width: 15%;">Created By</th>
-                                    <th style="width: 12%;">Created At</th>
-                                    <th style="width: 18%;">Physical Location</th>
+                                    <th>Document Number</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                    <th>Physical Location</th>
                                 </tr>
                             </thead>
                             <tbody>

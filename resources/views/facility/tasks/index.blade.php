@@ -209,7 +209,7 @@
                             <td colspan="7" class="text-center text-muted py-5">
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="fa fa-inbox fa-3x"></i>&nbsp;
+                                        <i class="fa fa-inbox icon"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No tasks found</p>
                                     <p class="empty-subtitle text-muted">

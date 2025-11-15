@@ -35,7 +35,7 @@
             
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Step 3: Kerupuk Kering Planning from Gelondongan</h3>
+                    <h3 class="card-title">Step 3: Kerupuk Kering Planning from Gld</h3>
                     <div class="card-actions">
                         <button type="button" class="btn btn-sm btn-primary" onclick="addStep3Row()">
                             <i class="far fa-plus"></i>&nbsp;Add Row
@@ -45,7 +45,7 @@
                 <div class="card-body">
                     <div class="alert alert-info">
                         <i class="far fa-info-circle me-2"></i>
-                        This step converts Gelondongan quantities to Kerupuk Kering (Kg) quantities using yield guidelines.
+                        This step converts Gld quantities to Kerupuk Kering (Kg) quantities using yield guidelines.
                         @if(count($calculatedData) > 0)
                         Auto-calculated values are pre-filled below. You can adjust them as needed.
                         @endif
@@ -55,7 +55,7 @@
                         <table class="table table-vcenter" id="step3-table">
                             <thead>
                                 <tr>
-                                    <th>Gelondongan Item</th>
+                                    <th>Gld Item</th>
                                     <th>Kerupuk Kering Item</th>
                                     <th>GL1 Gel</th>
                                     <th>GL1 Kg</th>
@@ -74,7 +74,7 @@
                                     <tr class="step3-row">
                                         <td>
                                             <select name="step3[{{ $index }}][gelondongan_item_id]" class="form-select" required>
-                                                <option value="">Select Gelondongan</option>
+                                                <option value="">Select Gld</option>
                                                 @foreach($productionPlan->step2->unique('gelondongan_item_id') as $step2)
                                                 <option value="{{ $step2->gelondongan_item_id }}" {{ $data['gelondongan_item_id'] == $step2->gelondongan_item_id ? 'selected' : '' }}>
                                                     {{ $step2->gelondonganItem->name ?? 'N/A' }}
@@ -117,7 +117,7 @@
                                     <tr class="step3-row">
                                         <td>
                                             <select name="step3[{{ $index }}][gelondongan_item_id]" class="form-select" required>
-                                                <option value="">Select Gelondongan</option>
+                                                <option value="">Select Gld</option>
                                                 @foreach($productionPlan->step2->unique('gelondongan_item_id') as $step2)
                                                 <option value="{{ $step2->gelondongan_item_id }}" {{ $step3->gelondongan_item_id == $step2->gelondongan_item_id ? 'selected' : '' }}>
                                                     {{ $step2->gelondonganItem->name ?? 'N/A' }}
@@ -198,7 +198,7 @@ function addStep3Row() {
 function createEmptyRow() {
     const row = document.createElement('tr');
     row.className = 'step3-row';
-    row.innerHTML = '<td><select name="step3[0][gelondongan_item_id]" class="form-select" required><option value="">Select Gelondongan</option></select></td><td><select name="step3[0][kerupuk_kering_item_id]" class="form-select" required><option value="">Select Kerupuk Kering</option></select></td><td><input type="number" name="step3[0][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_gl1_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_gl2_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_ta_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_bl_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)"><i class="far fa-trash"></i></button></td>';
+    row.innerHTML = '<td><select name="step3[0][gelondongan_item_id]" class="form-select" required><option value="">Select Gld</option></select></td><td><select name="step3[0][kerupuk_kering_item_id]" class="form-select" required><option value="">Select Kerupuk Kering</option></select></td><td><input type="number" name="step3[0][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_gl1_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_gl2_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_ta_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td><td><input type="number" name="step3[0][qty_bl_kg]" class="form-control" step="0.001" min="0" value="0" required></td><td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)"><i class="far fa-trash"></i></button></td>';
     return row;
 }
 
@@ -212,4 +212,19 @@ function removeRow(button) {
 </script>
 @endpush
 @endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

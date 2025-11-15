@@ -55,12 +55,24 @@ final class DocumentService
             });
         }
 
-        return $query->orderBy('department_id')
+        $documents = $query->orderBy('department_id')
             ->orderBy('document_type')
             ->orderBy('document_number')
-            ->get()
-            ->groupBy(function ($document) {
-                return ($document->department?->name ?? 'N/A') . '|' . $document->document_type->value;
+            ->get();
+
+        // Group by department first, then by document type
+        return $documents->groupBy(function ($document) {
+                return $document->department?->name ?? 'N/A';
+            })
+            ->map(function ($departmentDocuments) {
+                return $departmentDocuments->groupBy(function ($document) {
+                    // Ensure document_type is valid, fallback to 'other' if null or invalid
+                    try {
+                        return $document->document_type?->value ?? DocumentType::Other->value;
+                    } catch (\Throwable $e) {
+                        return DocumentType::Other->value;
+                    }
+                });
             });
     }
 

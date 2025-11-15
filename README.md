@@ -464,7 +464,7 @@ This isn't just another business application - it's a **sophisticated enterprise
 - **Build Tools**: Vite for modern asset compilation and hot reloading
 - **Icon Library**: Font Awesome for web icons
 - **Enhanced Selects**: Tom Select (tom-select.base.min.js) for dropdowns
-- **Date Picker**: Flatpickr or Bootstrap datepicker
+- **Date Picker**: Litepicker (CDN delivery)
 - **Image Handling**: Lightbox for image viewing
 - **File Uploads**: Native HTML5 with drag-and-drop support
 - **Signature Capture**: Canvas-based signature pad

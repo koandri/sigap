@@ -81,4 +81,43 @@ final class ProductionPlan extends Model
     {
         return $this->status === 'draft';
     }
+
+    /**
+     * Check if a specific step can be edited.
+     * A step can only be edited if no later steps exist.
+     */
+    public function canEditStep(int $stepNumber): bool
+    {
+        if (!$this->canBeEdited()) {
+            return false;
+        }
+
+        return match ($stepNumber) {
+            1 => !$this->step2()->exists(),
+            2 => !$this->step3()->exists(),
+            3 => !$this->step4()->exists(),
+            4 => true, // Step 4 can always be edited if plan is editable
+            default => false,
+        };
+    }
+
+    /**
+     * Get the highest step number that exists.
+     */
+    public function getHighestStep(): int
+    {
+        if ($this->step4()->exists()) {
+            return 4;
+        }
+        if ($this->step3()->exists()) {
+            return 3;
+        }
+        if ($this->step2()->exists()) {
+            return 2;
+        }
+        if ($this->step1()->exists()) {
+            return 1;
+        }
+        return 0;
+    }
 }

@@ -81,10 +81,27 @@
                                 
                                 @foreach($departmentDocuments as $documentType => $documents)
                                     <div class="mb-3">
-                                        <h4 class="text-muted">{{ \App\Enums\DocumentType::from($documentType)->label() }}</h4>
+                                        <h4 class="text-muted">
+                                            @php
+                                                try {
+                                                    $typeLabel = \App\Enums\DocumentType::from($documentType)->label();
+                                                } catch (\ValueError $e) {
+                                                    $typeLabel = 'Unknown Type (' . $documentType . ')';
+                                                }
+                                            @endphp
+                                            {{ $typeLabel }}
+                                        </h4>
                                         
                                         <div class="table-responsive">
-                                            <table class="table table-vcenter">
+                                            <table class="table table-vcenter" style="table-layout: fixed; width: 100%;">
+                                                <colgroup>
+                                                    <col style="width: 12%;">
+                                                    <col style="width: 30%;">
+                                                    <col style="width: 10%;">
+                                                    <col style="width: 18%;">
+                                                    <col style="width: 12%;">
+                                                    <col style="width: 18%;">
+                                                </colgroup>
                                                 <thead>
                                                     <tr>
                                                         <th>Document Number</th>
@@ -98,22 +115,22 @@
                                                 <tbody>
                                                     @foreach($documents as $document)
                                                         <tr>
-                                                            <td>{{ $document->document_number }}</td>
+                                                            <td class="text-nowrap">{{ $document->document_number }}</td>
                                                             <td>
                                                                 <div class="fw-bold">{{ $document->title }}</div>
                                                                 @if($document->description)
-                                                                    <div class="text-muted">{{ Str::limit($document->description, 50) }}</div>
+                                                                    <div class="text-muted small">{{ Str::limit($document->description, 50) }}</div>
                                                                 @endif
                                                             </td>
-                                                            <td>
+                                                            <td class="text-nowrap">
                                                                 @if($document->activeVersion)
                                                                     <span class="badge bg-success text-white">Active</span>
                                                                 @else
                                                                     <span class="badge bg-warning text-white">No Active Version</span>
                                                                 @endif
                                                             </td>
-                                                            <td>{{ $document->creator->name }}</td>
-                                                            <td>{{ $document->created_at->format('Y-m-d') }}</td>
+                                                            <td class="text-nowrap">{{ $document->creator->name }}</td>
+                                                            <td class="text-nowrap">{{ $document->created_at->format('Y-m-d') }}</td>
                                                             <td>{{ $document->physical_location_string }}</td>
                                                         </tr>
                                                     @endforeach

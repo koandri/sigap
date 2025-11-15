@@ -151,7 +151,7 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="far fa-clipboard-list fa-3x text-muted"></i>&nbsp;
+                        <i class="far fa-clipboard-list icon"></i>&nbsp;
                     </div>
                     <p class="empty-title">No maintenance logs found</p>
                     <p class="empty-subtitle text-muted">

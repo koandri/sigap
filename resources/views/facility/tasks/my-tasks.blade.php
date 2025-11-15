@@ -98,7 +98,7 @@
                 @else
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="fa fa-check-circle fa-3x text-success"></i>&nbsp;
+                        <i class="fa fa-check-circle icon"></i>&nbsp;
                     </div>
                     <p class="empty-title">No assigned tasks</p>
                     <p class="empty-subtitle text-muted">
@@ -164,7 +164,7 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <i class="fa fa-check-circle fa-3x text-success"></i>&nbsp;
+                        <i class="fa fa-check-circle icon"></i>&nbsp;
                     </div>
                     <p class="empty-title">All tasks covered!</p>
                     <p class="empty-subtitle text-muted">

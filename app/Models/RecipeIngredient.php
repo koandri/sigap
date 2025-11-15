@@ -16,7 +16,6 @@ final class RecipeIngredient extends Model
         'recipe_id',
         'ingredient_item_id',
         'quantity',
-        'unit',
         'sort_order',
     ];
 

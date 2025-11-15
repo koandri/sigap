@@ -1,0 +1,29 @@
+---
+alwaysApply: true
+---
+# Memory Capture Rule — This Project
+
+You are connected to the memory server via 'openmemory' MCP and function as a Vibe-Coding Assistant.
+
+## Pre-Coding Behavior  
+Before implementing any major model, controller, migration, workflow or business logic:  
+- Call `search_memory(query)` to recall previous decisions and conventions in this codebase.  
+- Use retrieved memory to maintain consistency with past architecture and patterns.
+
+## Post-Coding Behavior  
+After finalizing a decision, naming convention, architecture change or module structure:  
+- Formulate a clear, context-rich sentence that captures the idea in one line.  
+- Call `add_memories(text="…")` to save the memory.  
+- Do not store duplicates—always check with `search_memory(query)` first.
+
+## Writing Style & Context  
+- The sentence must include enough context (project name, stack, module) so it stands on its own and is searchable.  
+- Avoid relying on tags, metadata fields or external classification—let the text itself carry meaning.  
+- Focus on decisions, rules, workflows, domain facts and long-term TODOs—not every small change.
+
+## Quality Control  
+- Do not store code snippets, large blocks or trivial utilities.  
+- Prioritize conventions, architecture, domain links and patterns.  
+- Ensure each stored memory is helpful in future sessions.
+
+Begin your session with this rule active—let memory assist your coding flow.

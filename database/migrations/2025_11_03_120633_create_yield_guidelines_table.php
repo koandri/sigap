@@ -20,13 +20,8 @@ return new class extends Migration
             $table->enum('from_stage', ['adonan', 'gelondongan', 'kerupuk_kg']);
             $table->enum('to_stage', ['gelondongan', 'kerupuk_kg', 'packing']);
             $table->decimal('yield_quantity', 10, 3); // e.g., 3.9 for Gelondongan→Kg conversion
-            $table->string('unit', 15); // e.g., "Kg", "Gelondongan", "Packing"
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->index(['from_item_id', 'is_active']);
-            $table->index(['to_item_id', 'is_active']);
-            $table->index(['from_stage', 'to_stage', 'is_active']);
             // Ensure unique yield guideline per item pair
             $table->unique(['from_item_id', 'to_item_id']);
         });
