@@ -72,6 +72,14 @@ final class Item extends Model
     }
 
     /**
+     * Packing material blueprints for this pack item.
+     */
+    public function packingMaterialBlueprints(): HasMany
+    {
+        return $this->hasMany(PackingMaterialBlueprint::class, 'pack_item_id');
+    }
+
+    /**
      * Scope to get only active items.
      */
     public function scopeActive($query)

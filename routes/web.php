@@ -33,6 +33,7 @@ use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionPlanStepController;
 use App\Http\Controllers\YieldGuidelineController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\PackingMaterialBlueprintController;
 
 // Maintenance Controllers
 use App\Http\Controllers\MaintenanceDashboardController;
@@ -229,6 +230,11 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     // Yield Guidelines Management
     Route::resource('yield-guidelines', YieldGuidelineController::class);
     Route::get('yield-guidelines/items', [YieldGuidelineController::class, 'getItemsForStage'])->name('yield-guidelines.items');
+    
+    // Packing Material Blueprints
+    Route::get('packing-material-blueprints', [PackingMaterialBlueprintController::class, 'index'])->name('packing-material-blueprints.index');
+    Route::get('packing-material-blueprints/{item}', [PackingMaterialBlueprintController::class, 'manage'])->name('packing-material-blueprints.manage');
+    Route::put('packing-material-blueprints/{item}', [PackingMaterialBlueprintController::class, 'update'])->name('packing-material-blueprints.update');
     
     // Production Plan Steps
     Route::get('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'step2'])->name('production-plans.step2');

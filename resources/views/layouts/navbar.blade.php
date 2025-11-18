@@ -110,6 +110,11 @@
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.yield-guidelines.*') }}" href="{{ route('manufacturing.yield-guidelines.index') }}">
                                     <i class="far fa-chart-line"></i>&nbsp; &nbsp;Yield Guidelines
                                 </a>
+                                @can('manufacturing.packing-blueprints.view')
+                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.packing-material-blueprints.*') }}" href="{{ route('manufacturing.packing-material-blueprints.index') }}">
+                                    <i class="far fa-box-open"></i>&nbsp; &nbsp;Packing Blueprints
+                                </a>
+                                @endcan
                                 <a class="dropdown-item disabled">
                                     <i class="far fa-gears"></i>&nbsp; &nbsp;Production Execution
                                 </a>

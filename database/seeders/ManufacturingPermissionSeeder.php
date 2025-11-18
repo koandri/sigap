@@ -53,6 +53,12 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.yield-guidelines.create',
             'manufacturing.yield-guidelines.edit',
             'manufacturing.yield-guidelines.delete',
+
+            // Packing Material Blueprints
+            'manufacturing.packing-blueprints.view',
+            'manufacturing.packing-blueprints.create',
+            'manufacturing.packing-blueprints.edit',
+            'manufacturing.packing-blueprints.delete',
             
             // Production Execution
             'manufacturing.production.view',
@@ -117,6 +123,10 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.yield-guidelines.view',
             'manufacturing.yield-guidelines.create',
             'manufacturing.yield-guidelines.edit',
+            'manufacturing.packing-blueprints.view',
+            'manufacturing.packing-blueprints.create',
+            'manufacturing.packing-blueprints.edit',
+            'manufacturing.packing-blueprints.delete',
             'manufacturing.production.view',
             'manufacturing.production.record',
             'manufacturing.reports.view',
@@ -191,6 +201,7 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.warehouses.view',
             'manufacturing.production-plans.view',
             'manufacturing.yield-guidelines.view',
+            'manufacturing.packing-blueprints.view',
             'manufacturing.production.view',
             'manufacturing.materials.view',
             'manufacturing.qc.view',
