@@ -71,6 +71,30 @@
         pointer-events: none !important;
     }
     
+    /* Ensure table cells properly contain TomSelect wrappers */
+    #materials-table td {
+        position: relative;
+        vertical-align: middle;
+        overflow: visible !important;
+    }
+    
+    #materials-table td .ts-wrapper {
+        position: relative;
+        width: 100%;
+        z-index: 1;
+    }
+    
+    /* Ensure table-responsive doesn't clip dropdown */
+    #materials-table {
+        position: relative;
+    }
+    
+    /* When dropdown is appended to body, ensure proper positioning */
+    body > .ts-dropdown {
+        z-index: 99999 !important;
+        position: absolute !important;
+    }
+    
     /* Fix Tom Select dropdown background and readability */
     .ts-dropdown {
         background-color: #ffffff !important;
@@ -80,6 +104,8 @@
         opacity: 1 !important;
         max-height: 300px !important;
         overflow-y: auto !important;
+        z-index: 99999 !important;
+        position: absolute !important;
     }
     
     .ts-dropdown .ts-dropdown-content {
@@ -104,19 +130,6 @@
     .ts-dropdown .option.active {
         background-color: #0d6efd !important;
         color: #ffffff !important;
-    }
-    
-    /* Ensure table cells properly contain TomSelect wrappers */
-    #materials-table td {
-        position: relative;
-        vertical-align: middle;
-        overflow: visible !important;
-    }
-    
-    #materials-table td .ts-wrapper {
-        position: relative;
-        width: 100%;
-        z-index: 1;
     }
 </style>
 @endpush
@@ -298,7 +311,8 @@ function initializeTomSelect(selectElement) {
         sortField: {
             field: 'text',
             direction: 'asc'
-        }
+        },
+        dropdownParent: 'body'
     });
 }
 
