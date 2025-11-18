@@ -47,7 +47,6 @@
                         <tr>
                             <th>Pack SKU</th>
                             <th>Category</th>
-                            <th class="text-end">Weight (kg)</th>
                             <th class="text-center">Materials</th>
                             <th class="text-center"></th>
                         </tr>
@@ -60,9 +59,6 @@
                             </td>
                             <td>
                                 <span class="text-muted">{{ $packItem->itemCategory->name ?? 'N/A' }}</span>
-                            </td>
-                            <td class="text-end">
-                                {{ number_format((float) ($packItem->qty_kg_per_pack ?? 0), 3) }}
                             </td>
                             <td class="text-center">
                                 @if($packItem->packing_material_blueprints_count > 0)
@@ -85,7 +81,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="4" class="text-center text-muted py-4">
                                 <i class="far fa-box-open fa-3x mb-3 d-block"></i>
                                 <p class="mb-0">No pack items found</p>
                             </td>

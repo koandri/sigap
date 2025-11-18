@@ -19,7 +19,6 @@ final class ProductionPlanStep4 extends Model
         'production_plan_id',
         'kerupuk_kering_item_id',
         'kerupuk_packing_item_id',
-        'weight_per_unit',
         'qty_gl1_kg',
         'qty_gl1_packing',
         'qty_gl2_kg',
@@ -31,7 +30,6 @@ final class ProductionPlanStep4 extends Model
     ];
 
     protected $casts = [
-        'weight_per_unit' => 'decimal:3',
         'qty_gl1_kg' => 'decimal:2',
         'qty_gl1_packing' => 'integer',
         'qty_gl2_kg' => 'decimal:2',
@@ -55,6 +53,20 @@ final class ProductionPlanStep4 extends Model
     public function kerupukPackingItem(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'kerupuk_packing_item_id');
+    }
+
+    public function getWeightPerUnitAttribute(): float
+    {
+        $config = KerupukPackConfiguration::where('kerupuk_kg_item_id', $this->kerupuk_kering_item_id)
+            ->where('pack_item_id', $this->kerupuk_packing_item_id)
+            ->where('is_active', true)
+            ->first();
+
+        if ($config && $config->qty_kg_per_pack > 0) {
+            return (float) $config->qty_kg_per_pack;
+        }
+
+        return 1.0; // Default fallback
     }
 
     public function materials(): HasMany

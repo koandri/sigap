@@ -152,9 +152,6 @@
                     @if($item->itemCategory)
                     • <span class="badge bg-secondary">{{ $item->itemCategory->name }}</span>
                     @endif
-                    @if($item->qty_kg_per_pack)
-                    • <span class="badge bg-info">{{ number_format((float) $item->qty_kg_per_pack, 3) }} kg/pack</span>
-                    @endif
                 </p>
             </div>
             <div class="col-auto ms-auto d-print-none">

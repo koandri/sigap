@@ -539,7 +539,7 @@
                                             <tr>
                                                 <td>{{ $step4->kerupukKeringItem->name ?? 'N/A' }}</td>
                                                 <td>{{ $step4->kerupukPackingItem->name ?? 'N/A' }}</td>
-                                                <td>{{ number_format($step4->weight_per_unit, 3) }} kg</td>
+                                                <td>{{ number_format($step4->weight_per_unit, 2) }} kg</td>
                                                 <td>{{ number_format($step4->qty_gl1_kg, 2) }}</td>
                                                 <td>{{ number_format($step4->qty_gl1_packing, 0) }}</td>
                                                 <td>{{ number_format($step4->qty_gl2_kg, 2) }}</td>

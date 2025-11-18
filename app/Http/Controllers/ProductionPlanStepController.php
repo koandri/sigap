@@ -223,6 +223,16 @@ final class ProductionPlanStepController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Also load blueprints for Pack SKUs that are already in Step 4 (in case they're not in the main list)
+        $existingPackSkuIds = $productionPlan->step4->pluck('kerupuk_packing_item_id')->unique();
+        $additionalPackingItems = Item::with(['packingMaterialBlueprints.packingMaterialItem'])
+            ->whereIn('id', $existingPackSkuIds)
+            ->whereNotIn('id', $packingItems->pluck('id'))
+            ->get();
+        
+        // Merge both collections
+        $allPackingItems = $packingItems->merge($additionalPackingItems)->unique('id');
+
         $kerupukKeringOptions = $productionPlan->step3
             ->unique('kerupuk_kering_item_id')
             ->map(static function ($step3) {
@@ -233,10 +243,11 @@ final class ProductionPlanStepController extends Controller
             })
             ->values();
 
-        $packingBlueprints = $packingItems
+        // Load blueprints for ALL Pack SKUs (from both collections)
+        $packingBlueprints = $allPackingItems
             ->mapWithKeys(static function ($item) {
                 return [
-                    $item->id => $item->packingMaterialBlueprints->map(static function ($blueprint) {
+                    (string) $item->id => $item->packingMaterialBlueprints->map(static function ($blueprint) {
                         return [
                             'packing_material_item_id' => $blueprint->material_item_id,
                             'packing_material_item_name' => $blueprint->packingMaterialItem->name ?? 'N/A',
@@ -256,13 +267,25 @@ final class ProductionPlanStepController extends Controller
                 return $configs->pluck('pack_item_id')->toArray();
             });
 
+        // Get weight configurations for quick lookup
+        $weightConfigurations = \App\Models\KerupukPackConfiguration::with('packItem')
+            ->whereIn('kerupuk_kg_item_id', $kerupukKeringOptions->pluck('id'))
+            ->where('is_active', true)
+            ->get()
+            ->mapWithKeys(static function ($config) {
+                $key = $config->kerupuk_kg_item_id . '_' . $config->pack_item_id;
+                return [$key => (float) $config->qty_kg_per_pack];
+            });
+
         return view('manufacturing.production-plans.step4', compact(
             'productionPlan',
             'calculatedData',
             'packingItems',
+            'allPackingItems',
             'packingBlueprints',
             'kerupukKeringOptions',
-            'packConfigurations'
+            'packConfigurations',
+            'weightConfigurations'
         ));
     }
 
@@ -292,7 +315,6 @@ final class ProductionPlanStepController extends Controller
             'step4' => 'required|array',
             'step4.*.kerupuk_kering_item_id' => 'required|exists:items,id',
             'step4.*.kerupuk_packing_item_id' => 'required|exists:items,id',
-            'step4.*.weight_per_unit' => 'nullable|numeric|min:0.001',
             'step4.*.qty_gl1_packing' => 'required|numeric|min:0',
             'step4.*.qty_gl2_packing' => 'required|numeric|min:0',
             'step4.*.qty_ta_packing' => 'required|numeric|min:0',
@@ -301,6 +323,7 @@ final class ProductionPlanStepController extends Controller
             'materials.*.production_plan_step4_row_index' => 'required|integer',
             'materials.*.packing_material_item_id' => 'required|exists:items,id',
             'materials.*.quantity_total' => 'required|numeric|min:0',
+            'materials.*.pack_sku_id' => 'nullable|exists:items,id',
         ]);
 
         $packingItemIds = collect($validated['step4'])
@@ -333,18 +356,34 @@ final class ProductionPlanStepController extends Controller
         DB::transaction(function () use ($productionPlan, $validated, $blueprintsByPackingId): void {
             $productionPlan->step4()->delete();
 
-            // Group materials by row index
-            $materialsByRowIndex = [];
+            // Group materials by Pack SKU ID (since materials are now grouped by Pack SKU in the preview)
+            $materialsByPackSkuId = [];
             if (!empty($validated['materials'])) {
                 foreach ($validated['materials'] as $material) {
+                    $packSkuId = $material['pack_sku_id'] ?? null;
                     $rowIndex = $material['production_plan_step4_row_index'];
-                    if (!isset($materialsByRowIndex[$rowIndex])) {
-                        $materialsByRowIndex[$rowIndex] = [];
+                    
+                    if ($packSkuId) {
+                        // Group by Pack SKU ID
+                        if (!isset($materialsByPackSkuId[$packSkuId])) {
+                            $materialsByPackSkuId[$packSkuId] = [];
+                        }
+                        $materialsByPackSkuId[$packSkuId][] = [
+                            'packing_material_item_id' => $material['packing_material_item_id'],
+                            'quantity_total' => (int) $material['quantity_total'],
+                            'row_index' => $rowIndex, // Keep track of which row this came from
+                        ];
+                    } else {
+                        // Fallback: group by row index (for backward compatibility)
+                        if (!isset($materialsByPackSkuId['_row_' . $rowIndex])) {
+                            $materialsByPackSkuId['_row_' . $rowIndex] = [];
+                        }
+                        $materialsByPackSkuId['_row_' . $rowIndex][] = [
+                            'packing_material_item_id' => $material['packing_material_item_id'],
+                            'quantity_total' => (int) $material['quantity_total'],
+                            'row_index' => $rowIndex,
+                        ];
                     }
-                    $materialsByRowIndex[$rowIndex][] = [
-                        'packing_material_item_id' => $material['packing_material_item_id'],
-                        'quantity_total' => (int) $material['quantity_total'],
-                    ];
                 }
             }
 
@@ -355,7 +394,17 @@ final class ProductionPlanStepController extends Controller
                     continue;
                 }
 
-                $weightPerUnit = $this->resolveWeightPerUnit($packingItem, (float) ($data['weight_per_unit'] ?? 0.0));
+                // Get weight from KerupukPackConfiguration
+                $config = \App\Models\KerupukPackConfiguration::where('kerupuk_kg_item_id', $data['kerupuk_kering_item_id'])
+                    ->where('pack_item_id', $data['kerupuk_packing_item_id'])
+                    ->where('is_active', true)
+                    ->first();
+
+                if (!$config) {
+                    throw new \Exception('Kerupuk Pack Configuration not found for the selected items.');
+                }
+
+                $weightPerUnit = (float) $config->qty_kg_per_pack;
 
                 $qtyGl1Packing = (int) $data['qty_gl1_packing'];
                 $qtyGl2Packing = (int) $data['qty_gl2_packing'];
@@ -370,7 +419,6 @@ final class ProductionPlanStepController extends Controller
                 $step4Record = $productionPlan->step4()->create([
                     'kerupuk_kering_item_id' => $data['kerupuk_kering_item_id'],
                     'kerupuk_packing_item_id' => $data['kerupuk_packing_item_id'],
-                    'weight_per_unit' => $weightPerUnit,
                     'qty_gl1_kg' => $qtyGl1Kg,
                     'qty_gl1_packing' => $qtyGl1Packing,
                     'qty_gl2_kg' => $qtyGl2Kg,
@@ -381,11 +429,25 @@ final class ProductionPlanStepController extends Controller
                     'qty_bl_packing' => $qtyBlPacking,
                 ]);
 
-                // Save materials for this specific row
-                if (isset($materialsByRowIndex[$rowIndex]) && !empty($materialsByRowIndex[$rowIndex])) {
-                    // User provided custom materials for this row
-                    foreach ($materialsByRowIndex[$rowIndex] as $material) {
-                        $step4Record->materials()->create($material);
+                // Save materials for this row
+                // Check if materials are provided for this Pack SKU
+                $packSkuId = (string) $data['kerupuk_packing_item_id'];
+                if (isset($materialsByPackSkuId[$packSkuId]) && !empty($materialsByPackSkuId[$packSkuId])) {
+                    // User provided custom materials for this Pack SKU
+                    // Save materials for this row (materials are grouped by Pack SKU, so all rows with same Pack SKU get the same materials)
+                    foreach ($materialsByPackSkuId[$packSkuId] as $material) {
+                        $step4Record->materials()->create([
+                            'packing_material_item_id' => $material['packing_material_item_id'],
+                            'quantity_total' => $material['quantity_total'],
+                        ]);
+                    }
+                } elseif (isset($materialsByPackSkuId['_row_' . $rowIndex]) && !empty($materialsByPackSkuId['_row_' . $rowIndex])) {
+                    // Fallback: materials grouped by row index
+                    foreach ($materialsByPackSkuId['_row_' . $rowIndex] as $material) {
+                        $step4Record->materials()->create([
+                            'packing_material_item_id' => $material['packing_material_item_id'],
+                            'quantity_total' => $material['quantity_total'],
+                        ]);
                     }
                 } else {
                     // Use blueprint to auto-calculate materials
@@ -399,18 +461,6 @@ final class ProductionPlanStepController extends Controller
             ->with('success', 'Step 4 (Packing Planning) saved successfully.');
     }
 
-    private function resolveWeightPerUnit(Item $packingItem, float $requestedWeight): float
-    {
-        if ($requestedWeight > 0) {
-            return $requestedWeight;
-        }
-
-        if ($packingItem->qty_kg_per_pack && $packingItem->qty_kg_per_pack > 0) {
-            return (float) $packingItem->qty_kg_per_pack;
-        }
-
-        return 1.0;
-    }
 
     /**
      * Delete Step 2 and all subsequent steps.

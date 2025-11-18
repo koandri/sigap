@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('production_plan_id')->constrained('production_plans')->onDelete('cascade');
             $table->foreignId('kerupuk_kering_item_id')->constrained('items')->onDelete('restrict');
             $table->foreignId('kerupuk_packing_item_id')->constrained('items')->onDelete('restrict');
-            $table->decimal('weight_per_unit', 10, 3); // Kg per packing unit
             $table->decimal('qty_gl1_kg', 10, 2)->default(0);
             $table->integer('qty_gl1_packing')->default(0);
             $table->decimal('qty_gl2_kg', 10, 2)->default(0);

@@ -168,7 +168,6 @@ final class ProductionPlanCalculationService
                     'production_plan_id' => $plan->id,
                     'kerupuk_kering_item_id' => $kerupukItem->id,
                     'kerupuk_packing_item_id' => $packingItem->id,
-                    'weight_per_unit' => $weightPerUnit,
                     'qty_gl1_kg' => $step3->qty_gl1_kg,
                     'qty_gl1_packing' => $qtyGl1Packing,
                     'qty_gl2_kg' => $step3->qty_gl2_kg,
