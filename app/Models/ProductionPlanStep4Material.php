@@ -8,18 +8,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-final class PackingMaterialRequirement extends Model
+final class ProductionPlanStep4Material extends Model
 {
     use HasFactory;
+
+    protected $table = 'production_plan_step4_materials';
 
     protected $fillable = [
         'production_plan_step4_id',
         'packing_material_item_id',
-        'quantity_per_unit',
+        'quantity_total',
     ];
 
     protected $casts = [
-        'quantity_per_unit' => 'decimal:3',
+        'quantity_total' => 'decimal:3',
     ];
 
     public function productionPlanStep4(): BelongsTo

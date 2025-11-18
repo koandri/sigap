@@ -16,12 +16,6 @@ return new class extends Migration
 
         if (Schema::hasColumn('yield_guidelines', 'is_active')) {
             Schema::table('yield_guidelines', function (Blueprint $table): void {
-                $table->dropIndex('yield_guidelines_from_item_id_is_active_index');
-                $table->dropIndex('yield_guidelines_to_item_id_is_active_index');
-                $table->dropIndex('yield_guidelines_from_stage_to_stage_is_active_index');
-            });
-
-            Schema::table('yield_guidelines', function (Blueprint $table): void {
                 $table->dropColumn('is_active');
             });
         }
@@ -67,4 +61,6 @@ return new class extends Migration
         }
     }
 };
+
+
 

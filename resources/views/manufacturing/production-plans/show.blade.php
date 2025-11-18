@@ -512,52 +512,105 @@
                                                 <th colspan="2">GL2</th>
                                                 <th colspan="2">TA</th>
                                                 <th colspan="2">BL</th>
+                                                <th colspan="2">Totals</th>
                                             </tr>
                                             <tr>
                                                 <th></th>
                                                 <th></th>
                                                 <th></th>
+                                                <th>Packs</th>
                                                 <th>Kg</th>
-                                                <th>Packing</th>
+                                                <th>Packs</th>
                                                 <th>Kg</th>
-                                                <th>Packing</th>
+                                                <th>Packs</th>
                                                 <th>Kg</th>
-                                                <th>Packing</th>
+                                                <th>Packs</th>
                                                 <th>Kg</th>
-                                                <th>Packing</th>
+                                                <th>Packs</th>
+                                                <th>Kg</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($productionPlan->step4 as $step4)
+                                            @php
+                                                $rowTotalPacks = $step4->total_packing;
+                                                $rowTotalKg = $step4->total_kg;
+                                            @endphp
                                             <tr>
                                                 <td>{{ $step4->kerupukKeringItem->name ?? 'N/A' }}</td>
                                                 <td>{{ $step4->kerupukPackingItem->name ?? 'N/A' }}</td>
                                                 <td>{{ number_format($step4->weight_per_unit, 3) }} kg</td>
-                                                <td>{{ number_format($step4->qty_gl1_kg, 3) }}</td>
                                                 <td>{{ number_format($step4->qty_gl1_packing, 3) }}</td>
-                                                <td>{{ number_format($step4->qty_gl2_kg, 3) }}</td>
+                                                <td>{{ number_format($step4->qty_gl1_kg, 3) }}</td>
                                                 <td>{{ number_format($step4->qty_gl2_packing, 3) }}</td>
-                                                <td>{{ number_format($step4->qty_ta_kg, 3) }}</td>
+                                                <td>{{ number_format($step4->qty_gl2_kg, 3) }}</td>
                                                 <td>{{ number_format($step4->qty_ta_packing, 3) }}</td>
-                                                <td>{{ number_format($step4->qty_bl_kg, 3) }}</td>
+                                                <td>{{ number_format($step4->qty_ta_kg, 3) }}</td>
                                                 <td>{{ number_format($step4->qty_bl_packing, 3) }}</td>
+                                                <td>{{ number_format($step4->qty_bl_kg, 3) }}</td>
+                                                <td>{{ number_format($rowTotalPacks, 3) }}</td>
+                                                <td>{{ number_format($rowTotalKg, 3) }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
+                                            @php
+                                                $totalPacksAll = $totals['step4']['qty_gl1_packing']
+                                                    + $totals['step4']['qty_gl2_packing']
+                                                    + $totals['step4']['qty_ta_packing']
+                                                    + $totals['step4']['qty_bl_packing'];
+                                                $totalKgAll = $totals['step4']['qty_gl1_kg']
+                                                    + $totals['step4']['qty_gl2_kg']
+                                                    + $totals['step4']['qty_ta_kg']
+                                                    + $totals['step4']['qty_bl_kg'];
+                                            @endphp
                                             <tr>
                                                 <th colspan="3">Totals:</th>
-                                                <th>{{ number_format($totals['step4']['qty_gl1_kg'], 3) }}</th>
                                                 <th>{{ number_format($totals['step4']['qty_gl1_packing'], 3) }}</th>
-                                                <th>{{ number_format($totals['step4']['qty_gl2_kg'], 3) }}</th>
+                                                <th>{{ number_format($totals['step4']['qty_gl1_kg'], 3) }}</th>
                                                 <th>{{ number_format($totals['step4']['qty_gl2_packing'], 3) }}</th>
-                                                <th>{{ number_format($totals['step4']['qty_ta_kg'], 3) }}</th>
+                                                <th>{{ number_format($totals['step4']['qty_gl2_kg'], 3) }}</th>
                                                 <th>{{ number_format($totals['step4']['qty_ta_packing'], 3) }}</th>
-                                                <th>{{ number_format($totals['step4']['qty_bl_kg'], 3) }}</th>
+                                                <th>{{ number_format($totals['step4']['qty_ta_kg'], 3) }}</th>
                                                 <th>{{ number_format($totals['step4']['qty_bl_packing'], 3) }}</th>
+                                                <th>{{ number_format($totals['step4']['qty_bl_kg'], 3) }}</th>
+                                                <th>{{ number_format($totalPacksAll, 3) }}</th>
+                                                <th>{{ number_format($totalKgAll, 3) }}</th>
                                             </tr>
                                         </tfoot>
                                     </table>
+                                </div>
+
+                                <div class="card mt-3">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Packing Material Usage</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        @if($packingMaterialTotals->isNotEmpty())
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-vcenter">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Material</th>
+                                                            <th class="text-end">Estimated Qty</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($packingMaterialTotals as $material)
+                                                            <tr>
+                                                                <td>{{ $material['item']->name ?? 'N/A' }}</td>
+                                                                <td class="text-end">{{ number_format($material['quantity_total'], 3) }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="alert alert-warning mb-0">
+                                                <i class="far fa-exclamation-triangle me-2"></i>No packing material blueprints detected for the selected SKUs.
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                                 @if($productionPlan->canBeEdited())
                                 <div class="mt-3 d-flex flex-wrap gap-2 align-items-start">

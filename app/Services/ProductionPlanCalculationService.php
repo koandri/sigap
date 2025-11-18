@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Item;
+use App\Models\PackingMaterialBlueprint;
 use App\Models\ProductionPlan;
 use App\Models\ProductionPlanStep1;
 use App\Models\ProductionPlanStep2;
@@ -181,13 +182,44 @@ final class ProductionPlanCalculationService
      */
     public function calculatePackingMaterialRequirements(ProductionPlanStep4 $step4): array
     {
-        $requirements = [];
-        
-        // Get packing material items related to this packing item
-        // This would typically come from a configuration or item relationship
-        // For now, we'll return empty array - this should be implemented based on actual requirements
-        
-        return $requirements;
+        $blueprints = PackingMaterialBlueprint::with('packingMaterialItem')
+            ->where('kerupuk_packing_item_id', $step4->kerupuk_packing_item_id)
+            ->get();
+
+        $totalPacks = $step4->total_packing;
+
+        if ($totalPacks <= 0 || $blueprints->isEmpty()) {
+            return [];
+        }
+
+        return $blueprints->map(static function (PackingMaterialBlueprint $blueprint) use ($totalPacks) {
+            return [
+                'packing_material_item_id' => $blueprint->packing_material_item_id,
+                'packing_material_item_name' => $blueprint->packingMaterialItem->name ?? 'N/A',
+                'quantity_total' => round((float) $blueprint->quantity_per_pack * $totalPacks, 3),
+            ];
+        })->all();
+    }
+
+    public function syncPackingMaterials(ProductionPlanStep4 $step4, ?Collection $blueprints = null): void
+    {
+        $step4->materials()->delete();
+
+        $blueprints ??= PackingMaterialBlueprint::where('kerupuk_packing_item_id', $step4->kerupuk_packing_item_id)
+            ->get();
+
+        $totalPacks = $step4->total_packing;
+
+        if ($totalPacks <= 0 || $blueprints->isEmpty()) {
+            return;
+        }
+
+        foreach ($blueprints as $blueprint) {
+            $step4->materials()->create([
+                'packing_material_item_id' => $blueprint->packing_material_item_id,
+                'quantity_total' => $this->roundQuantity((float) $blueprint->quantity_per_pack * $totalPacks),
+            ]);
+        }
     }
 
     /**
@@ -247,10 +279,10 @@ final class ProductionPlanCalculationService
     {
         $gelondonganName = strtolower($gelondonganItem->name);
         
-        // Get finished products category
-        $finishedCategory = \App\Models\ItemCategory::where('name', 'Finished Products')->first();
+        // Get Kerupuk Kg category
+        $kerupukKgCategory = \App\Models\ItemCategory::where('name', 'Kerupuk Kg')->first();
 
-        if (!$finishedCategory) {
+        if (!$kerupukKgCategory) {
             return collect([]);
         }
 
@@ -265,12 +297,8 @@ final class ProductionPlanCalculationService
         }
 
         // Find kerupuk kering items matching the product type
-        $query = Item::where('item_category_id', $finishedCategory->id)
-            ->where('is_active', true)
-            ->where(function ($q) {
-                $q->where('name', 'like', '%kerupuk%')
-                  ->orWhere('name', 'like', '%kering%');
-            });
+        $query = Item::where('item_category_id', $kerupukKgCategory->id)
+            ->where('is_active', true);
 
         if (!empty($matchedTypes)) {
             $query->where(function ($q) use ($matchedTypes) {
@@ -290,10 +318,10 @@ final class ProductionPlanCalculationService
     {
         $kerupukName = strtolower($kerupukItem->name);
         
-        // Get finished products category
-        $finishedCategory = \App\Models\ItemCategory::where('name', 'Finished Products')->first();
+        // Get Kerupuk Pack category
+        $kerupukPackCategory = \App\Models\ItemCategory::where('name', 'Kerupuk Pack')->first();
 
-        if (!$finishedCategory) {
+        if (!$kerupukPackCategory) {
             return collect([]);
         }
 
@@ -307,15 +335,9 @@ final class ProductionPlanCalculationService
             }
         }
 
-        // Find packing items matching the product type (usually same name but different format)
-        $query = Item::where('item_category_id', $finishedCategory->id)
-            ->where('is_active', true)
-            ->where('id', '!=', $kerupukItem->id) // Exclude the kerupuk item itself
-            ->where(function ($q) {
-                $q->where('qty_kg_per_pack', '>', 1) // Items with packing info
-                  ->orWhere('name', 'like', '%packing%')
-                  ->orWhere('name', 'like', '%pack%');
-            });
+        // Find packing items matching the product type
+        $query = Item::where('item_category_id', $kerupukPackCategory->id)
+            ->where('is_active', true);
 
         if (!empty($matchedTypes)) {
             $query->where(function ($q) use ($matchedTypes) {
@@ -326,6 +348,11 @@ final class ProductionPlanCalculationService
         }
 
         return $query->get();
+    }
+
+    private function roundQuantity(float $value): float
+    {
+        return round($value, 3);
     }
 }
 

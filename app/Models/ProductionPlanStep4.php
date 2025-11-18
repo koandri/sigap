@@ -57,9 +57,9 @@ final class ProductionPlanStep4 extends Model
         return $this->belongsTo(Item::class, 'kerupuk_packing_item_id');
     }
 
-    public function packingMaterialRequirements(): HasMany
+    public function materials(): HasMany
     {
-        return $this->hasMany(PackingMaterialRequirement::class);
+        return $this->hasMany(ProductionPlanStep4Material::class);
     }
 
     public function getTotalKgAttribute(): float

@@ -26,9 +26,10 @@ final class YieldGuidelineSeeder extends Seeder
         // Get item categories
         $adonanCategory = ItemCategory::where('name', 'Adonan')->first();
         $gelondonganCategory = ItemCategory::where('name', 'Gelondongan')->first();
-        $finishedCategory = ItemCategory::where('name', 'Finished Products')->first();
+        $kerupukKgCategory = ItemCategory::where('name', 'Kerupuk Kg')->first();
+        $kerupukPackCategory = ItemCategory::where('name', 'Kerupuk Pack')->first();
 
-        if (!$adonanCategory || !$gelondonganCategory || !$finishedCategory) {
+        if (!$adonanCategory || !$gelondonganCategory || !$kerupukKgCategory || !$kerupukPackCategory) {
             $this->command->warn('Required item categories not found. Please seed item categories first.');
             return;
         }
@@ -36,9 +37,10 @@ final class YieldGuidelineSeeder extends Seeder
         // Get items by category
         $adonanItems = Item::where('item_category_id', $adonanCategory->id)->where('is_active', true)->get();
         $gelondonganItems = Item::where('item_category_id', $gelondonganCategory->id)->where('is_active', true)->get();
-        $finishedItems = Item::where('item_category_id', $finishedCategory->id)->where('is_active', true)->get();
+        $kerupukKgItems = Item::where('item_category_id', $kerupukKgCategory->id)->where('is_active', true)->get();
+        $kerupukPackItems = Item::where('item_category_id', $kerupukPackCategory->id)->where('is_active', true)->get();
 
-        if ($adonanItems->isEmpty() || $gelondonganItems->isEmpty() || $finishedItems->isEmpty()) {
+        if ($adonanItems->isEmpty() || $gelondonganItems->isEmpty() || $kerupukKgItems->isEmpty() || $kerupukPackItems->isEmpty()) {
             $this->command->warn('Items not found. Please create items first before seeding yield guidelines.');
             return;
         }
@@ -89,11 +91,10 @@ final class YieldGuidelineSeeder extends Seeder
             
             foreach ($productTypes as $type) {
                 if (stripos($gelondonganName, $type) !== false) {
-                    // Find matching kerupuk kering item (finished product)
-                    $kerupukItem = $finishedItems->first(function ($item) use ($type) {
+                    // Find matching kerupuk kering item from Kerupuk Kg category
+                    $kerupukItem = $kerupukKgItems->first(function ($item) use ($type) {
                         $name = strtolower($item->name);
-                        return stripos($name, $type) !== false 
-                            && (stripos($name, 'kerupuk') !== false || stripos($name, 'kering') !== false);
+                        return stripos($name, $type) !== false;
                     });
 
                     if ($kerupukItem) {
@@ -118,29 +119,28 @@ final class YieldGuidelineSeeder extends Seeder
 
         // Step 3: Create Kerupuk Kering (Kg) → Packing yield guidelines
         // This conversion uses weight_per_unit from items (qty_kg_per_pack)
-        foreach ($finishedItems as $kerupukItem) {
+        foreach ($kerupukKgItems as $kerupukItem) {
             $kerupukName = strtolower($kerupukItem->name);
             
-            // Only process items that are kerupuk kering (not packed products)
-            if (stripos($kerupukName, 'kerupuk') === false && stripos($kerupukName, 'kering') === false) {
+            // Extract product type
+            $productTypes = ['kancing', 'gondang', 'mentor', 'mini', 'surya bintang'];
+            $matchedType = null;
+            
+            foreach ($productTypes as $type) {
+                if (stripos($kerupukName, $type) !== false) {
+                    $matchedType = $type;
+                    break;
+                }
+            }
+
+            if (!$matchedType) {
                 continue;
             }
 
-            // Find matching packed product (usually same name but different unit/format)
-            $packedItem = $finishedItems->first(function ($item) use ($kerupukItem) {
+            // Find matching packed product from Kerupuk Pack category
+            $packedItem = $kerupukPackItems->first(function ($item) use ($matchedType) {
                 $itemName = strtolower($item->name);
-                $kerupukName = strtolower($kerupukItem->name);
-                
-                // Match by product type (Kancing, Gondang, etc.)
-                $productTypes = ['kancing', 'gondang', 'mentor', 'mini', 'surya bintang'];
-                foreach ($productTypes as $type) {
-                    if (stripos($kerupukName, $type) !== false && stripos($itemName, $type) !== false) {
-                        // Packed item should not be the same as kerupuk item
-                        return $item->id !== $kerupukItem->id 
-                            && (stripos($itemName, 'packing') !== false || $item->qty_kg_per_pack > 1);
-                    }
-                }
-                return false;
+                return stripos($itemName, $matchedType) !== false;
             });
 
             if ($packedItem && $packedItem->qty_kg_per_pack > 0) {
