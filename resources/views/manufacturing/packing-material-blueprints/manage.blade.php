@@ -173,14 +173,14 @@
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script>
 let materialIndex = {{ $item->packingMaterialBlueprints->count() > 0 ? $item->packingMaterialBlueprints->count() : 1 }};
-const materialOptions = @json($materialItems->map(function($item) {
+const materialOptions = {!! json_encode($materialItems->map(function($item) {
     return [
         'id' => $item->id,
         'name' => $item->name,
-        'category' => $item->itemCategory->name ?? '',
-        'unit' => $item->unit,
+        'category' => optional($item->itemCategory)->name ?? '',
+        'unit' => $item->unit ?? '',
     ];
-}));
+})) !!};
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeAllSelects();
