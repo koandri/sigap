@@ -11,6 +11,113 @@
     .material-row:hover {
         background-color: #f8f9fa;
     }
+    
+    /* Ensure select elements have proper width before TomSelect initializes */
+    .material-select {
+        width: 100% !important;
+        min-width: 200px !important;
+    }
+    
+    /* Fix Tom Select sizing to match Bootstrap form controls */
+    .ts-control {
+        min-height: calc(1.5em + 0.75rem + 2px) !important;
+        padding: 0.375rem 0.75rem !important;
+        font-size: 0.875rem !important;
+        line-height: 1.5 !important;
+        border: 1px solid #dadce0 !important;
+        border-radius: 4px !important;
+        background-color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+    
+    .ts-control.single .ts-control-input {
+        height: auto !important;
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    .ts-control.single .ts-control-input input {
+        height: auto !important;
+        line-height: 1.5 !important;
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 0.875rem !important;
+    }
+    
+    .ts-wrapper {
+        width: 100% !important;
+        display: block !important;
+    }
+    
+    /* Ensure the original select is properly hidden when TomSelect is initialized */
+    select.tomselected.ts-hidden-accessible {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        clip: rect(0, 0, 0, 0) !important;
+        -webkit-clip-path: inset(50%) !important;
+        clip-path: inset(50%) !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    
+    /* Fix Tom Select dropdown background and readability */
+    .ts-dropdown {
+        background-color: #ffffff !important;
+        border: 1px solid #dadce0 !important;
+        border-radius: 4px !important;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+        opacity: 1 !important;
+        max-height: 300px !important;
+        overflow-y: auto !important;
+    }
+    
+    .ts-dropdown .ts-dropdown-content {
+        background-color: #ffffff !important;
+        max-height: 300px !important;
+        overflow-y: auto !important;
+    }
+    
+    .ts-dropdown .option {
+        background-color: #ffffff !important;
+        color: #212529 !important;
+        padding: 0.375rem 0.75rem !important;
+        cursor: pointer !important;
+    }
+    
+    .ts-dropdown .option:hover,
+    .ts-dropdown .option.selected {
+        background-color: #e9ecef !important;
+        color: #212529 !important;
+    }
+    
+    .ts-dropdown .option.active {
+        background-color: #0d6efd !important;
+        color: #ffffff !important;
+    }
+    
+    /* Ensure table cells properly contain TomSelect wrappers */
+    #materials-table td {
+        position: relative;
+        vertical-align: middle;
+        overflow: visible !important;
+    }
+    
+    #materials-table td .ts-wrapper {
+        position: relative;
+        width: 100%;
+        z-index: 1;
+    }
 </style>
 @endpush
 
@@ -68,8 +175,7 @@
                         <table class="table table-vcenter" id="materials-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 50%;">Material</th>
-                                    <th style="width: 20%;">Unit</th>
+                                    <th style="width: 70%;">Material</th>
                                     <th style="width: 20%;" class="text-end">Qty/Pack</th>
                                     <th style="width: 10%;"></th>
                                 </tr>
@@ -82,7 +188,6 @@
                                             <option value="">Select material...</option>
                                             @foreach($materialItems as $materialItem)
                                             <option value="{{ $materialItem->id }}" 
-                                                data-unit="{{ $materialItem->unit }}"
                                                 {{ $blueprint->material_item_id == $materialItem->id ? 'selected' : '' }}>
                                                 {{ $materialItem->name }}
                                                 @if($materialItem->itemCategory)
@@ -91,9 +196,6 @@
                                             </option>
                                             @endforeach
                                         </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control unit-display" value="{{ $blueprint->materialItem->unit ?? '' }}" readonly>
                                     </td>
                                     <td>
                                         <input type="number" 
@@ -116,7 +218,7 @@
                                         <select name="materials[0][material_item_id]" class="form-select material-select" required>
                                             <option value="">Select material...</option>
                                             @foreach($materialItems as $materialItem)
-                                            <option value="{{ $materialItem->id }}" data-unit="{{ $materialItem->unit }}">
+                                            <option value="{{ $materialItem->id }}">
                                                 {{ $materialItem->name }}
                                                 @if($materialItem->itemCategory)
                                                     ({{ $materialItem->itemCategory->name }})
@@ -124,9 +226,6 @@
                                             </option>
                                             @endforeach
                                         </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control unit-display" readonly>
                                     </td>
                                     <td>
                                         <input type="number" 
@@ -178,7 +277,6 @@ const materialOptions = {!! json_encode($materialItems->map(function($item) {
         'id' => $item->id,
         'name' => $item->name,
         'category' => optional($item->itemCategory)->name ?? '',
-        'unit' => $item->unit ?? '',
     ];
 })) !!};
 
@@ -200,24 +298,8 @@ function initializeTomSelect(selectElement) {
         sortField: {
             field: 'text',
             direction: 'asc'
-        },
-        onChange: function(value) {
-            updateUnitDisplay(selectElement, value);
         }
     });
-}
-
-function updateUnitDisplay(selectElement, materialId) {
-    const row = selectElement.closest('tr');
-    const unitInput = row.querySelector('.unit-display');
-    
-    if (materialId) {
-        const selectedOption = selectElement.querySelector(`option[value="${materialId}"]`);
-        const unit = selectedOption ? selectedOption.dataset.unit : '';
-        unitInput.value = unit;
-    } else {
-        unitInput.value = '';
-    }
 }
 
 function addMaterialRow() {
@@ -227,7 +309,7 @@ function addMaterialRow() {
     
     let optionsHtml = '<option value="">Select material...</option>';
     materialOptions.forEach(function(material) {
-        optionsHtml += `<option value="${material.id}" data-unit="${material.unit}">
+        optionsHtml += `<option value="${material.id}">
             ${material.name}
             ${material.category ? `(${material.category})` : ''}
         </option>`;
@@ -238,9 +320,6 @@ function addMaterialRow() {
             <select name="materials[${materialIndex}][material_item_id]" class="form-select material-select" required>
                 ${optionsHtml}
             </select>
-        </td>
-        <td>
-            <input type="text" class="form-control unit-display" readonly>
         </td>
         <td>
             <input type="number" 
