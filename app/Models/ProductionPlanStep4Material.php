@@ -21,7 +21,7 @@ final class ProductionPlanStep4Material extends Model
     ];
 
     protected $casts = [
-        'quantity_total' => 'decimal:3',
+        'quantity_total' => 'integer',
     ];
 
     public function productionPlanStep4(): BelongsTo

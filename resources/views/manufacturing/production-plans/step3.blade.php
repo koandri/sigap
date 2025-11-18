@@ -190,20 +190,20 @@
                                             </select>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $data['qty_gl1_gelondongan'] ?? 0 }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl1_kg]" class="form-control" step="0.001" min="0" value="{{ $data['qty_gl1_kg'] ?? 0 }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="1" min="0" value="{{ $data['qty_gl1_gelondongan'] ?? 0 }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl1_kg]" class="form-control" step="0.01" min="0" value="{{ $data['qty_gl1_kg'] ?? 0 }}" required>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $data['qty_gl2_gelondongan'] ?? 0 }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl2_kg]" class="form-control" step="0.001" min="0" value="{{ $data['qty_gl2_kg'] ?? 0 }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="1" min="0" value="{{ $data['qty_gl2_gelondongan'] ?? 0 }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl2_kg]" class="form-control" step="0.01" min="0" value="{{ $data['qty_gl2_kg'] ?? 0 }}" required>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $data['qty_ta_gelondongan'] ?? 0 }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_ta_kg]" class="form-control" step="0.001" min="0" value="{{ $data['qty_ta_kg'] ?? 0 }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="1" min="0" value="{{ $data['qty_ta_gelondongan'] ?? 0 }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_ta_kg]" class="form-control" step="0.01" min="0" value="{{ $data['qty_ta_kg'] ?? 0 }}" required>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $data['qty_bl_gelondongan'] ?? 0 }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_bl_kg]" class="form-control" step="0.001" min="0" value="{{ $data['qty_bl_kg'] ?? 0 }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="1" min="0" value="{{ $data['qty_bl_gelondongan'] ?? 0 }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_bl_kg]" class="form-control" step="0.01" min="0" value="{{ $data['qty_bl_kg'] ?? 0 }}" required>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
@@ -241,20 +241,20 @@
                                             </select>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_gl1_gelondongan }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl1_kg]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_gl1_kg }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="1" min="0" value="{{ $step3->qty_gl1_gelondongan }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl1_kg]" class="form-control" step="0.01" min="0" value="{{ $step3->qty_gl1_kg }}" required>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_gl2_gelondongan }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl2_kg]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_gl2_kg }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="1" min="0" value="{{ $step3->qty_gl2_gelondongan }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_gl2_kg]" class="form-control" step="0.01" min="0" value="{{ $step3->qty_gl2_kg }}" required>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_ta_gelondongan }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_ta_kg]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_ta_kg }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="1" min="0" value="{{ $step3->qty_ta_gelondongan }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_ta_kg]" class="form-control" step="0.01" min="0" value="{{ $step3->qty_ta_kg }}" required>
                                         </td>
                                         <td>
-                                            Gld: <input type="number" name="step3[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_bl_gelondongan }}" readonly required><br />
-                                            Kg: <input type="number" name="step3[{{ $index }}][qty_bl_kg]" class="form-control" step="0.001" min="0" value="{{ $step3->qty_bl_kg }}" required>
+                                            Gld: <input type="number" name="step3[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="1" min="0" value="{{ $step3->qty_bl_gelondongan }}" readonly required><br />
+                                            Kg: <input type="number" name="step3[{{ $index }}][qty_bl_kg]" class="form-control" step="0.01" min="0" value="{{ $step3->qty_bl_kg }}" required>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
@@ -486,20 +486,20 @@ function createEmptyRow() {
         <td>${gelondonganSelect}</td>
         <td>${kerupukSelect}</td>
         <td>
-            Gld: <input type="number" name="step3[0][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" value="0" readonly required><br />
-            Kg: <input type="number" name="step3[0][qty_gl1_kg]" class="form-control" step="0.001" min="0" value="0" required>
+            Gld: <input type="number" name="step3[0][qty_gl1_gelondongan]" class="form-control" step="1" min="0" value="0" readonly required><br />
+            Kg: <input type="number" name="step3[0][qty_gl1_kg]" class="form-control" step="0.01" min="0" value="0" required>
         </td>
         <td>
-            Gld: <input type="number" name="step3[0][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" value="0" readonly required><br />
-            Kg: <input type="number" name="step3[0][qty_gl2_kg]" class="form-control" step="0.001" min="0" value="0" required>
+            Gld: <input type="number" name="step3[0][qty_gl2_gelondongan]" class="form-control" step="1" min="0" value="0" readonly required><br />
+            Kg: <input type="number" name="step3[0][qty_gl2_kg]" class="form-control" step="0.01" min="0" value="0" required>
         </td>
         <td>
-            Gld: <input type="number" name="step3[0][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" value="0" readonly required><br />
-            Kg: <input type="number" name="step3[0][qty_ta_kg]" class="form-control" step="0.001" min="0" value="0" required>
+            Gld: <input type="number" name="step3[0][qty_ta_gelondongan]" class="form-control" step="1" min="0" value="0" readonly required><br />
+            Kg: <input type="number" name="step3[0][qty_ta_kg]" class="form-control" step="0.01" min="0" value="0" required>
         </td>
         <td>
-            Gld: <input type="number" name="step3[0][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" value="0" readonly required><br />
-            Kg: <input type="number" name="step3[0][qty_bl_kg]" class="form-control" step="0.001" min="0" value="0" required>
+            Gld: <input type="number" name="step3[0][qty_bl_gelondongan]" class="form-control" step="1" min="0" value="0" readonly required><br />
+            Kg: <input type="number" name="step3[0][qty_bl_kg]" class="form-control" step="0.01" min="0" value="0" required>
         </td>
         <td>
             <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">

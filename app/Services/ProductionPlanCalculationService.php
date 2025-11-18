@@ -47,10 +47,10 @@ final class ProductionPlanCalculationService
                 $yield = (float) $yieldGuideline->yield_quantity;
 
                 // Calculate gelondongan quantities from adonan quantities
-                $qtyGl1Gelondongan = (float) $step1->qty_gl1 * $yield;
-                $qtyGl2Gelondongan = (float) $step1->qty_gl2 * $yield;
-                $qtyTaGelondongan = (float) $step1->qty_ta * $yield;
-                $qtyBlGelondongan = (float) $step1->qty_bl * $yield;
+                $qtyGl1Gelondongan = (int) round((float) $step1->qty_gl1 * $yield);
+                $qtyGl2Gelondongan = (int) round((float) $step1->qty_gl2 * $yield);
+                $qtyTaGelondongan = (int) round((float) $step1->qty_ta * $yield);
+                $qtyBlGelondongan = (int) round((float) $step1->qty_bl * $yield);
 
                 $calculations[] = [
                     'production_plan_id' => $plan->id,
@@ -102,10 +102,10 @@ final class ProductionPlanCalculationService
                 $yield = (float) $yieldGuideline->yield_quantity;
 
                 // Calculate kg quantities from gelondongan quantities
-                $qtyGl1Kg = (float) $step2->qty_gl1_gelondongan * $yield;
-                $qtyGl2Kg = (float) $step2->qty_gl2_gelondongan * $yield;
-                $qtyTaKg = (float) $step2->qty_ta_gelondongan * $yield;
-                $qtyBlKg = (float) $step2->qty_bl_gelondongan * $yield;
+                $qtyGl1Kg = round((float) $step2->qty_gl1_gelondongan * $yield, 2);
+                $qtyGl2Kg = round((float) $step2->qty_gl2_gelondongan * $yield, 2);
+                $qtyTaKg = round((float) $step2->qty_ta_gelondongan * $yield, 2);
+                $qtyBlKg = round((float) $step2->qty_bl_gelondongan * $yield, 2);
 
                 $calculations[] = [
                     'production_plan_id' => $plan->id,
@@ -140,20 +140,29 @@ final class ProductionPlanCalculationService
         foreach ($step3Records as $step3) {
             $kerupukItem = $step3->kerupukKeringItem;
             
-            // Find packing items that match this kerupuk kering type
-            $packingItems = $this->findPackingItems($kerupukItem);
+            // Get pack configurations for this kerupuk kg item
+            $configurations = \App\Models\KerupukPackConfiguration::with('packItem')
+                ->where('kerupuk_kg_item_id', $kerupukItem->id)
+                ->where('is_active', true)
+                ->get();
 
-            foreach ($packingItems as $packingItem) {
-                // Get weight per unit from item or use default
-                $weightPerUnit = $packingItem->qty_kg_per_pack > 0 
-                    ? (float) $packingItem->qty_kg_per_pack 
+            foreach ($configurations as $config) {
+                $packingItem = $config->packItem;
+                
+                if (!$packingItem) {
+                    continue;
+                }
+
+                // Get weight per unit from configuration
+                $weightPerUnit = $config->qty_kg_per_pack > 0 
+                    ? (float) $config->qty_kg_per_pack 
                     : 1.0; // Default to 1 kg per pack if not set
 
                 // Calculate packing quantities from kg quantities
-                $qtyGl1Packing = (float) $step3->qty_gl1_kg / $weightPerUnit;
-                $qtyGl2Packing = (float) $step3->qty_gl2_kg / $weightPerUnit;
-                $qtyTaPacking = (float) $step3->qty_ta_kg / $weightPerUnit;
-                $qtyBlPacking = (float) $step3->qty_bl_kg / $weightPerUnit;
+                $qtyGl1Packing = (int) round((float) $step3->qty_gl1_kg / $weightPerUnit);
+                $qtyGl2Packing = (int) round((float) $step3->qty_gl2_kg / $weightPerUnit);
+                $qtyTaPacking = (int) round((float) $step3->qty_ta_kg / $weightPerUnit);
+                $qtyBlPacking = (int) round((float) $step3->qty_bl_kg / $weightPerUnit);
 
                 $calculations[] = [
                     'production_plan_id' => $plan->id,
@@ -183,7 +192,7 @@ final class ProductionPlanCalculationService
     public function calculatePackingMaterialRequirements(ProductionPlanStep4 $step4): array
     {
         $blueprints = PackingMaterialBlueprint::with('packingMaterialItem')
-            ->where('kerupuk_packing_item_id', $step4->kerupuk_packing_item_id)
+            ->where('pack_item_id', $step4->kerupuk_packing_item_id)
             ->get();
 
         $totalPacks = $step4->total_packing;
@@ -194,7 +203,7 @@ final class ProductionPlanCalculationService
 
         return $blueprints->map(static function (PackingMaterialBlueprint $blueprint) use ($totalPacks) {
             return [
-                'packing_material_item_id' => $blueprint->packing_material_item_id,
+                'packing_material_item_id' => $blueprint->material_item_id,
                 'packing_material_item_name' => $blueprint->packingMaterialItem->name ?? 'N/A',
                 'quantity_total' => round((float) $blueprint->quantity_per_pack * $totalPacks, 3),
             ];
@@ -205,7 +214,7 @@ final class ProductionPlanCalculationService
     {
         $step4->materials()->delete();
 
-        $blueprints ??= PackingMaterialBlueprint::where('kerupuk_packing_item_id', $step4->kerupuk_packing_item_id)
+        $blueprints ??= PackingMaterialBlueprint::where('pack_item_id', $step4->kerupuk_packing_item_id)
             ->get();
 
         $totalPacks = $step4->total_packing;
@@ -216,8 +225,8 @@ final class ProductionPlanCalculationService
 
         foreach ($blueprints as $blueprint) {
             $step4->materials()->create([
-                'packing_material_item_id' => $blueprint->packing_material_item_id,
-                'quantity_total' => $this->roundQuantity((float) $blueprint->quantity_per_pack * $totalPacks),
+                'packing_material_item_id' => $blueprint->material_item_id,
+                'quantity_total' => (int) round((float) $blueprint->quantity_per_pack * $totalPacks),
             ]);
         }
     }
@@ -312,47 +321,28 @@ final class ProductionPlanCalculationService
     }
 
     /**
-     * Find packing items that match a given kerupuk kering item.
+     * Find packing items configured for a given kerupuk kering item.
      */
     private function findPackingItems(Item $kerupukItem): Collection
     {
-        $kerupukName = strtolower($kerupukItem->name);
-        
-        // Get Kerupuk Pack category
-        $kerupukPackCategory = \App\Models\ItemCategory::where('name', 'Kerupuk Pack')->first();
+        // Get configured pack items from KerupukPackConfiguration
+        $configurations = \App\Models\KerupukPackConfiguration::with('packItem')
+            ->where('kerupuk_kg_item_id', $kerupukItem->id)
+            ->where('is_active', true)
+            ->get();
 
-        if (!$kerupukPackCategory) {
+        if ($configurations->isEmpty()) {
             return collect([]);
         }
 
-        // Extract product type
-        $productTypes = ['kancing', 'gondang', 'mentor', 'mini', 'surya bintang'];
-        $matchedTypes = [];
-
-        foreach ($productTypes as $type) {
-            if (stripos($kerupukName, $type) !== false) {
-                $matchedTypes[] = $type;
-            }
-        }
-
-        // Find packing items matching the product type
-        $query = Item::where('item_category_id', $kerupukPackCategory->id)
-            ->where('is_active', true);
-
-        if (!empty($matchedTypes)) {
-            $query->where(function ($q) use ($matchedTypes) {
-                foreach ($matchedTypes as $type) {
-                    $q->orWhere('name', 'like', "%{$type}%");
-                }
-            });
-        }
-
-        return $query->get();
+        return $configurations->map(static function ($config) {
+            return $config->packItem;
+        })->filter();
     }
 
     private function roundQuantity(float $value): float
     {
-        return round($value, 3);
+        return round($value, 2);
     }
 }
 

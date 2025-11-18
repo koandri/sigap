@@ -115,6 +115,11 @@
                                     <i class="far fa-box-open"></i>&nbsp; &nbsp;Packing Blueprints
                                 </a>
                                 @endcan
+                                @can('manufacturing.kerupuk-pack-config.view')
+                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.kerupuk-pack-configurations.*') }}" href="{{ route('manufacturing.kerupuk-pack-configurations.index') }}">
+                                    <i class="far fa-link"></i>&nbsp; &nbsp;Kerupuk Pack Config
+                                </a>
+                                @endcan
                                 <a class="dropdown-item disabled">
                                     <i class="far fa-gears"></i>&nbsp; &nbsp;Production Execution
                                 </a>

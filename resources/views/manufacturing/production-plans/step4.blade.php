@@ -151,7 +151,6 @@
                                     <th rowspan="2" class="w-1"></th>
                                 </tr>
                                 <tr>
-                                    <th>Packs</th>
                                     <th>Kg</th>
                                     <th>Packs</th>
                                     <th>Kg</th>
@@ -161,6 +160,7 @@
                                     <th>Kg</th>
                                     <th>Packs</th>
                                     <th>Kg</th>
+                                    <th>Packs</th>
                                 </tr>
                             </thead>
                             <tbody id="step4-tbody">
@@ -180,7 +180,7 @@
                                     @endphp
                                     <tr class="step4-row" data-index="{{ $row['index'] }}">
                                         <td>
-                                            <select name="step4[{{ $row['index'] }}][kerupuk_kering_item_id]" class="form-select form-select-sm" required>
+                                            <select name="step4[{{ $row['index'] }}][kerupuk_kering_item_id]" class="form-select form-select-sm kerupuk-kg-select" data-row-index="{{ $row['index'] }}" required>
                                                 <option value="">Select Kerupuk Kering</option>
                                                 @foreach($kerupukKeringOptions as $option)
                                                     <option value="{{ $option['id'] }}" {{ (string) ($row['kerupuk_kering_item_id'] ?? '') === (string) $option['id'] ? 'selected' : '' }}>
@@ -190,7 +190,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <select name="step4[{{ $row['index'] }}][kerupuk_packing_item_id]" class="form-select form-select-sm" data-role="packing-select" required>
+                                            <select name="step4[{{ $row['index'] }}][kerupuk_packing_item_id]" class="form-select form-select-sm pack-sku-select" data-role="packing-select" data-row-index="{{ $row['index'] }}" required>
                                                 <option value="">Select Pack SKU</option>
                                                 @foreach($packingItems as $item)
                                                     <option value="{{ $item->id }}"
@@ -212,52 +212,52 @@
                                                    required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step4[{{ $row['index'] }}][qty_gl1_packing]"
-                                                class="form-control form-control-sm text-end pack-input"
-                                                data-line="gl1" step="0.001" min="0"
-                                                value="{{ $formatQty($gl1Pack) }}" required>
-                                        </td>
-                                        <td>
                                             <input type="text" class="form-control form-control-sm text-end bg-light"
                                                 data-kg-field="gl1" value="{{ $formatQty($gl1Kg) }}" readonly tabindex="-1">
                                         </td>
                                         <td>
-                                            <input type="number" name="step4[{{ $row['index'] }}][qty_gl2_packing]"
+                                            <input type="number" name="step4[{{ $row['index'] }}][qty_gl1_packing]"
                                                 class="form-control form-control-sm text-end pack-input"
-                                                data-line="gl2" step="0.001" min="0"
-                                                value="{{ $formatQty($gl2Pack) }}" required>
+                                                data-line="gl1" step="1" min="0"
+                                                value="{{ $formatQty($gl1Pack) }}" required>
                                         </td>
                                         <td>
                                             <input type="text" class="form-control form-control-sm text-end bg-light"
                                                 data-kg-field="gl2" value="{{ $formatQty($gl2Kg) }}" readonly tabindex="-1">
                                         </td>
                                         <td>
-                                            <input type="number" name="step4[{{ $row['index'] }}][qty_ta_packing]"
+                                            <input type="number" name="step4[{{ $row['index'] }}][qty_gl2_packing]"
                                                 class="form-control form-control-sm text-end pack-input"
-                                                data-line="ta" step="0.001" min="0"
-                                                value="{{ $formatQty($taPack) }}" required>
+                                                data-line="gl2" step="1" min="0"
+                                                value="{{ $formatQty($gl2Pack) }}" required>
                                         </td>
                                         <td>
                                             <input type="text" class="form-control form-control-sm text-end bg-light"
                                                 data-kg-field="ta" value="{{ $formatQty($taKg) }}" readonly tabindex="-1">
                                         </td>
                                         <td>
-                                            <input type="number" name="step4[{{ $row['index'] }}][qty_bl_packing]"
+                                            <input type="number" name="step4[{{ $row['index'] }}][qty_ta_packing]"
                                                 class="form-control form-control-sm text-end pack-input"
-                                                data-line="bl" step="0.001" min="0"
-                                                value="{{ $formatQty($blPack) }}" required>
+                                                data-line="ta" step="1" min="0"
+                                                value="{{ $formatQty($taPack) }}" required>
                                         </td>
                                         <td>
                                             <input type="text" class="form-control form-control-sm text-end bg-light"
                                                 data-kg-field="bl" value="{{ $formatQty($blKg) }}" readonly tabindex="-1">
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control form-control-sm text-end bg-light"
-                                                data-total-field="pack" value="{{ $formatQty($totalPacks) }}" readonly tabindex="-1">
+                                            <input type="number" name="step4[{{ $row['index'] }}][qty_bl_packing]"
+                                                class="form-control form-control-sm text-end pack-input"
+                                                data-line="bl" step="1" min="0"
+                                                value="{{ $formatQty($blPack) }}" required>
                                         </td>
                                         <td>
                                             <input type="text" class="form-control form-control-sm text-end bg-light"
                                                 data-total-field="kg" value="{{ $formatQty($totalKg) }}" readonly tabindex="-1">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm text-end bg-light"
+                                                data-total-field="pack" value="{{ $formatQty($totalPacks) }}" readonly tabindex="-1">
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
@@ -273,7 +273,7 @@
                     <div class="mt-4">
                         <h4 class="card-title h5 mb-2">Packing Material Usage Preview</h4>
                         <p class="text-muted small mb-3">
-                            The system multiplies each pack SKU's blueprint by the total packs above to estimate required materials.
+                            The system multiplies each pack SKU's blueprint by the total packs above to estimate required materials. Materials are grouped by Pack SKU.
                         </p>
                         <div id="materials-preview"></div>
                     </div>
@@ -295,10 +295,20 @@ const packingDefaultWeights = @json(
         static fn ($item) => [$item->id => (float) ($item->qty_kg_per_pack > 0 ? $item->qty_kg_per_pack : 1)]
     )
 );
+const packConfigurations = @json($packConfigurations);
+const allPackingItems = @json(
+    $packingItems->map(static fn ($item) => [
+        'id' => $item->id,
+        'name' => $item->name,
+        'weight' => (float) ($item->qty_kg_per_pack > 0 ? $item->qty_kg_per_pack : 1)
+    ])
+);
 let rowIndex = {{ $rowCount }};
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.step4-row').forEach(bindRowEvents);
+    // Initialize pack SKU filters based on current selections
+    document.querySelectorAll('.kerupuk-kg-select').forEach(filterPackSKUsForRow);
     refreshMaterialsPreview();
 });
 
@@ -318,6 +328,13 @@ function bindRowEvents(row) {
         });
     }
 
+    const kerupukKgSelect = row.querySelector('.kerupuk-kg-select');
+    if (kerupukKgSelect) {
+        kerupukKgSelect.addEventListener('change', () => {
+            filterPackSKUsForRow(kerupukKgSelect);
+        });
+    }
+
     const packingSelect = row.querySelector('[data-role="packing-select"]');
     if (packingSelect) {
         packingSelect.addEventListener('change', (event) => {
@@ -331,6 +348,65 @@ function bindRowEvents(row) {
     }
 
     updateRowCalculations(row);
+}
+
+function filterPackSKUsForRow(kerupukKgSelect) {
+    const row = kerupukKgSelect.closest('.step4-row');
+    if (!row) return;
+    
+    const packSkuSelect = row.querySelector('.pack-sku-select');
+    if (!packSkuSelect) return;
+    
+    const kerupukKgId = kerupukKgSelect.value;
+    const currentPackSkuId = packSkuSelect.value;
+    
+    // Clear options except the first "Select Pack SKU"
+    packSkuSelect.innerHTML = '<option value="">Select Pack SKU</option>';
+    
+    if (!kerupukKgId) {
+        // If no kerupuk kg selected, show all pack items
+        allPackingItems.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = item.name;
+            option.dataset.defaultWeight = item.weight.toFixed(3);
+            packSkuSelect.appendChild(option);
+        });
+    } else {
+        // Filter by configuration
+        const allowedPackIds = packConfigurations[kerupukKgId] || [];
+        
+        if (allowedPackIds.length === 0) {
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "No pack SKUs configured for this Kerupuk Kg";
+            option.disabled = true;
+            packSkuSelect.appendChild(option);
+        } else {
+            allPackingItems.forEach(item => {
+                if (allowedPackIds.includes(item.id)) {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.name;
+                    option.dataset.defaultWeight = item.weight.toFixed(3);
+                    if (item.id == currentPackSkuId) {
+                        option.selected = true;
+                    }
+                    packSkuSelect.appendChild(option);
+                }
+            });
+        }
+    }
+    
+    // If previously selected pack SKU is not in the filtered list, clear it
+    if (currentPackSkuId) {
+        const foundOption = Array.from(packSkuSelect.options).find(opt => opt.value == currentPackSkuId);
+        if (!foundOption) {
+            packSkuSelect.value = "";
+            const event = new Event('change');
+            packSkuSelect.dispatchEvent(event);
+        }
+    }
 }
 
 function addStep4Row() {
@@ -417,58 +493,128 @@ function refreshMaterialsPreview() {
         return;
     }
 
-    const summary = {};
-    document.querySelectorAll('.step4-row').forEach((row) => {
+    // Group materials by Pack SKU (row index)
+    const rowMaterials = [];
+    let hasAnyMaterials = false;
+
+    document.querySelectorAll('.step4-row').forEach((row, rowIdx) => {
         const packingSelect = row.querySelector('[data-role="packing-select"]');
         const packingId = packingSelect ? packingSelect.value : null;
+        const packingName = packingSelect ? packingSelect.options[packingSelect.selectedIndex]?.text : 'N/A';
+        
         if (!packingId || !packingBlueprints[packingId]) {
+            rowMaterials.push({
+                rowIndex: row.dataset.index || rowIdx,
+                packingId: packingId,
+                packingName: packingName,
+                totalPacks: 0,
+                materials: []
+            });
             return;
         }
 
         const totalPackField = row.querySelector('[data-total-field="pack"]');
         const totalPacks = parseFloat(totalPackField?.value ?? '0') || 0;
-        if (totalPacks <= 0) {
-            return;
+
+        const materials = [];
+        if (totalPacks > 0 && packingBlueprints[packingId] && packingBlueprints[packingId].length > 0) {
+            hasAnyMaterials = true;
+            packingBlueprints[packingId].forEach((material) => {
+                materials.push({
+                    packingMaterialItemId: material.packing_material_item_id,
+                    name: material.packing_material_item_name,
+                    quantityPerPack: material.quantity_per_pack || 0,
+                    quantityTotal: (material.quantity_per_pack || 0) * totalPacks
+                });
+            });
         }
 
-        packingBlueprints[packingId].forEach((material) => {
-            const materialId = material.packing_material_item_id;
-            if (!summary[materialId]) {
-                summary[materialId] = {
-                    name: material.packing_material_item_name,
-                    quantity: 0,
-                };
-            }
-            summary[materialId].quantity += (material.quantity_per_pack || 0) * totalPacks;
+        rowMaterials.push({
+            rowIndex: row.dataset.index || rowIdx,
+            packingId: packingId,
+            packingName: packingName,
+            totalPacks: totalPacks,
+            materials: materials
         });
     });
 
-    const materialIds = Object.keys(summary);
-    if (materialIds.length === 0) {
-        container.innerHTML = '<div class="alert alert-warning mb-0"><i class="far fa-exclamation-triangle me-2"></i>No packing materials calculated yet.</div>';
+    if (!hasAnyMaterials) {
+        container.innerHTML = '<div class="alert alert-warning mb-0"><i class="far fa-exclamation-triangle me-2"></i>No packing materials calculated yet. Select Pack SKUs and enter quantities above.</div>';
         return;
     }
 
-    materialIds.sort((a, b) => summary[a].name.localeCompare(summary[b].name));
+    // Build HTML for each row's materials
+    let html = '';
+    let materialInputCounter = 0;
 
-    const rows = materialIds.map((id) => {
-        const material = summary[id];
-        return `<tr><td>${material.name}</td><td class="text-end">${(material.quantity || 0).toFixed(3)}</td></tr>`;
-    }).join('');
+    rowMaterials.forEach((rowData) => {
+        if (rowData.materials.length === 0) {
+            return; // Skip rows with no materials
+        }
 
-    container.innerHTML = `
-        <div class="table-responsive mb-0">
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>Packing Material</th>
-                        <th class="text-end">Estimated Qty</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-        </div>
-    `;
+        html += `
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="far fa-box me-2"></i>${rowData.packingName}
+                        <span class="text-muted ms-2">(${rowData.totalPacks.toFixed(3)} packs)</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-vcenter mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Packing Material</th>
+                                    <th class="text-end">Per Pack</th>
+                                    <th class="text-end" style="width: 250px;">Total Quantity (Editable)</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+        rowData.materials.forEach((material) => {
+            html += `
+                <tr>
+                    <td class="align-middle">
+                        <strong>${material.name}</strong>
+                        <input type="hidden" name="materials[${materialInputCounter}][production_plan_step4_row_index]" value="${rowData.rowIndex}">
+                        <input type="hidden" name="materials[${materialInputCounter}][packing_material_item_id]" value="${material.packingMaterialItemId}">
+                    </td>
+                    <td class="text-end align-middle text-muted">
+                        ${material.quantityPerPack.toFixed(3)}
+                    </td>
+                    <td class="text-end align-middle">
+                        <div class="input-group input-group-sm" style="max-width: 200px; margin-left: auto;">
+                            <input type="number" 
+                                name="materials[${materialInputCounter}][quantity_total]" 
+                                class="form-control text-end" 
+                                value="${Math.round(material.quantityTotal)}" 
+                                step="1" 
+                                min="0"
+                                title="You can adjust this quantity if needed">
+                            <span class="input-group-text">units</span>
+                        </div>
+                        <small class="text-muted">Calculated: ${Math.round(material.quantityTotal)}</small>
+                    </td>
+                </tr>`;
+            materialInputCounter++;
+        });
+
+        html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+    });
+
+    html += `
+        <div class="alert alert-info mt-2 mb-0">
+            <i class="far fa-info-circle me-2"></i>
+            <strong>Note:</strong> Quantities are auto-calculated from pack SKU blueprints, but you can adjust them if needed before saving.
+        </div>`;
+
+    container.innerHTML = html;
 }
 </script>
 @endpush

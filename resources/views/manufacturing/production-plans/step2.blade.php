@@ -102,35 +102,35 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl1_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl1_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_gl1_adonan'] ?? 0 }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_gl1_gelondongan'] ?? 0 }}" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl2_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl2_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_gl2_adonan'] ?? 0 }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_gl2_gelondongan'] ?? 0 }}" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_ta_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_ta_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_ta_adonan'] ?? 0 }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_ta_gelondongan'] ?? 0 }}" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_bl_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_bl_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_bl_adonan'] ?? 0 }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $data['qty_bl_gelondongan'] ?? 0 }}" required>
                                         </td>
                                     </tr>
@@ -164,35 +164,35 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl1_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl1_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_gl1_adonan }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl1_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_gl1_gelondongan }}" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl2_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl2_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_gl2_adonan }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_gl2_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_gl2_gelondongan }}" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_ta_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_ta_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_ta_adonan }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_ta_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_ta_gelondongan }}" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_bl_adonan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_bl_adonan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_bl_adonan }}" readonly required>
                                         </td>
                                         <td>
-                                            <input type="number" name="step2[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" 
+                                            <input type="number" name="step2[{{ $index }}][qty_bl_gelondongan]" class="form-control" step="1" min="0" 
                                                    value="{{ $step2->qty_bl_gelondongan }}" required>
                                         </td>
                                     </tr>
@@ -262,14 +262,14 @@ function createEmptyRow() {
                 <option value="">Select Gld</option>
             </select>
         </td>
-        <td><input type="number" name="step2[0][qty_gl1_adonan]" class="form-control" step="0.001" min="0" value="0" readonly required></td>
-        <td><input type="number" name="step2[0][qty_gl1_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td>
-        <td><input type="number" name="step2[0][qty_gl2_adonan]" class="form-control" step="0.001" min="0" value="0" readonly required></td>
-        <td><input type="number" name="step2[0][qty_gl2_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td>
-        <td><input type="number" name="step2[0][qty_ta_adonan]" class="form-control" step="0.001" min="0" value="0" readonly required></td>
-        <td><input type="number" name="step2[0][qty_ta_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td>
-        <td><input type="number" name="step2[0][qty_bl_adonan]" class="form-control" step="0.001" min="0" value="0" readonly required></td>
-        <td><input type="number" name="step2[0][qty_bl_gelondongan]" class="form-control" step="0.001" min="0" value="0" required></td>
+        <td><input type="number" name="step2[0][qty_gl1_adonan]" class="form-control" step="1" min="0" value="0" readonly required></td>
+        <td><input type="number" name="step2[0][qty_gl1_gelondongan]" class="form-control" step="1" min="0" value="0" required></td>
+        <td><input type="number" name="step2[0][qty_gl2_adonan]" class="form-control" step="1" min="0" value="0" readonly required></td>
+        <td><input type="number" name="step2[0][qty_gl2_gelondongan]" class="form-control" step="1" min="0" value="0" required></td>
+        <td><input type="number" name="step2[0][qty_ta_adonan]" class="form-control" step="1" min="0" value="0" readonly required></td>
+        <td><input type="number" name="step2[0][qty_ta_gelondongan]" class="form-control" step="1" min="0" value="0" required></td>
+        <td><input type="number" name="step2[0][qty_bl_adonan]" class="form-control" step="1" min="0" value="0" readonly required></td>
+        <td><input type="number" name="step2[0][qty_bl_gelondongan]" class="form-control" step="1" min="0" value="0" required></td>
     `;
     return row;
 }

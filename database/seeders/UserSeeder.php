@@ -26,22 +26,22 @@ class UserSeeder extends Seeder
         $owner->name = 'Owner';
         $owner->save();
 
-        //add user
-        $user = new User;
-        $user->name = 'System';
-        $user->email = 'no-reply@suryagroup.app';
-        $user->password = Hash::make('9HBdPtURT2EK3a-yB6Nd');
-        $user->active = 0;
-        $user->save();
+        //add System user
+        $systemUser = new User;
+        $systemUser->name = 'System';
+        $systemUser->email = env('SYSTEM_USER_EMAIL', 'no-reply@example.com');
+        $systemUser->password = Hash::make(env('SYSTEM_USER_PASSWORD', 'password'));
+        $systemUser->active = 0;
+        $systemUser->save();
 
         //add Super Admin user
-        $user = new User;
-        $user->name = 'Andri Halim Gunawan';
-        $user->email = 'andri@ptsiap.com';
-        $user->password = Hash::make('Jtv6NVKZ9-ouHqvm.jwP');
-        $user->save();
+        $superAdminUser = new User;
+        $superAdminUser->name = env('SUPER_ADMIN_NAME', 'Super Admin');
+        $superAdminUser->email = env('SUPER_ADMIN_EMAIL', 'admin@example.com');
+        $superAdminUser->password = Hash::make(env('SUPER_ADMIN_PASSWORD', 'password'));
+        $superAdminUser->save();
 
         //assign Super Admin role
-        $user->assignRole($superadmin);
+        $superAdminUser->assignRole($superadmin);
     }
 }

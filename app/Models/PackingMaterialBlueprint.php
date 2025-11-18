@@ -31,5 +31,13 @@ final class PackingMaterialBlueprint extends Model
     {
         return $this->belongsTo(Item::class, 'material_item_id');
     }
+
+    /**
+     * Alias for materialItem() - represents the packing material
+     */
+    public function packingMaterialItem(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'material_item_id');
+    }
 }
 

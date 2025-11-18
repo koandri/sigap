@@ -29,14 +29,14 @@ final class ProductionPlanStep2 extends Model
     ];
 
     protected $casts = [
-        'qty_gl1_adonan' => 'decimal:3',
-        'qty_gl1_gelondongan' => 'decimal:3',
-        'qty_gl2_adonan' => 'decimal:3',
-        'qty_gl2_gelondongan' => 'decimal:3',
-        'qty_ta_adonan' => 'decimal:3',
-        'qty_ta_gelondongan' => 'decimal:3',
-        'qty_bl_adonan' => 'decimal:3',
-        'qty_bl_gelondongan' => 'decimal:3',
+        'qty_gl1_adonan' => 'integer',
+        'qty_gl1_gelondongan' => 'integer',
+        'qty_gl2_adonan' => 'integer',
+        'qty_gl2_gelondongan' => 'integer',
+        'qty_ta_adonan' => 'integer',
+        'qty_ta_gelondongan' => 'integer',
+        'qty_bl_adonan' => 'integer',
+        'qty_bl_gelondongan' => 'integer',
     ];
 
     public function productionPlan(): BelongsTo

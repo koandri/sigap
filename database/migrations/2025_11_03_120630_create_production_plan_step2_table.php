@@ -18,14 +18,14 @@ return new class extends Migration
             $table->foreignId('production_plan_id')->constrained('production_plans')->onDelete('cascade');
             $table->foreignId('adonan_item_id')->constrained('items')->onDelete('restrict');
             $table->foreignId('gelondongan_item_id')->constrained('items')->onDelete('restrict');
-            $table->decimal('qty_gl1_adonan', 10, 3)->default(0);
-            $table->decimal('qty_gl1_gelondongan', 10, 3)->default(0);
-            $table->decimal('qty_gl2_adonan', 10, 3)->default(0);
-            $table->decimal('qty_gl2_gelondongan', 10, 3)->default(0);
-            $table->decimal('qty_ta_adonan', 10, 3)->default(0);
-            $table->decimal('qty_ta_gelondongan', 10, 3)->default(0);
-            $table->decimal('qty_bl_adonan', 10, 3)->default(0);
-            $table->decimal('qty_bl_gelondongan', 10, 3)->default(0);
+            $table->integer('qty_gl1_adonan')->default(0);
+            $table->integer('qty_gl1_gelondongan')->default(0);
+            $table->integer('qty_gl2_adonan')->default(0);
+            $table->integer('qty_gl2_gelondongan')->default(0);
+            $table->integer('qty_ta_adonan')->default(0);
+            $table->integer('qty_ta_gelondongan')->default(0);
+            $table->integer('qty_bl_adonan')->default(0);
+            $table->integer('qty_bl_gelondongan')->default(0);
             $table->timestamps();
 
             $table->index('production_plan_id');

@@ -20,10 +20,10 @@ return new class extends Migration
             $table->foreignId('recipe_id')->nullable()->constrained('recipes')->onDelete('set null');
             $table->string('recipe_name', 100); // Snapshot of recipe name when plan was created
             $table->date('recipe_date'); // Snapshot of recipe date
-            $table->decimal('qty_gl1', 10, 3)->default(0);
-            $table->decimal('qty_gl2', 10, 3)->default(0);
-            $table->decimal('qty_ta', 10, 3)->default(0);
-            $table->decimal('qty_bl', 10, 3)->default(0);
+            $table->integer('qty_gl1')->default(0);
+            $table->integer('qty_gl2')->default(0);
+            $table->integer('qty_ta')->default(0);
+            $table->integer('qty_bl')->default(0);
             $table->boolean('is_custom_recipe')->default(false); // True if recipe differs from master recipe
             $table->timestamps();
 

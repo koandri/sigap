@@ -19,14 +19,14 @@ return new class extends Migration
             $table->foreignId('kerupuk_kering_item_id')->constrained('items')->onDelete('restrict');
             $table->foreignId('kerupuk_packing_item_id')->constrained('items')->onDelete('restrict');
             $table->decimal('weight_per_unit', 10, 3); // Kg per packing unit
-            $table->decimal('qty_gl1_kg', 10, 3)->default(0);
-            $table->decimal('qty_gl1_packing', 10, 3)->default(0);
-            $table->decimal('qty_gl2_kg', 10, 3)->default(0);
-            $table->decimal('qty_gl2_packing', 10, 3)->default(0);
-            $table->decimal('qty_ta_kg', 10, 3)->default(0);
-            $table->decimal('qty_ta_packing', 10, 3)->default(0);
-            $table->decimal('qty_bl_kg', 10, 3)->default(0);
-            $table->decimal('qty_bl_packing', 10, 3)->default(0);
+            $table->decimal('qty_gl1_kg', 10, 2)->default(0);
+            $table->integer('qty_gl1_packing')->default(0);
+            $table->decimal('qty_gl2_kg', 10, 2)->default(0);
+            $table->integer('qty_gl2_packing')->default(0);
+            $table->decimal('qty_ta_kg', 10, 2)->default(0);
+            $table->integer('qty_ta_packing')->default(0);
+            $table->decimal('qty_bl_kg', 10, 2)->default(0);
+            $table->integer('qty_bl_packing')->default(0);
             $table->timestamps();
 
             $table->index('production_plan_id');

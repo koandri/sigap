@@ -129,18 +129,20 @@ final class ProductionPlanController extends Controller
             ? $requestedStep
             : max(1, $highestStep ?: 1);
 
-        $packingMaterialTotals = $productionPlan->step4
-            ->flatMap(static fn ($step4) => $step4->materials)
-            ->groupBy('packing_material_item_id')
-            ->map(function ($materials) {
-                $first = $materials->first();
-
-                return [
-                    'item' => $first?->packingMaterialItem,
-                    'quantity_total' => $materials->sum(static fn ($material) => (float) $material->quantity_total),
-                ];
-            })
-            ->values();
+        // Group materials by Pack SKU (Step 4 row)
+        $packingMaterialsByRow = $productionPlan->step4->map(function ($step4) {
+            return [
+                'step4' => $step4,
+                'pack_sku_name' => $step4->kerupukPackingItem->name ?? 'N/A',
+                'total_packs' => $step4->total_packing,
+                'materials' => $step4->materials->map(function ($material) {
+                    return [
+                        'item' => $material->packingMaterialItem,
+                        'quantity_total' => (float) $material->quantity_total,
+                    ];
+                }),
+            ];
+        });
 
         return view('manufacturing.production-plans.show', compact(
             'productionPlan',
@@ -148,7 +150,7 @@ final class ProductionPlanController extends Controller
             'isComplete',
             'highestStep',
             'activeStep',
-            'packingMaterialTotals'
+            'packingMaterialsByRow'
         ));
     }
 

@@ -32,14 +32,14 @@ final class ProductionPlanStep4 extends Model
 
     protected $casts = [
         'weight_per_unit' => 'decimal:3',
-        'qty_gl1_kg' => 'decimal:3',
-        'qty_gl1_packing' => 'decimal:3',
-        'qty_gl2_kg' => 'decimal:3',
-        'qty_gl2_packing' => 'decimal:3',
-        'qty_ta_kg' => 'decimal:3',
-        'qty_ta_packing' => 'decimal:3',
-        'qty_bl_kg' => 'decimal:3',
-        'qty_bl_packing' => 'decimal:3',
+        'qty_gl1_kg' => 'decimal:2',
+        'qty_gl1_packing' => 'integer',
+        'qty_gl2_kg' => 'decimal:2',
+        'qty_gl2_packing' => 'integer',
+        'qty_ta_kg' => 'decimal:2',
+        'qty_ta_packing' => 'integer',
+        'qty_bl_kg' => 'decimal:2',
+        'qty_bl_packing' => 'integer',
     ];
 
     public function productionPlan(): BelongsTo

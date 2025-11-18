@@ -87,7 +87,18 @@ final class ProductionPlanStepController extends Controller
 
         // Create new Step 2 records
         foreach ($validated['step2'] as $data) {
-            $productionPlan->step2()->create($data);
+            $productionPlan->step2()->create([
+                'adonan_item_id' => $data['adonan_item_id'],
+                'gelondongan_item_id' => $data['gelondongan_item_id'],
+                'qty_gl1_adonan' => (int) $data['qty_gl1_adonan'],
+                'qty_gl1_gelondongan' => (int) $data['qty_gl1_gelondongan'],
+                'qty_gl2_adonan' => (int) $data['qty_gl2_adonan'],
+                'qty_gl2_gelondongan' => (int) $data['qty_gl2_gelondongan'],
+                'qty_ta_adonan' => (int) $data['qty_ta_adonan'],
+                'qty_ta_gelondongan' => (int) $data['qty_ta_gelondongan'],
+                'qty_bl_adonan' => (int) $data['qty_bl_adonan'],
+                'qty_bl_gelondongan' => (int) $data['qty_bl_gelondongan'],
+            ]);
         }
 
         return redirect()
@@ -154,7 +165,18 @@ final class ProductionPlanStepController extends Controller
 
         // Create new Step 3 records
         foreach ($validated['step3'] as $data) {
-            $productionPlan->step3()->create($data);
+            $productionPlan->step3()->create([
+                'gelondongan_item_id' => $data['gelondongan_item_id'],
+                'kerupuk_kering_item_id' => $data['kerupuk_kering_item_id'],
+                'qty_gl1_gelondongan' => (int) $data['qty_gl1_gelondongan'],
+                'qty_gl1_kg' => round((float) $data['qty_gl1_kg'], 2),
+                'qty_gl2_gelondongan' => (int) $data['qty_gl2_gelondongan'],
+                'qty_gl2_kg' => round((float) $data['qty_gl2_kg'], 2),
+                'qty_ta_gelondongan' => (int) $data['qty_ta_gelondongan'],
+                'qty_ta_kg' => round((float) $data['qty_ta_kg'], 2),
+                'qty_bl_gelondongan' => (int) $data['qty_bl_gelondongan'],
+                'qty_bl_kg' => round((float) $data['qty_bl_kg'], 2),
+            ]);
         }
 
         return redirect()
@@ -216,7 +238,7 @@ final class ProductionPlanStepController extends Controller
                 return [
                     $item->id => $item->packingMaterialBlueprints->map(static function ($blueprint) {
                         return [
-                            'packing_material_item_id' => $blueprint->packing_material_item_id,
+                            'packing_material_item_id' => $blueprint->material_item_id,
                             'packing_material_item_name' => $blueprint->packingMaterialItem->name ?? 'N/A',
                             'quantity_per_pack' => (float) $blueprint->quantity_per_pack,
                         ];
@@ -224,12 +246,23 @@ final class ProductionPlanStepController extends Controller
                 ];
             });
 
+        // Get pack configurations for each kerupuk kg item
+        $packConfigurations = \App\Models\KerupukPackConfiguration::with('packItem')
+            ->whereIn('kerupuk_kg_item_id', $kerupukKeringOptions->pluck('id'))
+            ->where('is_active', true)
+            ->get()
+            ->groupBy('kerupuk_kg_item_id')
+            ->map(static function ($configs) {
+                return $configs->pluck('pack_item_id')->toArray();
+            });
+
         return view('manufacturing.production-plans.step4', compact(
             'productionPlan',
             'calculatedData',
             'packingItems',
             'packingBlueprints',
-            'kerupukKeringOptions'
+            'kerupukKeringOptions',
+            'packConfigurations'
         ));
     }
 
@@ -244,6 +277,17 @@ final class ProductionPlanStepController extends Controller
                 ->with('error', 'Cannot edit production plan that is not in draft status.');
         }
 
+        $request->merge([
+            'materials' => collect($request->input('materials', []))
+                ->filter(static function ($material) {
+                    return !empty($material['packing_material_item_id']) && 
+                           $material['packing_material_item_id'] !== 'null' &&
+                           is_numeric($material['packing_material_item_id']);
+                })
+                ->values()
+                ->toArray()
+        ]);
+
         $validated = $request->validate([
             'step4' => 'required|array',
             'step4.*.kerupuk_kering_item_id' => 'required|exists:items,id',
@@ -253,6 +297,10 @@ final class ProductionPlanStepController extends Controller
             'step4.*.qty_gl2_packing' => 'required|numeric|min:0',
             'step4.*.qty_ta_packing' => 'required|numeric|min:0',
             'step4.*.qty_bl_packing' => 'required|numeric|min:0',
+            'materials' => 'nullable|array',
+            'materials.*.production_plan_step4_row_index' => 'required|integer',
+            'materials.*.packing_material_item_id' => 'required|exists:items,id',
+            'materials.*.quantity_total' => 'required|numeric|min:0',
         ]);
 
         $packingItemIds = collect($validated['step4'])
@@ -260,9 +308,9 @@ final class ProductionPlanStepController extends Controller
             ->unique()
             ->values();
 
-        $blueprintsByPackingId = PackingMaterialBlueprint::whereIn('kerupuk_packing_item_id', $packingItemIds)
+        $blueprintsByPackingId = PackingMaterialBlueprint::whereIn('pack_item_id', $packingItemIds)
             ->get()
-            ->groupBy('kerupuk_packing_item_id');
+            ->groupBy('pack_item_id');
 
         $missingBlueprintItems = $packingItemIds->filter(static function ($packingItemId) use ($blueprintsByPackingId) {
             return !$blueprintsByPackingId->has($packingItemId) || $blueprintsByPackingId->get($packingItemId)->isEmpty();
@@ -285,7 +333,22 @@ final class ProductionPlanStepController extends Controller
         DB::transaction(function () use ($productionPlan, $validated, $blueprintsByPackingId): void {
             $productionPlan->step4()->delete();
 
-            foreach ($validated['step4'] as $data) {
+            // Group materials by row index
+            $materialsByRowIndex = [];
+            if (!empty($validated['materials'])) {
+                foreach ($validated['materials'] as $material) {
+                    $rowIndex = $material['production_plan_step4_row_index'];
+                    if (!isset($materialsByRowIndex[$rowIndex])) {
+                        $materialsByRowIndex[$rowIndex] = [];
+                    }
+                    $materialsByRowIndex[$rowIndex][] = [
+                        'packing_material_item_id' => $material['packing_material_item_id'],
+                        'quantity_total' => (int) $material['quantity_total'],
+                    ];
+                }
+            }
+
+            foreach ($validated['step4'] as $rowIndex => $data) {
                 $packingItem = Item::find($data['kerupuk_packing_item_id']);
 
                 if (!$packingItem) {
@@ -294,15 +357,15 @@ final class ProductionPlanStepController extends Controller
 
                 $weightPerUnit = $this->resolveWeightPerUnit($packingItem, (float) ($data['weight_per_unit'] ?? 0.0));
 
-                $qtyGl1Packing = (float) $data['qty_gl1_packing'];
-                $qtyGl2Packing = (float) $data['qty_gl2_packing'];
-                $qtyTaPacking = (float) $data['qty_ta_packing'];
-                $qtyBlPacking = (float) $data['qty_bl_packing'];
+                $qtyGl1Packing = (int) $data['qty_gl1_packing'];
+                $qtyGl2Packing = (int) $data['qty_gl2_packing'];
+                $qtyTaPacking = (int) $data['qty_ta_packing'];
+                $qtyBlPacking = (int) $data['qty_bl_packing'];
 
-                $qtyGl1Kg = $qtyGl1Packing * $weightPerUnit;
-                $qtyGl2Kg = $qtyGl2Packing * $weightPerUnit;
-                $qtyTaKg = $qtyTaPacking * $weightPerUnit;
-                $qtyBlKg = $qtyBlPacking * $weightPerUnit;
+                $qtyGl1Kg = round($qtyGl1Packing * $weightPerUnit, 2);
+                $qtyGl2Kg = round($qtyGl2Packing * $weightPerUnit, 2);
+                $qtyTaKg = round($qtyTaPacking * $weightPerUnit, 2);
+                $qtyBlKg = round($qtyBlPacking * $weightPerUnit, 2);
 
                 $step4Record = $productionPlan->step4()->create([
                     'kerupuk_kering_item_id' => $data['kerupuk_kering_item_id'],
@@ -318,7 +381,16 @@ final class ProductionPlanStepController extends Controller
                     'qty_bl_packing' => $qtyBlPacking,
                 ]);
 
-                $this->calculationService->syncPackingMaterials($step4Record, $blueprintsByPackingId->get($data['kerupuk_packing_item_id']));
+                // Save materials for this specific row
+                if (isset($materialsByRowIndex[$rowIndex]) && !empty($materialsByRowIndex[$rowIndex])) {
+                    // User provided custom materials for this row
+                    foreach ($materialsByRowIndex[$rowIndex] as $material) {
+                        $step4Record->materials()->create($material);
+                    }
+                } else {
+                    // Use blueprint to auto-calculate materials
+                    $this->calculationService->syncPackingMaterials($step4Record, $blueprintsByPackingId->get($data['kerupuk_packing_item_id']));
+                }
             }
         });
 

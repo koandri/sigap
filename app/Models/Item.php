@@ -80,6 +80,23 @@ final class Item extends Model
     }
 
     /**
+     * Get pack configurations for this kerupuk kg item.
+     */
+    public function kerupukPackConfigurations(): HasMany
+    {
+        return $this->hasMany(KerupukPackConfiguration::class, 'kerupuk_kg_item_id');
+    }
+
+    /**
+     * Get available pack items for this kerupuk kg item.
+     */
+    public function availablePackItems(): HasMany
+    {
+        return $this->hasMany(KerupukPackConfiguration::class, 'kerupuk_kg_item_id')
+            ->where('is_active', true);
+    }
+
+    /**
      * Scope to get only active items.
      */
     public function scopeActive($query)
