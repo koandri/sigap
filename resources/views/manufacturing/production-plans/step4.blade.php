@@ -225,22 +225,22 @@
                                                                     data-role="packing-select" 
                                                                     data-row-index="{{ $row['index'] }}" 
                                                                     required>
-                                                                <option value="">Select Pack SKU</option>
+                                                <option value="">Select Pack SKU</option>
                                                                 @if(count($allowedPackIds) > 0)
-                                                                    @foreach($allPackingItems ?? $packingItems as $item)
+                                                @foreach($allPackingItems ?? $packingItems as $item)
                                                                         @if(in_array($item->id, $allowedPackIds))
-                                                                            <option value="{{ $item->id }}"
-                                                                                data-default-weight="{{ number_format($item->qty_kg_per_pack > 0 ? $item->qty_kg_per_pack : 1, 2, '.', '') }}"
-                                                                                {{ (string) ($row['kerupuk_packing_item_id'] ?? '') === (string) $item->id ? 'selected' : '' }}>
-                                                                                {{ $item->name }}
-                                                                            </option>
+                                                    <option value="{{ $item->id }}"
+                                                        data-default-weight="{{ number_format($item->qty_kg_per_pack > 0 ? $item->qty_kg_per_pack : 1, 2, '.', '') }}"
+                                                        {{ (string) ($row['kerupuk_packing_item_id'] ?? '') === (string) $item->id ? 'selected' : '' }}>
+                                                        {{ $item->name }}
+                                                    </option>
                                                                         @endif
-                                                                    @endforeach
+                                                @endforeach
                                                                 @else
                                                                     <option value="" disabled>No Pack SKUs configured</option>
                                                                 @endif
-                                                            </select>
-                                                        </td>
+                                            </select>
+                                        </td>
                                                         <td class="text-end">{{ $formatWeight($weight) }} Kg</td>
                                                         <td class="text-end">{{ $formatKg($gl1Kg) }} Kg</td>
                                                         <td class="text-end">{{ $formatKg($gl2Kg) }} Kg</td>
@@ -262,7 +262,7 @@
                                                                 value="{{ $formatPacks($gl1Pack) }}" 
                                                                 required>
                                                             <span> Pack</span>
-                                                        </td>
+                                        </td>
                                                         <td class="text-end">
                                                             <input type="number" 
                                                                 name="step4[{{ $row['index'] }}][qty_gl2_packing]" 
@@ -275,7 +275,7 @@
                                                                 value="{{ $formatPacks($gl2Pack) }}" 
                                                                 required>
                                                             <span> Pack</span>
-                                                        </td>
+                                        </td>
                                                         <td class="text-end">
                                                             <input type="number" 
                                                                 name="step4[{{ $row['index'] }}][qty_ta_packing]" 
@@ -288,7 +288,7 @@
                                                                 value="{{ $formatPacks($taPack) }}" 
                                                                 required>
                                                             <span> Pack</span>
-                                                        </td>
+                                        </td>
                                                         <td class="text-end">
                                                             <input type="number" 
                                                                 name="step4[{{ $row['index'] }}][qty_bl_packing]" 
@@ -301,13 +301,13 @@
                                                                 value="{{ $formatPacks($blPack) }}" 
                                                                 required>
                                                             <span> Pack</span>
-                                                        </td>
+                                        </td>
                                                         <td class="text-end"><strong>{{ $formatPacks($totalPacks) }}</strong></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        
+                                    </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                                         <!-- Hidden inputs for this row -->
                                         <div class="d-none step4-row" data-index="{{ $row['index'] }}">
                                             <input type="hidden" name="step4[{{ $row['index'] }}][kerupuk_kering_item_id]" value="{{ $row['kerupuk_kering_item_id'] }}">
@@ -373,6 +373,21 @@ const allPackingItems = @json(
 );
 let rowIndex = {{ $rowCount }};
 let globalMaterialCounter = 0;
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+function formatNumber(num) {
+    return parseFloat(num).toFixed(2);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Bind events for display tables and hidden rows
@@ -547,20 +562,20 @@ function addStep4Row() {
     const rowsContainer = targetSection.querySelector('.step4-rows-container');
     const firstRow = rowsContainer.querySelector('.step4-row');
     if (!firstRow) return;
-    
+
     const newRow = firstRow.cloneNode(true);
     newRow.dataset.index = rowIndex;
-    
+
     newRow.querySelectorAll('[name]').forEach((input) => {
         const oldName = input.getAttribute('name');
         if (oldName) {
             input.setAttribute('name', oldName.replace(/\[\d+]/, `[${rowIndex}]`));
         }
-        
+
         if (input.matches('select')) {
             input.selectedIndex = 0;
         }
-        
+
         if (input.tagName === 'INPUT') {
             if (input.classList.contains('pack-input')) {
                 input.value = '0';
@@ -573,7 +588,7 @@ function addStep4Row() {
             }
         }
     });
-    
+
     rowsContainer.appendChild(newRow);
     bindRowEvents(newRow);
     refreshAllSections();
@@ -757,8 +772,8 @@ function updatePackSkuSection(section) {
                 packCells[6].innerHTML = '<strong>' + totalPacks.toFixed(0) + '</strong>';
             }
         }
-    }
-    
+        }
+        
     // Update materials preview for this section
     refreshMaterialsForSection(section);
 }
@@ -820,7 +835,7 @@ function refreshMaterialsForSection(section) {
         materialsTbody.innerHTML = '<tr><td colspan="3" class="text-center text-warning"><small>No packing material blueprints configured for this Pack SKU</small></td></tr>';
         return;
     }
-    
+
     // Build materials table
     let html = '';
     
@@ -828,7 +843,7 @@ function refreshMaterialsForSection(section) {
         const quantityPerPack = material.quantity_per_pack || 0;
         const quantityTotal = quantityPerPack * totalPacks;
         const currentCounter = globalMaterialCounter++;
-        
+
         html += `
             <tr>
                 <td>
@@ -836,18 +851,18 @@ function refreshMaterialsForSection(section) {
                     <input type="hidden" name="materials[${currentCounter}][production_plan_step4_row_index]" value="${firstRowIndex}">
                     <input type="hidden" name="materials[${currentCounter}][packing_material_item_id]" value="${material.packing_material_item_id}">
                     <input type="hidden" name="materials[${currentCounter}][pack_sku_id]" value="${packSkuId}">
-                </td>
+                    </td>
                 <td class="text-end">${quantityPerPack.toFixed(1)}</td>
                 <td class="text-end">
-                    <input type="number" 
+                            <input type="number" 
                         name="materials[${currentCounter}][quantity_total]" 
                         class="form-control form-control-sm text-end" 
                         value="${Math.round(quantityTotal)}" 
-                        step="1" 
-                        min="0"
+                                step="1" 
+                                min="0"
                         style="max-width: 120px; margin-left: auto;">
-                </td>
-            </tr>`;
+                    </td>
+                </tr>`;
     });
     
     materialsTbody.innerHTML = html;
@@ -898,7 +913,7 @@ function refreshMaterialsForRow(rowDiv) {
         const perPack = parseFloat(blueprint.qty_per_pack) || 0;
         const totalQty = perPack * totalPacks;
         const counter = globalMaterialCounter++;
-        
+
         html += `
             <tr>
                 <td>
