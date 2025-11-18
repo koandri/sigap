@@ -71,15 +71,16 @@ final class PackingMaterialBlueprintController extends Controller
             ],
             'materials.*.quantity_per_pack' => [
                 'required',
-                'numeric',
-                'min:0.001',
+                'integer',
+                'min:1',
             ],
         ], [
             'materials.required' => 'At least one packing material is required.',
             'materials.*.material_item_id.required' => 'Please select a material.',
             'materials.*.material_item_id.distinct' => 'Each material can only be added once.',
             'materials.*.quantity_per_pack.required' => 'Quantity is required.',
-            'materials.*.quantity_per_pack.min' => 'Quantity must be at least 0.001.',
+            'materials.*.quantity_per_pack.integer' => 'Quantity must be a whole number.',
+            'materials.*.quantity_per_pack.min' => 'Quantity must be at least 1.',
         ]);
 
         DB::transaction(function () use ($item, $validated): void {

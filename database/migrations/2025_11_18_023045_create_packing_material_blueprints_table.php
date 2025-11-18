@@ -23,7 +23,7 @@ return new class extends Migration
                 ->constrained('items')
                 ->onDelete('restrict')
                 ->name('pmb_material_item_fk');
-            $table->decimal('quantity_per_pack', 10, 3);
+            $table->unsignedInteger('quantity_per_pack');
             $table->timestamps();
 
             $table->unique(

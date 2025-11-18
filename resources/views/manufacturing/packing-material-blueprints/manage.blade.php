@@ -100,8 +100,8 @@
                                             name="materials[{{ $index }}][quantity_per_pack]" 
                                             class="form-control text-end" 
                                             value="{{ $blueprint->quantity_per_pack }}" 
-                                            step="0.001" 
-                                            min="0.001" 
+                                            step="1" 
+                                            min="1" 
                                             required>
                                     </td>
                                     <td class="text-end">
@@ -132,9 +132,9 @@
                                         <input type="number" 
                                             name="materials[0][quantity_per_pack]" 
                                             class="form-control text-end" 
-                                            value="1.000" 
-                                            step="0.001" 
-                                            min="0.001" 
+                                            value="1" 
+                                            step="1" 
+                                            min="1" 
                                             required>
                                     </td>
                                     <td class="text-end">
@@ -246,9 +246,9 @@ function addMaterialRow() {
             <input type="number" 
                 name="materials[${materialIndex}][quantity_per_pack]" 
                 class="form-control text-end" 
-                value="1.000" 
-                step="0.001" 
-                min="0.001" 
+                value="1" 
+                step="1" 
+                min="1" 
                 required>
         </td>
         <td class="text-end">

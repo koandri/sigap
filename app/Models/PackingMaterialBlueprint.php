@@ -19,7 +19,7 @@ final class PackingMaterialBlueprint extends Model
     ];
 
     protected $casts = [
-        'quantity_per_pack' => 'decimal:3',
+        'quantity_per_pack' => 'integer',
     ];
 
     public function packItem(): BelongsTo
