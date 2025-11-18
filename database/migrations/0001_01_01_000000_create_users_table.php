@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,9 +19,25 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // Two-factor authentication columns
+            $table->text('two_factor_secret')->nullable();
+            $table->text('two_factor_recovery_codes')->nullable();
+            $table->timestamp('two_factor_confirmed_at')->nullable();
+            
             $table->rememberToken();
+            
+            // User profile and management
+            $table->string('mobilephone_no', 16)->nullable();
+            $table->unsignedBigInteger('manager_id')->nullable();
+            $table->string('keycloak_id')->nullable();
+            $table->json('locations')->nullable();
+            
             $table->boolean('active')->default(true);
             $table->timestamps();
+            
+            $table->foreign('manager_id')->references('id')->on('users');
+            $table->index('keycloak_id');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -43,8 +61,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

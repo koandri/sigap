@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +20,12 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('frequency_type'); // daily, weekly, monthly
             $table->json('frequency_config')->nullable();
+            $table->time('scheduled_time')->nullable()
+                  ->comment('Specific time for daily/weekly/monthly tasks');
+            $table->time('start_time')->nullable()
+                  ->comment('Start time for hourly frequency range');
+            $table->time('end_time')->nullable()
+                  ->comment('End time for hourly frequency range');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +25,8 @@ return new class extends Migration
             $table->timestamp('received_at')->nullable();
             $table->timestamp('scanned_at')->nullable();
             $table->string('scanned_file_path')->nullable();
+            $table->text('notes')->nullable();
+            $table->json('physical_location')->nullable(); // room_no, cabinet_no, shelf_no
             $table->timestamps();
         });
     }

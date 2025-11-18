@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('shelf_position_id')->constrained()->onDelete('cascade');
             $table->foreignId('item_id')->constrained()->onDelete('cascade');
-            $table->decimal('quantity', 10, 3)->default(0);
+            $table->decimal('quantity', 10, 2)->default(0);
             $table->date('expiry_date')->nullable();
             $table->text('notes')->nullable();
             $table->foreignId('last_updated_by')->constrained('users');

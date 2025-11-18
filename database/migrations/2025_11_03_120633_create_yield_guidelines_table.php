@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('yield_guidelines', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('from_item_id')->constrained('items')->onDelete('restrict'); // e.g., Gelondongan Surya Bintang Kancing
-            $table->foreignId('to_item_id')->constrained('items')->onDelete('restrict'); // e.g., Kerupuk Kering Surya Bintang Kancing
+            $table->foreignId('from_item_id')->constrained('items')->onDelete('restrict');
+            $table->foreignId('to_item_id')->constrained('items')->onDelete('restrict');
             $table->enum('from_stage', ['adonan', 'gelondongan', 'kerupuk_kg']);
             $table->enum('to_stage', ['gelondongan', 'kerupuk_kg', 'packing']);
-            $table->decimal('yield_quantity', 10, 3); // e.g., 3.9 for Gelondongan→Kg conversion
+            $table->decimal('yield_quantity', 10, 3);
             $table->timestamps();
 
             // Ensure unique yield guideline per item pair

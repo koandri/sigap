@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +19,7 @@ return new class extends Migration
             $table->unsignedInteger('version_number');
             $table->string('file_path');
             $table->string('file_type'); // docx, xlsx, pdf, jpg
+            $table->boolean('is_ncr_paper')->default(false);
             $table->string('status');
             $table->foreignId('created_by')->constrained('users');
             $table->text('revision_description')->nullable();

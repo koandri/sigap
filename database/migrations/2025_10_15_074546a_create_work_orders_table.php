@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,11 +19,27 @@ return new class extends Migration
             $table->foreignId('asset_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('maintenance_type_id')->nullable()->constrained()->onDelete('set null');
             $table->enum('priority', ['low', 'medium', 'high', 'critical'])->default('medium');
-            $table->enum('status', ['pending', 'in-progress', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', [
+                'submitted', 
+                'assigned', 
+                'in-progress', 
+                'pending-verification', 
+                'verified', 
+                'completed', 
+                'rework',
+                'cancelled'
+            ])->default('submitted');
             $table->datetime('scheduled_date')->nullable();
             $table->datetime('completed_date')->nullable();
             $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('requested_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('assigned_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->timestamp('assigned_at')->nullable();
+            $table->timestamp('work_started_at')->nullable();
+            $table->timestamp('work_finished_at')->nullable();
+            $table->timestamp('verified_at')->nullable();
+            $table->foreignId('verified_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->text('verification_notes')->nullable();
             $table->decimal('estimated_hours', 8, 2)->nullable();
             $table->decimal('actual_hours', 8, 2)->nullable();
             $table->text('description')->nullable();
@@ -41,4 +59,3 @@ return new class extends Migration
         Schema::dropIfExists('work_orders');
     }
 };
-
