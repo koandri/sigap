@@ -55,7 +55,7 @@ final class PackingMaterialBlueprintController extends Controller
                 $query->whereIn('name', ['Bahan Pembantu Lainnya', 'Plastik', 'Dos']);
             })
             ->orderBy('name')
-            ->get(['id', 'name', 'item_category_id', 'unit']);
+            ->get(['id', 'name', 'item_category_id']);
 
         return view('manufacturing.packing-material-blueprints.manage', compact('item', 'materialItems'));
     }
