@@ -249,9 +249,10 @@ final class ProductionPlanStepController extends Controller
                 return [
                     (string) $item->id => $item->packingMaterialBlueprints->map(static function ($blueprint) {
                         return [
-                            'packing_material_item_id' => $blueprint->material_item_id,
-                            'packing_material_item_name' => $blueprint->packingMaterialItem->name ?? 'N/A',
-                            'quantity_per_pack' => (float) $blueprint->quantity_per_pack,
+                            'material_id' => $blueprint->material_item_id,
+                            'material_name' => $blueprint->packingMaterialItem->name ?? 'N/A',
+                            'qty_per_pack' => (float) $blueprint->quantity_per_pack,
+                            'unit' => $blueprint->packingMaterialItem->unit ?? 'pcs',
                         ];
                     }),
                 ];
