@@ -120,22 +120,31 @@ Multi-level approval processes with SLA management.
 
 ### 🏭 Manufacturing & Inventory
 
-Comprehensive warehouse and inventory management system.
+Comprehensive warehouse and inventory management system with production planning capabilities.
 
 **Key Features:**
 - Multi-warehouse management
 - Shelf-based organization
-- Bill of Materials (BoM)
+- Recipe management (replaces BoM)
+- Production Planning System (5-step planning workflow)
 - FIFO picklist generation
 - Expiry tracking
 - Excel import/export
+
+**Production Planning:**
+- **5-Step Planning Workflow**: Dough → Gelondongan → Kerupuk Kering → Packing → Packing Materials
+- Multi-site quantity tracking (GL1, GL2, TA, BL)
+- Recipe integration with ingredient tracking
+- Yield guideline management
+- Auto-calculation between steps
+- Status workflow: Draft → Approved → In Production → Completed
 
 **Learn More:**
 - **[Manufacturing Guide](./MANUFACTURING_GUIDE.md)** - Complete manufacturing and inventory guide
 
 **Quick Start:**
 - **Warehouse Staff**: [Manage Inventory](./MANUFACTURING_GUIDE.md#shelf-based-inventory)
-- **Planners**: [Create BoMs](./MANUFACTURING_GUIDE.md#bill-of-materials-bom)
+- **Production Planners**: Create production plans → Plan Step 1 (Dough) → Step 2 (Gelondongan) → Step 3 (Kerupuk Kering) → Step 4 (Packing) → Step 5 (Materials) → Approve plan
 - **Managers**: [View Reports](./MANUFACTURING_GUIDE.md#reports-and-analytics)
 
 ---

@@ -101,6 +101,7 @@ final class ProductionPlanningService
             2 => $plan->step1()->exists(),
             3 => $plan->step2()->exists(),
             4 => $plan->step3()->exists(),
+            5 => $plan->step4()->exists(),
             default => false,
         };
     }
@@ -208,7 +209,8 @@ final class ProductionPlanningService
         return $plan->step1()->exists()
             && $plan->step2()->exists()
             && $plan->step3()->exists()
-            && $plan->step4()->exists();
+            && $plan->step4()->exists()
+            && $plan->step5()->exists();
     }
 }
 

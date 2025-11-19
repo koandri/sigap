@@ -62,6 +62,11 @@ final class ProductionPlan extends Model
         return $this->hasMany(ProductionPlanStep4::class);
     }
 
+    public function step5(): HasMany
+    {
+        return $this->hasMany(ProductionPlanStep5::class);
+    }
+
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
@@ -97,6 +102,7 @@ final class ProductionPlan extends Model
             2 => !$this->step3()->exists(),
             3 => !$this->step4()->exists(),
             4 => true, // Step 4 can always be edited if plan is editable
+            5 => true, // Step 5 can always be edited if plan is editable
             default => false,
         };
     }
@@ -106,6 +112,9 @@ final class ProductionPlan extends Model
      */
     public function getHighestStep(): int
     {
+        if ($this->step5()->exists()) {
+            return 5;
+        }
         if ($this->step4()->exists()) {
             return 4;
         }

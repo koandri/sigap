@@ -8,7 +8,7 @@
     $createStepRoute = null;
 
     if ($productionPlan->canBeEdited()) {
-        $nextStepCandidate = $highestStep < 4 ? max(1, $highestStep + 1) : null;
+        $nextStepCandidate = $highestStep < 5 ? max(1, $highestStep + 1) : null;
 
         if ($nextStepCandidate) {
             $canCreateStep = match ($nextStepCandidate) {
@@ -16,6 +16,7 @@
                 2 => $productionPlan->canEditStep(2),
                 3 => $productionPlan->canEditStep(3),
                 4 => $productionPlan->canEditStep(4),
+                5 => $productionPlan->canEditStep(5),
                 default => false,
             };
 
@@ -26,6 +27,7 @@
                     2 => route('manufacturing.production-plans.step2', $productionPlan),
                     3 => route('manufacturing.production-plans.step3', $productionPlan),
                     4 => route('manufacturing.production-plans.step4', $productionPlan),
+                    5 => route('manufacturing.production-plans.step5', $productionPlan),
                     default => null,
                 };
             }
@@ -194,9 +196,18 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ $activeStep === 4 ? 'active' : '' }} {{ !$productionPlan->step3()->exists() ? 'disabled' : '' }}" 
                                    href="#step4" data-bs-toggle="tab" {{ !$productionPlan->step3()->exists() ? 'onclick="return false;"' : '' }}>
-                                    Step 4: Packing Planning
+                                    Step 4: Packing Output Planning
                                     @if($productionPlan->step4->count() > 0)
                                         <span class="badge bg-success text-white ms-1">{{ $productionPlan->step4->count() }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $activeStep === 5 ? 'active' : '' }} {{ !$productionPlan->step4()->exists() ? 'disabled' : '' }}" 
+                                   href="#step5" data-bs-toggle="tab" {{ !$productionPlan->step4()->exists() ? 'onclick="return false;"' : '' }}>
+                                    Step 5: Packing Materials Planning
+                                    @if($productionPlan->step5()->exists())
+                                        <span class="badge bg-success text-white ms-1">✓</span>
                                     @endif
                                 </a>
                             </li>
@@ -499,7 +510,7 @@
 
                             <!-- Step 4 Tab -->
                             <div class="tab-pane {{ $activeStep === 4 ? 'active' : '' }}" id="step4">
-                                <h4 class="mb-3">Step 4: Packing Planning</h4>
+                                <h4 class="mb-3">Step 4: Packing Output Planning</h4>
                                 @if($productionPlan->step4->count() > 0)
                                 <div class="table-responsive">
                                     <table class="table table-vcenter">
@@ -581,47 +592,6 @@
                                     </table>
                                 </div>
 
-                                <div class="mt-3">
-                                    <h4 class="mb-3">Packing Material Usage</h4>
-                                    @if($packingMaterialsByRow->isNotEmpty() && $packingMaterialsByRow->some(fn($row) => $row['materials']->isNotEmpty()))
-                                        @foreach($packingMaterialsByRow as $rowData)
-                                            @if($rowData['materials']->isNotEmpty())
-                                                <div class="card mb-3">
-                                                    <div class="card-header">
-                                                        <h5 class="card-title mb-0">
-                                                            <i class="far fa-box me-2"></i>{{ $rowData['pack_sku_name'] }}
-                                                            <span class="text-muted ms-2">({{ number_format($rowData['total_packs'], 0) }} packs)</span>
-                                                        </h5>
-                                                    </div>
-                                                    <div class="card-body p-0">
-                                                        <div class="table-responsive">
-                                                            <table class="table table-sm table-vcenter mb-0">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Packing Material</th>
-                                                                        <th class="text-end">Total Quantity</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach($rowData['materials'] as $material)
-                                                                        <tr>
-                                                                            <td>{{ $material['item']->name ?? 'N/A' }}</td>
-                                                                            <td class="text-end">{{ number_format($material['quantity_total'], 0) }}</td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <div class="alert alert-warning mb-0">
-                                            <i class="far fa-exclamation-triangle me-2"></i>No packing material blueprints detected for the selected SKUs.
-                                        </div>
-                                    @endif
-                                </div>
                                 @if($productionPlan->canBeEdited())
                                 <div class="mt-3 d-flex flex-wrap gap-2 align-items-start">
                                     @if($productionPlan->canEditStep(4))
@@ -644,6 +614,85 @@
                                 <div class="alert alert-warning">
                                     Step 4 not yet created. <a href="{{ route('manufacturing.production-plans.step4', $productionPlan) }}">Create Step 4 planning.</a>
                                 </div>
+                                @endif
+                            </div>
+
+                            <!-- Step 5 Tab -->
+                            <div class="tab-pane {{ $activeStep === 5 ? 'active' : '' }}" id="step5">
+                                <h4 class="mb-3">Step 5: Packing Materials Planning</h4>
+                                @if($productionPlan->step4->count() > 0)
+                                    @php
+                                        // Materials are now in Step 5
+                                        $hasMaterials = $productionPlan->step5()->exists();
+                                    @endphp
+
+                                    @if($hasMaterials)
+                                        @php
+                                            // Group Step 5 materials by Pack SKU
+                                            $packSkuMaterials = $productionPlan->step5
+                                                ->load(['packingMaterialItem'])
+                                                ->groupBy('pack_sku_id')
+                                                ->map(function ($materials, $packSkuId) use ($productionPlan) {
+                                                    $packSku = $productionPlan->step4
+                                                        ->where('kerupuk_packing_item_id', $packSkuId)
+                                                        ->first();
+                                                    return [
+                                                        'pack_sku_name' => $packSku?->kerupukPackingItem->name ?? 'N/A',
+                                                        'total_packs' => $packSku?->total_packing ?? 0,
+                                                        'materials' => $materials,
+                                                    ];
+                                                });
+                                        @endphp
+                                        
+                                        @foreach($packSkuMaterials as $packSkuId => $data)
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5 class="card-title mb-0">
+                                                        <i class="far fa-box me-2"></i>{{ $data['pack_sku_name'] }}
+                                                        <span class="badge bg-secondary ms-2">{{ number_format($data['total_packs'], 0) }} Packs</span>
+                                                    </h5>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm table-vcenter mb-0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>No</th>
+                                                                    <th>Packing Material</th>
+                                                                    <th class="text-end">Total Quantity</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($data['materials'] as $index => $material)
+                                                                    <tr>
+                                                                        <td>{{ $index + 1 }}</td>
+                                                                        <td>{{ $material->packingMaterialItem->name ?? 'N/A' }}</td>
+                                                                        <td class="text-end">{{ number_format($material->quantity_total, 0) }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="alert alert-warning mb-0">
+                                            <i class="far fa-exclamation-triangle me-2"></i>No packing materials have been configured yet.
+                                        </div>
+                                    @endif
+
+                                    @if($productionPlan->canBeEdited())
+                                    <div class="mt-3 d-flex flex-wrap gap-2 align-items-start">
+                                        <a href="{{ route('manufacturing.production-plans.step5', $productionPlan) }}" class="btn btn-primary">
+                                            <i class="far fa-edit me-2"></i>&nbsp;{{ $hasMaterials ? 'Edit' : 'Create' }} Step 5
+                                        </a>
+                                    </div>
+                                    @endif
+                                @else
+                                    <div class="alert alert-warning">
+                                        Step 4 not yet created. <a href="{{ route('manufacturing.production-plans.step4', $productionPlan) }}">Create Step 4 planning first.</a>
+                                    </div>
                                 @endif
                             </div>
                         </div>

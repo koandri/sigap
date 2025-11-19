@@ -187,17 +187,30 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Minimum stock level alerts
   - Price tracking (optional)
   - Active/inactive status management
-- **Bill of Materials (BoM)**: Recipe and ingredient management with approval workflows
-  - Multiple BoM types (Raw Material, Finished Goods, Semi-Finished, Packaging)
-  - Base quantity configuration
-  - Ingredient list with quantities
-  - BoM approval workflow
+- **Recipe Management**: Recipe and ingredient management (replaces BoM system)
+  - Recipe versioning with date tracking
+  - Ingredient list with quantities and units
+  - Recipe approval workflow
   - Production requirement calculation
   - Cost estimation
+- **Production Planning System**: 5-step production planning workflow for cracker manufacturing
+  - **Step 1**: Dough Production Planning (Adonan) with recipe selection
+  - **Step 2**: Gelondongan Production Planning from Adonan (auto-calculated using yield guidelines)
+  - **Step 3**: Kerupuk Kering Production Planning from Gelondongan (auto-calculated using yield guidelines)
+  - **Step 4**: Packing Planning for finished products (auto-calculated using weight configurations)
+  - **Step 5**: Packing Materials Planning (material requirements calculation)
+  - Multi-site quantity tracking (GL1, GL2, TA, BL distribution channels)
+  - Recipe integration with ingredient snapshot tracking
+  - Yield guideline management (master data for yield calculations)
+  - Auto-calculation between steps using yield guidelines
+  - Status workflow: Draft → Approved → In Production → Completed
+  - Complete CRUD operations with step-by-step planning
+  - Production plan approval system
+  - Comprehensive plan overview with all steps in tabbed interface
 - **Picklist Generation**: FIFO-based picking lists across warehouses
   - Automatic FIFO logic (oldest first, expiry date priority)
   - Cross-warehouse picking
-  - BoM-based picklist generation
+  - Recipe-based picklist generation
   - Manual picklist creation
   - Print-friendly format
 - **Expiry Tracking**: Monitor and manage items approaching expiration
@@ -718,10 +731,12 @@ MAINTENANCE_SCHEDULING_GUIDE.md # Automatic work order generation (root level)
 - `FormSubmission`, `FormAnswer`
 - `ApprovalWorkflow`, `ApprovalFlowStep`, `ApprovalLog`
 
-**Manufacturing & Inventory (9 models):**
+**Manufacturing & Inventory (15+ models):**
 - `Warehouse`, `WarehouseShelf`, `ShelfPosition`, `PositionItem`
 - `Item`, `ItemCategory`
-- `BomTemplate`, `BomIngredient`, `BomType`
+- `Recipe`, `RecipeIngredient` (replaces BoM system)
+- `ProductionPlan`, `ProductionPlanStep1`, `ProductionPlanStep2`, `ProductionPlanStep3`, `ProductionPlanStep4`, `ProductionPlanStep5`
+- `ProductionPlanStep1RecipeIngredient`, `YieldGuideline`
 
 **Facility Management (7 models):**
 - `CleaningSchedule`, `CleaningScheduleItem`, `CleaningScheduleAlert`

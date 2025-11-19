@@ -252,6 +252,8 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::get('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'step4'])->name('production-plans.step4');
     Route::post('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'storeStep4'])->name('production-plans.step4.store');
     Route::delete('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'deleteStep4'])->name('production-plans.step4.delete');
+    Route::get('production-plans/{productionPlan}/step5', [ProductionPlanStepController::class, 'step5'])->name('production-plans.step5');
+    Route::post('production-plans/{productionPlan}/step5', [ProductionPlanStepController::class, 'storeStep5'])->name('production-plans.step5.store');
     
     // Recipes
     Route::resource('recipes', RecipeController::class);

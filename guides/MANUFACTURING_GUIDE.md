@@ -11,22 +11,24 @@
 2. [Warehouse Management](#warehouse-management)
 3. [Item Management](#item-management)
 4. [Shelf-Based Inventory](#shelf-based-inventory)
-5. [Bill of Materials (BoM)](#bill-of-materials-bom)
-6. [Picklist Generation](#picklist-generation)
-7. [Reports and Analytics](#reports-and-analytics)
+5. [Recipe Management](#recipe-management)
+6. [Production Planning System](#production-planning-system)
+7. [Picklist Generation](#picklist-generation)
+8. [Reports and Analytics](#reports-and-analytics)
 
 ---
 
 ## Overview
 
-The Manufacturing module provides comprehensive warehouse and inventory management with shelf-based organization, Bill of Materials (BoM), and advanced inventory tracking.
+The Manufacturing module provides comprehensive warehouse and inventory management with shelf-based organization, Recipe management, Production Planning System, and advanced inventory tracking.
 
 ### Key Features
 
 - **Multi-Warehouse Management** - Multiple warehouses with shelf-based organization
 - **Shelf-Based Inventory** - Organize by warehouse, shelf, and position
 - **Item Management** - Comprehensive catalog with categories
-- **Bill of Materials** - Recipe and ingredient management
+- **Recipe Management** - Recipe and ingredient management (replaces BoM)
+- **Production Planning System** - 5-step production planning workflow
 - **FIFO Tracking** - First In, First Out inventory management
 - **Expiry Tracking** - Monitor expiring items
 - **Picklist Generation** - FIFO-based picking lists
@@ -276,81 +278,239 @@ For large inventory updates:
 
 ---
 
-## Bill of Materials (BoM)
+## Recipe Management
 
-### Creating a BoM
+The Recipe system replaces the previous BoM (Bill of Materials) system, providing better versioning and date tracking for production recipes.
 
-1. Navigate to **Manufacturing > Bill of Materials**
-2. Click **"Create BoM"**
-3. Fill in BoM details:
-   - **Code**: BoM identifier (e.g., `BOM-001`)
-   - **Name**: Product name
-   - **Type**: Select type:
-     - Raw Material
-     - Finished Goods
-     - Semi-Finished
-     - Packaging
-   - **Base Quantity**: Production batch size
-   - **Unit**: Output unit
-   - **Description**: Product details
-   - **Active**: Enable BoM
+### Creating a Recipe
+
+1. Navigate to **Manufacturing > Recipes**
+2. Click **"Create Recipe"**
+3. Fill in recipe details:
+   - **Dough Item**: Select the dough/product this recipe is for
+   - **Name**: Recipe name (e.g., "Standard Recipe v1.0")
+   - **Recipe Date**: Date when recipe is created/effective
+   - **Description**: Recipe details and notes
+   - **Active**: Enable recipe
 4. Click **"Create"**
 
 ### Adding Ingredients
 
-1. In BoM details, click **"Add Ingredient"**
-2. Select item from inventory
-3. Enter required quantity per base quantity
+1. In recipe details, click **"Add Ingredient"**
+2. Select ingredient item from inventory
+3. Enter required quantity
 4. Confirm unit matches
-5. Add notes (optional)
-6. Repeat for all ingredients
-7. Click **"Save"**
+5. Set sort order (display order)
+6. Add notes (optional)
+7. Repeat for all ingredients
+8. Click **"Save"**
 
-**Example BoM:**
+**Example Recipe:**
 ```
-Product: Fish Cake (100 kg batch)
+Dough: Adonan Kancing
+Recipe: Standard Recipe v1.0 (2025-01-15)
 Ingredients:
-- Fish Meat: 70 kg
-- Flour: 20 kg
-- Seasoning: 5 kg
-- Water: 5 kg
+- Tepung Tapioka: 50 kg
+- Ikan Tenggiri: 30 kg
+- Garam: 2 kg
+- Bumbu: 1 kg
 ```
 
-### Using BoMs for Production
+### Recipe Versioning
 
-#### Calculate Requirements
+- Each recipe has a date (recipe_date) for version tracking
+- Multiple recipes can exist for the same dough item
+- Production plans reference specific recipes by date
+- Recipe ingredients are snapshotted when used in production plans
 
-1. Open BoM details
-2. Click **"Calculate Requirements"**
-3. Enter production quantity needed
-4. System calculates:
-   - Required quantities of each ingredient
-   - Available stock
-   - Shortages (if any)
-   - Cost estimate (if prices available)
-
-#### Generate Picklist from BoM
-
-1. After calculating requirements
-2. Click **"Generate Picklist"**
-3. System creates FIFO-based picklist
-4. Shows exact locations to pick from
-5. Print picklist for warehouse operators
-
-### BoM Approval Workflow
+### Recipe Approval Workflow
 
 If approval is required:
 
-1. Create or edit BoM
+1. Create or edit recipe
 2. Click **"Submit for Approval"**
-3. BoM enters approval workflow
+3. Recipe enters approval workflow
 4. Approvers review:
    - Ingredient list
    - Quantities
    - Costs
    - Feasibility
-5. Approved BoMs can be used for production
-6. Rejected BoMs must be revised
+5. Approved recipes can be used in production plans
+6. Rejected recipes must be revised
+
+---
+
+## Production Planning System
+
+The Production Planning System manages the complete 5-step production planning workflow for cracker manufacturing, from dough production through packing materials.
+
+### Overview
+
+The system tracks planned quantities by distribution channel (GL1, GL2, TA, BL) and supports a sequential planning process:
+
+1. **Step 1**: Dough Production Planning (Adonan) with recipe selection
+2. **Step 2**: Gelondongan Production Planning from Adonan
+3. **Step 3**: Kerupuk Kering Production Planning from Gelondongan
+4. **Step 4**: Packing Planning for finished products
+5. **Step 5**: Packing Materials Planning (material requirements)
+
+### Creating a Production Plan
+
+1. Navigate to **Manufacturing > Production Plans**
+2. Click **"Create Production Plan"**
+3. Fill in plan details:
+   - **Plan Date**: Date when plan is created
+   - **Production Start Date**: Automatically calculated (plan_date + 1 day)
+   - **Ready Date**: Automatically calculated (production_start_date + 2 days)
+   - **Notes**: Additional information
+4. Click **"Create"**
+
+The plan starts in **Draft** status and you can now add planning steps.
+
+### Step 1: Dough Production Planning
+
+1. After creating the plan, you'll see the plan details page
+2. Click **"Create Step 1"** or navigate to Step 1 tab
+3. For each dough type:
+   - **Dough Item**: Select dough item (Adonan)
+   - **Recipe**: Select recipe for this dough
+   - **Quantities**: Enter planned quantities for each channel:
+     - **GL1**: Quantity for GL1 site
+     - **GL2**: Quantity for GL2 site
+     - **TA**: Quantity for TA site
+     - **BL**: Quantity for BL site
+4. Click **"Add Row"** to add more dough types
+5. Click **"Save Step 1"**
+
+**Recipe Ingredients:**
+- When a recipe is selected, its ingredients are automatically loaded
+- Ingredients are stored as a snapshot in the production plan
+- This ensures historical accuracy even if recipes change later
+
+### Step 2: Gelondongan Production Planning
+
+1. After Step 1 is complete, click **"Step 2"** tab or **"Create Step 2"**
+2. System auto-calculates Gelondongan quantities from Step 1 using yield guidelines
+3. Review and adjust quantities if needed:
+   - **Adonan Item**: Source dough item
+   - **Gelondongan Item**: Target gelondongan item
+   - **Adonan Quantities**: Quantities per channel (from Step 1)
+   - **Gelondongan Quantities**: Calculated quantities (can be adjusted)
+4. Click **"Save Step 2"**
+
+**Yield Guidelines:**
+- System uses yield guidelines to calculate conversions
+- Yield guidelines are managed in **Manufacturing > Yield Guidelines**
+- Different yields for different product types (Kancing, Gondang, Mentor, Mini)
+
+### Step 3: Kerupuk Kering Production Planning
+
+1. After Step 2 is complete, click **"Step 3"** tab or **"Create Step 3"**
+2. System auto-calculates Kerupuk Kering quantities from Step 2 using yield guidelines
+3. Review and adjust quantities:
+   - **Gelondongan Item**: Source gelondongan item
+   - **Kerupuk Kering Item**: Target kerupuk kering item
+   - **Gelondongan Quantities**: Quantities per channel (from Step 2)
+   - **Kg Quantities**: Calculated quantities in kilograms (can be adjusted)
+4. Click **"Save Step 3"**
+
+### Step 4: Packing Planning
+
+1. After Step 3 is complete, click **"Step 4"** tab or **"Create Step 4"**
+2. System auto-calculates packing quantities from Step 3 using weight configurations
+3. For each packing type:
+   - **Kerupuk Kering Item**: Source kerupuk kering item
+   - **Packing Item**: Select packing SKU
+   - **Kg Quantities**: Available from Step 3 (read-only)
+   - **Packing Quantities**: Calculated based on weight per pack (can be adjusted)
+4. System validates that packing quantities don't exceed available kg quantities
+5. Click **"Save Step 4"**
+
+**Weight Configuration:**
+- System uses Kerupuk Pack Configuration to determine weight per pack
+- Different pack sizes have different weights
+- Configuration is managed in the system settings
+
+### Step 5: Packing Materials Planning
+
+1. After Step 4 is complete, click **"Step 5"** tab or **"Create Step 5"**
+2. System shows all Pack SKUs from Step 4
+3. For each Pack SKU, add required packing materials:
+   - **Pack SKU**: Selected automatically
+   - **Packing Material**: Select material item (e.g., plastic, dos)
+   - **Quantity Total**: Total quantity needed for all packs
+4. System can auto-calculate from Packing Material Blueprints if configured
+5. Click **"Save Step 5"**
+
+**Packing Material Blueprints:**
+- Define standard material requirements per pack SKU
+- Used for automatic calculation
+- Managed in the system settings
+
+### Approving a Production Plan
+
+1. After all 5 steps are complete, review the plan
+2. Click **"Approve"** button
+3. Plan status changes from **Draft** to **Approved**
+4. Once approved, the plan cannot be edited (unless you have special permissions)
+
+**Approval Requirements:**
+- All 5 steps must be completed
+- Plan must be in Draft status
+- User must have approval permissions
+
+### Viewing Production Plans
+
+The plan overview page shows:
+- **Plan Information**: Dates, status, creator, approver
+- **Step Tabs**: Navigate between all 5 steps
+- **Totals**: Summary of quantities across all steps
+- **Status Indicators**: Visual indicators for completion status
+
+### Editing Production Plans
+
+**Draft Plans:**
+- Can edit any step
+- Must delete later steps before editing earlier steps
+- Example: To edit Step 1, you must delete Step 2, 3, 4, and 5 first
+
+**Approved Plans:**
+- Cannot be edited
+- Read-only view
+- Ready for production execution
+
+### Production Plan Status Workflow
+
+```
+Draft → Approved → In Production → Completed
+```
+
+- **Draft**: Plan is being created and can be edited
+- **Approved**: Plan is finalized and ready for production
+- **In Production**: Production has started (future feature)
+- **Completed**: Production is finished (future feature)
+
+### Yield Guidelines Management
+
+Yield guidelines define conversion rates between production stages:
+
+1. Navigate to **Manufacturing > Yield Guidelines**
+2. Click **"Create Yield Guideline"**
+3. Configure:
+   - **Product Type**: Kancing, Gondang, Mentor, or Mini
+   - **From Stage**: Adonan, Gelondongan, or Kerupuk Kg
+   - **To Stage**: Gelondongan, Kerupuk Kg, or Packing
+   - **Yield Quantity**: Conversion rate (e.g., 3.9 means 1 unit from → 3.9 units to)
+   - **Unit**: Unit of measurement
+   - **Active**: Enable guideline
+4. Click **"Create"**
+
+**Example:**
+- Product Type: Kancing
+- From: Gelondongan
+- To: Kerupuk Kg
+- Yield: 3.9
+- Meaning: 1 Gelondongan → 3.9 Kg Kerupuk Kering
 
 ---
 
@@ -395,8 +555,23 @@ System automatically applies First-In-First-Out:
 3. Go to each location
 4. Verify batch number
 5. Pick specified quantity
-6. Check off each line
-7. Return completed picklist
+
+### Generate Picklist from Recipe
+
+1. Open recipe details
+2. Click **"Calculate Requirements"**
+3. Enter production quantity needed
+4. System calculates:
+   - Required quantities of each ingredient
+   - Available stock
+   - Shortages (if any)
+   - Cost estimate (if prices available)
+5. Click **"Generate Picklist"**
+6. System creates FIFO-based picklist
+7. Shows exact locations to pick from
+8. Print picklist for warehouse operators
+9. Check off each line
+10. Return completed picklist
 
 **After Picking:**
 - Update inventory quantities

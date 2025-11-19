@@ -117,7 +117,7 @@ final class ProductionPlanController extends Controller
             'step3.kerupukKeringItem',
             'step4.kerupukKeringItem',
             'step4.kerupukPackingItem',
-            'step4.materials.packingMaterialItem',
+            'step5.packingMaterialItem',
         ]);
 
         $totals = $this->planningService->getTotalQuantities($productionPlan);
@@ -125,24 +125,12 @@ final class ProductionPlanController extends Controller
         $highestStep = $productionPlan->getHighestStep();
 
         $requestedStep = (int) request()->input('step', 0);
-        $activeStep = in_array($requestedStep, [1, 2, 3, 4], true)
+        $activeStep = in_array($requestedStep, [1, 2, 3, 4, 5], true)
             ? $requestedStep
             : max(1, $highestStep ?: 1);
 
-        // Group materials by Pack SKU (Step 4 row)
-        $packingMaterialsByRow = $productionPlan->step4->map(function ($step4) {
-            return [
-                'step4' => $step4,
-                'pack_sku_name' => $step4->kerupukPackingItem->name ?? 'N/A',
-                'total_packs' => $step4->total_packing,
-                'materials' => $step4->materials->map(function ($material) {
-                    return [
-                        'item' => $material->packingMaterialItem,
-                        'quantity_total' => (float) $material->quantity_total,
-                    ];
-                }),
-            ];
-        });
+        // Materials are now in Step 5, we'll handle this in the view
+        $packingMaterialsByRow = collect();
 
         return view('manufacturing.production-plans.show', compact(
             'productionPlan',

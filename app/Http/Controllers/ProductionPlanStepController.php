@@ -206,7 +206,6 @@ final class ProductionPlanStepController extends Controller
             'step3.kerupukKeringItem',
             'step4.kerupukKeringItem',
             'step4.kerupukPackingItem',
-            'step4.materials.packingMaterialItem',
         ]);
 
         // Auto-calculate Step 4 from Step 3 if Step 4 is empty
@@ -242,6 +241,18 @@ final class ProductionPlanStepController extends Controller
                 ];
             })
             ->values();
+
+        // Get Step 3 limits for validation
+        $step3Limits = $productionPlan->step3
+            ->groupBy('kerupuk_kering_item_id')
+            ->map(static function ($group) {
+                return [
+                    'qty_gl1_kg' => $group->sum('qty_gl1_kg'),
+                    'qty_gl2_kg' => $group->sum('qty_gl2_kg'),
+                    'qty_ta_kg' => $group->sum('qty_ta_kg'),
+                    'qty_bl_kg' => $group->sum('qty_bl_kg'),
+                ];
+            });
 
         // Load blueprints for ALL Pack SKUs (from both collections)
         $packingBlueprints = $allPackingItems
@@ -286,7 +297,8 @@ final class ProductionPlanStepController extends Controller
             'packingBlueprints',
             'kerupukKeringOptions',
             'packConfigurations',
-            'weightConfigurations'
+            'weightConfigurations',
+            'step3Limits'
         ));
     }
 
@@ -301,17 +313,6 @@ final class ProductionPlanStepController extends Controller
                 ->with('error', 'Cannot edit production plan that is not in draft status.');
         }
 
-        $request->merge([
-            'materials' => collect($request->input('materials', []))
-                ->filter(static function ($material) {
-                    return !empty($material['packing_material_item_id']) && 
-                           $material['packing_material_item_id'] !== 'null' &&
-                           is_numeric($material['packing_material_item_id']);
-                })
-                ->values()
-                ->toArray()
-        ]);
-
         $validated = $request->validate([
             'step4' => 'required|array',
             'step4.*.kerupuk_kering_item_id' => 'required|exists:items,id',
@@ -320,81 +321,13 @@ final class ProductionPlanStepController extends Controller
             'step4.*.qty_gl2_packing' => 'required|numeric|min:0',
             'step4.*.qty_ta_packing' => 'required|numeric|min:0',
             'step4.*.qty_bl_packing' => 'required|numeric|min:0',
-            'materials' => 'nullable|array',
-            'materials.*.production_plan_step4_row_index' => 'required|integer',
-            'materials.*.packing_material_item_id' => 'required|exists:items,id',
-            'materials.*.quantity_total' => 'required|numeric|min:0',
-            'materials.*.pack_sku_id' => 'nullable|exists:items,id',
         ]);
 
-        $packingItemIds = collect($validated['step4'])
-            ->pluck('kerupuk_packing_item_id')
-            ->unique()
-            ->values();
-
-        $blueprintsByPackingId = PackingMaterialBlueprint::whereIn('pack_item_id', $packingItemIds)
-            ->get()
-            ->groupBy('pack_item_id');
-
-        $missingBlueprintItems = $packingItemIds->filter(static function ($packingItemId) use ($blueprintsByPackingId) {
-            return !$blueprintsByPackingId->has($packingItemId) || $blueprintsByPackingId->get($packingItemId)->isEmpty();
-        });
-
-        if ($missingBlueprintItems->isNotEmpty()) {
-            $missingNames = Item::whereIn('id', $missingBlueprintItems)->pluck('name')->implode(', ');
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->withErrors([
-                    'step4' => sprintf(
-                        'Packing material blueprint not found for: %s. Please define packing materials before saving.',
-                        $missingNames
-                    ),
-                ]);
-        }
-
-        DB::transaction(function () use ($productionPlan, $validated, $blueprintsByPackingId): void {
+        DB::transaction(function () use ($productionPlan, $validated): void {
+            // Delete existing Step 4 data
             $productionPlan->step4()->delete();
 
-            // Group materials by Pack SKU ID (since materials are now grouped by Pack SKU in the preview)
-            $materialsByPackSkuId = [];
-            if (!empty($validated['materials'])) {
-                foreach ($validated['materials'] as $material) {
-                    $packSkuId = $material['pack_sku_id'] ?? null;
-                    $rowIndex = $material['production_plan_step4_row_index'];
-                    
-                    if ($packSkuId) {
-                        // Group by Pack SKU ID
-                        if (!isset($materialsByPackSkuId[$packSkuId])) {
-                            $materialsByPackSkuId[$packSkuId] = [];
-                        }
-                        $materialsByPackSkuId[$packSkuId][] = [
-                            'packing_material_item_id' => $material['packing_material_item_id'],
-                            'quantity_total' => (int) $material['quantity_total'],
-                            'row_index' => $rowIndex, // Keep track of which row this came from
-                        ];
-                    } else {
-                        // Fallback: group by row index (for backward compatibility)
-                        if (!isset($materialsByPackSkuId['_row_' . $rowIndex])) {
-                            $materialsByPackSkuId['_row_' . $rowIndex] = [];
-                        }
-                        $materialsByPackSkuId['_row_' . $rowIndex][] = [
-                            'packing_material_item_id' => $material['packing_material_item_id'],
-                            'quantity_total' => (int) $material['quantity_total'],
-                            'row_index' => $rowIndex,
-                        ];
-                    }
-                }
-            }
-
             foreach ($validated['step4'] as $rowIndex => $data) {
-                $packingItem = Item::find($data['kerupuk_packing_item_id']);
-
-                if (!$packingItem) {
-                    continue;
-                }
-
                 // Get weight from KerupukPackConfiguration
                 $config = \App\Models\KerupukPackConfiguration::where('kerupuk_kg_item_id', $data['kerupuk_kering_item_id'])
                     ->where('pack_item_id', $data['kerupuk_packing_item_id'])
@@ -417,7 +350,7 @@ final class ProductionPlanStepController extends Controller
                 $qtyTaKg = round($qtyTaPacking * $weightPerUnit, 2);
                 $qtyBlKg = round($qtyBlPacking * $weightPerUnit, 2);
 
-                $step4Record = $productionPlan->step4()->create([
+                $productionPlan->step4()->create([
                     'kerupuk_kering_item_id' => $data['kerupuk_kering_item_id'],
                     'kerupuk_packing_item_id' => $data['kerupuk_packing_item_id'],
                     'qty_gl1_kg' => $qtyGl1Kg,
@@ -429,39 +362,128 @@ final class ProductionPlanStepController extends Controller
                     'qty_bl_kg' => $qtyBlKg,
                     'qty_bl_packing' => $qtyBlPacking,
                 ]);
+            }
+        });
 
-                // Save materials for this row
-                // Check if materials are provided for this Pack SKU
-                $packSkuId = (string) $data['kerupuk_packing_item_id'];
-                if (isset($materialsByPackSkuId[$packSkuId]) && !empty($materialsByPackSkuId[$packSkuId])) {
-                    // User provided custom materials for this Pack SKU
-                    // Save materials for this row (materials are grouped by Pack SKU, so all rows with same Pack SKU get the same materials)
-                    foreach ($materialsByPackSkuId[$packSkuId] as $material) {
-                        $step4Record->materials()->create([
-                            'packing_material_item_id' => $material['packing_material_item_id'],
-                            'quantity_total' => $material['quantity_total'],
-                        ]);
-                    }
-                } elseif (isset($materialsByPackSkuId['_row_' . $rowIndex]) && !empty($materialsByPackSkuId['_row_' . $rowIndex])) {
-                    // Fallback: materials grouped by row index
-                    foreach ($materialsByPackSkuId['_row_' . $rowIndex] as $material) {
-                        $step4Record->materials()->create([
-                            'packing_material_item_id' => $material['packing_material_item_id'],
-                            'quantity_total' => $material['quantity_total'],
-                        ]);
-                    }
-                } else {
-                    // Use blueprint to auto-calculate materials
-                    $this->calculationService->syncPackingMaterials($step4Record, $blueprintsByPackingId->get($data['kerupuk_packing_item_id']));
-                }
+        return redirect()
+            ->route('manufacturing.production-plans.step5', $productionPlan)
+            ->with('success', 'Step 4 (Packing Output Planning) saved successfully. Please continue to Step 5.');
+    }
+
+
+    /**
+     * Show Step 5 form.
+     */
+    public function step5(ProductionPlan $productionPlan): View|RedirectResponse
+    {
+        // Validate dependency
+        if (!$this->planningService->validateStepDependency($productionPlan, 5)) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Please complete Step 4 first.');
+        }
+
+        if (!$productionPlan->canBeEdited()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot edit production plan that is not in draft status.');
+        }
+
+        $productionPlan->load([
+            'step4.kerupukKeringItem',
+            'step4.kerupukPackingItem',
+            'step5.packingMaterialItem',
+        ]);
+
+        // Get unique Pack SKUs from Step 4 and their materials from Step 5
+        $packSkus = $productionPlan->step4
+            ->groupBy('kerupuk_packing_item_id')
+            ->map(function ($group) use ($productionPlan) {
+                $first = $group->first();
+                $packSkuId = $first->kerupuk_packing_item_id;
+                
+                // Get materials for this Pack SKU from Step 5
+                $materials = $productionPlan->step5->where('pack_sku_id', $packSkuId);
+                
+                return [
+                    'pack_sku_id' => $packSkuId,
+                    'pack_sku_name' => $first->kerupukPackingItem->name ?? 'N/A',
+                    'total_qty' => $group->sum('total_packing'),
+                    'materials' => $materials,
+                ];
+            })
+            ->values();
+
+        // Get all packing material items for the dropdown from specific categories
+        $packingMaterialItems = Item::whereHas('itemCategory', static function ($query): void {
+            $query->whereIn('name', ['Bahan Pembantu Lainnya', 'Plastik', 'Dos']);
+        })
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        // Get packing blueprints for all Pack SKUs
+        $packingBlueprints = PackingMaterialBlueprint::with('packingMaterialItem')
+            ->whereIn('pack_item_id', $packSkus->pluck('pack_sku_id'))
+            ->get()
+            ->groupBy('pack_item_id')
+            ->mapWithKeys(static function ($blueprints, $packItemId) {
+                return [
+                    (string) $packItemId => $blueprints->map(static function ($blueprint) {
+                        return [
+                            'packing_material_item_id' => $blueprint->material_item_id,
+                            'packing_material_item_name' => $blueprint->packingMaterialItem->name ?? 'N/A',
+                            'quantity_per_pack' => (float) $blueprint->quantity_per_pack,
+                            'unit' => $blueprint->packingMaterialItem->unit ?? 'pcs',
+                        ];
+                    }),
+                ];
+            });
+
+        return view('manufacturing.production-plans.step5', compact(
+            'productionPlan',
+            'packSkus',
+            'packingMaterialItems',
+            'packingBlueprints'
+        ));
+    }
+
+    /**
+     * Store Step 5 data.
+     */
+    public function storeStep5(Request $request, ProductionPlan $productionPlan): RedirectResponse
+    {
+        if (!$productionPlan->canBeEdited()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Cannot edit production plan that is not in draft status.');
+        }
+
+        $validated = $request->validate([
+            'materials' => 'required|array',
+            'materials.*.pack_sku_id' => 'required|exists:items,id',
+            'materials.*.packing_material_item_id' => 'required|exists:items,id',
+            'materials.*.quantity_total' => 'required|numeric|min:0',
+        ]);
+
+        DB::transaction(function () use ($productionPlan, $validated): void {
+            // Delete all existing materials from Step 5
+            $productionPlan->step5()->delete();
+
+            // Save materials to Step 5
+            foreach ($validated['materials'] as $material) {
+                $productionPlan->step5()->create([
+                    'pack_sku_id' => $material['pack_sku_id'],
+                    'packing_material_item_id' => $material['packing_material_item_id'],
+                    'quantity_total' => (int) $material['quantity_total'],
+                ]);
             }
         });
 
         return redirect()
             ->route('manufacturing.production-plans.show', $productionPlan)
-            ->with('success', 'Step 4 (Packing Planning) saved successfully.');
+            ->with('success', 'Step 5 (Packing Materials Planning) saved successfully.');
     }
-
 
     /**
      * Delete Step 2 and all subsequent steps.
