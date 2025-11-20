@@ -105,8 +105,7 @@
                 second: '2-digit',
                 hour12: false
             };
-            const dateTimeStr = now.toLocaleDateString('id-ID', options) + ' ' + 
-                               now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            const dateTimeStr = now.toLocaleString('id-ID', options);
             document.getElementById('printDateTime').textContent = dateTimeStr;
         }
         updatePrintDateTime();

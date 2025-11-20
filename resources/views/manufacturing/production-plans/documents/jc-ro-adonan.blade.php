@@ -68,7 +68,7 @@
         .barcode-cell {
             text-align: center;
             padding: 20px 15px;
-            min-width: 100px;
+            min-width: 200px;
         }
         .barcode-cell svg {
             max-width: 250px;
@@ -117,8 +117,7 @@
                 second: '2-digit',
                 hour12: false
             };
-            const dateTimeStr = now.toLocaleDateString('id-ID', options) + ' ' + 
-                               now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            const dateTimeStr = now.toLocaleString('id-ID', options);
             document.getElementById('printDateTime').textContent = dateTimeStr;
         }
         updatePrintDateTime();
@@ -169,7 +168,7 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Kode</th>
+                                <th width="200">Kode</th>
                                 <th>Nama Bahan Baku</th>
                                 <th class="text-right">Jumlah</th>
                                 <th>Satuan</th>
@@ -209,7 +208,7 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Kode</th>
+                                <th width="200">Kode</th>
                                 <th>Nama Adonan</th>
                                 <th class="text-right">Jumlah</th>
                                 <th class="text-right">Persentase (%)</th>
