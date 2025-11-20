@@ -257,6 +257,19 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     
     // Recipes
     Route::resource('recipes', RecipeController::class);
+    Route::get('recipes/{recipe}/duplicate', [RecipeController::class, 'duplicate'])->name('recipes.duplicate');
+    Route::post('recipes/{recipe}/duplicate', [RecipeController::class, 'storeDuplicate'])->name('recipes.duplicate.store');
+    
+    // Production Actuals (Actual Production Tracking)
+    Route::post('production-plans/{productionPlan}/start', [ProductionActualController::class, 'start'])->name('production-plans.start');
+    Route::get('production-plans/{productionPlan}/execute', [ProductionActualController::class, 'execute'])->name('production-plans.execute');
+    Route::get('production-plans/{productionPlan}/actuals', [ProductionActualController::class, 'show'])->name('production-plans.actuals');
+    Route::post('production-plans/{productionPlan}/actuals/step1', [ProductionActualController::class, 'recordStep1'])->name('production-plans.actuals.step1');
+    Route::post('production-plans/{productionPlan}/actuals/step2', [ProductionActualController::class, 'recordStep2'])->name('production-plans.actuals.step2');
+    Route::post('production-plans/{productionPlan}/actuals/step3', [ProductionActualController::class, 'recordStep3'])->name('production-plans.actuals.step3');
+    Route::post('production-plans/{productionPlan}/actuals/step4', [ProductionActualController::class, 'recordStep4'])->name('production-plans.actuals.step4');
+    Route::post('production-plans/{productionPlan}/actuals/step5', [ProductionActualController::class, 'recordStep5'])->name('production-plans.actuals.step5');
+    Route::post('production-plans/{productionPlan}/complete', [ProductionActualController::class, 'complete'])->name('production-plans.complete');
     
 });
 
@@ -429,4 +442,9 @@ Route::prefix('api')->name('api.')->middleware('auth')->group(function () {
     });
     Route::post('/test-api-config', [FormFieldOptionsController::class, 'testApiConfig'])->name('test-api-config');
     Route::post('/calculate-fields', [FormSubmissionController::class, 'calculateFields'])->name('calculate-fields');
+    
+    // Manufacturing API Routes
+    Route::prefix('manufacturing')->name('manufacturing.')->group(function () {
+        Route::get('/temperature-data', [ManufacturingController::class, 'getTemperatureData'])->name('temperature-data');
+    });
 });

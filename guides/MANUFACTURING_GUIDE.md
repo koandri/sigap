@@ -15,6 +15,7 @@
 6. [Production Planning System](#production-planning-system)
 7. [Picklist Generation](#picklist-generation)
 8. [Reports and Analytics](#reports-and-analytics)
+9. [Temperature Sensor Monitoring](#temperature-sensor-monitoring)
 
 ---
 
@@ -799,6 +800,144 @@ Calculate total inventory value:
 
 ---
 
+## Temperature Sensor Monitoring
+
+The Manufacturing Dashboard includes a real-time temperature sensor widget that displays temperature data from HomeAssistant sensors. This feature allows you to monitor temperature conditions in your manufacturing facilities.
+
+![Temperature Sensor Widget](/guides-imgs/manufacturing-temperature-widget.png)
+
+### Overview
+
+The Temperature Sensor widget provides:
+- **Real-time visualization** of temperature data using interactive line charts
+- **Historical data** with configurable time ranges
+- **Data sampling** to optimize chart performance
+- **HomeAssistant integration** for seamless sensor data retrieval
+
+### Accessing the Widget
+
+1. Navigate to **Manufacturing > Dashboard**
+2. The Temperature Sensor widget is displayed at the top of the dashboard
+3. The widget shows temperature data for the configured sensor (default: `sensor.tes_temperature`)
+
+### Using the Widget
+
+#### Selecting Time Range
+
+1. Click on the **Time Period** input field
+2. A datetime range picker will appear
+3. Select your desired start date and time
+4. Select your desired end date and time
+5. The chart will automatically update with data for the selected period
+
+**Default Time Range**: The widget defaults to showing the last 8 hours of data.
+
+#### Adjusting Data Sampling Interval
+
+The interval dropdown allows you to control how frequently data points are sampled:
+
+- **5 minutes**: More detailed view, more data points
+- **15 minutes**: Balanced view
+- **30 minutes**: Default setting, optimized for most use cases
+- **60 minutes**: Less detailed, fewer data points (good for longer time ranges)
+
+1. Select your desired interval from the **Interval** dropdown
+2. The chart will automatically refresh with the new sampling interval
+
+#### Manual Refresh
+
+Click the **Reload** button to manually refresh the temperature data without changing the time range or interval.
+
+### Chart Features
+
+- **Interactive Line Chart**: Hover over data points to see exact temperature values and timestamps
+- **Smooth Curves**: The chart uses smooth curves to better visualize temperature trends
+- **Horizontal Grid Lines**: Dashed grid lines help read temperature values
+- **Dark Blue Line**: Matches the site's primary color scheme
+- **Responsive Design**: The chart adapts to different screen sizes
+
+### Configuration
+
+#### Environment Setup
+
+To use the Temperature Sensor widget, you need to configure HomeAssistant connection settings in your `.env` file:
+
+```env
+# HomeAssistant Configuration
+HA_BASE_URL=http://192.168.99.99:8123
+HA_TOKEN=your_homeassistant_bearer_token_here
+```
+
+**Configuration Details:**
+- `HA_BASE_URL`: The base URL of your HomeAssistant instance (default: `http://192.168.99.99:8123`)
+- `HA_TOKEN`: Your HomeAssistant long-lived access token (Bearer token)
+
+#### Getting a HomeAssistant Token
+
+1. Log in to your HomeAssistant instance
+2. Go to your profile (click on your name in the bottom left)
+3. Scroll down to **Long-lived access tokens**
+4. Click **Create Token**
+5. Give it a name (e.g., "SIGaP Temperature Widget")
+6. Copy the token and add it to your `.env` file as `HA_TOKEN`
+
+#### Sensor Entity ID
+
+The widget is configured to use the sensor entity `sensor.tes_temperature` by default. To change this, you would need to modify the controller code.
+
+### Troubleshooting
+
+#### Chart Not Loading
+
+**Issue**: The chart shows a loading indicator but never displays data.
+
+**Solutions**:
+1. Check that `HA_TOKEN` is set in your `.env` file
+2. Verify that `HA_BASE_URL` is correct and accessible
+3. Ensure the sensor entity ID exists in HomeAssistant
+4. Check browser console for error messages
+5. Verify HomeAssistant API is accessible from your server
+
+#### No Data Points
+
+**Issue**: The chart loads but shows no data points.
+
+**Solutions**:
+1. Verify the sensor has data for the selected time range
+2. Try expanding the time range
+3. Check HomeAssistant logs for API errors
+4. Verify the sensor entity ID is correct
+
+#### Time Range Not Updating
+
+**Issue**: Changing the time range doesn't update the chart.
+
+**Solutions**:
+1. Ensure both start and end times are selected
+2. Check that start time is before end time
+3. Try clicking the Reload button
+4. Check browser console for JavaScript errors
+
+### Best Practices
+
+1. **Time Range Selection**: 
+   - For real-time monitoring: Use shorter ranges (1-8 hours)
+   - For trend analysis: Use longer ranges (24-48 hours) with higher intervals (30-60 minutes)
+
+2. **Interval Selection**:
+   - Use 5-15 minute intervals for detailed analysis
+   - Use 30-60 minute intervals for overview and longer time ranges
+
+3. **Performance**:
+   - Larger time ranges with smaller intervals may take longer to load
+   - Use appropriate intervals based on your time range
+
+4. **Monitoring**:
+   - Check the widget regularly for temperature anomalies
+   - Use the historical data to identify patterns and trends
+
+---
+
 ## Related Documentation
 
 - **[User Guide](./USER_GUIDE.md)** - Main system guide
@@ -806,6 +945,6 @@ Calculate total inventory value:
 
 ---
 
-**Last Updated**: October 17, 2025  
-**Version**: 1.0
+**Last Updated**: November 20, 2025  
+**Version**: 1.1
 

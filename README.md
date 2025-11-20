@@ -233,6 +233,13 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Item master data import
   - Validation and error reporting
   - Inventory data export
+- **Temperature Sensor Monitoring**: Real-time temperature monitoring via HomeAssistant integration
+  - Live temperature data visualization with Chart.js
+  - Configurable time range selection (default: last 8 hours)
+  - Adjustable data sampling intervals (5, 15, 30, 60 minutes)
+  - Interactive datetime range picker
+  - Smooth line charts with historical data
+  - HomeAssistant API integration with Bearer token authentication
 
 ### 🧹 Facility Management & Cleaning System
 - **Cleaning Schedules**: Flexible scheduling system with 5 frequency types
