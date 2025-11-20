@@ -19,7 +19,7 @@ final class RecipeController extends Controller
     public function __construct()
     {
         $this->middleware('can:manufacturing.recipes.view')->only(['index', 'show']);
-        $this->middleware('can:manufacturing.recipes.create')->only(['create', 'store']);
+        $this->middleware('can:manufacturing.recipes.create')->only(['create', 'store', 'duplicate', 'storeDuplicate']);
         $this->middleware('can:manufacturing.recipes.edit')->only(['edit', 'update']);
         $this->middleware('can:manufacturing.recipes.delete')->only(['destroy']);
     }
@@ -255,6 +255,96 @@ final class RecipeController extends Controller
         return redirect()
             ->route('manufacturing.recipes.index')
             ->with('success', "Recipe '{$name}' deleted successfully.");
+    }
+
+    /**
+     * Show the form for duplicating a recipe.
+     */
+    public function duplicate(Recipe $recipe): View
+    {
+        $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
+        $doughItems = $doughCategory
+            ? Item::where('item_category_id', $doughCategory->id)
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get()
+            : collect([]);
+
+        // Get ingredient items from specific categories (only active items)
+        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
+        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        $recipe->load('ingredients.ingredientItem');
+
+        return view('manufacturing.recipes.duplicate', compact('recipe', 'doughItems', 'ingredientItems'));
+    }
+
+    /**
+     * Store a duplicated recipe.
+     */
+    public function storeDuplicate(Request $request, Recipe $sourceRecipe): RedirectResponse
+    {
+        $validated = $request->validate([
+            'dough_item_id' => 'required|exists:items,id',
+            'name' => 'required|string|max:100',
+            'recipe_date' => 'required|date',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+            'ingredients' => 'nullable|array',
+            'ingredients.*.ingredient_item_id' => 'required|exists:items,id',
+            'ingredients.*.quantity' => 'required|numeric|min:0',
+            'ingredients.*.sort_order' => 'nullable|integer|min:0',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $recipe = Recipe::create([
+                'dough_item_id' => $validated['dough_item_id'],
+                'name' => $validated['name'],
+                'recipe_date' => $validated['recipe_date'],
+                'description' => $validated['description'] ?? null,
+                'is_active' => $validated['is_active'] ?? true,
+                'created_by' => Auth::id(),
+            ]);
+
+            // Copy ingredients from source recipe if not provided, otherwise use provided ingredients
+            if (!empty($validated['ingredients'])) {
+                foreach ($validated['ingredients'] as $index => $ingredientData) {
+                    RecipeIngredient::create([
+                        'recipe_id' => $recipe->id,
+                        'ingredient_item_id' => $ingredientData['ingredient_item_id'],
+                        'quantity' => $ingredientData['quantity'],
+                        'sort_order' => $ingredientData['sort_order'] ?? $index,
+                    ]);
+                }
+            } else {
+                // Copy ingredients from source recipe
+                foreach ($sourceRecipe->ingredients as $index => $ingredient) {
+                    RecipeIngredient::create([
+                        'recipe_id' => $recipe->id,
+                        'ingredient_item_id' => $ingredient->ingredient_item_id,
+                        'quantity' => $ingredient->quantity,
+                        'unit' => $ingredient->unit,
+                        'sort_order' => $ingredient->sort_order ?? $index,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('manufacturing.recipes.show', $recipe)
+                ->with('success', "Recipe '{$recipe->name}' created successfully from '{$sourceRecipe->name}'.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Failed to duplicate recipe: ' . $e->getMessage());
+        }
     }
 }
 

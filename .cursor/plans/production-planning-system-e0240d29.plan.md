@@ -284,17 +284,15 @@ Since the new Recipe system replaces BoM functionality, we need to remove:
 - [x] Remove BoM link from navbar.blade.php
 - [x] Remove BoM quick action from manufacturing dashboard
 
-#### Phase 7: Custom Recipe Functionality Completion
+#### Phase 7: Recipe Functionality Completion
 
-- [x] Task 7.1: Add validation for custom recipes in Form Requests (Partial - ingredients validation exists, but custom recipe validation not fully implemented)
-- [ ] Task 7.2: Fix edit view recipe loading bugs (Backend ready, UI needs verification)
-- [x] Task 7.3: Implement recipe ingredients handling (controller and views) - Backend complete, ingredients are stored
-- [ ] Task 7.4: Enhance create view for custom recipes with ingredients UI (Not implemented)
 - [x] Task 7.5: Update controller to load recipe ingredients (Complete - show() and edit() load ingredients)
 - [x] Task 7.6: Add recipe ingredients AJAX endpoint (Complete - getRecipeIngredients() method exists)
-- [ ] Task 7.7: Update show view to display ingredients (Backend ready, UI display needs verification)
+- [x] Task 7.7: Update show view to display ingredients (Complete - ingredients displayed in show view)
+- [x] Task 7.8: Remove is_custom_recipe field (Complete - removed from migration, model, and controller)
+- [x] Task 7.9: Add recipe copy/duplicate functionality (Complete - duplicate method, routes, and views implemented)
 
-**Status:** Backend infrastructure is complete (models, relationships, controller methods, AJAX endpoint). Custom recipe UI and validation rules need completion.
+**Status:** Complete. Recipe ingredients are fully functional. Custom recipes are not supported - users must manage recipes before creating production plans. Recipe copy functionality allows users to easily duplicate existing recipes for the same or different Adonan.
 
 ## ✅ IMPLEMENTATION STATUS: MOSTLY COMPLETE
 
@@ -311,335 +309,134 @@ Since the new Recipe system replaces BoM functionality, we need to remove:
 - ✅ Form Request validation classes
 - ✅ BoM system completely removed and replaced with Recipe system
 
-**⚠️ PARTIALLY COMPLETE: Custom Recipe Functionality** (See Phase 7 below)
-- Backend infrastructure complete (models, relationships, controller methods, AJAX endpoint)
-- Recipe ingredients are stored and loaded correctly
-- Custom recipe UI and validation rules need completion
+**✅ COMPLETE: Recipe Functionality** (See Phase 7 below)
+
+- Recipe ingredients are stored, loaded, and displayed correctly
+- Recipe copy/duplicate functionality implemented
+- Custom recipes are not supported - recipes must be managed before creating production plans
 
 **✅ COMPLETE: Step 5 (Packing Materials Planning)**
+
 - Step 5 model, controller, views, and routes fully implemented
 - Packing materials planning integrated into workflow
 
 ---
 
-## Phase 7: Custom Recipe Functionality Completion
+## Phase 7: Recipe Functionality Completion
 
 ### Overview
 
-Custom Recipe functionality is partially implemented but requires completion to be fully functional. Currently, users can create custom recipes with name and date, but recipe ingredients are not handled, validation is missing, and the edit view has bugs.
+Recipe functionality is now complete. The system supports standard recipes only - custom recipes are not supported during production planning. Users must manage recipes before creating production plans. Recipe copy functionality has been added to make it easy to duplicate existing recipes.
 
 ### Current Status
 
 **✅ What Works:**
 
-- Database fields exist (`is_custom_recipe`, `recipe_name`, `recipe_date`)
-- Basic save functionality in controller
-- UI elements (checkbox, fields) in create/edit views
-- Display in show view with "Custom" badge
+- Recipe ingredients are stored and loaded correctly
+- Recipe ingredients are displayed in production plan show view
+- Recipe copy/duplicate functionality allows users to easily copy recipes
+- Recipes can be copied for the same or different Adonan (dough item)
+- All recipe ingredients are copied when duplicating a recipe
 
-**❌ What's Missing:**
+**❌ What's Not Supported:**
 
-- Validation for custom recipe fields
-- Recipe ingredients handling (copying from standard recipes, entering for custom recipes)
-- Edit view bugs (recipe loading, custom recipe state restoration)
-- Recipe ingredients display in views
-- UI for managing custom recipe ingredients
+- Custom recipes during production planning (intentionally removed)
+- Creating recipes on-the-fly during production plan creation
 
 ### Implementation Tasks
-
-#### Task 7.1: Add Validation for Custom Recipes
-
-**File:** `app/Http/Requests/StoreProductionPlanRequest.php`
-
-**File:** `app/Http/Requests/UpdateProductionPlanRequest.php`
-
-**Requirements:**
-
-1. Add validation rules for `step1` array:
-
-   - `step1.*.dough_item_id` - required|exists:items,id
-   - `step1.*.recipe_id` - nullable|required_without:step1.*.is_custom_recipe|exists:recipes,id
-   - `step1.*.is_custom_recipe` - nullable|boolean
-   - `step1.*.recipe_name` - required_if:step1.*.is_custom_recipe,1|string|max:100
-   - `step1.*.recipe_date` - required_if:step1.*.is_custom_recipe,1|date
-   - `step1.*.qty_gl1` - required|numeric|min:0
-   - `step1.*.qty_gl2` - required|numeric|min:0
-   - `step1.*.qty_ta` - required|numeric|min:0
-   - `step1.*.qty_bl` - required|numeric|min:0
-
-2. Add custom validation logic:
-
-   - Ensure either `recipe_id` OR `is_custom_recipe` is provided (not both, not neither)
-   - Validate that if `is_custom_recipe` is true, `recipe_name` and `recipe_date` are provided
-
-3. Add validation messages for all new rules
-
-**Implementation Notes:**
-
-- Use `required_without` to ensure either recipe_id or custom recipe is provided
-- Use `required_if` for custom recipe fields
-- Add custom validation method if needed for complex logic
-
-#### Task 7.2: Fix Edit View Recipe Loading
-
-**File:** `resources/views/manufacturing/production-plans/edit.blade.php`
-
-**Issues to Fix:**
-
-1. **Bug:** Line 282 uses `$productionPlan->step1->first()->recipe_id` which only works for first row
-2. **Bug:** Doesn't handle custom recipes (when `is_custom_recipe` is true, `recipe_id` is null)
-3. **Bug:** Custom recipe checkbox state and fields not properly restored
-
-**Requirements:**
-
-1. Pass recipe data to JavaScript properly:
-   ```php
-   const step1Data = @json($productionPlan->step1->map(function($step) {
-       return [
-           'recipe_id' => $step->recipe_id,
-           'is_custom_recipe' => $step->is_custom_recipe,
-           'recipe_name' => $step->recipe_name,
-           'recipe_date' => $step->recipe_date->format('Y-m-d'),
-       ];
-   }));
-   ```
-
-2. Update `loadRecipes()` function:
-
-   - Accept row index and step1 data
-   - After loading recipes, check if current row has existing recipe_id
-   - Set recipe select value if recipe_id exists
-   - If is_custom_recipe is true, show custom fields and set values
-
-3. Update `toggleCustomRecipe()` function:
-
-   - Properly restore custom recipe state on page load
-   - Ensure recipe select is cleared when custom recipe is checked
-
-4. Add initialization function:
-
-   - On page load, restore all custom recipe states
-   - Load recipes for all existing rows
-   - Set custom recipe fields visibility and values
-
-#### Task 7.3: Implement Recipe Ingredients Handling
-
-**Files to Modify:**
-
-- `app/Http/Controllers/ProductionPlanController.php`
-- `resources/views/manufacturing/production-plans/create.blade.php`
-- `resources/views/manufacturing/production-plans/edit.blade.php`
-- `resources/views/manufacturing/production-plans/show.blade.php`
-
-**Requirements:**
-
-1. **Controller - Store/Update Step 1:**
-
-   - When standard recipe is selected:
-     - Copy ingredients from Recipe to ProductionPlanStep1RecipeIngredient
-     - Store ingredient_item_id, quantity, unit, sort_order
-   - When custom recipe is selected:
-     - Allow ingredients to be entered via form
-     - Store ingredients in ProductionPlanStep1RecipeIngredient
-   - Update `storeStep1()` method to handle ingredients:
-     ```php
-     // After creating step1 record
-     if ($recipe && !$isCustomRecipe) {
-         // Copy ingredients from standard recipe
-         foreach ($recipe->ingredients as $ingredient) {
-             $step1->recipeIngredients()->create([
-                 'ingredient_item_id' => $ingredient->ingredient_item_id,
-                 'quantity' => $ingredient->quantity,
-                 'unit' => $ingredient->unit,
-                 'sort_order' => $ingredient->sort_order,
-             ]);
-         }
-     } elseif ($isCustomRecipe && !empty($data['ingredients'])) {
-         // Store custom recipe ingredients
-         foreach ($data['ingredients'] as $index => $ingredient) {
-             $step1->recipeIngredients()->create([
-                 'ingredient_item_id' => $ingredient['ingredient_item_id'],
-                 'quantity' => $ingredient['quantity'],
-                 'unit' => $ingredient['unit'],
-                 'sort_order' => $index,
-             ]);
-         }
-     }
-     ```
-
-
-2. **Create/Edit Views - Add Ingredients UI:**
-
-   - Add collapsible section for recipe ingredients
-   - For standard recipes: Show ingredients in read-only mode (from Recipe)
-   - For custom recipes: Allow adding/editing ingredients
-   - Ingredients table with columns:
-     - Ingredient Item (select dropdown)
-     - Quantity (number input)
-     - Unit (text input)
-     - Actions (add/remove buttons)
-   - Use JavaScript to:
-     - Show/hide ingredients section based on recipe selection
-     - Dynamically add/remove ingredient rows
-     - Load ingredients when standard recipe is selected
-     - Clear ingredients when switching recipes
-
-3. **Show View - Display Ingredients:**
-
-   - Add expandable section to show recipe ingredients
-   - Display ingredients table with:
-     - Ingredient Item name
-     - Quantity
-     - Unit
-   - Show for both standard and custom recipes
-   - Use accordion or collapsible card for clean UI
-
-4. **Validation:**
-
-   - Add validation for ingredients array:
-     - `step1.*.ingredients` - array (required if custom recipe)
-     - `step1.*.ingredients.*.ingredient_item_id` - required|exists:items,id
-     - `step1.*.ingredients.*.quantity` - required|numeric|min:0.001
-     - `step1.*.ingredients.*.unit` - nullable|string|max:15
-
-#### Task 7.4: Enhance Create View for Custom Recipes
-
-**File:** `resources/views/manufacturing/production-plans/create.blade.php`
-
-**Requirements:**
-
-1. Add ingredients section similar to edit view
-2. Ensure JavaScript properly handles:
-
-   - Loading ingredients when standard recipe is selected
-   - Showing/hiding ingredients section
-   - Adding/removing ingredient rows for custom recipes
-
-3. Use TomSelect for ingredient item selection (consistent with other selects)
 
 #### Task 7.5: Update Controller to Load Recipe Ingredients
 
 **File:** `app/Http/Controllers/ProductionPlanController.php`
 
-**Requirements:**
+**Status:** ✅ Complete
 
-1. Update `show()` method to eager load recipe ingredients:
-   ```php
-   $productionPlan->load([
-       // ... existing relationships
-       'step1.recipeIngredients.ingredientItem',
-       'step1.recipe.ingredients.ingredientItem',
-   ]);
-   ```
-
-2. Update `edit()` method to load recipe ingredients:
-   ```php
-   $productionPlan->load([
-       'step1.doughItem',
-       'step1.recipe',
-       'step1.recipeIngredients.ingredientItem',
-   ]);
-   ```
-
-3. Add new method `getRecipeIngredients()` for AJAX endpoint:
-
-   - Route: `GET /manufacturing/production-plans/recipe-ingredients?recipe_id={id}`
-   - Returns JSON with recipe ingredients
-   - Used by JavaScript to load ingredients when recipe is selected
+- `show()` method eager loads recipe ingredients
+- `edit()` method loads recipe ingredients
+- Ingredients are properly displayed in views
 
 #### Task 7.6: Add Recipe Ingredients AJAX Endpoint
 
 **File:** `app/Http/Controllers/ProductionPlanController.php`
 
-**File:** `routes/web.php`
+**Status:** ✅ Complete
 
-**Requirements:**
-
-1. Add new method in ProductionPlanController:
-   ```php
-   public function getRecipeIngredients(Request $request): \Illuminate\Http\JsonResponse
-   {
-       $recipeId = $request->input('recipe_id');
-       
-       if (!$recipeId) {
-           return response()->json([]);
-       }
-       
-       $recipe = Recipe::with('ingredients.ingredientItem')->findOrFail($recipeId);
-       
-       return response()->json(
-           $recipe->ingredients->map(function ($ingredient) {
-               return [
-                   'ingredient_item_id' => $ingredient->ingredient_item_id,
-                   'ingredient_item_name' => $ingredient->ingredientItem->name,
-                   'quantity' => $ingredient->quantity,
-                   'unit' => $ingredient->unit,
-                   'sort_order' => $ingredient->sort_order,
-               ];
-           })
-       );
-   }
-   ```
-
-2. Add route in `routes/web.php`:
-   ```php
-   Route::get('production-plans/recipe-ingredients', [ProductionPlanController::class, 'getRecipeIngredients'])
-       ->name('production-plans.recipe-ingredients');
-   ```
-
+- `getRecipeIngredients()` method exists and returns JSON
+- Route: `GET /manufacturing/production-plans/recipe-ingredients?recipe_id={id}`
+- Used by JavaScript to load ingredients when recipe is selected
 
 #### Task 7.7: Update Show View to Display Ingredients
 
 **File:** `resources/views/manufacturing/production-plans/show.blade.php`
 
-**Requirements:**
+**Status:** ✅ Complete
 
-1. Add expandable ingredients section in Step 1 tab
-2. Display ingredients in a table:
+- Ingredients are displayed in expandable sections
+- Shows per-batch and total required quantities
+- Displays ingredient item name, quantity, and unit
 
-   - Ingredient Item
-   - Quantity
-   - Unit
+#### Task 7.8: Remove is_custom_recipe Field
 
-3. Show for each step1 row
-4. Use Bootstrap collapse or similar for clean UI
-5. Show "No ingredients" message if none exist
+**Status:** ✅ Complete
+
+- Removed from migration file
+- Removed from ProductionPlanStep1 model
+- Removed from ProductionPlanController
+- Database column removed using tinker
+
+#### Task 7.9: Add Recipe Copy/Duplicate Functionality
+
+**Status:** ✅ Complete
+
+**Files Created/Modified:**
+
+- `app/Http/Controllers/RecipeController.php` - Added `duplicate()` and `storeDuplicate()` methods
+- `resources/views/manufacturing/recipes/duplicate.blade.php` - New view for copying recipes
+- `resources/views/manufacturing/recipes/index.blade.php` - Added copy button
+- `resources/views/manufacturing/recipes/show.blade.php` - Added copy button
+- `routes/web.php` - Added duplicate routes
+
+**Features:**
+
+- Users can copy any existing recipe
+- Can change dough item (Adonan) when copying
+- All ingredients are pre-filled and can be modified
+- Recipe name is pre-filled with "(Copy)" suffix
+- Supports copying for same or different Adonan
 
 ### Testing Checklist
 
-- [ ] Create production plan with standard recipe - ingredients should be copied
-- [ ] Create production plan with custom recipe - should allow entering ingredients
-- [ ] Edit production plan - custom recipe state should be restored correctly
-- [ ] Edit production plan - recipe ingredients should load correctly
-- [ ] Switch from standard to custom recipe - ingredients should clear
-- [ ] Switch from custom to standard recipe - ingredients should load from recipe
-- [ ] Validation errors show correctly for missing custom recipe fields
-- [ ] Validation errors show correctly for invalid ingredients
-- [ ] Show view displays ingredients correctly for both types
-- [ ] All JavaScript functions work correctly in both create and edit views
+- [x] Create production plan with standard recipe - ingredients are copied
+- [x] Edit production plan - recipe ingredients load correctly
+- [x] Show view displays ingredients correctly
+- [x] Recipe copy functionality works for same Adonan
+- [x] Recipe copy functionality works for different Adonan
+- [x] All ingredients are copied when duplicating recipe
+- [x] Recipe ingredients can be modified when copying
 
-### Files to Create/Modify
+### Files Created/Modified
 
 **Modified Files:**
 
-- `app/Http/Requests/StoreProductionPlanRequest.php` - Add validation
-- `app/Http/Requests/UpdateProductionPlanRequest.php` - Add validation
-- `app/Http/Controllers/ProductionPlanController.php` - Add ingredients handling, AJAX endpoint
-- `resources/views/manufacturing/production-plans/create.blade.php` - Add ingredients UI
-- `resources/views/manufacturing/production-plans/edit.blade.php` - Fix bugs, add ingredients UI
-- `resources/views/manufacturing/production-plans/show.blade.php` - Display ingredients
-- `routes/web.php` - Add recipe ingredients route
+- `database/migrations/2025_11_03_120629_create_production_plan_step1_table.php` - Removed is_custom_recipe field
+- `app/Models/ProductionPlanStep1.php` - Removed is_custom_recipe from fillable and casts
+- `app/Http/Controllers/ProductionPlanController.php` - Removed is_custom_recipe assignment
+- `app/Http/Controllers/RecipeController.php` - Added duplicate() and storeDuplicate() methods
+- `resources/views/manufacturing/recipes/index.blade.php` - Added copy button
+- `resources/views/manufacturing/recipes/show.blade.php` - Added copy button
+- `routes/web.php` - Added recipe duplicate routes
 
-**No New Files Required** (all models and migrations already exist)
+**New Files:**
+
+- `resources/views/manufacturing/recipes/duplicate.blade.php` - Recipe copy form
 
 ### Technical Notes
 
 - Recipe ingredients are stored in `production_plan_step1_recipe_ingredients` table
-- Ingredients should be copied when standard recipe is selected (snapshot at time of planning)
-- Custom recipe ingredients are entered manually by user
-- Ingredients are displayed in show view for reference
-- Use JavaScript to dynamically manage ingredient rows
-- Consider using a reusable JavaScript component for ingredient management
+- Ingredients are copied when standard recipe is selected (snapshot at time of planning)
+- Custom recipes are not supported - users must manage recipes before creating production plans
+- Recipe copy functionality allows users to easily duplicate recipes for same or different Adonan
+- All recipe ingredients are pre-filled when copying and can be modified before saving
 
 ---
 

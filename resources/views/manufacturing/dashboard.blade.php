@@ -73,13 +73,11 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h3 class="card-title">
                                 <i class="far fa-temperature-half"></i>&nbsp;
-                                Temperature Sensor
-                            </h3>
-                            <div class="d-flex gap-2">
+                                Temperature Sensor&nbsp;
                                 <button type="button" id="reload-temperature-btn" class="btn btn-sm btn-outline-primary">
                                     <i class="far fa-rotate"></i>&nbsp;Reload
                                 </button>
-                            </div>
+                            </h3>
                         </div>
                     </div>
                     <div class="card-body">

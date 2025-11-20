@@ -25,7 +25,6 @@ final class ProductionPlanStep1 extends Model
         'qty_gl2',
         'qty_ta',
         'qty_bl',
-        'is_custom_recipe',
     ];
 
     protected $casts = [
@@ -34,7 +33,6 @@ final class ProductionPlanStep1 extends Model
         'qty_gl2' => 'integer',
         'qty_ta' => 'integer',
         'qty_bl' => 'integer',
-        'is_custom_recipe' => 'boolean',
     ];
 
     public function productionPlan(): BelongsTo
@@ -55,6 +53,11 @@ final class ProductionPlanStep1 extends Model
     public function recipeIngredients(): HasMany
     {
         return $this->hasMany(ProductionPlanStep1RecipeIngredient::class)->orderBy('sort_order');
+    }
+
+    public function actualStep1(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ProductionActualStep1::class, 'production_plan_step1_id');
     }
 
     public function getTotalQuantityAttribute(): float

@@ -212,5 +212,32 @@ final class ProductionPlanningService
             && $plan->step4()->exists()
             && $plan->step5()->exists();
     }
+
+    /**
+     * Start production (delegates to ProductionActualService).
+     * Kept for backward compatibility.
+     */
+    public function startProduction(ProductionPlan $plan, User $user): ProductionPlan
+    {
+        $actualService = app(\App\Services\ProductionActualService::class);
+        $actualService->startProduction($plan, $user);
+        return $plan->fresh();
+    }
+
+    /**
+     * Mark production plan as completed (delegates to ProductionActualService).
+     * Kept for backward compatibility.
+     */
+    public function markAsCompleted(ProductionPlan $plan): ProductionPlan
+    {
+        $actual = $plan->actual;
+        if (!$actual) {
+            throw new \RuntimeException('Cannot mark as completed: production has not been started.');
+        }
+
+        $actualService = app(\App\Services\ProductionActualService::class);
+        $actualService->completeProduction($actual);
+        return $plan->fresh();
+    }
 }
 

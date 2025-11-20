@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\ItemCategory;
 use App\Models\ProductionPlan;
 use App\Models\Recipe;
+use App\Services\ProductionDocumentService;
 use App\Services\ProductionPlanningService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ use Illuminate\View\View;
 final class ProductionPlanController extends Controller
 {
     public function __construct(
-        private readonly ProductionPlanningService $planningService
+        private readonly ProductionPlanningService $planningService,
+        private readonly ProductionDocumentService $documentService
     ) {
         $this->middleware('can:manufacturing.production-plans.view')->only(['index', 'show']);
         $this->middleware('can:manufacturing.production-plans.create')->only(['create', 'store']);
@@ -264,7 +266,6 @@ final class ProductionPlanController extends Controller
                 'qty_gl2' => (int) ($data['qty_gl2'] ?? 0),
                 'qty_ta' => (int) ($data['qty_ta'] ?? 0),
                 'qty_bl' => (int) ($data['qty_bl'] ?? 0),
-                'is_custom_recipe' => false,
             ]);
 
             // Handle recipe ingredients
@@ -361,6 +362,152 @@ final class ProductionPlanController extends Controller
                 ];
             })
         );
+    }
+
+    /**
+     * Display Surat Perintah Kerja Produksi Basah.
+     */
+    public function showWetProductionWorkOrder(ProductionPlan $productionPlan): View|RedirectResponse
+    {
+        // Restrict to PPIC role only
+        if (!Auth::user()->hasRole('PPIC') && !Auth::user()->hasRole('Super Admin') && !Auth::user()->hasRole('Owner')) {
+            abort(403, 'Only PPIC role can access Work Orders.');
+        }
+
+        if (!$productionPlan->isApproved()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Production plan must be approved to generate documents.');
+        }
+
+        $data = $this->documentService->getWetProductionWorkOrderData($productionPlan);
+
+        return view('manufacturing.production-plans.documents.wet-production-work-order', $data);
+    }
+
+    /**
+     * Display Surat Perintah Kerja Produksi Kering.
+     */
+    public function showDryProductionWorkOrder(ProductionPlan $productionPlan): View|RedirectResponse
+    {
+        // Restrict to PPIC role only
+        if (!Auth::user()->hasRole('PPIC') && !Auth::user()->hasRole('Super Admin') && !Auth::user()->hasRole('Owner')) {
+            abort(403, 'Only PPIC role can access Work Orders.');
+        }
+
+        if (!$productionPlan->isApproved()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Production plan must be approved to generate documents.');
+        }
+
+        $data = $this->documentService->getDryProductionWorkOrderData($productionPlan);
+
+        return view('manufacturing.production-plans.documents.dry-production-work-order', $data);
+    }
+
+    /**
+     * Display combined JC/RO for Adonan.
+     */
+    public function showJcRoAdonan(ProductionPlan $productionPlan): View|RedirectResponse
+    {
+        // Restrict to Admin Central role only
+        if (!Auth::user()->hasRole('Admin Central') && !Auth::user()->hasRole('Super Admin') && !Auth::user()->hasRole('Owner')) {
+            abort(403, 'Only Admin Central role can access JC/RO reports.');
+        }
+
+        if (!$productionPlan->isApproved()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Production plan must be approved to generate documents.');
+        }
+
+        $jcData = $this->documentService->getJobCostingAdonanData($productionPlan);
+        $roData = $this->documentService->getRollOverAdonanData($productionPlan);
+
+        return view('manufacturing.production-plans.documents.jc-ro-adonan', [
+            'plan' => $productionPlan,
+            'jcData' => $jcData,
+            'roData' => $roData,
+        ]);
+    }
+
+    /**
+     * Display combined JC/RO for Gelondongan.
+     */
+    public function showJcRoGelondongan(ProductionPlan $productionPlan): View|RedirectResponse
+    {
+        // Restrict to Admin Central role only
+        if (!Auth::user()->hasRole('Admin Central') && !Auth::user()->hasRole('Super Admin') && !Auth::user()->hasRole('Owner')) {
+            abort(403, 'Only Admin Central role can access JC/RO reports.');
+        }
+
+        if (!$productionPlan->isApproved()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Production plan must be approved to generate documents.');
+        }
+
+        $jcData = $this->documentService->getJobCostingGelondonganData($productionPlan);
+        $roData = $this->documentService->getRollOverGelondonganData($productionPlan);
+
+        return view('manufacturing.production-plans.documents.jc-ro-gelondongan', [
+            'plan' => $productionPlan,
+            'jcData' => $jcData,
+            'roData' => $roData,
+        ]);
+    }
+
+    /**
+     * Display combined JC/RO for Kerupuk Kg.
+     */
+    public function showJcRoKerupukKg(ProductionPlan $productionPlan): View|RedirectResponse
+    {
+        // Restrict to Admin Central role only
+        if (!Auth::user()->hasRole('Admin Central') && !Auth::user()->hasRole('Super Admin') && !Auth::user()->hasRole('Owner')) {
+            abort(403, 'Only Admin Central role can access JC/RO reports.');
+        }
+
+        if (!$productionPlan->isApproved()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Production plan must be approved to generate documents.');
+        }
+
+        $jcData = $this->documentService->getJobCostingKerupukKgData($productionPlan);
+        $roData = $this->documentService->getRollOverKerupukKgData($productionPlan);
+
+        return view('manufacturing.production-plans.documents.jc-ro-kerupuk-kg', [
+            'plan' => $productionPlan,
+            'jcData' => $jcData,
+            'roData' => $roData,
+        ]);
+    }
+
+    /**
+     * Display combined JC/RO for Kerupuk Pack.
+     */
+    public function showJcRoKerupukPack(ProductionPlan $productionPlan): View|RedirectResponse
+    {
+        // Restrict to Admin Central role only
+        if (!Auth::user()->hasRole('Admin Central') && !Auth::user()->hasRole('Super Admin') && !Auth::user()->hasRole('Owner')) {
+            abort(403, 'Only Admin Central role can access JC/RO reports.');
+        }
+
+        if (!$productionPlan->isApproved()) {
+            return redirect()
+                ->route('manufacturing.production-plans.show', $productionPlan)
+                ->with('error', 'Production plan must be approved to generate documents.');
+        }
+
+        $jcData = $this->documentService->getJobCostingKerupukPackData($productionPlan);
+        $roData = $this->documentService->getRollOverKerupukPackData($productionPlan);
+
+        return view('manufacturing.production-plans.documents.jc-ro-kerupuk-pack', [
+            'plan' => $productionPlan,
+            'jcData' => $jcData,
+            'roData' => $roData,
+        ]);
     }
 }
 

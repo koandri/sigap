@@ -59,6 +59,11 @@ final class ProductionPlanStep3 extends Model
         return (float) ($this->qty_gl1_gelondongan + $this->qty_gl2_gelondongan + $this->qty_ta_gelondongan + $this->qty_bl_gelondongan);
     }
 
+    public function actualStep3(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ProductionActualStep3::class, 'production_plan_step3_id');
+    }
+
     public function getTotalKgAttribute(): float
     {
         return (float) ($this->qty_gl1_kg + $this->qty_gl2_kg + $this->qty_ta_kg + $this->qty_bl_kg);

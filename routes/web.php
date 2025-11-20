@@ -228,6 +228,16 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::resource('production-plans', ProductionPlanController::class);
     Route::post('production-plans/{productionPlan}/approve', [ProductionPlanController::class, 'approve'])->name('production-plans.approve');
     
+    // Production Plan Documents (Work Orders and JC/RO Reports)
+    Route::get('production-plans/{productionPlan}/work-order/wet', [ProductionPlanController::class, 'showWetProductionWorkOrder'])->name('production-plans.work-order.wet');
+    Route::get('production-plans/{productionPlan}/work-order/dry', [ProductionPlanController::class, 'showDryProductionWorkOrder'])->name('production-plans.work-order.dry');
+    
+    // Combined JC/RO Reports
+    Route::get('production-plans/{productionPlan}/jc-ro/adonan', [ProductionPlanController::class, 'showJcRoAdonan'])->name('production-plans.jc-ro.adonan');
+    Route::get('production-plans/{productionPlan}/jc-ro/gelondongan', [ProductionPlanController::class, 'showJcRoGelondongan'])->name('production-plans.jc-ro.gelondongan');
+    Route::get('production-plans/{productionPlan}/jc-ro/kerupuk-kg', [ProductionPlanController::class, 'showJcRoKerupukKg'])->name('production-plans.jc-ro.kerupuk-kg');
+    Route::get('production-plans/{productionPlan}/jc-ro/kerupuk-pack', [ProductionPlanController::class, 'showJcRoKerupukPack'])->name('production-plans.jc-ro.kerupuk-pack');
+    
     // Yield Guidelines Management
     Route::resource('yield-guidelines', YieldGuidelineController::class);
     Route::get('yield-guidelines/items', [YieldGuidelineController::class, 'getItemsForStage'])->name('yield-guidelines.items');

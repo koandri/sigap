@@ -24,7 +24,6 @@ return new class extends Migration
             $table->integer('qty_gl2')->default(0);
             $table->integer('qty_ta')->default(0);
             $table->integer('qty_bl')->default(0);
-            $table->boolean('is_custom_recipe')->default(false); // True if recipe differs from master recipe
             $table->timestamps();
 
             $table->index('production_plan_id');

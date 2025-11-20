@@ -152,6 +152,11 @@
                                                 <i class="far fa-edit"></i>
                                             </a>
                                             @endcan
+                                            @can('manufacturing.recipes.create')
+                                            <a href="{{ route('manufacturing.recipes.duplicate', $recipe) }}" class="btn btn-sm btn-outline-success" title="Copy Recipe">
+                                                <i class="far fa-copy"></i>
+                                            </a>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>

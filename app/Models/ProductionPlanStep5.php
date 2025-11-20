@@ -39,4 +39,9 @@ final class ProductionPlanStep5 extends Model
     {
         return $this->belongsTo(Item::class, 'packing_material_item_id');
     }
+
+    public function actualStep5(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ProductionActualStep5::class, 'production_plan_step5_id');
+    }
 }

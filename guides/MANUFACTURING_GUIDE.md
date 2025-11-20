@@ -491,6 +491,110 @@ Draft → Approved → In Production → Completed
 - **In Production**: Production has started (future feature)
 - **Completed**: Production is finished (future feature)
 
+### Work Orders (Surat Perintah Kerja)
+
+Once a production plan is approved, you can generate printable work orders for production execution.
+
+**Access Control:**
+- Work Orders are restricted to users with **PPIC**, **Super Admin**, or **Owner** roles
+- Links to work orders only appear for authorized users
+
+**Available Work Orders:**
+
+1. **Wet Production Work Order (Surat Perintah Kerja Produksi Basah)**
+   - Shows dough production details
+   - Lists raw materials required
+   - Displays gelondongan production by location (GL1, GL2, TA, BL)
+   - Includes production dates and plan information
+
+2. **Dry Production Work Order (Surat Perintah Kerja Produksi Kering)**
+   - Shows kerupuk kering production details
+   - Lists gelondongan requirements
+   - Displays packing planning information
+   - Includes production dates and plan information
+
+**Features:**
+- **Watermarked Documents**: All work orders include watermarks with:
+  - Company name: "PT. SURYA INTI ANEKA PANGAN"
+  - User name who printed the document
+  - Print date and time (automatically updated)
+- **Print-Optimized**: Designed for printing with proper formatting
+- **Secure Access**: Role-based access ensures only authorized personnel can view
+
+**How to Generate Work Orders:**
+
+1. Navigate to an approved production plan
+2. Scroll to the **"Documents"** section
+3. Click on the desired work order link:
+   - **"Surat Perintah Kerja Produksi Basah"** for wet production
+   - **"Surat Perintah Kerja Produksi Kering"** for dry production
+4. Review the document
+5. Click **"Print"** button to print or save as PDF
+
+![Work Order Example](/guides-imgs/production-plan-work-order.png)
+
+### JC/RO Reports (Job Costing & Roll Over)
+
+JC/RO reports provide detailed cost analysis and roll-over information for each production stage.
+
+**Access Control:**
+- JC/RO reports are restricted to users with **Admin Central**, **Super Admin**, or **Owner** roles
+- Links to JC/RO reports only appear for authorized users
+
+**Available Reports:**
+
+1. **JC/RO Adonan** - Job Costing and Roll Over for Dough Production
+2. **JC/RO Gelondongan** - Job Costing and Roll Over for Gelondongan Production
+3. **JC/RO Kerupuk Kg** - Job Costing and Roll Over for Kerupuk Kering (Kg)
+4. **JC/RO Kerupuk Pack** - Job Costing and Roll Over for Packed Products
+
+**Report Structure:**
+
+Each report contains two sections displayed sequentially (not in tabs for better printing):
+
+1. **Job Costing (JC) Section** - Shows:
+   - Item code (Code 128 barcode)
+   - Item name
+   - Quantities per distribution channel (GL1, GL2, TA, BL)
+   - Total quantities
+   - Cost information (if available)
+
+2. **Roll Over (RO) Section** - Shows:
+   - Item code (Code 128 barcode)
+   - Item name
+   - Roll-over quantities per distribution channel
+   - Total roll-over quantities
+
+**Features:**
+- **Code 128 Barcodes**: Each item displays its `accurate_id` as a scannable Code 128 barcode
+  - Positioned before the item name
+  - Large size for easy scanning
+  - Proper spacing and padding for barcode readers
+- **Print-Optimized Layout**: 
+  - Sequential display (JC first, then RO)
+  - No tabs for better printing
+  - Adequate padding and margins for barcode scanning
+  - Large, scannable barcodes
+- **Watermarked Documents**: All JC/RO reports include watermarks with:
+  - Company name: "PT. SURYA INTI ANEKA PANGAN"
+  - User name who printed the document
+  - Print date and time (automatically updated)
+- **Secure Access**: Role-based access ensures only authorized personnel can view
+
+**How to Generate JC/RO Reports:**
+
+1. Navigate to an approved production plan
+2. Scroll to the **"Documents"** section
+3. Click on the desired JC/RO report link:
+   - **"JC/RO Adonan"** for dough production
+   - **"JC/RO Gelondongan"** for gelondongan production
+   - **"JC/RO Kerupuk Kg"** for kerupuk kering (kg)
+   - **"JC/RO Kerupuk Pack"** for packed products
+4. Review the report (JC section first, then RO section)
+5. Click **"Print"** button to print or save as PDF
+
+![JC/RO Report Example](/guides-imgs/production-plan-jcro-report.png)
+
 ### Yield Guidelines Management
 
 Yield guidelines define conversion rates between production stages:

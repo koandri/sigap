@@ -74,6 +74,33 @@
                     </form>
                     @endcan
                     @endif
+                    @if($productionPlan->isApproved() && !$productionPlan->actual)
+                    @can('manufacturing.production-plans.start')
+                    <form method="POST" action="{{ route('manufacturing.production-plans.start', $productionPlan) }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to start production?')">
+                            <i class="far fa-play me-2"></i>&nbsp;
+                            Start Production
+                        </button>
+                    </form>
+                    @endcan
+                    @endif
+                    @if($productionPlan->isInProduction() || $productionPlan->isCompleted())
+                    @can('manufacturing.production-plans.view-actuals')
+                    <a href="{{ route('manufacturing.production-plans.actuals', $productionPlan) }}" class="btn btn-info">
+                        <i class="far fa-chart-bar me-2"></i>&nbsp;
+                        View Actuals
+                    </a>
+                    @endcan
+                    @endif
+                    @if($productionPlan->isInProduction())
+                    @can('manufacturing.production-plans.record-actuals')
+                    <a href="{{ route('manufacturing.production-plans.execute', $productionPlan) }}" class="btn btn-warning">
+                        <i class="far fa-tasks me-2"></i>&nbsp;
+                        Continue Production
+                    </a>
+                    @endcan
+                    @endif
                     <a href="{{ route('manufacturing.production-plans.index') }}" class="btn btn-outline-secondary">
                         <i class="far fa-arrow-left me-2"></i>&nbsp;
                         Back to Plans
@@ -160,6 +187,76 @@
                 </div>
             </div>
         </div>
+
+        @if($productionPlan->isApproved())
+        <!-- Document Generation Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="far fa-file-alt me-2"></i>
+                            Generate Documents
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @if(auth()->user()->hasRole('PPIC') || auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Owner'))
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Work Orders</h4>
+                                <div class="list-group">
+                                    <a href="{{ route('manufacturing.production-plans.work-order.wet', $productionPlan) }}" 
+                                       target="_blank"
+                                       class="list-group-item list-group-item-action">
+                                        <i class="far fa-file-pdf me-2"></i>
+                                        Surat Perintah Kerja Produksi Basah
+                                    </a>
+                                    <a href="{{ route('manufacturing.production-plans.work-order.dry', $productionPlan) }}" 
+                                       target="_blank"
+                                       class="list-group-item list-group-item-action">
+                                        <i class="far fa-file-pdf me-2"></i>
+                                        Surat Perintah Kerja Produksi Kering
+                                    </a>
+                                </div>
+                            </div>
+                            @endif
+                            @if(auth()->user()->hasRole('Admin Central') || auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Owner'))
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Job Costing & Roll Over Reports</h4>
+                                <div class="list-group">
+                                    <a href="{{ route('manufacturing.production-plans.jc-ro.adonan', $productionPlan) }}" 
+                                       target="_blank"
+                                       class="list-group-item list-group-item-action">
+                                        <i class="far fa-file-alt me-2"></i>
+                                        JC/RO Adonan
+                                    </a>
+                                    <a href="{{ route('manufacturing.production-plans.jc-ro.gelondongan', $productionPlan) }}" 
+                                       target="_blank"
+                                       class="list-group-item list-group-item-action">
+                                        <i class="far fa-file-alt me-2"></i>
+                                        JC/RO Gelondongan
+                                    </a>
+                                    <a href="{{ route('manufacturing.production-plans.jc-ro.kerupuk-kg', $productionPlan) }}" 
+                                       target="_blank"
+                                       class="list-group-item list-group-item-action">
+                                        <i class="far fa-file-alt me-2"></i>
+                                        JC/RO Kerupuk Kg
+                                    </a>
+                                    <a href="{{ route('manufacturing.production-plans.jc-ro.kerupuk-pack', $productionPlan) }}" 
+                                       target="_blank"
+                                       class="list-group-item list-group-item-action">
+                                        <i class="far fa-file-alt me-2"></i>
+                                        JC/RO Kerupuk Pack
+                                    </a>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <!-- Production Plan Steps with Tabs -->
         <div class="row">
@@ -649,7 +746,7 @@
                                                 <div class="card-header">
                                                     <h5 class="card-title mb-0">
                                                         <i class="far fa-box me-2"></i>{{ $data['pack_sku_name'] }}
-                                                        <span class="badge bg-secondary ms-2">{{ number_format($data['total_packs'], 0) }} Packs</span>
+                                                        <span class="badge bg-secondary text-white ms-2">{{ number_format($data['total_packs'], 0) }} Packs</span>
                                                     </h5>
                                                 </div>
                                                 <div class="card-body p-0">

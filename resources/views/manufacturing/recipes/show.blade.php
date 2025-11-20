@@ -38,6 +38,12 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
+                    @can('manufacturing.recipes.create')
+                    <a href="{{ route('manufacturing.recipes.duplicate', $recipe) }}" class="btn btn-success">
+                        <i class="far fa-copy me-2"></i>&nbsp;
+                        Copy Recipe
+                    </a>
+                    @endcan
                     @can('manufacturing.recipes.edit')
                     <a href="{{ route('manufacturing.recipes.edit', $recipe) }}" class="btn btn-primary">
                         <i class="far fa-edit me-2"></i>&nbsp;

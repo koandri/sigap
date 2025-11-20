@@ -67,6 +67,11 @@ final class ProductionPlan extends Model
         return $this->hasMany(ProductionPlanStep5::class);
     }
 
+    public function actual(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ProductionActual::class);
+    }
+
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
@@ -77,6 +82,16 @@ final class ProductionPlan extends Model
         return $query->where('status', 'approved');
     }
 
+    public function scopeInProduction($query)
+    {
+        return $query->where('status', 'in_production');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
     public function isDraft(): bool
     {
         return $this->status === 'draft';
@@ -85,6 +100,21 @@ final class ProductionPlan extends Model
     public function canBeEdited(): bool
     {
         return $this->status === 'draft';
+    }
+
+    public function isInProduction(): bool
+    {
+        return $this->status === 'in_production';
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
     }
 
     /**

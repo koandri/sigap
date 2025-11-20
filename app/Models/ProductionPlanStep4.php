@@ -79,6 +79,11 @@ final class ProductionPlanStep4 extends Model
         return (float) ($this->qty_gl1_kg + $this->qty_gl2_kg + $this->qty_ta_kg + $this->qty_bl_kg);
     }
 
+    public function actualStep4(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ProductionActualStep4::class, 'production_plan_step4_id');
+    }
+
     public function getTotalPackingAttribute(): float
     {
         return (float) ($this->qty_gl1_packing + $this->qty_gl2_packing + $this->qty_ta_packing + $this->qty_bl_packing);

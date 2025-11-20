@@ -207,6 +207,20 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Complete CRUD operations with step-by-step planning
   - Production plan approval system
   - Comprehensive plan overview with all steps in tabbed interface
+  - **Work Orders (Surat Perintah Kerja)**: Printable production work orders
+    - Wet Production Work Order (Produksi Basah)
+    - Dry Production Work Order (Produksi Kering)
+    - Role-based access: Restricted to PPIC, Super Admin, and Owner roles
+    - Watermarked documents with user name and print date/time
+  - **JC/RO Reports**: Combined Job Costing and Roll Over reports
+    - JC/RO Adonan (Dough)
+    - JC/RO Gelondongan
+    - JC/RO Kerupuk Kg
+    - JC/RO Kerupuk Pack
+    - Code 128 barcodes for item accurate_id
+    - Print-optimized layout with sequential display (JC first, then RO)
+    - Role-based access: Restricted to Admin Central, Super Admin, and Owner roles
+    - Watermarked documents with user name and print date/time
 - **Picklist Generation**: FIFO-based picking lists across warehouses
   - Automatic FIFO logic (oldest first, expiry date priority)
   - Cross-warehouse picking

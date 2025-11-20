@@ -59,6 +59,11 @@ final class ProductionPlanStep2 extends Model
         return (float) ($this->qty_gl1_adonan + $this->qty_gl2_adonan + $this->qty_ta_adonan + $this->qty_bl_adonan);
     }
 
+    public function actualStep2(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ProductionActualStep2::class, 'production_plan_step2_id');
+    }
+
     public function getTotalGelondonganAttribute(): float
     {
         return (float) ($this->qty_gl1_gelondongan + $this->qty_gl2_gelondongan + $this->qty_ta_gelondongan + $this->qty_bl_gelondongan);
