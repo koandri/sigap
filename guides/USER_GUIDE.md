@@ -155,6 +155,16 @@ Computerized Maintenance Management System for asset tracking.
 
 **Key Features:**
 - Asset management with QR codes and custom locations
+- **Mobile Asset Creation** with camera integration and AI-powered analysis
+  - Capture multiple photos directly from mobile device camera
+  - AI image analysis to automatically extract asset information (name, category, manufacturer, model, serial number)
+  - GPS location tracking with automatic geotagging
+  - AI-powered specification fetching from web sources
+- **Multiple Photo Management** for comprehensive asset documentation
+  - Upload and manage up to 10 photos per asset
+  - Set primary photo for quick identification
+  - Photo gallery with thumbnail previews
+  - Automatic EXIF data extraction (capture time, GPS coordinates)
 - Flexible maintenance scheduling (hourly, daily, weekly, monthly, yearly)
 - Complete work order lifecycle with status tracking
 - 14-day upcoming maintenance forecast
@@ -165,6 +175,12 @@ Computerized Maintenance Management System for asset tracking.
 - Maintenance calendar with visual scheduling
 - Work order reports with performance metrics
 
+![Asset Index Page](/guides-imgs/asset-index.png)
+
+![Mobile Asset Creation](/guides-imgs/asset-create-mobile.png)
+
+![Asset Detail with Photos](/guides-imgs/asset-detail-photos.png)
+
 **Learn More:**
 - **[Maintenance Guide](./MAINTENANCE_GUIDE.md)** - Complete CMMS guide
 - **[Maintenance Scheduling Guide](./MAINTENANCE_SCHEDULING_GUIDE.md)** - Automatic work order generation
@@ -172,7 +188,7 @@ Computerized Maintenance Management System for asset tracking.
 **Quick Start:**
 - **Technicians**: [Complete Work Orders](./MAINTENANCE_GUIDE.md#for-technicians-completing-work)
 - **Supervisors**: [Verify Work](./MAINTENANCE_GUIDE.md#for-supervisors-verifying-work)
-- **Admins**: [Create Schedules](./MAINTENANCE_GUIDE.md#creating-a-schedule)
+- **Admins**: [Create Assets](./MAINTENANCE_GUIDE.md#creating-an-asset) - Use mobile creation for quick asset registration with AI assistance
 
 ---
 

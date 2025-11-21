@@ -324,6 +324,29 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Asset specifications in JSON format
   - Department and user assignment
   - Purchase information and warranty tracking
+  - **Mobile Asset Creation**: Mobile-optimized asset creation with camera integration
+    - Full-screen camera interface for capturing asset photos
+    - Multiple photo capture (up to 10 photos per asset)
+    - GPS location tracking with automatic geotagging
+    - EXIF data extraction (date/time, GPS coordinates from photo metadata)
+  - **AI-Powered Image Analysis**: Intelligent asset data extraction using OpenRouter API
+    - Batch image analysis for multiple photos
+    - Automatic extraction of asset name, category, manufacturer, model, and serial number
+    - Confidence scoring for AI-detected information
+    - Auto-population of form fields based on AI analysis
+  - **AI Specifications Fetching**: Automated specification retrieval using Firecrawl API
+    - Web search for asset specifications based on manufacturer and model
+    - Automatic specification data extraction and formatting
+    - JSON-formatted specifications storage
+  - **Multiple Photo Management**: Comprehensive photo handling system
+    - Support for multiple photos per asset (up to 10)
+    - Primary photo designation and management
+    - Photo deletion with automatic primary photo reassignment
+    - Photo gallery with thumbnail previews
+    - Click-to-view full-size photo modal
+    - Photo metadata tracking (capture time, upload time, GPS coordinates)
+    - Automatic image optimization and resizing (max 1920x1080)
+    - S3 cloud storage integration for photo storage
 - **Maintenance Types**: Six pre-configured types (customizable)
   - Preventive Maintenance (scheduled prevention)
   - Corrective Maintenance (repairs and fixes)
