@@ -17,7 +17,9 @@ final class RecordProductionActualStep4Request extends FormRequest
     {
         return [
             'step4' => 'required|array|min:1',
-            'step4.*.production_plan_step4_id' => 'required|exists:production_plan_step4,id',
+            'step4.*.production_plan_step4_id' => 'nullable|exists:production_plan_step4,id',
+            'step4.*.kerupuk_kering_item_id' => 'required_without:step4.*.production_plan_step4_id|exists:items,id',
+            'step4.*.kerupuk_packing_item_id' => 'required_without:step4.*.production_plan_step4_id|exists:items,id',
             'step4.*.actual_qty_gl1_kg' => 'required|numeric|min:0',
             'step4.*.actual_qty_gl1_packing' => 'required|integer|min:0',
             'step4.*.actual_qty_gl2_kg' => 'required|numeric|min:0',
@@ -35,8 +37,11 @@ final class RecordProductionActualStep4Request extends FormRequest
             'step4.required' => 'Step 4 data is required.',
             'step4.array' => 'Step 4 data must be an array.',
             'step4.min' => 'At least one step 4 entry is required.',
-            'step4.*.production_plan_step4_id.required' => 'Production plan step 4 ID is required.',
             'step4.*.production_plan_step4_id.exists' => 'Selected production plan step 4 does not exist.',
+            'step4.*.kerupuk_kering_item_id.required_without' => 'Kerupuk kering item is required when creating a new item.',
+            'step4.*.kerupuk_kering_item_id.exists' => 'Selected kerupuk kering item does not exist.',
+            'step4.*.kerupuk_packing_item_id.required_without' => 'Kerupuk packing item is required when creating a new item.',
+            'step4.*.kerupuk_packing_item_id.exists' => 'Selected kerupuk packing item does not exist.',
             'step4.*.actual_qty_gl1_kg.required' => 'GL1 Kg actual quantity is required.',
             'step4.*.actual_qty_gl1_kg.numeric' => 'GL1 Kg actual quantity must be a number.',
             'step4.*.actual_qty_gl1_kg.min' => 'GL1 Kg actual quantity must be at least 0.',

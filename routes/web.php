@@ -31,6 +31,7 @@ use App\Http\Controllers\PicklistController;
 use App\Http\Controllers\WarehouseOverviewController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\ProductionPlanStepController;
+use App\Http\Controllers\ProductionActualController;
 use App\Http\Controllers\YieldGuidelineController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\PackingMaterialBlueprintController;
@@ -275,10 +276,15 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::get('production-plans/{productionPlan}/execute', [ProductionActualController::class, 'execute'])->name('production-plans.execute');
     Route::get('production-plans/{productionPlan}/actuals', [ProductionActualController::class, 'show'])->name('production-plans.actuals');
     Route::post('production-plans/{productionPlan}/actuals/step1', [ProductionActualController::class, 'recordStep1'])->name('production-plans.actuals.step1');
+    Route::delete('production-plans/{productionPlan}/actuals/step1/{actualStep1}', [ProductionActualController::class, 'deleteStep1'])->name('production-plans.actuals.step1.delete');
     Route::post('production-plans/{productionPlan}/actuals/step2', [ProductionActualController::class, 'recordStep2'])->name('production-plans.actuals.step2');
+    Route::delete('production-plans/{productionPlan}/actuals/step2/{actualStep2}', [ProductionActualController::class, 'deleteStep2'])->name('production-plans.actuals.step2.delete');
     Route::post('production-plans/{productionPlan}/actuals/step3', [ProductionActualController::class, 'recordStep3'])->name('production-plans.actuals.step3');
+    Route::delete('production-plans/{productionPlan}/actuals/step3/{actualStep3}', [ProductionActualController::class, 'deleteStep3'])->name('production-plans.actuals.step3.delete');
     Route::post('production-plans/{productionPlan}/actuals/step4', [ProductionActualController::class, 'recordStep4'])->name('production-plans.actuals.step4');
+    Route::delete('production-plans/{productionPlan}/actuals/step4/{actualStep4}', [ProductionActualController::class, 'deleteStep4'])->name('production-plans.actuals.step4.delete');
     Route::post('production-plans/{productionPlan}/actuals/step5', [ProductionActualController::class, 'recordStep5'])->name('production-plans.actuals.step5');
+    Route::delete('production-plans/{productionPlan}/actuals/step5/{actualStep5}', [ProductionActualController::class, 'deleteStep5'])->name('production-plans.actuals.step5.delete');
     Route::post('production-plans/{productionPlan}/complete', [ProductionActualController::class, 'complete'])->name('production-plans.complete');
     
 });
@@ -286,9 +292,22 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
 // Options Routes
 Route::prefix('options')->name('options.')->middleware(['auth'])->group(function () {
     Route::resource('asset-categories', AssetCategoryController::class);
-    Route::resource('assets', AssetController::class);
+    
+    // Asset routes - specific routes must be defined BEFORE resource route
+    Route::get('assets/create-mobile', [AssetController::class, 'createMobile'])->name('assets.create-mobile');
+    Route::post('assets/store-mobile', [AssetController::class, 'storeMobile'])->name('assets.store-mobile');
+            Route::get('assets/test-openrouter', [AssetController::class, 'testOpenRouter'])->name('assets.test-openrouter');
+            Route::post('assets/analyze-images', [AssetController::class, 'analyzeImages'])->name('assets.analyze-images');
+            Route::post('assets/fetch-specifications', [AssetController::class, 'fetchSpecifications'])->name('assets.fetch-specifications');
     Route::get('assets/qr-codes/all', [AssetController::class, 'qrIndex'])->name('assets.qr-index');
     Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr-code');
+    Route::post('assets/{asset}/photos', [AssetController::class, 'store'])->name('assets.photos.store');
+    Route::put('assets/{asset}/photos/{photo}/primary', [AssetController::class, 'setPrimaryPhoto'])->name('assets.photos.primary');
+    Route::delete('assets/{asset}/photos/{photo}', [AssetController::class, 'deletePhoto'])->name('assets.photos.destroy');
+    
+    // Resource route must be defined last
+    Route::resource('assets', AssetController::class);
+    
     Route::resource('locations', LocationController::class);
 });
 

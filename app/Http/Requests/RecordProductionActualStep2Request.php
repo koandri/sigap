@@ -17,7 +17,9 @@ final class RecordProductionActualStep2Request extends FormRequest
     {
         return [
             'step2' => 'required|array|min:1',
-            'step2.*.production_plan_step2_id' => 'required|exists:production_plan_step2,id',
+            'step2.*.production_plan_step2_id' => 'nullable|exists:production_plan_step2,id',
+            'step2.*.adonan_item_id' => 'required_without:step2.*.production_plan_step2_id|exists:items,id',
+            'step2.*.gelondongan_item_id' => 'required_without:step2.*.production_plan_step2_id|exists:items,id',
             'step2.*.actual_qty_gl1_adonan' => 'required|integer|min:0',
             'step2.*.actual_qty_gl1_gelondongan' => 'required|integer|min:0',
             'step2.*.actual_qty_gl2_adonan' => 'required|integer|min:0',
@@ -35,8 +37,11 @@ final class RecordProductionActualStep2Request extends FormRequest
             'step2.required' => 'Step 2 data is required.',
             'step2.array' => 'Step 2 data must be an array.',
             'step2.min' => 'At least one step 2 entry is required.',
-            'step2.*.production_plan_step2_id.required' => 'Production plan step 2 ID is required.',
             'step2.*.production_plan_step2_id.exists' => 'Selected production plan step 2 does not exist.',
+            'step2.*.adonan_item_id.required_without' => 'Adonan item is required when creating a new item.',
+            'step2.*.adonan_item_id.exists' => 'Selected adonan item does not exist.',
+            'step2.*.gelondongan_item_id.required_without' => 'Gelondongan item is required when creating a new item.',
+            'step2.*.gelondongan_item_id.exists' => 'Selected gelondongan item does not exist.',
             'step2.*.actual_qty_gl1_adonan.required' => 'GL1 Adonan actual quantity is required.',
             'step2.*.actual_qty_gl1_adonan.integer' => 'GL1 Adonan actual quantity must be a whole number.',
             'step2.*.actual_qty_gl1_adonan.min' => 'GL1 Adonan actual quantity must be at least 0.',

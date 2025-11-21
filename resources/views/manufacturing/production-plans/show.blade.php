@@ -188,7 +188,7 @@
             </div>
         </div>
 
-        @if($productionPlan->isApproved())
+        @if($productionPlan->isApproved() || $productionPlan->isInProduction() || $productionPlan->isCompleted())
         <!-- Document Generation Section -->
         <div class="row mb-4">
             <div class="col-12">
@@ -201,7 +201,10 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            @if(auth()->user()->hasRole('PPIC') || auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Owner'))
+                            @php
+                                $hasProductionStarted = $productionPlan->actual !== null || $productionPlan->isInProduction() || $productionPlan->isCompleted();
+                            @endphp
+                            @if((auth()->user()->hasRole('PPIC') || auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Owner')) && !$hasProductionStarted)
                             <div class="col-md-6">
                                 <h4 class="mb-3">Work Orders</h4>
                                 <div class="list-group">
@@ -221,8 +224,35 @@
                             </div>
                             @endif
                             @if(auth()->user()->hasRole('Admin Central') || auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Owner'))
-                            <div class="col-md-6">
+                            <div class="{{ !$hasProductionStarted && (auth()->user()->hasRole('PPIC') || auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Owner')) ? 'col-md-6' : 'col-md-12' }}">
                                 <h4 class="mb-3">Job Costing & Roll Over Reports</h4>
+                                @php
+                                    $actual = $productionPlan->actual;
+                                    $step1Completed = $actual && $actual->step1()->exists();
+                                    $step2Completed = $actual && $actual->step2()->exists();
+                                    $step3Completed = $actual && $actual->step3()->exists();
+                                    $step4Completed = $actual && $actual->step4()->exists();
+                                @endphp
+                                @if($hasProductionStarted)
+                                <div class="alert alert-info mb-3">
+                                    <i class="far fa-info-circle me-2"></i>
+                                    <strong>Note:</strong> Reports use <strong>Actual Production</strong> data for completed steps, and <strong>Production Plan</strong> data for steps not yet completed.
+                                    @if($step1Completed || $step2Completed || $step3Completed || $step4Completed)
+                                    <br><small class="mt-1 d-block">
+                                        Completed steps: 
+                                        @if($step1Completed) <span class="badge bg-success">Step 1</span> @endif
+                                        @if($step2Completed) <span class="badge bg-success">Step 2</span> @endif
+                                        @if($step3Completed) <span class="badge bg-success">Step 3</span> @endif
+                                        @if($step4Completed) <span class="badge bg-success">Step 4</span> @endif
+                                    </small>
+                                    @endif
+                                </div>
+                                @else
+                                <div class="alert alert-info mb-3">
+                                    <i class="far fa-info-circle me-2"></i>
+                                    <strong>Note:</strong> Reports are based on <strong>Production Plan</strong> data.
+                                </div>
+                                @endif
                                 <div class="list-group">
                                     <a href="{{ route('manufacturing.production-plans.jc-ro.adonan', $productionPlan) }}" 
                                        target="_blank"
@@ -250,6 +280,37 @@
                                     </a>
                                 </div>
                             </div>
+                            @else
+                            <div class="col-md-12">
+                                <h4 class="mb-3">Job Costing & Roll Over Reports</h4>
+                                <div class="alert alert-warning mb-0">
+                                    <i class="far fa-exclamation-triangle me-2"></i>
+                                    <strong>Access Restricted:</strong> JC/RO Reports are only available to users with <strong>Admin Central</strong>, <strong>Super Admin</strong>, or <strong>Owner</strong> role.
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @elseif($productionPlan->isDraft())
+        <!-- Document Generation Section - Not Available (Draft) -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="far fa-file-alt me-2"></i>
+                            Generate Documents
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-0">
+                            <i class="far fa-exclamation-triangle me-2"></i>
+                            <strong>Documents are not available yet.</strong> The production plan must be <strong>approved</strong> before documents can be generated.
+                            @if(!auth()->user()->hasRole('Admin Central') && !auth()->user()->hasRole('Super Admin') && !auth()->user()->hasRole('Owner'))
+                            <br><small class="mt-1 d-block">Additionally, JC/RO Reports require <strong>Admin Central</strong>, <strong>Super Admin</strong>, or <strong>Owner</strong> role.</small>
                             @endif
                         </div>
                     </div>

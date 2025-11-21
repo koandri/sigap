@@ -416,7 +416,7 @@ final class ProductionPlanController extends Controller
             abort(403, 'Only Admin Central role can access JC/RO reports.');
         }
 
-        if (!$productionPlan->isApproved()) {
+        if ($productionPlan->isDraft()) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
                 ->with('error', 'Production plan must be approved to generate documents.');
@@ -429,6 +429,8 @@ final class ProductionPlanController extends Controller
             'plan' => $productionPlan,
             'jcData' => $jcData,
             'roData' => $roData,
+            'isBasedOnActual' => $jcData['isBasedOnActual'] ?? false,
+            'actual' => $jcData['actual'] ?? null,
         ]);
     }
 
@@ -442,7 +444,7 @@ final class ProductionPlanController extends Controller
             abort(403, 'Only Admin Central role can access JC/RO reports.');
         }
 
-        if (!$productionPlan->isApproved()) {
+        if ($productionPlan->isDraft()) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
                 ->with('error', 'Production plan must be approved to generate documents.');
@@ -455,6 +457,8 @@ final class ProductionPlanController extends Controller
             'plan' => $productionPlan,
             'jcData' => $jcData,
             'roData' => $roData,
+            'isBasedOnActual' => $jcData['isBasedOnActual'] ?? false,
+            'actual' => $jcData['actual'] ?? null,
         ]);
     }
 
@@ -468,7 +472,7 @@ final class ProductionPlanController extends Controller
             abort(403, 'Only Admin Central role can access JC/RO reports.');
         }
 
-        if (!$productionPlan->isApproved()) {
+        if ($productionPlan->isDraft()) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
                 ->with('error', 'Production plan must be approved to generate documents.');
@@ -481,6 +485,8 @@ final class ProductionPlanController extends Controller
             'plan' => $productionPlan,
             'jcData' => $jcData,
             'roData' => $roData,
+            'isBasedOnActual' => $jcData['isBasedOnActual'] ?? false,
+            'actual' => $jcData['actual'] ?? null,
         ]);
     }
 
@@ -494,7 +500,7 @@ final class ProductionPlanController extends Controller
             abort(403, 'Only Admin Central role can access JC/RO reports.');
         }
 
-        if (!$productionPlan->isApproved()) {
+        if ($productionPlan->isDraft()) {
             return redirect()
                 ->route('manufacturing.production-plans.show', $productionPlan)
                 ->with('error', 'Production plan must be approved to generate documents.');
@@ -507,6 +513,8 @@ final class ProductionPlanController extends Controller
             'plan' => $productionPlan,
             'jcData' => $jcData,
             'roData' => $roData,
+            'isBasedOnActual' => $jcData['isBasedOnActual'] ?? false,
+            'actual' => $jcData['actual'] ?? null,
         ]);
     }
 }

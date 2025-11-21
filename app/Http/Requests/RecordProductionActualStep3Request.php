@@ -17,7 +17,9 @@ final class RecordProductionActualStep3Request extends FormRequest
     {
         return [
             'step3' => 'required|array|min:1',
-            'step3.*.production_plan_step3_id' => 'required|exists:production_plan_step3,id',
+            'step3.*.production_plan_step3_id' => 'nullable|exists:production_plan_step3,id',
+            'step3.*.gelondongan_item_id' => 'required_without:step3.*.production_plan_step3_id|exists:items,id',
+            'step3.*.kerupuk_kering_item_id' => 'required_without:step3.*.production_plan_step3_id|exists:items,id',
             'step3.*.actual_qty_gl1_gelondongan' => 'required|integer|min:0',
             'step3.*.actual_qty_gl1_kg' => 'required|numeric|min:0',
             'step3.*.actual_qty_gl2_gelondongan' => 'required|integer|min:0',
@@ -35,8 +37,11 @@ final class RecordProductionActualStep3Request extends FormRequest
             'step3.required' => 'Step 3 data is required.',
             'step3.array' => 'Step 3 data must be an array.',
             'step3.min' => 'At least one step 3 entry is required.',
-            'step3.*.production_plan_step3_id.required' => 'Production plan step 3 ID is required.',
             'step3.*.production_plan_step3_id.exists' => 'Selected production plan step 3 does not exist.',
+            'step3.*.gelondongan_item_id.required_without' => 'Gelondongan item is required when creating a new item.',
+            'step3.*.gelondongan_item_id.exists' => 'Selected gelondongan item does not exist.',
+            'step3.*.kerupuk_kering_item_id.required_without' => 'Kerupuk kering item is required when creating a new item.',
+            'step3.*.kerupuk_kering_item_id.exists' => 'Selected kerupuk kering item does not exist.',
             'step3.*.actual_qty_gl1_gelondongan.required' => 'GL1 Gelondongan actual quantity is required.',
             'step3.*.actual_qty_gl1_gelondongan.integer' => 'GL1 Gelondongan actual quantity must be a whole number.',
             'step3.*.actual_qty_gl1_gelondongan.min' => 'GL1 Gelondongan actual quantity must be at least 0.',

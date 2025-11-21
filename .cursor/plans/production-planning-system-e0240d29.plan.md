@@ -1006,3 +1006,33 @@ Summary:
 - Actual data should be immutable once production is completed (or require special permissions to edit)
 - Support for partial recording (can record Step 1, then Step 2 later)
 - Progress calculation: (steps with actual data / total steps) * 100
+
+### Phase 8.4: Work Orders and JCRO Reports Updates
+
+**Status:** ✅ Complete
+
+**Changes Implemented:**
+
+1. **Work Orders Visibility:**
+   - Work Orders (Surat Perintah Kerja) are now only displayed if actual production has not started
+   - Hidden when `$productionPlan->actual` exists or status is `in_production` or `completed`
+
+2. **JCRO Reports Data Source:**
+   - JCRO Reports now automatically use actual production data if available, otherwise use plan data
+   - Service methods updated to check for actual data first, then fall back to plan data
+   - All JCRO views updated to clearly indicate data source with visual indicators:
+     - Blue banner: "BERDASARKAN PRODUKSI AKTUAL" (Based on Actual Production)
+     - Orange banner: "BERDASARKAN RENCANA PRODUKSI" (Based on Production Plan)
+   - Actual production date displayed when using actual data
+
+3. **Service Layer Updates:**
+   - `ProductionDocumentService` updated with methods to aggregate actual production data
+   - All JCRO data methods now return `isBasedOnActual` flag and `actual` object
+   - New private methods added for aggregating actual data from ProductionActual steps
+
+**TODO:**
+- [ ] Verify JCRO Reports for Actual Production after Phase 8 (Actual Production Tracking) implementation is completed
+  - Test all 4 JCRO reports (Adonan, Gelondongan, Kerupuk Kg, Kerupuk Pack) with actual production data
+  - Verify data accuracy and calculations match actual production quantities
+  - Verify visual indicators correctly show "BERDASARKAN PRODUKSI AKTUAL" when actual data exists
+  - Verify fallback to plan data when actual data is not available

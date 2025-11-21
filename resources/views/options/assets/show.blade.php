@@ -88,6 +88,53 @@
             </div>
         </div>
 
+        <!-- Asset Photos -->
+        @if($asset->photos->count() > 0)
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">Asset Photos</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-2" id="photo-gallery">
+                    @foreach($asset->photos as $photo)
+                    <div class="col-md-3 col-sm-4 col-6 photo-item" data-photo-id="{{ $photo->id }}">
+                        <div class="card {{ $photo->is_primary ? 'border-primary' : '' }}">
+                            <img src="{{ Storage::disk('s3')->url($photo->photo_path) }}" 
+                                 class="card-img-top" 
+                                 style="height: 200px; object-fit: cover; cursor: pointer;" 
+                                 alt="Photo"
+                                 onclick="openPhotoModal('{{ Storage::disk('s3')->url($photo->photo_path) }}')">
+                            <div class="card-body p-2">
+                                <small class="text-muted d-block">
+                                    Captured: {{ $photo->captured_at ? $photo->captured_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') : '-' }}
+                                </small>
+                                <small class="text-muted d-block">
+                                    Uploaded: {{ $photo->uploaded_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
+                                </small>
+                                @if($photo->is_primary)
+                                    <span class="badge bg-primary mt-1">Primary</span>
+                                @endif
+                                @can('maintenance.assets.manage')
+                                <div class="mt-2">
+                                    @if(!$photo->is_primary)
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="setPrimaryPhoto({{ $asset->id }}, {{ $photo->id }})">
+                                        Set Primary
+                                    </button>
+                                    @endif
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletePhoto({{ $asset->id }}, {{ $photo->id }})">
+                                        Delete
+                                    </button>
+                                </div>
+                                @endcan
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Asset Information -->
         <div class="card">
                     <div class="card-header">
@@ -224,6 +271,29 @@
                         </div>
             </div>
         </div>
+
+        <!-- Specifications -->
+        @if($asset->specifications && count($asset->specifications) > 0)
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">Specifications</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    @foreach($asset->specifications as $key => $value)
+                        @if(!empty($value))
+                        <div class="col-md-6 col-lg-4">
+                            <div class="mb-2">
+                                <label class="form-label fw-bold text-capitalize">{{ str_replace('_', ' ', $key) }}</label>
+                                <div>{{ $value }}</div>
+                            </div>
+                        </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
 
         <!-- Work Orders Section with Tabs -->
         <div class="card mt-3">
@@ -477,4 +547,77 @@
         </div>
     </div>
 </div>
+
+<!-- Photo Modal -->
+<div class="modal modal-blur fade" id="photo-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modal-photo-img" src="" alt="Photo" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+function openPhotoModal(imageUrl) {
+    document.getElementById('modal-photo-img').src = imageUrl;
+    const modal = new bootstrap.Modal(document.getElementById('photo-modal'));
+    modal.show();
+}
+
+function setPrimaryPhoto(assetId, photoId) {
+    if (!confirm('Set this photo as primary?')) return;
+    
+    fetch(`/options/assets/${assetId}/photos/${photoId}/primary`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to set primary photo: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while setting primary photo');
+    });
+}
+
+function deletePhoto(assetId, photoId) {
+    if (!confirm('Are you sure you want to delete this photo?')) return;
+    
+    fetch(`/options/assets/${assetId}/photos/${photoId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to delete photo: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting photo');
+    });
+}
+</script>
 @endsection

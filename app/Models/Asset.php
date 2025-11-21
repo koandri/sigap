@@ -27,7 +27,6 @@ final class Asset extends Model
         'model',
         'status',
         'specifications',
-        'image_path',
         'qr_code_path',
         'department_id',
         'user_id',
@@ -116,6 +115,14 @@ final class Asset extends Model
     }
 
     /**
+     * Get all photos for this asset.
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(AssetPhoto::class);
+    }
+
+    /**
      * Get the user who disposed this asset.
      */
     public function disposedBy(): BelongsTo
@@ -161,5 +168,23 @@ final class Asset extends Model
     public function scopeByCategory($query, $categoryId)
     {
         return $query->where('asset_category_id', $categoryId);
+    }
+
+    /**
+     * Get the primary photo or first photo.
+     */
+    public function primaryPhoto(): ?AssetPhoto
+    {
+        return $this->photos()->where('is_primary', true)->first()
+            ?? $this->photos()->orderBy('created_at')->first();
+    }
+
+    /**
+     * Get the image path from the primary photo.
+     */
+    public function getImagePath(): ?string
+    {
+        $primaryPhoto = $this->primaryPhoto();
+        return $primaryPhoto?->photo_path;
     }
 }

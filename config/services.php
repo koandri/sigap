@@ -54,4 +54,15 @@ return [
         'realms' => env('KEYCLOAK_REALM')         // Specify your keycloak realm
     ],
 
+    'openrouter' => [
+        'api_key' => env('OPENROUTER_API_KEY'),
+        'base_url' => 'https://openrouter.ai/api/v1',
+        'model' => env('OPENROUTER_MODEL', 'google/gemini-2.5-flash'),
+    ],
+
+    'firecrawl' => [
+        'api_key' => env('FIRECRAWL_API_KEY'),
+        'base_url' => 'https://api.firecrawl.dev/v2',
+    ],
+
 ];

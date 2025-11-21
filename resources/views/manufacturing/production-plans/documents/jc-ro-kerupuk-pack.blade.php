@@ -147,6 +147,15 @@
             <div class="document-header">
                 <div class="document-title">JOB COSTING & ROLL OVER KERUPUK PACK</div>
                 <div class="document-subtitle">PT. SURYA INTI ANEKA PANGAN</div>
+                @if(isset($isBasedOnActual) && $isBasedOnActual)
+                <div style="margin-top: 10px; padding: 10px; background-color: #e3f2fd; border: 2px solid #2196f3; border-radius: 5px; font-weight: bold; color: #1976d2;">
+                    <i class="far fa-info-circle me-2"></i>BERDASARKAN PRODUKSI AKTUAL (Step 4 Selesai)
+                </div>
+                @else
+                <div style="margin-top: 10px; padding: 10px; background-color: #fff3e0; border: 2px solid #ff9800; border-radius: 5px; font-weight: bold; color: #f57c00;">
+                    <i class="far fa-info-circle me-2"></i>BERDASARKAN RENCANA PRODUKSI (Step 4 Belum Selesai)
+                </div>
+                @endif
             </div>
 
             <div class="info-section">
@@ -158,6 +167,12 @@
                     <div class="info-label">Tanggal Mulai Produksi:</div>
                     <div class="info-value">{{ $plan->production_start_date->format('d F Y') }}</div>
                 </div>
+                @if(isset($isBasedOnActual) && $isBasedOnActual && isset($actual))
+                <div class="info-row">
+                    <div class="info-label">Tanggal Produksi Aktual:</div>
+                    <div class="info-value">{{ $actual->production_date->format('d F Y') }}</div>
+                </div>
+                @endif
             </div>
 
             <!-- Job Costing Section -->

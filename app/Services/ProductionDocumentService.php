@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\ProductionActual;
 use App\Models\ProductionPlan;
 use Illuminate\Support\Collection;
 
@@ -50,177 +51,273 @@ final class ProductionDocumentService
 
     /**
      * Get data for Job Costing Adonan.
+     * Uses actual production data for Step 1 if completed, otherwise uses plan data.
      */
     public function getJobCostingAdonanData(ProductionPlan $plan): array
     {
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 1 is completed in actual production
+        $isStep1Completed = $actual !== null && $actual->step1()->exists();
+        
+        // For raw materials, we always use plan recipe ingredients
+        // as the raw materials are the same (they were used to produce the actual adonan)
         $plan->load([
             'step1.recipeIngredients.ingredientItem',
         ]);
+        $rawMaterials = $this->aggregateRawMaterialsForAdonan($plan);
 
         return [
             'plan' => $plan,
-            'rawMaterials' => $this->aggregateRawMaterialsForAdonan($plan),
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep1Completed,
+            'rawMaterials' => $rawMaterials,
         ];
     }
 
     /**
      * Get data for Roll Over Adonan.
+     * Uses actual production data for Step 1 if completed, otherwise uses plan data.
      */
     public function getRollOverAdonanData(ProductionPlan $plan): array
     {
-        $plan->load([
-            'step1.doughItem',
-        ]);
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 1 is completed in actual production
+        $isStep1Completed = $actual !== null && $actual->step1()->exists();
 
-        $adonan = $this->aggregateAdonanProduced($plan);
+        if ($isStep1Completed) {
+            $adonan = $this->aggregateActualAdonanProduced($actual);
+        } else {
+            $plan->load([
+                'step1.doughItem',
+            ]);
+            $adonan = $this->aggregateAdonanProduced($plan);
+        }
+
         $adonanWithPercentages = $this->calculateRollOverPercentages($adonan);
 
         return [
             'plan' => $plan,
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep1Completed,
             'adonan' => $adonanWithPercentages,
         ];
     }
 
     /**
      * Get data for Job Costing Gelondongan.
+     * Uses actual production data for Step 2 if completed, otherwise uses plan data.
      */
     public function getJobCostingGelondonganData(ProductionPlan $plan): array
     {
-        $plan->load([
-            'step2.adonanItem',
-        ]);
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 2 is completed in actual production
+        $isStep2Completed = $actual !== null && $actual->step2()->exists();
 
-        $adonan = $plan->step2()
-            ->with('adonanItem')
-            ->get()
-            ->groupBy('adonan_item_id')
-            ->map(function ($group) {
-                $first = $group->first();
-                return [
-                    'item' => $first->adonanItem,
-                    'quantity' => $group->sum(function ($item) {
-                        return (float) ($item->qty_gl1_adonan + $item->qty_gl2_adonan + $item->qty_ta_adonan + $item->qty_bl_adonan);
-                    }),
-                ];
-            })
-            ->values();
+        if ($isStep2Completed) {
+            $adonan = $this->aggregateActualAdonanForGelondongan($actual);
+        } else {
+            $plan->load([
+                'step2.adonanItem',
+            ]);
+            $adonan = $plan->step2()
+                ->with('adonanItem')
+                ->get()
+                ->groupBy('adonan_item_id')
+                ->map(function ($group) {
+                    $first = $group->first();
+                    return [
+                        'item' => $first->adonanItem,
+                        'quantity' => $group->sum(function ($item) {
+                            return (float) ($item->qty_gl1_adonan + $item->qty_gl2_adonan + $item->qty_ta_adonan + $item->qty_bl_adonan);
+                        }),
+                    ];
+                })
+                ->values();
+        }
 
         return [
             'plan' => $plan,
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep2Completed,
             'adonan' => $adonan,
         ];
     }
 
     /**
      * Get data for Roll Over Gelondongan.
+     * Uses actual production data for Step 2 if completed, otherwise uses plan data.
      */
     public function getRollOverGelondonganData(ProductionPlan $plan): array
     {
-        $plan->load([
-            'step2.gelondonganItem',
-        ]);
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 2 is completed in actual production
+        $isStep2Completed = $actual !== null && $actual->step2()->exists();
 
-        $gelondongan = $plan->step2()
-            ->with('gelondonganItem')
-            ->get()
-            ->groupBy('gelondongan_item_id')
-            ->map(function ($group) {
-                $first = $group->first();
-                return [
-                    'item' => $first->gelondonganItem,
-                    'quantity' => $group->sum(function ($item) {
-                        return (float) ($item->qty_gl1_gelondongan + $item->qty_gl2_gelondongan + $item->qty_ta_gelondongan + $item->qty_bl_gelondongan);
-                    }),
-                ];
-            })
-            ->values();
+        if ($isStep2Completed) {
+            $gelondongan = $this->aggregateActualGelondonganProduced($actual);
+        } else {
+            $plan->load([
+                'step2.gelondonganItem',
+            ]);
+            $gelondongan = $plan->step2()
+                ->with('gelondonganItem')
+                ->get()
+                ->groupBy('gelondongan_item_id')
+                ->map(function ($group) {
+                    $first = $group->first();
+                    return [
+                        'item' => $first->gelondonganItem,
+                        'quantity' => $group->sum(function ($item) {
+                            return (float) ($item->qty_gl1_gelondongan + $item->qty_gl2_gelondongan + $item->qty_ta_gelondongan + $item->qty_bl_gelondongan);
+                        }),
+                    ];
+                })
+                ->values();
+        }
 
         $gelondonganWithPercentages = $this->calculateRollOverPercentages($gelondongan);
 
         return [
             'plan' => $plan,
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep2Completed,
             'gelondongan' => $gelondonganWithPercentages,
         ];
     }
 
     /**
      * Get data for Job Costing Kerupuk Kg.
+     * Uses actual production data for Step 3 if completed, otherwise uses plan data.
      */
     public function getJobCostingKerupukKgData(ProductionPlan $plan): array
     {
-        $plan->load([
-            'step3.gelondonganItem',
-        ]);
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 3 is completed in actual production
+        $isStep3Completed = $actual !== null && $actual->step3()->exists();
 
-        $gelondongan = $plan->step3()
-            ->with('gelondonganItem')
-            ->get()
-            ->groupBy('gelondongan_item_id')
-            ->map(function ($group) {
-                $first = $group->first();
-                return [
-                    'item' => $first->gelondonganItem,
-                    'quantity' => $group->sum(function ($item) {
-                        return (float) ($item->qty_gl1_gelondongan + $item->qty_gl2_gelondongan + $item->qty_ta_gelondongan + $item->qty_bl_gelondongan);
-                    }),
-                ];
-            })
-            ->values();
+        if ($isStep3Completed) {
+            $gelondongan = $this->aggregateActualGelondonganForKerupukKg($actual);
+        } else {
+            $plan->load([
+                'step3.gelondonganItem',
+            ]);
+            $gelondongan = $plan->step3()
+                ->with('gelondonganItem')
+                ->get()
+                ->groupBy('gelondongan_item_id')
+                ->map(function ($group) {
+                    $first = $group->first();
+                    return [
+                        'item' => $first->gelondonganItem,
+                        'quantity' => $group->sum(function ($item) {
+                            return (float) ($item->qty_gl1_gelondongan + $item->qty_gl2_gelondongan + $item->qty_ta_gelondongan + $item->qty_bl_gelondongan);
+                        }),
+                    ];
+                })
+                ->values();
+        }
 
         return [
             'plan' => $plan,
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep3Completed,
             'gelondongan' => $gelondongan,
         ];
     }
 
     /**
      * Get data for Roll Over Kerupuk Kg.
+     * Uses actual production data for Step 3 if completed, otherwise uses plan data.
      */
     public function getRollOverKerupukKgData(ProductionPlan $plan): array
     {
-        $plan->load([
-            'step3.kerupukKeringItem',
-        ]);
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 3 is completed in actual production
+        $isStep3Completed = $actual !== null && $actual->step3()->exists();
 
-        $kerupukKg = $this->aggregateKerupukKgProduced($plan);
+        if ($isStep3Completed) {
+            $kerupukKg = $this->aggregateActualKerupukKgProduced($actual);
+        } else {
+            $plan->load([
+                'step3.kerupukKeringItem',
+            ]);
+            $kerupukKg = $this->aggregateKerupukKgProduced($plan);
+        }
+
         $kerupukKgWithPercentages = $this->calculateRollOverPercentages($kerupukKg);
 
         return [
             'plan' => $plan,
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep3Completed,
             'kerupukKg' => $kerupukKgWithPercentages,
         ];
     }
 
     /**
      * Get data for Job Costing Kerupuk Pack.
+     * Uses actual production data for Step 4 if completed, otherwise uses plan data.
      */
     public function getJobCostingKerupukPackData(ProductionPlan $plan): array
     {
-        $plan->load([
-            'step4.kerupukKeringItem',
-            'step4.materials.packingMaterialItem',
-            'step5.packingMaterialItem',
-        ]);
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 4 is completed in actual production
+        $isStep4Completed = $actual !== null && $actual->step4()->exists();
 
-        $kerupukKg = $plan->step4()
-            ->with('kerupukKeringItem')
-            ->get()
-            ->groupBy('kerupuk_kering_item_id')
-            ->map(function ($group) {
-                $first = $group->first();
-                return [
-                    'item' => $first->kerupukKeringItem,
-                    'quantity' => $group->sum(function ($item) {
-                        return (float) ($item->qty_gl1_kg + $item->qty_gl2_kg + $item->qty_ta_kg + $item->qty_bl_kg);
-                    }),
-                ];
-            })
-            ->values();
-
-        $packingMaterials = $this->aggregatePackingMaterials($plan);
+        if ($isStep4Completed) {
+            $kerupukKg = $this->aggregateActualKerupukKgForPack($actual);
+            // For packing materials, check if Step 5 is also completed
+            $isStep5Completed = $actual->step5()->exists();
+            if ($isStep5Completed) {
+                $packingMaterials = $this->aggregateActualPackingMaterials($actual);
+            } else {
+                $plan->load([
+                    'step4.materials.packingMaterialItem',
+                    'step5.packingMaterialItem',
+                ]);
+                $packingMaterials = $this->aggregatePackingMaterials($plan);
+            }
+        } else {
+            $plan->load([
+                'step4.kerupukKeringItem',
+                'step4.materials.packingMaterialItem',
+                'step5.packingMaterialItem',
+            ]);
+            $kerupukKg = $plan->step4()
+                ->with('kerupukKeringItem')
+                ->get()
+                ->groupBy('kerupuk_kering_item_id')
+                ->map(function ($group) {
+                    $first = $group->first();
+                    return [
+                        'item' => $first->kerupukKeringItem,
+                        'quantity' => $group->sum(function ($item) {
+                            return (float) ($item->qty_gl1_kg + $item->qty_gl2_kg + $item->qty_ta_kg + $item->qty_bl_kg);
+                        }),
+                    ];
+                })
+                ->values();
+            $packingMaterials = $this->aggregatePackingMaterials($plan);
+        }
 
         return [
             'plan' => $plan,
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep4Completed,
             'kerupukKg' => $kerupukKg,
             'packingMaterials' => $packingMaterials,
         ];
@@ -228,18 +325,31 @@ final class ProductionDocumentService
 
     /**
      * Get data for Roll Over Kerupuk Pack.
+     * Uses actual production data for Step 4 if completed, otherwise uses plan data.
      */
     public function getRollOverKerupukPackData(ProductionPlan $plan): array
     {
-        $plan->load([
-            'step4.kerupukPackingItem',
-        ]);
+        $plan->load('actual');
+        $actual = $plan->actual;
+        
+        // Check if Step 4 is completed in actual production
+        $isStep4Completed = $actual !== null && $actual->step4()->exists();
 
-        $kerupukPack = $this->aggregateKerupukPackProduced($plan);
+        if ($isStep4Completed) {
+            $kerupukPack = $this->aggregateActualKerupukPackProduced($actual);
+        } else {
+            $plan->load([
+                'step4.kerupukPackingItem',
+            ]);
+            $kerupukPack = $this->aggregateKerupukPackProduced($plan);
+        }
+
         $kerupukPackWithPercentages = $this->calculateRollOverPercentages($kerupukPack);
 
         return [
             'plan' => $plan,
+            'actual' => $actual,
+            'isBasedOnActual' => $isStep4Completed,
             'kerupukPack' => $kerupukPackWithPercentages,
         ];
     }
@@ -431,6 +541,177 @@ final class ProductionDocumentService
             $item['percentage'] = round(($item['quantity'] / $totalQty) * 100, 2);
             return $item;
         });
+    }
+
+    /**
+     * Aggregate actual Adonan produced from ProductionActual Step 1.
+     */
+    private function aggregateActualAdonanProduced(ProductionActual $actual): Collection
+    {
+        return $actual->step1()
+            ->with('doughItem')
+            ->get()
+            ->groupBy('dough_item_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'item' => $first->doughItem,
+                    'quantity' => $group->sum(function ($item) {
+                        return (float) ($item->actual_qty_gl1 + $item->actual_qty_gl2 + $item->actual_qty_ta + $item->actual_qty_bl);
+                    }),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Aggregate actual Adonan for Gelondongan from ProductionActual Step 2.
+     */
+    private function aggregateActualAdonanForGelondongan(ProductionActual $actual): Collection
+    {
+        return $actual->step2()
+            ->with('adonanItem')
+            ->get()
+            ->groupBy('adonan_item_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'item' => $first->adonanItem,
+                    'quantity' => $group->sum(function ($item) {
+                        return (float) ($item->actual_qty_gl1_adonan + $item->actual_qty_gl2_adonan + $item->actual_qty_ta_adonan + $item->actual_qty_bl_adonan);
+                    }),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Aggregate actual Gelondongan produced from ProductionActual Step 2.
+     */
+    private function aggregateActualGelondonganProduced(ProductionActual $actual): Collection
+    {
+        return $actual->step2()
+            ->with('gelondonganItem')
+            ->get()
+            ->groupBy('gelondongan_item_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'item' => $first->gelondonganItem,
+                    'quantity' => $group->sum(function ($item) {
+                        return (float) ($item->actual_qty_gl1_gelondongan + $item->actual_qty_gl2_gelondongan + $item->actual_qty_ta_gelondongan + $item->actual_qty_bl_gelondongan);
+                    }),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Aggregate actual Gelondongan for Kerupuk Kg from ProductionActual Step 3.
+     */
+    private function aggregateActualGelondonganForKerupukKg(ProductionActual $actual): Collection
+    {
+        return $actual->step3()
+            ->with('gelondonganItem')
+            ->get()
+            ->groupBy('gelondongan_item_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'item' => $first->gelondonganItem,
+                    'quantity' => $group->sum(function ($item) {
+                        return (float) ($item->actual_qty_gl1_gelondongan + $item->actual_qty_gl2_gelondongan + $item->actual_qty_ta_gelondongan + $item->actual_qty_bl_gelondongan);
+                    }),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Aggregate actual Kerupuk Kg produced from ProductionActual Step 3.
+     */
+    private function aggregateActualKerupukKgProduced(ProductionActual $actual): Collection
+    {
+        return $actual->step3()
+            ->with('kerupukKeringItem')
+            ->get()
+            ->groupBy('kerupuk_kering_item_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'item' => $first->kerupukKeringItem,
+                    'quantity' => $group->sum(function ($item) {
+                        return (float) ($item->actual_qty_gl1_kg + $item->actual_qty_gl2_kg + $item->actual_qty_ta_kg + $item->actual_qty_bl_kg);
+                    }),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Aggregate actual Kerupuk Kg for Pack from ProductionActual Step 4.
+     */
+    private function aggregateActualKerupukKgForPack(ProductionActual $actual): Collection
+    {
+        return $actual->step4()
+            ->with('kerupukKeringItem')
+            ->get()
+            ->groupBy('kerupuk_kering_item_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'item' => $first->kerupukKeringItem,
+                    'quantity' => $group->sum(function ($item) {
+                        return (float) ($item->actual_qty_gl1_kg + $item->actual_qty_gl2_kg + $item->actual_qty_ta_kg + $item->actual_qty_bl_kg);
+                    }),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Aggregate actual Kerupuk Pack produced from ProductionActual Step 4.
+     */
+    private function aggregateActualKerupukPackProduced(ProductionActual $actual): Collection
+    {
+        return $actual->step4()
+            ->with('kerupukPackingItem')
+            ->get()
+            ->groupBy('kerupuk_packing_item_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'item' => $first->kerupukPackingItem,
+                    'quantity' => $group->sum(function ($item) {
+                        return (float) ($item->actual_qty_gl1_packing + $item->actual_qty_gl2_packing + $item->actual_qty_ta_packing + $item->actual_qty_bl_packing);
+                    }),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Aggregate actual packing materials from ProductionActual Step 5.
+     */
+    private function aggregateActualPackingMaterials(ProductionActual $actual): Collection
+    {
+        $materials = collect();
+
+        foreach ($actual->step5 as $step5) {
+            $itemId = $step5->packing_material_item_id;
+            $quantity = (int) $step5->actual_quantity_total;
+
+            if ($materials->has($itemId)) {
+                $materials[$itemId]['quantity'] += $quantity;
+            } else {
+                $materials[$itemId] = [
+                    'item' => $step5->packingMaterialItem,
+                    'quantity' => $quantity,
+                ];
+            }
+        }
+
+        return $materials->values();
     }
 }
 

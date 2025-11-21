@@ -195,20 +195,70 @@
                                 </div>
                             </div>
 
-                            @if($asset->image_path)
+                            <!-- Existing Photos -->
+                            @if($asset->photos->count() > 0)
                             <div class="mb-3">
-                                <label class="form-label">Current Image</label>
-                                <div>
-                                    <img src="{{ Storage::url($asset->image_path) }}" alt="{{ $asset->name }}" class="img-thumbnail" style="max-width: 200px;">
+                                <label class="form-label">Current Photos</label>
+                                <div class="row g-2">
+                                    @foreach($asset->photos as $photo)
+                                    <div class="col-md-3 col-sm-4 col-6">
+                                        <div class="card {{ $photo->is_primary ? 'border-primary' : '' }}">
+                                            <img src="{{ Storage::disk('s3')->url($photo->photo_path) }}" 
+                                                 class="card-img-top" 
+                                                 style="height: 150px; object-fit: cover;" 
+                                                 alt="Photo">
+                                            <div class="card-body p-2">
+                                                @if($photo->is_primary)
+                                                    <span class="badge bg-primary">Primary</span>
+                                                @endif
+                                                <small class="text-muted d-block">
+                                                    {{ $photo->captured_at ? $photo->captured_at->setTimezone('Asia/Jakarta')->format('d M Y') : '-' }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                             @endif
 
                             <div class="mb-3">
-                                <label class="form-label">{{ $asset->image_path ? 'Replace Image' : 'Asset Image' }}</label>
-                                <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" 
-                                       accept="image/*">
-                                @error('image')
+                                <label class="form-label">Add More Photos</label>
+                                <input type="file" name="photos[]" class="form-control @error('photos.*') is-invalid @enderror" 
+                                       accept="image/*" multiple>
+                                <small class="form-hint">You can select multiple photos (max 10).</small>
+                                @error('photos.*')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                @error('photos')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Specifications -->
+                            <div class="mb-3">
+                                <label class="form-label">Specifications</label>
+                                @if($asset->specifications && count($asset->specifications) > 0)
+                                <div class="card bg-light mb-2">
+                                    <div class="card-body">
+                                        <div class="row g-2">
+                                            @foreach($asset->specifications as $key => $value)
+                                                @if(!empty($value))
+                                                <div class="col-md-6">
+                                                    <strong class="text-capitalize">{{ str_replace('_', ' ', $key) }}:</strong> {{ $value }}
+                                                </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+                                <textarea name="specifications_text" id="specifications-textarea" class="form-control @error('specifications') is-invalid @enderror" 
+                                          rows="4" placeholder="Enter specifications as JSON or key-value pairs (one per line: key: value)">@if($asset->specifications)@foreach($asset->specifications as $key => $value){{ $key }}: {{ $value }}
+@endforeach@endif</textarea>
+                                <small class="form-hint">Edit specifications as key-value pairs (one per line: key: value) or as JSON.</small>
+                                <input type="hidden" name="specifications" id="specifications-input" value="{{ $asset->specifications ? json_encode($asset->specifications) : '' }}">
+                                @error('specifications')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -233,16 +283,57 @@
 </div>
 @endsection
 
-@section('scripts')
-<link href="{{ asset('assets/tabler/dist/libs/tom-select/dist/css/tom-select.bootstrap5.css') }}" rel="stylesheet"/>
-<script src="{{ asset('assets/tabler/dist/libs/tom-select/dist/js/tom-select.base.min.js') }}"></script>
+@push('css')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet"/>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     new TomSelect('#location-select', {
         placeholder: '-- Select Location --',
         allowEmptyOption: true
     });
+    
+    // Convert specifications textarea to JSON before form submission
+    const form = document.querySelector('form[action*="assets"]');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const textarea = document.getElementById('specifications-textarea');
+            const hiddenInput = document.getElementById('specifications-input');
+            
+            if (textarea && textarea.value.trim()) {
+                // Try to parse as JSON first
+                try {
+                    const parsed = JSON.parse(textarea.value);
+                    hiddenInput.value = JSON.stringify(parsed);
+                } catch (e) {
+                    // If not JSON, convert key-value pairs to object
+                    const lines = textarea.value.split('\n').filter(line => line.trim());
+                    const specs = {};
+                    lines.forEach(line => {
+                        const colonIndex = line.indexOf(':');
+                        if (colonIndex > 0) {
+                            const key = line.substring(0, colonIndex).trim();
+                            const value = line.substring(colonIndex + 1).trim();
+                            if (key && value) {
+                                specs[key] = value;
+                            }
+                        }
+                    });
+                    if (Object.keys(specs).length > 0) {
+                        hiddenInput.value = JSON.stringify(specs);
+                    } else {
+                        hiddenInput.value = '';
+                    }
+                }
+            } else {
+                hiddenInput.value = '';
+            }
+        });
+    }
 });
 </script>
-@endsection
+@endpush
 

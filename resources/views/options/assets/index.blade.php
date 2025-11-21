@@ -109,8 +109,8 @@
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            @if($asset->image_path)
-                                                <span class="avatar avatar-sm me-2" style="background-image: url({{ Storage::url($asset->image_path) }})"></span>
+                                            @if($asset->primaryPhoto())
+                                                <span class="avatar avatar-sm me-2" style="background-image: url({{ Storage::disk('s3')->url($asset->primaryPhoto()->photo_path) }})"></span>
                                             @else
                                                 <span class="avatar avatar-sm me-2 bg-secondary">
                                                     <i class="far fa-clipboard"></i>&nbsp;

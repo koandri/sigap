@@ -25,8 +25,7 @@ return new class extends Migration
             $table->string('manufacturer')->nullable();
             $table->string('model')->nullable();
             $table->enum('status', ['operational', 'down', 'maintenance', 'disposed'])->default('operational');
-            $table->json('specifications')->nullable();
-            $table->string('image_path')->nullable();
+            $table->json('specifications')->nullable()->comment('Asset specifications (voltage, power, weight, dimensions, etc.) - can be AI-retrieved or manually entered');
             $table->string('qr_code_path')->nullable();
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
