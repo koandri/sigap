@@ -325,9 +325,9 @@ final class AssetController extends Controller
             $photo->delete();
         }
 
-        // Delete QR code
-        if ($asset->qr_code_path && file_exists(public_path($asset->qr_code_path))) {
-            unlink(public_path($asset->qr_code_path));
+        // Delete QR code from S3
+        if ($asset->qr_code_path && Storage::disk('s3')->exists($asset->qr_code_path)) {
+            Storage::disk('s3')->delete($asset->qr_code_path);
         }
 
         $asset->delete();
@@ -342,15 +342,12 @@ final class AssetController extends Controller
      */
     public function generateQR(Asset $asset): View
     {
-        // Generate QR if it doesn't exist
-        if (!$asset->qr_code_path || !file_exists(public_path($asset->qr_code_path))) {
+        // Generate QR if it doesn't exist in S3
+        if (!$asset->qr_code_path || !Storage::disk('s3')->exists($asset->qr_code_path)) {
             $this->generateAndStoreQRCode($asset);
             $asset->refresh();
         }
-
-        $hasLogo = file_exists(public_path('imgs/qr_logo.png'));
-
-        return view('options.assets.qr-code', compact('asset', 'hasLogo'));
+        return view('options.assets.qr-code', compact('asset'));
     }
 
     /**
@@ -423,9 +420,9 @@ final class AssetController extends Controller
      */
     private function generateAndStoreQRCode(Asset $asset): void
     {
-        // Delete old QR code if exists
-        if ($asset->qr_code_path && file_exists(public_path($asset->qr_code_path))) {
-            unlink(public_path($asset->qr_code_path));
+        // Delete old QR code from S3 if exists
+        if ($asset->qr_code_path && Storage::disk('s3')->exists($asset->qr_code_path)) {
+            Storage::disk('s3')->delete($asset->qr_code_path);
         }
 
         // Generate QR code data
@@ -451,12 +448,12 @@ final class AssetController extends Controller
 
         $result = $builder->build();
 
-        // Save to file
+        // Save to S3
         $filename = 'qr-' . $asset->code . '.png';
-        $filePath = 'storage/assets_qr/' . $filename;
-        $fullPath = public_path($filePath);
+        $folderPath = 'assets/' . $asset->id . '/qr';
+        $filePath = $folderPath . '/' . $filename;
 
-        file_put_contents($fullPath, $result->getString());
+        Storage::disk('s3')->put($filePath, $result->getString(), 'public');
 
         // Update asset with QR path
         $asset->update(['qr_code_path' => $filePath]);

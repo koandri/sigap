@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 final class Asset extends Model
 {
@@ -186,5 +187,17 @@ final class Asset extends Model
     {
         $primaryPhoto = $this->primaryPhoto();
         return $primaryPhoto?->photo_path;
+    }
+
+    /**
+     * Get the full URL for the QR code.
+     */
+    public function getQrCodeUrlAttribute(): ?string
+    {
+        if (!$this->qr_code_path) {
+            return null;
+        }
+
+        return Storage::disk('s3')->url($this->qr_code_path);
     }
 }

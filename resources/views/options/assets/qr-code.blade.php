@@ -40,13 +40,8 @@
                     <div class="card-body text-center">
                         <!-- QR Code -->
                         <div class="mb-4 d-inline-block" id="qrCodeContainer">
-                            <img src="{{ asset($asset->qr_code_path) }}" alt="QR Code for {{ $asset->code }}" id="qrCodeImage">
+                            <img src="{{ $asset->qr_code_url }}" alt="QR Code for {{ $asset->code }}" id="qrCodeImage">
                         </div>
-                        @if($hasLogo)
-                        <div class="text-muted mb-3">
-                            <small><i class="far fa-check-circle text-success"></i>&nbsp; QR Code includes embedded logo</small>
-                        </div>
-                        @endif
 
                         <!-- Asset Information -->
                         <div class="row">

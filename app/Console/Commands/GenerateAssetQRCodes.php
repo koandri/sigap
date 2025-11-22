@@ -11,6 +11,7 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 final class GenerateAssetQRCodes extends Command
 {
@@ -70,9 +71,9 @@ final class GenerateAssetQRCodes extends Command
      */
     private function generateQRCode(Asset $asset): void
     {
-        // Delete old QR code if exists
-        if ($asset->qr_code_path && file_exists(public_path($asset->qr_code_path))) {
-            unlink(public_path($asset->qr_code_path));
+        // Delete old QR code from S3 if exists
+        if ($asset->qr_code_path && Storage::disk('s3')->exists($asset->qr_code_path)) {
+            Storage::disk('s3')->delete($asset->qr_code_path);
         }
 
         // Generate QR code data
@@ -98,12 +99,12 @@ final class GenerateAssetQRCodes extends Command
 
         $result = $builder->build();
 
-        // Save to file
+        // Save to S3
         $filename = 'qr-' . $asset->code . '.png';
-        $filePath = 'storage/assets_qr/' . $filename;
-        $fullPath = public_path($filePath);
+        $folderPath = 'assets/' . $asset->id . '/qr';
+        $filePath = $folderPath . '/' . $filename;
 
-        file_put_contents($fullPath, $result->getString());
+        Storage::disk('s3')->put($filePath, $result->getString(), 'public');
 
         // Update asset with QR path
         $asset->update(['qr_code_path' => $filePath]);

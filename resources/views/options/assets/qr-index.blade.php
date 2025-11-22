@@ -78,7 +78,7 @@
                                 <div class="card h-100">
                                     <div class="card-body text-center">
                                         <!-- QR Code -->
-                                        <img src="{{ asset($asset->qr_code_path) }}" 
+                                        <img src="{{ $asset->qr_code_url }}" 
                                                 alt="QR Code for {{ $asset->code }}" 
                                                 class="img-fluid mb-3"
                                                 style="max-width: 200px;">
@@ -113,7 +113,7 @@
                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="far fa-eye"></i>&nbsp; View
                                             </a>
-                                            <a href="{{ asset($asset->qr_code_path) }}" 
+                                            <a href="{{ $asset->qr_code_url }}" 
                                                download="qr-{{ $asset->code }}.png"
                                                class="btn btn-sm btn-primary">
                                                 <i class="far fa-download"></i>&nbsp; Download
