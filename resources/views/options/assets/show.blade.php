@@ -89,51 +89,141 @@
         </div>
 
         <!-- Asset Photos -->
-        @if($asset->photos->count() > 0)
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title">Asset Photos</h3>
-            </div>
-            <div class="card-body">
-                <div class="row g-2" id="photo-gallery">
-                    @foreach($asset->photos as $photo)
-                    <div class="col-md-3 col-sm-4 col-6 photo-item" data-photo-id="{{ $photo->id }}">
-                        <div class="card {{ $photo->is_primary ? 'border-primary' : '' }}">
-                            <img src="{{ Storage::disk('s3')->url($photo->photo_path) }}" 
-                                 class="card-img-top" 
-                                 style="height: 200px; object-fit: cover; cursor: pointer;" 
-                                 alt="Photo"
-                                 onclick="openPhotoModal('{{ Storage::disk('s3')->url($photo->photo_path) }}')">
-                            <div class="card-body p-2">
-                                <small class="text-muted d-block">
-                                    Captured: {{ $photo->captured_at ? $photo->captured_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') : '-' }}
-                                </small>
-                                <small class="text-muted d-block">
-                                    Uploaded: {{ $photo->uploaded_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
-                                </small>
-                                @if($photo->is_primary)
-                                    <span class="badge bg-primary mt-1">Primary</span>
-                                @endif
-                                @can('maintenance.assets.manage')
-                                <div class="mt-2">
-                                    @if(!$photo->is_primary)
-                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="setPrimaryPhoto({{ $asset->id }}, {{ $photo->id }})">
-                                        Set Primary
-                                    </button>
-                                    @endif
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletePhoto({{ $asset->id }}, {{ $photo->id }})">
-                                        Delete
-                                    </button>
-                                </div>
-                                @endcan
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Asset Photos</h3>
+                    @if($asset->photos->count() > 0)
+                        <span class="badge bg-primary">{{ $asset->photos->count() }} photo(s)</span>
+                    @endif
                 </div>
             </div>
+            <div class="card-body">
+                @if($asset->photos->count() > 0)
+                    <div class="row g-3" id="photo-gallery">
+                        @php
+                            $primaryPhoto = $asset->photos->where('is_primary', true)->first();
+                            $otherPhotos = $asset->photos->where('is_primary', false);
+                            if (!$primaryPhoto && $asset->photos->count() > 0) {
+                                $primaryPhoto = $asset->photos->first();
+                                $otherPhotos = $asset->photos->skip(1);
+                            }
+                        @endphp
+                        
+                        @if($primaryPhoto)
+                            <!-- Primary Photo - Larger Display -->
+                            <div class="col-12">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h4 class="card-title mb-0">
+                                            <i class="far fa-star"></i> Primary Photo
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                @if($primaryPhoto->file_path)
+                                                <img src="{{ Storage::disk('s3')->url($primaryPhoto->file_path) }}" 
+                                                     class="img-fluid rounded" 
+                                                     style="height: 250px; width: 100%; object-fit: cover; cursor: pointer;" 
+                                                     alt="Primary Photo"
+                                                     onclick="openPhotoModal('{{ Storage::disk('s3')->url($primaryPhoto->file_path) }}')">
+                                                @else
+                                                <div class="alert alert-warning">Photo path not available</div>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="mb-2">
+                                                    <strong>Captured:</strong> 
+                                                    {{ $primaryPhoto->captured_at ? $primaryPhoto->captured_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') : '-' }}
+                                                </div>
+                                                <div class="mb-2">
+                                                    <strong>Uploaded:</strong> 
+                                                    {{ $primaryPhoto->uploaded_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
+                                                </div>
+                                                @if($primaryPhoto->uploadedBy)
+                                                    <div class="mb-2">
+                                                        <strong>Uploaded By:</strong> 
+                                                        {{ $primaryPhoto->uploadedBy->name }}
+                                                    </div>
+                                                @endif
+                                                @can('maintenance.assets.manage')
+                                                <div class="mt-3">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletePhoto({{ $asset->id }}, {{ $primaryPhoto->id }})">
+                                                        <i class="far fa-trash"></i> Delete
+                                                    </button>
+                                                </div>
+                                                @endcan
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        
+                        @if($otherPhotos->count() > 0)
+                            <!-- Other Photos -->
+                            <div class="col-12">
+                                <h5 class="mb-3">Additional Photos</h5>
+                            </div>
+                            @foreach($otherPhotos as $photo)
+                            <div class="col-md-3 col-sm-4 col-6 photo-item" data-photo-id="{{ $photo->id }}">
+                                <div class="card h-100">
+                                    @if($photo->file_path)
+                                    <img src="{{ Storage::disk('s3')->url($photo->file_path) }}" 
+                                         class="card-img-top" 
+                                         style="height: 200px; object-fit: cover; cursor: pointer;" 
+                                         alt="Photo"
+                                         onclick="openPhotoModal('{{ Storage::disk('s3')->url($photo->file_path) }}')">
+                                    @else
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <span class="text-muted">Photo not available</span>
+                                    </div>
+                                    @endif
+                                    <div class="card-body p-2">
+                                        <small class="text-muted d-block">
+                                            <strong>Captured:</strong> {{ $photo->captured_at ? $photo->captured_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') : '-' }}
+                                        </small>
+                                        <small class="text-muted d-block">
+                                            <strong>Uploaded:</strong> {{ $photo->uploaded_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
+                                        </small>
+                                        @can('maintenance.assets.manage')
+                                        <div class="mt-2 d-flex gap-1">
+                                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="setPrimaryPhoto({{ $asset->id }}, {{ $photo->id }})">
+                                                <i class="far fa-star"></i> Set Primary
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletePhoto({{ $asset->id }}, {{ $photo->id }})">
+                                                <i class="far fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        @endcan
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        @endif
+                    </div>
+                @else
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <i class="far fa-images"></i>
+                        </div>
+                        <p class="empty-title">No photos available</p>
+                        <p class="empty-subtitle text-muted">
+                            This asset doesn't have any photos yet.
+                        </p>
+                        @can('maintenance.assets.manage')
+                        <div class="empty-action">
+                            <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-primary">
+                                <i class="far fa-plus"></i>
+                                Add Photos
+                            </a>
+                        </div>
+                        @endcan
+                    </div>
+                @endif
+            </div>
         </div>
-        @endif
 
         <!-- Asset Information -->
         <div class="card">
@@ -269,30 +359,282 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Component & Lifetime Information -->
+                        @if($asset->isComponent() || $asset->hasComponents() || $asset->lifetime_unit)
+                        <div class="row mb-3">
+                            @if($asset->isComponent() && $asset->parentAsset)
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Parent Asset</label>
+                                    <div>
+                                        <a href="{{ route('options.assets.show', $asset->parentAsset) }}">
+                                            {{ $asset->parentAsset->name }} ({{ $asset->parentAsset->code }})
+                                        </a>
+                                        @if($asset->component_type)
+                                            <span class="badge bg-info ms-2">{{ $asset->component_type->label() }}</span>
+                                        @endif
+                                    </div>
+                                    @if($asset->installed_date)
+                                        <small class="text-muted">Installed: {{ $asset->installed_date->format('d M Y') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
+
+
+                            @if($asset->lifetime_unit)
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Lifetime Unit</label>
+                                    <div>
+                                        <span class="badge bg-info">{{ $asset->lifetime_unit->label() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($asset->expected_lifetime_value)
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Expected Lifetime</label>
+                                    <div>
+                                        {{ number_format($asset->expected_lifetime_value, 2) }}
+                                        @if($asset->lifetime_unit)
+                                            {{ $asset->lifetime_unit->label() }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($asset->actual_lifetime_value)
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Actual Lifetime</label>
+                                    <div>
+                                        {{ number_format($asset->actual_lifetime_value, 2) }}
+                                        @if($asset->lifetime_unit)
+                                            {{ $asset->lifetime_unit->label() }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            @php
+                                $lifetimePercentage = $asset->getLifetimePercentage();
+                                $remainingLifetime = $asset->getRemainingLifetime();
+                            @endphp
+
+                            @if($lifetimePercentage !== null)
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Lifetime Used</label>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar {{ $lifetimePercentage >= 100 ? 'bg-danger' : ($lifetimePercentage >= 80 ? 'bg-warning' : 'bg-success') }}" 
+                                             role="progressbar" 
+                                             style="width: {{ min(100, $lifetimePercentage) }}%" 
+                                             aria-valuenow="{{ $lifetimePercentage }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            {{ number_format($lifetimePercentage, 1) }}%
+                                        </div>
+                                    </div>
+                                    @if($remainingLifetime !== null)
+                                        <small class="text-muted">Remaining: {{ number_format($remainingLifetime, 2) }} {{ $asset->lifetime_unit?->label() ?? '' }}</small>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                        @endif
             </div>
         </div>
 
-        <!-- Specifications -->
-        @if($asset->specifications && count($asset->specifications) > 0)
+        <!-- Components Section -->
+        @if($asset->hasComponents() || !$asset->isComponent())
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title">Specifications</h3>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    @foreach($asset->specifications as $key => $value)
-                        @if(!empty($value))
-                        <div class="col-md-6 col-lg-4">
-                            <div class="mb-2">
-                                <label class="form-label fw-bold text-capitalize">{{ str_replace('_', ' ', $key) }}</label>
-                                <div>{{ $value }}</div>
-                            </div>
-                        </div>
-                        @endif
-                    @endforeach
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Components</h3>
+                    @can('maintenance.assets.manage')
+                    <a href="{{ route('assets.components', $asset) }}" class="btn btn-sm btn-primary">
+                        <i class="far fa-puzzle-piece"></i>&nbsp;
+                        Manage Components
+                    </a>
+                    @endcan
                 </div>
             </div>
+            <div class="card-body">
+                @if($asset->hasComponents())
+                    <div class="table-responsive">
+                        <table class="table table-vcenter">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Installed Date</th>
+                                    <th>Status</th>
+                                    <th class="w-1"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($asset->childAssets as $component)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('options.assets.show', $component) }}">
+                                            {{ $component->code }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $component->name }}</td>
+                                    <td>
+                                        @if($component->component_type)
+                                            <span class="badge bg-info">{{ $component->component_type->label() }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{ $component->installed_date ? $component->installed_date->format('d M Y') : '-' }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ $component->is_active ? 'success' : 'secondary' }}">
+                                            {{ $component->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('options.assets.show', $component) }}" class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <i class="far fa-puzzle-piece"></i>
+                        </div>
+                        <p class="empty-title">No components attached</p>
+                        <p class="empty-subtitle text-muted">
+                            This asset has no child components.
+                        </p>
+                        @can('maintenance.assets.manage')
+                        <div class="empty-action">
+                            <a href="{{ route('assets.components', $asset) }}" class="btn btn-primary">
+                                <i class="far fa-plus"></i>
+                                Attach Component
+                            </a>
+                        </div>
+                        @endcan
+                    </div>
+                @endif
+            </div>
         </div>
+        @endif
+
+        <!-- Lifetime Metrics Link -->
+        @if($asset->lifetime_unit || $asset->expected_lifetime_value || $asset->actual_lifetime_value)
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">Lifetime Metrics</h3>
+            </div>
+            <div class="card-body">
+                <a href="{{ route('assets.lifetime', $asset) }}" class="btn btn-outline-primary">
+                    <i class="far fa-chart-line"></i>&nbsp;
+                    View Lifetime Report
+                </a>
+            </div>
+        </div>
+        @endif
+
+        <!-- Specifications -->
+        @if($asset->specifications)
+            @php
+                $specsArray = [];
+                if (is_object($asset->specifications) && method_exists($asset->specifications, 'toArray')) {
+                    $specsArray = $asset->specifications->toArray();
+                } elseif (is_array($asset->specifications)) {
+                    $specsArray = $asset->specifications;
+                }
+                
+                // Handle malformed data - if we only have one key with a concatenated string value
+                // Try to parse it as key-value pairs (e.g., "440Vpower: 38940Wweight: 263kgdimensions: {...}")
+                if (count($specsArray) === 1) {
+                    $firstKey = array_key_first($specsArray);
+                    $firstValue = $specsArray[$firstKey];
+                    if (is_string($firstValue) && (stripos($firstValue, 'power:') !== false || stripos($firstValue, 'weight:') !== false)) {
+                        $parsed = [];
+                        $value = html_entity_decode($firstValue, ENT_QUOTES, 'UTF-8');
+                        
+                        // Extract voltage (everything before "power:")
+                        if (preg_match('/^(.+?)(?=power:|$)/i', $value, $matches)) {
+                            $voltage = trim($matches[1]);
+                            if (!empty($voltage) && preg_match('/\d/', $voltage)) {
+                                $parsed['voltage'] = $voltage;
+                            }
+                        }
+                        
+                        // Extract power
+                        if (preg_match('/power:\s*([0-9]+[^\s]*(?:W|kW|MW)?)/i', $value, $matches)) {
+                            $parsed['power'] = trim($matches[1]);
+                        }
+                        
+                        // Extract weight  
+                        if (preg_match('/weight:\s*([0-9]+[^\s]*(?:kg|g|lbs|oz)?)/i', $value, $matches)) {
+                            $parsed['weight'] = trim($matches[1]);
+                        }
+                        
+                        // Extract dimensions JSON
+                        if (preg_match('/dimensions:\s*(\{[^}]+\})/i', $value, $matches)) {
+                            $dimJson = json_decode($matches[1], true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($dimJson)) {
+                                $parsed['dimensions'] = $dimJson;
+                            }
+                        }
+                        
+                        if (!empty($parsed) && count($parsed) > 1) {
+                            $specsArray = $parsed;
+                        }
+                    }
+                }
+            @endphp
+            @if(!empty($specsArray))
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">Specifications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        @foreach($specsArray as $key => $value)
+                            @if($value !== null && $value !== '')
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="mb-3">
+                                    <div class="fw-bold text-capitalize mb-1" style="font-size: 0.875rem; color: #6c757d;">
+                                        {{ str_replace('_', ' ', $key) }}
+                                    </div>
+                                    <div class="text-muted" style="word-wrap: break-word; word-break: break-word;">
+                                        @if(is_array($value))
+                                            @if(isset($value['length']) && isset($value['width']) && isset($value['height']))
+                                                {{ $value['length'] }} × {{ $value['width'] }} × {{ $value['height'] }}{{ isset($value['unit']) ? ' ' . $value['unit'] : '' }}
+                                            @else
+                                                {{ json_encode($value) }}
+                                            @endif
+                                        @else
+                                            {{ $value }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
         @endif
 
         <!-- Work Orders Section with Tabs -->
@@ -564,7 +906,7 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
 function openPhotoModal(imageUrl) {
     document.getElementById('modal-photo-img').src = imageUrl;
@@ -620,4 +962,4 @@ function deletePhoto(assetId, photoId) {
     });
 }
 </script>
-@endsection
+@endpush
