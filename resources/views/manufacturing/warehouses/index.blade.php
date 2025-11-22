@@ -16,17 +16,20 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('manufacturing.warehouses.picklist') }}" class="btn btn-outline-success d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.warehouses.picklist') }}" class="btn btn-outline-success">
                         <i class="far fa-list-check me-2"></i>&nbsp;
-                        Generate Picklist
+                        <span class="d-none d-sm-inline">Generate Picklist</span>
+                        <span class="d-sm-none">Picklist</span>
                     </a>
-                    <a href="{{ route('manufacturing.warehouses.overview-report') }}" class="btn btn-outline-info d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.warehouses.overview-report') }}" class="btn btn-outline-info">
                         <i class="far fa-chart-line me-2"></i>&nbsp;
-                        Overview Report
+                        <span class="d-none d-sm-inline">Overview Report</span>
+                        <span class="d-sm-none">Report</span>
                     </a>
-                    <a href="{{ route('manufacturing.warehouses.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.warehouses.create') }}" class="btn btn-primary">
                         <i class="far fa-plus me-2"></i>&nbsp;
-                        New Warehouse
+                        <span class="d-none d-sm-inline">New Warehouse</span>
+                        <span class="d-sm-none">New</span>
                     </a>
                 </div>
             </div>

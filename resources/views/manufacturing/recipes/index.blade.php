@@ -17,9 +17,10 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     @can('manufacturing.recipes.create')
-                    <a href="{{ route('manufacturing.recipes.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.recipes.create') }}" class="btn btn-primary">
                         <i class="far fa-plus me-2"></i>&nbsp;
-                        Create Recipe
+                        <span class="d-none d-sm-inline">Create Recipe</span>
+                        <span class="d-sm-none">Create</span>
                     </a>
                     @endcan
                 </div>

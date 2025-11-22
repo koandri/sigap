@@ -99,9 +99,10 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('manufacturing.yield-guidelines.show', $yieldGuideline) }}" class="btn btn-outline-secondary d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.yield-guidelines.show', $yieldGuideline) }}" class="btn btn-outline-secondary">
                         <i class="far fa-arrow-left"></i>&nbsp;
-                        Back to Guideline
+                        <span class="d-none d-sm-inline">Back to Guideline</span>
+                        <span class="d-sm-none">Back</span>
                     </a>
                 </div>
             </div>

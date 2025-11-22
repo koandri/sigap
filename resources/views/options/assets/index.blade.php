@@ -16,14 +16,16 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('options.assets.qr-index') }}" class="btn btn-outline-primary d-none d-sm-inline-block">
+                    <a href="{{ route('options.assets.qr-index') }}" class="btn btn-outline-primary">
                         <i class="far fa-qrcode"></i>&nbsp;
-                        View QR Codes
+                        <span class="d-none d-sm-inline">View QR Codes</span>
+                        <span class="d-sm-none">QR Codes</span>
                     </a>
                     @can('maintenance.assets.manage')
-                    <a href="{{ route('options.assets.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('options.assets.create') }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
-                        Add Asset
+                        <span class="d-none d-sm-inline">Add Asset</span>
+                        <span class="d-sm-none">Add</span>
                     </a>
                     @endcan
                 </div>

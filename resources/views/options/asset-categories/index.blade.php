@@ -17,9 +17,10 @@
             <div class="col-auto ms-auto d-print-none">
                 @can('maintenance.assets.manage')
                 <div class="btn-list">
-                    <a href="{{ route('options.asset-categories.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('options.asset-categories.create') }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
-                        Add Category
+                        <span class="d-none d-sm-inline">Add Category</span>
+                        <span class="d-sm-none">Add</span>
                     </a>
                 </div>
                 @endcan
@@ -100,6 +101,7 @@
                                                 View
                                             </a>
                                             @can('maintenance.assets.manage')
+
                                             <a href="{{ route('options.asset-categories.edit', $category) }}" class="btn btn-sm btn-outline-secondary">
                                                 Edit
                                             </a>

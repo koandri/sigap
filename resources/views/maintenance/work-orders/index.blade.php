@@ -17,9 +17,10 @@
             <div class="col-auto ms-auto d-print-none">
                 @can('create', App\Models\WorkOrder::class)
                 <div class="btn-list">
-                    <a href="{{ route('maintenance.work-orders.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('maintenance.work-orders.create') }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
-                        Create Work Order
+                        <span class="d-none d-sm-inline">Create Work Order</span>
+                        <span class="d-sm-none">Create</span>
                     </a>
                 </div>
                 @endcan

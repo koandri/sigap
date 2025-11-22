@@ -17,9 +17,10 @@
             <div class="col-auto ms-auto d-print-none">
                 @can('maintenance.assets.manage')
                 <div class="btn-list">
-                    <a href="{{ route('options.locations.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('options.locations.create') }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
-                        Add Location
+                        <span class="d-none d-sm-inline">Add Location</span>
+                        <span class="d-sm-none">Add</span>
                     </a>
                 </div>
                 @endcan

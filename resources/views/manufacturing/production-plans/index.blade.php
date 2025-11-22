@@ -17,9 +17,10 @@
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     @can('manufacturing.production-plans.create')
-                    <a href="{{ route('manufacturing.production-plans.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.production-plans.create') }}" class="btn btn-primary">
                         <i class="far fa-plus me-2"></i>&nbsp;
-                        New Production Plan
+                        <span class="d-none d-sm-inline">New Production Plan</span>
+                        <span class="d-sm-none">New Plan</span>
                     </a>
                     @endcan
                 </div>
@@ -172,6 +173,7 @@
     </div>
 </div>
 @endsection
+
 
 
 

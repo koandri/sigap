@@ -16,9 +16,10 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('manufacturing.item-categories.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.item-categories.create') }}" class="btn btn-primary">
                         <i class="far fa-plus me-2"></i>&nbsp;
-                        New Category
+                        <span class="d-none d-sm-inline">New Category</span>
+                        <span class="d-sm-none">New</span>
                     </a>
                 </div>
             </div>

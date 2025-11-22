@@ -16,9 +16,10 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-secondary d-none d-sm-inline-block">
+                    <a href="{{ route('manufacturing.items.index') }}" class="btn btn-outline-secondary">
                         <i class="far fa-arrow-left"></i>&nbsp;
-                        View Items
+                        <span class="d-none d-sm-inline">View Items</span>
+                        <span class="d-sm-none">Back</span>
                     </a>
                 </div>
             </div>
