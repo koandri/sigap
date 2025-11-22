@@ -156,7 +156,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Total Positions</div>
                         </div>
-                        <div class="h1 mb-3">{{ $shelf->shelfPositions->count() }}</div>
+                        <div class="h1 mb-3">{{ $totalPositions }}</div>
                     </div>
                 </div>
             </div>
@@ -166,7 +166,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Occupied Positions</div>
                         </div>
-                        <div class="h1 mb-3">{{ $shelf->occupied_positions }}</div>
+                        <div class="h1 mb-3">{{ $occupiedPositions }}</div>
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Available Positions</div>
                         </div>
-                        <div class="h1 mb-3">{{ $shelf->available_positions }}</div>
+                        <div class="h1 mb-3">{{ $availablePositions }}</div>
                     </div>
                 </div>
             </div>
@@ -186,7 +186,7 @@
                         <div class="d-flex align-items-center">
                             <div class="subheader">Occupancy Rate</div>
                         </div>
-                        <div class="h1 mb-3">{{ $shelf->occupancy_rate }}%</div>
+                        <div class="h1 mb-3">{{ $occupancyRate }}%</div>
                     </div>
                 </div>
             </div>

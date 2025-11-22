@@ -35,16 +35,37 @@ final class ShelfInventoryController extends Controller
      */
     public function index(Warehouse $warehouse): View
     {
-        $warehouse->load(['shelves.shelfPositions.positionItems.item.itemCategory']);
+        // Eager load all necessary relationships with optimized queries
+        $warehouse->load([
+            'shelves' => function ($query) {
+                $query->where('is_active', true)
+                    ->orderBy('shelf_code')
+                    ->withCount([
+                        'shelfPositions as total_positions_count',
+                        'shelfPositions as occupied_positions_count' => function ($q) {
+                            $q->whereHas('positionItems', function ($subQ) {
+                                $subQ->where('quantity', '>', 0);
+                            });
+                        }
+                    ])
+                    ->with(['shelfPositions' => function ($q) {
+                        $q->withCount([
+                            'positionItems as has_items' => function ($subQ) {
+                                $subQ->where('quantity', '>', 0);
+                            }
+                        ]);
+                    }]);
+            }
+        ]);
         
-        // Get shelf grid for visual layout (legacy support)
-        $shelfGrid = $warehouse->shelf_grid;
+        // Get shelf columns using loaded relationships (no additional queries)
+        $shelfColumns = $this->buildShelfColumns($warehouse->shelves);
         
-        // Get shelf columns for 3-column layout
-        $shelfColumns = $warehouse->shelf_columns;
+        // Get shelf grid for visual layout (legacy support) - reuse loaded shelves
+        $shelfGrid = $this->buildShelfGrid($warehouse->shelves);
         
-        // Get statistics
-        $stats = $warehouse->shelf_inventory_stats;
+        // Get statistics using efficient queries
+        $stats = $this->calculateShelfInventoryStats($warehouse);
 
         return view('manufacturing.warehouses.shelf-inventory', compact(
             'warehouse', 'shelfGrid', 'shelfColumns', 'stats'
@@ -52,33 +73,163 @@ final class ShelfInventoryController extends Controller
     }
 
     /**
+     * Build shelf columns from loaded shelves collection.
+     */
+    private function buildShelfColumns($shelves): array
+    {
+        $columns = [
+            'column_1' => [],
+            'column_2' => [],
+            'column_3' => []
+        ];
+        
+        foreach ($shelves as $shelf) {
+            // Parse shelf code format: A-01-04
+            $parts = explode('-', $shelf->shelf_code);
+            $row = $parts[0] ?? 'A';
+            $section = (int) ($parts[1] ?? 1);
+            
+            // Create row-section combination key (A-01, A-02, etc.)
+            $rowSectionKey = $row . '-' . str_pad((string)$section, 2, '0', STR_PAD_LEFT);
+            
+            // Determine which column this row-section belongs to
+            $columnNumber = (($section - 1) % 3) + 1;
+            $columnKey = "column_{$columnNumber}";
+            
+            // Group by row-section combination
+            if (!isset($columns[$columnKey][$rowSectionKey])) {
+                $columns[$columnKey][$rowSectionKey] = [];
+            }
+            
+            $columns[$columnKey][$rowSectionKey][] = $shelf;
+        }
+        
+        // Sort row-section combinations within each column
+        foreach ($columns as $columnKey => $rowSections) {
+            ksort($rowSections);
+            $columns[$columnKey] = $rowSections;
+        }
+        
+        return $columns;
+    }
+
+    /**
+     * Build shelf grid from loaded shelves collection.
+     */
+    private function buildShelfGrid($shelves): array
+    {
+        $grid = [];
+        
+        foreach ($shelves as $shelf) {
+            // Parse shelf code format: A-01-04
+            $parts = explode('-', $shelf->shelf_code);
+            $row = $parts[0] ?? 'A';
+            $section = (int) ($parts[1] ?? 1);
+            
+            if (!isset($grid[$row])) {
+                $grid[$row] = [];
+            }
+            
+            if (!isset($grid[$row][$section])) {
+                $grid[$row][$section] = [];
+            }
+            $grid[$row][$section][] = $shelf;
+        }
+        
+        return $grid;
+    }
+
+    /**
+     * Calculate shelf inventory statistics efficiently.
+     */
+    private function calculateShelfInventoryStats(Warehouse $warehouse): array
+    {
+        // Use a single query with joins and aggregations
+        $stats = DB::table('warehouse_shelves')
+            ->leftJoin('shelf_positions', 'warehouse_shelves.id', '=', 'shelf_positions.warehouse_shelf_id')
+            ->leftJoin('position_items', function ($join) {
+                $join->on('shelf_positions.id', '=', 'position_items.shelf_position_id')
+                    ->where('position_items.quantity', '>', 0);
+            })
+            ->where('warehouse_shelves.warehouse_id', $warehouse->id)
+            ->selectRaw('
+                COUNT(DISTINCT warehouse_shelves.id) as total_shelves,
+                COUNT(DISTINCT CASE WHEN position_items.id IS NOT NULL THEN warehouse_shelves.id END) as occupied_shelves,
+                COUNT(DISTINCT shelf_positions.id) as total_positions,
+                COUNT(DISTINCT CASE WHEN position_items.id IS NOT NULL THEN shelf_positions.id END) as occupied_positions
+            ')
+            ->first();
+
+        // Get expiring items count
+        $expiringItems = PositionItem::whereHas('shelfPosition.warehouseShelf', function($q) use ($warehouse) {
+            $q->where('warehouse_id', $warehouse->id);
+        })->expiring(30)->count();
+        
+        $totalPositions = (int) ($stats->total_positions ?? 0);
+        $occupiedPositions = (int) ($stats->occupied_positions ?? 0);
+        
+        return [
+            'total_shelves' => (int) ($stats->total_shelves ?? 0),
+            'occupied_shelves' => (int) ($stats->occupied_shelves ?? 0),
+            'total_positions' => $totalPositions,
+            'occupied_positions' => $occupiedPositions,
+            'expiring_items' => $expiringItems,
+            'occupancy_rate' => $totalPositions > 0 ? round(($occupiedPositions / $totalPositions) * 100, 1) : 0
+        ];
+    }
+
+    /**
      * Show specific shelf details with all positions.
      */
     public function showShelf(Warehouse $warehouse, WarehouseShelf $shelf): View
     {
+        // Eager load all necessary relationships
         $shelf->load([
+            'warehouse',
+            'shelfPositions.warehouseShelf',
             'shelfPositions.positionItems.item.itemCategory',
             'shelfPositions.positionItems.lastUpdatedBy'
         ]);
         
+        // Pre-calculate statistics from loaded relationships to avoid N+1 queries
+        $shelfPositions = $shelf->shelfPositions;
+        $totalPositions = $shelfPositions->count();
+        
+        $occupiedPositions = $shelfPositions->filter(function ($position) {
+            return $position->positionItems->where('quantity', '>', 0)->isNotEmpty();
+        })->count();
+        
+        $availablePositions = $totalPositions - $occupiedPositions;
+        $occupancyRate = $totalPositions > 0 
+            ? round(($occupiedPositions / $totalPositions) * 100, 1) 
+            : 0;
+        
+        // Get item IDs that are already in this shelf (using subquery for efficiency)
+        $existingItemIds = PositionItem::whereHas('shelfPosition', function($q) use ($shelf) {
+                $q->where('warehouse_shelf_id', $shelf->id);
+            })
+            ->where('quantity', '>', 0)
+            ->distinct()
+            ->pluck('item_id');
+        
+        // Optimize availableItems query using subquery instead of loading everything
         $availableItems = Item::active()
-            ->whereNotIn('id', $shelf->shelfPositions()
-                ->whereHas('positionItems', function($q) {
-                    $q->where('quantity', '>', 0);
-                })
-                ->with('positionItems')
-                ->get()
-                ->pluck('positionItems')
-                ->flatten()
-                ->pluck('item_id')
-                ->unique()
-            )
+            ->whereHas('itemCategory', function($q) {
+                $q->where('name', 'Kerupuk Pack');
+            })
+            ->whereNotIn('id', $existingItemIds)
             ->with('itemCategory')
             ->orderBy('name')
             ->get();
 
         return view('manufacturing.warehouses.shelf-detail', compact(
-            'warehouse', 'shelf', 'availableItems'
+            'warehouse', 
+            'shelf', 
+            'availableItems',
+            'totalPositions',
+            'occupiedPositions',
+            'availablePositions',
+            'occupancyRate'
         ));
     }
 
@@ -112,11 +263,16 @@ final class ShelfInventoryController extends Controller
             DB::beginTransaction();
 
             // Get the item details for validation
-            $item = Item::findOrFail($validated['item_id']);
+            $item = Item::with('itemCategory')->findOrFail($validated['item_id']);
             
             // Check if item is active
             if (!$item->is_active) {
                 return back()->with('error', 'Selected item is not active and cannot be added.');
+            }
+
+            // Check if item belongs to 'Kerupuk Pack' category
+            if (!$item->itemCategory || $item->itemCategory->name !== 'Kerupuk Pack') {
+                return back()->with('error', 'Only items from Kerupuk Pack category can be added to shelf positions.');
             }
 
             // Create the position item record

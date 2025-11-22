@@ -62,23 +62,70 @@ final class WarehouseShelf extends Model
 
     /**
      * Get the occupancy rate for this shelf.
+     * Optimized to use withCount results when available.
      */
     public function getOccupancyRateAttribute(): float
     {
-        $totalPositions = $this->shelfPositions()->count();
-        $occupiedPositions = $this->shelfPositions()
-            ->whereHas('positionItems', function($q) {
-                $q->where('quantity', '>', 0);
+        // Use withCount results if available (most efficient)
+        if (isset($this->attributes['occupied_positions_count']) && isset($this->attributes['total_positions_count'])) {
+            $totalPositions = (int) $this->attributes['total_positions_count'];
+            $occupiedPositions = (int) $this->attributes['occupied_positions_count'];
+            return $totalPositions > 0 ? round(($occupiedPositions / $totalPositions) * 100, 1) : 0;
+        }
+        
+        // Use loaded relationship if available to avoid N+1 queries
+        if ($this->relationLoaded('shelfPositions')) {
+            $totalPositions = $this->shelfPositions->count();
+            $occupiedPositions = $this->shelfPositions->filter(function ($position) {
+                // Check if position has has_items count attribute
+                if (isset($position->attributes['has_items'])) {
+                    return (int) $position->attributes['has_items'] > 0;
+                }
+                // Fallback to checking loaded positionItems
+                if ($position->relationLoaded('positionItems')) {
+                    return $position->positionItems->where('quantity', '>', 0)->isNotEmpty();
+                }
+                // Last resort: check is_occupied attribute
+                return $position->is_occupied;
             })->count();
+        } else {
+            $totalPositions = $this->shelfPositions()->count();
+            $occupiedPositions = $this->shelfPositions()
+                ->whereHas('positionItems', function($q) {
+                    $q->where('quantity', '>', 0);
+                })->count();
+        }
             
         return $totalPositions > 0 ? round(($occupiedPositions / $totalPositions) * 100, 1) : 0;
     }
 
     /**
      * Get the number of occupied positions.
+     * Optimized to use withCount results when available.
      */
     public function getOccupiedPositionsAttribute(): int
     {
+        // Use withCount results if available (most efficient)
+        if (isset($this->attributes['occupied_positions_count'])) {
+            return (int) $this->attributes['occupied_positions_count'];
+        }
+        
+        // Use loaded relationship if available to avoid N+1 queries
+        if ($this->relationLoaded('shelfPositions')) {
+            return $this->shelfPositions->filter(function ($position) {
+                // Check if position has has_items count attribute
+                if (isset($position->attributes['has_items'])) {
+                    return (int) $position->attributes['has_items'] > 0;
+                }
+                // Fallback to checking loaded positionItems
+                if ($position->relationLoaded('positionItems')) {
+                    return $position->positionItems->where('quantity', '>', 0)->isNotEmpty();
+                }
+                // Last resort: check is_occupied attribute
+                return $position->is_occupied;
+            })->count();
+        }
+        
         return $this->shelfPositions()
             ->whereHas('positionItems', function($q) {
                 $q->where('quantity', '>', 0);
@@ -87,9 +134,33 @@ final class WarehouseShelf extends Model
 
     /**
      * Get the number of available positions.
+     * Optimized to use withCount results when available.
      */
     public function getAvailablePositionsAttribute(): int
     {
+        // Use withCount results if available (most efficient)
+        if (isset($this->attributes['total_positions_count']) && isset($this->attributes['occupied_positions_count'])) {
+            return (int) $this->attributes['total_positions_count'] - (int) $this->attributes['occupied_positions_count'];
+        }
+        
+        // Use loaded relationship if available to avoid N+1 queries
+        if ($this->relationLoaded('shelfPositions')) {
+            $totalPositions = $this->shelfPositions->count();
+            $occupiedPositions = $this->shelfPositions->filter(function ($position) {
+                // Check if position has has_items count attribute
+                if (isset($position->attributes['has_items'])) {
+                    return (int) $position->attributes['has_items'] > 0;
+                }
+                // Fallback to checking loaded positionItems
+                if ($position->relationLoaded('positionItems')) {
+                    return $position->positionItems->where('quantity', '>', 0)->isNotEmpty();
+                }
+                // Last resort: check is_occupied attribute
+                return $position->is_occupied;
+            })->count();
+            return $totalPositions - $occupiedPositions;
+        }
+        
         return $this->shelfPositions()
             ->whereDoesntHave('positionItems', function($q) {
                 $q->where('quantity', '>', 0);

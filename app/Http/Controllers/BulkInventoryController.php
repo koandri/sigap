@@ -19,7 +19,7 @@ final class BulkInventoryController extends Controller
     public function __construct()
     {
         $this->middleware('can:manufacturing.inventory.view')->only(['index', 'show']);
-        $this->middleware('can:manufacturing.inventory.edit')->only(['update', 'bulkUpdate', 'bulkAssign', 'bulkClear']);
+        $this->middleware('can:manufacturing.inventory.edit')->only(['update', 'bulkUpdate', 'bulkAssign', 'bulkClear', 'saveAllChanges']);
     }
 
     /**
@@ -34,32 +34,16 @@ final class BulkInventoryController extends Controller
             ->orderBy('aisle')
             ->pluck('aisle');
 
-        // Load only the first aisle initially to prevent memory issues
-        $initialAisles = $availableAisles->take(1);
+        // No positions loaded initially - lazy load via AJAX when aisle is selected
+        $aisles = collect();
         
-        // Get positions for initial aisles only
-        $positions = collect();
-        foreach ($initialAisles as $aisle) {
-            $aislePositions = $warehouse->shelves()
-                ->where('shelf_code', 'like', $aisle . '-%')
-                ->with(['shelfPositions.positionItems.item', 'shelfPositions.positionItems.updatedBy'])
-                ->orderBy('shelf_code')
-                ->get()
-                ->flatMap(function ($shelf) {
-                    return $shelf->shelfPositions->map(function ($position) use ($shelf) {
-                        $position->shelf_code = $shelf->shelf_code;
-                        $position->aisle = $shelf->shelf_code ? substr($shelf->shelf_code, 0, 1) : 'Unknown';
-                        return $position;
-                    });
-                });
-            $positions = $positions->merge($aislePositions);
-        }
-
-        // Group by aisle for better organization
-        $aisles = $positions->groupBy('aisle');
-        
-        // Get all items for dropdowns
-        $items = Item::active()->whereIn('item_category_id', [12, 16, 7, 6])->orderBy('name')->get();
+        // Get all items for dropdowns - only from 'Kerupuk Pack' category
+        $items = Item::active()
+            ->whereHas('itemCategory', function($q) {
+                $q->where('name', 'Kerupuk Pack');
+            })
+            ->orderBy('name')
+            ->get();
 
         return view('manufacturing.warehouses.bulk-edit', compact('warehouse', 'aisles', 'items', 'availableAisles'));
     }
@@ -251,13 +235,27 @@ final class BulkInventoryController extends Controller
      */
     public function getAislePositions(Warehouse $warehouse, string $aisle): JsonResponse
     {
+        // Optimized query: only load active positions and positionItems with quantity > 0
         $positions = $warehouse->shelves()
             ->where('shelf_code', 'like', $aisle . '-%')
-            ->with(['shelfPositions.positionItems.item', 'shelfPositions.positionItems.updatedBy'])
+            ->with([
+                'shelfPositions' => function($query) {
+                    $query->where('is_active', true)
+                          ->orderBy('position_code')
+                          ->with('warehouseShelf'); // Eager load warehouseShelf for full_location_code accessor
+                },
+                'shelfPositions.positionItems' => function($query) {
+                    // Only load positionItems with quantity > 0 to reduce data
+                    $query->where('quantity', '>', 0)
+                          ->with(['item', 'updatedBy']);
+                }
+            ])
             ->orderBy('shelf_code')
             ->get()
             ->flatMap(function ($shelf) use ($aisle) {
                 return $shelf->shelfPositions->map(function ($position) use ($shelf, $aisle) {
+                    // Pre-calculate current_item from eager loaded data
+                    $position->current_item = $position->positionItems->first();
                     $position->shelf_code = $shelf->shelf_code;
                     $position->aisle = $aisle;
                     return $position;
@@ -265,8 +263,13 @@ final class BulkInventoryController extends Controller
             });
 
         
-        // Get filtered items for dropdowns
-        $items = Item::active()->whereIn('item_category_id', [12, 16, 7, 6])->orderBy('name')->get();
+        // Get filtered items for dropdowns - only from 'Kerupuk Pack' category
+        $items = Item::active()
+            ->whereHas('itemCategory', function($q) {
+                $q->where('name', 'Kerupuk Pack');
+            })
+            ->orderBy('name')
+            ->get();
         return response()->json([
             "success" => true,
             "aisle" => $aisle,
@@ -281,6 +284,87 @@ final class BulkInventoryController extends Controller
             }),
             "count" => $positions->count()
         ]);
+    }
+
+    /**
+     * Save all changes for multiple positions
+     */
+    public function saveAllChanges(Request $request, Warehouse $warehouse): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'positions' => 'required|array',
+            'positions.*.position_id' => 'required|exists:shelf_positions,id',
+            'positions.*.item_id' => 'nullable|exists:items,id',
+            'positions.*.quantity' => 'required|numeric|min:0',
+            'positions.*.expiry_date' => 'nullable|date'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $updatedCount = 0;
+            $errors = [];
+
+            foreach ($request->positions as $index => $positionData) {
+                try {
+                    $position = ShelfPosition::findOrFail($positionData['position_id']);
+                    
+                    // Verify position belongs to this warehouse
+                    if ($position->warehouseShelf->warehouse_id !== $warehouse->id) {
+                        $errors[] = "Position {$positionData['position_id']} does not belong to this warehouse";
+                        continue;
+                    }
+
+                    // If quantity is 0, remove the item
+                    if ($positionData['quantity'] == 0) {
+                        $position->positionItems()->delete();
+                        $updatedCount++;
+                        continue;
+                    }
+
+                    // If item_id is provided, create or update position item
+                    if (!empty($positionData['item_id'])) {
+                        $positionItem = $position->positionItems()->firstOrNew(['item_id' => $positionData['item_id']]);
+                        $positionItem->quantity = $positionData['quantity'];
+                        $positionItem->expiry_date = $positionData['expiry_date'] ?? null;
+                        $positionItem->last_updated_by = auth()->id();
+                        $positionItem->last_updated_at = now();
+                        $positionItem->save();
+
+                        // Remove other items from this position
+                        $position->positionItems()->where('item_id', '!=', $positionData['item_id'])->delete();
+                        $updatedCount++;
+                    } else {
+                        // If no item_id but quantity > 0, skip (invalid state)
+                        $errors[] = "Position {$positionData['position_id']} has quantity but no item selected";
+                    }
+                } catch (\Exception $e) {
+                    $errors[] = "Error updating position {$positionData['position_id']}: " . $e->getMessage();
+                }
+            }
+
+            DB::commit();
+
+            $message = "Successfully updated {$updatedCount} position(s).";
+            if (!empty($errors)) {
+                $message .= " " . count($errors) . " error(s) occurred.";
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'updated_count' => $updatedCount,
+                'errors' => $errors
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error saving changes: ' . $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -300,24 +384,30 @@ final class BulkInventoryController extends Controller
      */
     public function formatPosition(ShelfPosition $position): array
     {
-        $currentItem = $position->positionItems()->where('quantity', '>', 0)->first();
+        // Use pre-calculated current_item from eager loaded data to avoid N+1 queries
+        $currentItem = $position->current_item ?? ($position->positionItems->where('quantity', '>', 0)->first() ?? null);
+        
+        // Get shelf code - use property if set, otherwise get from relationship
+        $shelfCode = $position->shelf_code ?? ($position->warehouseShelf->shelf_code ?? 'Unknown');
+        $aisle = $position->aisle ?? ($shelfCode !== 'Unknown' ? substr($shelfCode, 0, 1) : 'Unknown');
+        $fullLocation = $position->full_location_code ?? ($shelfCode . '-' . $position->position_code);
         
         return [
             'id' => $position->id,
-            'shelf_code' => $position->shelf_code,
+            'shelf_code' => $shelfCode,
             'position_code' => $position->position_code,
-            'full_location' => $position->full_location_code,
-            'aisle' => $position->aisle ?? ($position->shelf_code ? substr($position->shelf_code, 0, 1) : 'Unknown'),
+            'full_location' => $fullLocation,
+            'aisle' => $aisle,
             'current_item' => $currentItem ? [
                 'id' => $currentItem->item_id,
-                'name' => $currentItem->item->name,
+                'name' => $currentItem->item->name ?? 'Unknown',
                 'quantity' => $currentItem->quantity,
                 'expiry_date' => $currentItem->expiry_date?->format('Y-m-d'),
                 'updated_at' => $currentItem->updated_at->format('Y-m-d H:i:s'),
                 'updated_at_human' => $currentItem->updated_at->diffForHumans(),
                 'updated_by_name' => $currentItem->updatedBy->name ?? 'Unknown'
             ] : null,
-            'is_occupied' => $position->is_occupied
+            'is_occupied' => $currentItem !== null
         ];
     }
 }

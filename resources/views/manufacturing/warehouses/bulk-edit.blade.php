@@ -256,118 +256,16 @@
 
             <!-- Aisles Grid -->
             <div class="row" id="aisles-container">
-                @foreach($aisles as $aisle => $positions)
-                <div class="col-12 mb-4 aisle-section" data-aisle="{{ $aisle }}" id="aisle-section-{{ $aisle }}">
+                <!-- Empty state - shown when no aisle is selected -->
+                <div class="col-12 mb-4" id="empty-state">
                     <div class="card">
-                        <div class="card-header">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="card-title">
-                                        <i class="far fa-layer-group me-2"></i>&nbsp;
-                                        Aisle {{ $aisle }}
-                                        <span class="badge bg-blue-lt ms-2" id="aisle-count-badge-{{ $aisle }}">{{ $positions->count() }} positions</span>
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body" id="aisle-{{ $aisle }}-content">
-                            <div class="table-responsive">
-                                <table class="table table-vcenter">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">
-                                                <input type="checkbox" class="form-check-input" id="select-all-{{ $aisle }}">
-                                            </th>
-                                            <th width="120">Location</th>
-                                            <th>Current Item</th>
-                                            <th width="120">Quantity</th>
-                                            <th width="120">Expiry Date</th>
-                                            <th width="200">Updated By</th>
-                                            <th width="150">Last Updated</th>
-                                            <th width="50">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="aisle-{{ $aisle }}-positions">
-                                        @php
-                                            $groupedPositions = $positions->groupBy(function($position) {
-                                                return substr($position->full_location_code, 0, strrpos($position->full_location_code, '-'));
-                                            });
-                                        @endphp
-                                        @foreach($groupedPositions as $shelfCode => $shelfPositions)
-                                            <!-- Shelf Header Row -->
-                                            <tr class="shelf-header-row bg-light">
-                                                <td colspan="8" class="fw-bold text-primary">
-                                                    <i class="far fa-layer-group me-2"></i>&nbsp;
-                                                    Shelf {{ $shelfCode }} ({{ $shelfPositions->count() }} positions)
-                                                </td>
-                                            </tr>
-                                            @foreach($shelfPositions as $position)
-                                            <tr class="position-row" data-position-id="{{ $position->id }}" data-aisle="{{ $aisle }}" data-shelf="{{ $shelfCode }}">
-                                                <td>
-                                                    <input type="checkbox" class="form-check-input position-checkbox" value="{{ $position->id }}">
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-blue-lt">{{ $position->full_location_code }}</span>
-                                                </td>
-                                                <td>
-                                                    <select class="form-select form-select-sm item-select tom-select" data-position-id="{{ $position->id }}">
-                                                        <option value="">Select Item</option>
-                                                        @foreach($items as $item)
-                                                        <option value="{{ $item->id }}" 
-                                                            @if($position->current_item && $position->current_item->item_id == $item->id) selected @endif>
-                                                            {{ $item->name }}
-                                                        </option>
-                                                        @endforeach
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control form-control-sm quantity-input" 
-                                                           data-position-id="{{ $position->id }}" 
-                                                           value="{{ $position->current_item ? $position->current_item->quantity : 0 }}" 
-                                                           min="0" step="0.01" max="999999.99">
-                                                </td>
-                                                <td>
-                                                    <input type="date" class="form-control form-control-sm expiry-input" 
-                                                           data-position-id="{{ $position->id }}" 
-                                                           value="{{ $position->current_item && $position->current_item->expiry_date ? $position->current_item->expiry_date->format('Y-m-d') : date('Y-m-d', strtotime('+18 months')) }}">
-                                                </td>
-                                                <td>
-                                                    <span class="text-muted">
-                                                        @if($position->current_item && $position->current_item->last_updated_by)
-                                                            {{ $position->current_item->updatedBy->name ?? 'Unknown' }}
-                                                        @endif
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    @if($position->current_item)
-                                                    <span class="text-muted" title="{{ $position->current_item->updated_at->format('M d, Y H:i:s') }}">
-                                                        {{ $position->current_item->updated_at->diffForHumans() }}
-                                                    </span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <form method="POST" action="{{ route('manufacturing.warehouses.bulk-update', $warehouse) }}" 
-                                                          style="display: inline;" 
-                                                          onsubmit="return confirm('Are you sure you want to clear this position?')">
-                                                        @csrf
-                                                        <input type="hidden" name="action" value="clear">
-                                                        <input type="hidden" name="position_ids[]" value="{{ $position->id }}">
-                                                        <button type="submit" class="btn btn-sm btn-outline-warning" 
-                                                                title="Clear position data">
-                                                            <i class="far fa-broom"></i>&nbsp;
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="card-body text-center py-5">
+                            <i class="far fa-layer-group fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">Select an Aisle to View Positions</h4>
+                            <p class="text-muted">Click on an aisle button above to load and view positions.</p>
                         </div>
                     </div>
                 </div>
-                @endforeach
                 
                 <!-- Loading placeholder for dynamic aisles -->
                 <div class="col-12 mb-4" id="aisle-loading-placeholder" style="display: none;">
@@ -405,33 +303,31 @@
 $(document).ready(function() {
     let hasChanges = false;
     let selectedPositions = new Set();
-    let loadedAisles = new Set(@json($aisles->keys()->toArray()));
-    let allItems = @json($items);
+    let loadedAisles = new Set();
+    let changedPositions = new Map(); // Track changed positions: positionId => {item_id, quantity, expiry_date}
+    // Store items as JSON for JavaScript dropdown generation
+    @php
+        $itemsArray = $items->map(function($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'shortname' => $item->shortname,
+                'unit' => $item->unit
+            ];
+        })->values()->all();
+    @endphp
+    let allItems = @json($itemsArray);
 
     // Initialize
     initializeEventHandlers();
     updateBulkOperationsVisibility();
     updateAisleNavigation();
-    initializeTomSelect();
+    initializeTomSelect(); // Initialize non-lazy dropdowns (search, bulk item)
     
-    // Show only the first aisle by default
-    $('.aisle-section').hide();
-    $('.aisle-section').first().show();
-    
-    // Initialize aisle counts for loaded aisles
-    @foreach($aisles as $aisle => $positions)
-        $('#aisle-count-{{ $aisle }}').text('{{ $positions->count() }}');
-    @endforeach
-    
-    // Load counts for all available aisles that aren't already loaded
+    // Load counts for all available aisles
     @foreach($availableAisles as $aisle)
-        @if(!$aisles->has($aisle))
-            loadAisleCount('{{ $aisle }}');
-        @endif
+        loadAisleCount('{{ $aisle }}');
     @endforeach
-    
-    // Update navigation to reflect the initial state
-    updateAisleNavigation();
 
     function loadAisleCount(aisle) {
         $.ajax({
@@ -458,14 +354,16 @@ $(document).ready(function() {
             // Add active class to clicked button
             $(this).addClass('active');
             
-            // Always hide all aisle sections first
+            // Always hide all aisle sections and empty state first
             $('.aisle-section').hide();
+            $('#empty-state').hide();
             
             if (!loadedAisles.has(aisle)) {
                 loadAisle(aisle);
             } else {
                 // Show only the selected aisle
                 $(`#aisle-section-${aisle}`).show();
+                $('#empty-state').hide();
                 // Update navigation to reflect the change
                 updateAisleNavigation();
             }
@@ -578,8 +476,25 @@ $(document).ready(function() {
 
         // Track changes
         $(document).on('change', '.item-select, .quantity-input, .expiry-input', function() {
-            hasChanges = true;
-            $('#save-all-btn').prop('disabled', false);
+            const positionId = parseInt($(this).data('position-id'));
+            const row = $(this).closest('.position-row');
+            
+            if (positionId) {
+                const itemId = row.find('.item-select').val() || null;
+                const quantity = parseFloat(row.find('.quantity-input').val()) || 0;
+                const expiryDate = row.find('.expiry-input').val() || null;
+                
+                // Store the change
+                changedPositions.set(positionId, {
+                    position_id: positionId,
+                    item_id: itemId,
+                    quantity: quantity,
+                    expiry_date: expiryDate
+                });
+                
+                hasChanges = true;
+                $('#save-all-btn').prop('disabled', false);
+            }
         });
     }
 
@@ -590,6 +505,8 @@ $(document).ready(function() {
         // Show loading state
         button.prop('disabled', true).html('<i class="far fa-spinner fa-spin me-1"></i>&nbsp;Loading...');
         $('#aisle-loading-placeholder').show();
+        $('#empty-state').hide();
+        $('.aisle-section').hide();
 
         const url = '{{ url("manufacturing/warehouses/{$warehouse->id}/aisle-positions") }}/' + aisle;
 
@@ -607,18 +524,32 @@ $(document).ready(function() {
                     updateAisleNavigation();
                     updateAisleFilter();
                     
-                    // Initialize TomSelect on newly created dropdowns
-                    initializeTomSelect();
+                    // Clear changed positions for positions in this aisle (they're being reloaded)
+                    response.positions.forEach(position => {
+                        changedPositions.delete(position.id);
+                    });
+                    
+                    // Initialize TomSelect lazily for visible dropdowns only
+                    initializeTomSelectLazy();
                     
                     // Show only the loaded aisle
                     $('.aisle-section').hide();
                     $(`#aisle-section-${aisle}`).show();
+                    $('#empty-state').hide();
+                    
+                    // Update save button state
+                    if (changedPositions.size === 0) {
+                        hasChanges = false;
+                        $('#save-all-btn').prop('disabled', true);
+                    }
                 } else {
                     showToast('error', 'Failed to load aisle data');
+                    $('#empty-state').show();
                 }
             },
             error: function(xhr) {
                 showToast('error', 'Error loading aisle: ' + (xhr.responseJSON?.message || 'Unknown error'));
+                $('#empty-state').show();
             },
             complete: function() {
                 button.prop('disabled', false).html(originalText);
@@ -660,7 +591,7 @@ $(document).ready(function() {
                 
                 // Add position rows
                 shelfPositions.forEach(position => {
-                    const rowHtml = createPositionRowHtml(position);
+                    const rowHtml = createPositionRowHtml(position, shelfCode);
                     tbody.append(rowHtml);
                 });
             });
@@ -673,8 +604,8 @@ $(document).ready(function() {
         $(`#aisle-count-${aisle}`).text(positions.length);
         $(`#aisle-btn-${aisle}`).addClass('active');
         
-        // Initialize Tom Select for new elements
-        initializeTomSelect();
+        // Initialize Tom Select lazily for visible dropdowns only
+        initializeTomSelectLazy();
     }
 
     function groupPositionsByShelf(positions) {
@@ -690,9 +621,27 @@ $(document).ready(function() {
     }
 
     function createAisleHtml(aisle, positions) {
+        // Group positions by shelf
+        const groupedPositions = groupPositionsByShelf(positions);
         let positionsHtml = '';
-        positions.forEach(position => {
-            positionsHtml += createPositionRowHtml(position);
+        
+        Object.keys(groupedPositions).forEach(shelfCode => {
+            const shelfPositions = groupedPositions[shelfCode];
+            
+            // Add shelf header
+            positionsHtml += `
+                <tr class="shelf-header-row bg-light">
+                    <td colspan="8" class="fw-bold text-primary">
+                        <i class="far fa-layer-group me-2"></i>&nbsp;
+                        Shelf ${shelfCode} (${shelfPositions.length} positions)
+                    </td>
+                </tr>
+            `;
+            
+            // Add position rows
+            shelfPositions.forEach(position => {
+                positionsHtml += createPositionRowHtml(position, shelfCode);
+            });
         });
 
         return `
@@ -717,13 +666,13 @@ $(document).ready(function() {
                                         <th width="50">
                                             <input type="checkbox" class="form-check-input" id="select-all-${aisle}">
                                         </th>
-                                        <th width="80">Location</th>
+                                        <th width="120">Location</th>
                                         <th>Current Item</th>
-                                        <th width="50">Quantity</th>
-                                        <th>Expiry Date</th>
-                                        <th>Notes</th>
-                                        <th>Last Updated</th>
-                                        <th width="80">Actions</th>
+                                        <th width="120">Quantity</th>
+                                        <th width="120">Expiry Date</th>
+                                        <th width="200">Updated By</th>
+                                        <th width="150">Last Updated</th>
+                                        <th width="50">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="aisle-${aisle}-positions">
@@ -737,14 +686,21 @@ $(document).ready(function() {
         `;
     }
 
-    function createPositionRowHtml(position) {
+    function createPositionRowHtml(position, shelfCode) {
         const currentItem = position.current_item;
-        const itemOptions = allItems.map(item => 
-            `<option value="${item.id}" ${currentItem && currentItem.id === item.id ? 'selected' : ''}>${item.name}</option>`
-        ).join('');
+        // Generate dropdown options from JSON items array
+        const itemOptions = allItems.map(item => {
+            const selected = currentItem && currentItem.id === item.id ? 'selected' : '';
+            return `<option value="${item.id}" ${selected}>${item.name}</option>`;
+        }).join('');
+        
+        // Default expiry date (18 months from now)
+        const defaultExpiry = new Date();
+        defaultExpiry.setMonth(defaultExpiry.getMonth() + 18);
+        const defaultExpiryStr = defaultExpiry.toISOString().split('T')[0];
 
         return `
-            <tr class="position-row" data-position-id="${position.id}" data-aisle="${position.aisle}" data-shelf="${position.shelf || ''}">
+            <tr class="position-row" data-position-id="${position.id}" data-aisle="${position.aisle}" data-shelf="${shelfCode}">
                 <td>
                     <input type="checkbox" class="form-check-input position-checkbox" value="${position.id}">
                 </td>
@@ -752,7 +708,7 @@ $(document).ready(function() {
                     <span class="badge bg-blue-lt">${position.full_location}</span>
                 </td>
                 <td>
-                    <select class="form-select form-select-sm item-select tom-select" data-position-id="${position.id}">
+                    <select class="form-select form-select-sm item-select" data-position-id="${position.id}">
                         <option value="">Select Item</option>
                         ${itemOptions}
                     </select>
@@ -766,11 +722,11 @@ $(document).ready(function() {
                 <td>
                     <input type="date" class="form-control form-control-sm expiry-input" 
                            data-position-id="${position.id}" 
-                           value="${currentItem && currentItem.expiry_date ? currentItem.expiry_date : '{{ date('Y-m-d', strtotime('+18 months')) }}'}">
+                           value="${currentItem && currentItem.expiry_date ? currentItem.expiry_date : defaultExpiryStr}">
                 </td>
                 <td>
                     <span class="text-muted">
-                        ${currentItem && currentItem.updated_by_name ? currentItem.updated_by_name : '{{ auth()->user()->name }}'}
+                        ${currentItem && currentItem.updated_by_name ? currentItem.updated_by_name : ''}
                     </span>
                 </td>
                 <td>
@@ -823,38 +779,18 @@ $(document).ready(function() {
     }
 
     function initializeTomSelect() {
-        // Initialize Tom Select for existing item selects
-        $('.item-select.tom-select').each(function() {
-            if (!$(this).hasClass('tomselected') && $(this).is(':visible')) {
-                try {
-                    new TomSelect(this, {
-                        placeholder: 'Select Item',
-                        allowEmptyOption: true,
-                        create: false,
-                        sortField: {
-                            field: 'text',
-                            direction: 'asc'
-                        }
-                    });
-                } catch (error) {
-                    // Remove tom-select class to prevent retry
-                    $(this).removeClass('tom-select');
-                }
-            }
-        });
-
         // Initialize TomSelect for search location dropdown
         if ($('#search-location').length && !$('#search-location').hasClass('tomselected')) {
             try {
                 new TomSelect('#search-location', {
-                placeholder: 'Search by shelf...',
-                allowEmptyOption: true,
-                create: false,
-                sortField: {
-                    field: 'text',
-                    direction: 'asc'
-                }
-            });
+                    placeholder: 'Search by shelf...',
+                    allowEmptyOption: true,
+                    create: false,
+                    sortField: {
+                        field: 'text',
+                        direction: 'asc'
+                    }
+                });
             } catch (error) {
                 // Silently handle error
             }
@@ -875,6 +811,62 @@ $(document).ready(function() {
             } catch (error) {
                 // Silently handle error
             }
+        }
+    }
+
+    // Lazy initialization of TomSelect for item dropdowns - only for visible elements
+    function initializeTomSelectLazy() {
+        // Use Intersection Observer for lazy initialization
+        if (typeof IntersectionObserver !== 'undefined') {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const select = entry.target;
+                        if (!$(select).hasClass('tomselected') && $(select).is(':visible')) {
+                            try {
+                                new TomSelect(select, {
+                                    placeholder: 'Select Item',
+                                    allowEmptyOption: true,
+                                    create: false,
+                                    sortField: {
+                                        field: 'text',
+                                        direction: 'asc'
+                                    }
+                                });
+                                observer.unobserve(select);
+                            } catch (error) {
+                                // Silently handle error
+                            }
+                        }
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '50px',
+                threshold: 0.1
+            });
+
+            // Observe all item selects that aren't initialized yet
+            $('.item-select:not(.tomselected)').each(function() {
+                observer.observe(this);
+            });
+        } else {
+            // Fallback for browsers without IntersectionObserver
+            $('.item-select:visible:not(.tomselected)').each(function() {
+                try {
+                    new TomSelect(this, {
+                        placeholder: 'Select Item',
+                        allowEmptyOption: true,
+                        create: false,
+                        sortField: {
+                            field: 'text',
+                            direction: 'asc'
+                        }
+                    });
+                } catch (error) {
+                    // Silently handle error
+                }
+            });
         }
     }
 
@@ -1029,8 +1021,67 @@ $(document).ready(function() {
     }
 
     function saveAllChanges() {
-        // This would implement saving all pending changes
-        showToast('info', 'Save all functionality will be implemented in the next phase');
+        if (changedPositions.size === 0) {
+            showToast('warning', 'No changes to save');
+            return;
+        }
+        
+        if (!confirm(`Are you sure you want to save changes to ${changedPositions.size} position(s)?`)) {
+            return;
+        }
+        
+        // Disable button and show loading state
+        const saveBtn = $('#save-all-btn');
+        const originalHtml = saveBtn.html();
+        saveBtn.prop('disabled', true).html('<i class="far fa-spinner fa-spin me-2"></i>&nbsp;Saving...');
+        
+        // Convert Map to array
+        const positionsArray = Array.from(changedPositions.values());
+        
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        
+        $.ajax({
+            url: '{{ route("manufacturing.warehouses.save-all-changes", $warehouse) }}',
+            method: 'POST',
+            data: {
+                positions: positionsArray
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    
+                    // Clear changed positions
+                    changedPositions.clear();
+                    hasChanges = false;
+                    saveBtn.prop('disabled', true).html(originalHtml);
+                    
+                    // Reload the current aisle to reflect changes
+                    const activeAisle = $('.aisle-nav-btn.active').data('aisle');
+                    if (activeAisle && loadedAisles.has(activeAisle)) {
+                        // Remove from loaded aisles to force reload
+                        loadedAisles.delete(activeAisle);
+                        loadAisle(activeAisle);
+                    }
+                } else {
+                    showToast('error', response.message || 'Error saving changes');
+                    saveBtn.prop('disabled', false).html(originalHtml);
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error saving changes';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = 'Validation errors: ' + JSON.stringify(xhr.responseJSON.errors);
+                }
+                showToast('error', errorMessage);
+                saveBtn.prop('disabled', false).html(originalHtml);
+            }
+        });
     }
 
     // Loading functions removed - using form submissions instead of AJAX

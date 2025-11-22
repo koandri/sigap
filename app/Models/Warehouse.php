@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 final class Warehouse extends Model
 {
@@ -123,10 +124,34 @@ final class Warehouse extends Model
 
     /**
      * Get shelves organized in 3-column layout grouped by row-section combination.
+     * Optimized to use loaded relationships when available.
      */
     public function getShelfColumnsAttribute(): array
     {
-        $shelves = $this->activeShelves()->orderBy('shelf_code')->get();
+        // Use loaded shelves if available, otherwise query
+        if ($this->relationLoaded('shelves')) {
+            $shelves = $this->shelves->where('is_active', true)->sortBy('shelf_code');
+        } else {
+            $shelves = $this->activeShelves()
+                ->orderBy('shelf_code')
+                ->withCount([
+                    'shelfPositions as total_positions_count',
+                    'shelfPositions as occupied_positions_count' => function ($q) {
+                        $q->whereHas('positionItems', function ($subQ) {
+                            $subQ->where('quantity', '>', 0);
+                        });
+                    }
+                ])
+                ->with(['shelfPositions' => function ($q) {
+                    $q->withCount([
+                        'positionItems as has_items' => function ($subQ) {
+                            $subQ->where('quantity', '>', 0);
+                        }
+                    ]);
+                }])
+                ->get();
+        }
+        
         $columns = [
             'column_1' => [],
             'column_2' => [],
@@ -136,8 +161,8 @@ final class Warehouse extends Model
         foreach ($shelves as $shelf) {
             // Parse shelf code format: A-01-04
             $parts = explode('-', $shelf->shelf_code);
-            $row = $parts[0]; // A, B, C, D, etc.
-            $section = (int) $parts[1]; // 01, 02, 03, etc.
+            $row = $parts[0] ?? 'A';
+            $section = (int) ($parts[1] ?? 1);
             
             // Create row-section combination key (A-01, A-02, etc.)
             $rowSectionKey = $row . '-' . str_pad((string)$section, 2, '0', STR_PAD_LEFT);
@@ -159,7 +184,7 @@ final class Warehouse extends Model
         
         // Sort row-section combinations within each column
         foreach ($columns as $columnKey => $rowSections) {
-            ksort($rowSections); // Sort row-section combinations alphabetically
+            ksort($rowSections);
             $columns[$columnKey] = $rowSections;
         }
         
@@ -168,32 +193,37 @@ final class Warehouse extends Model
 
     /**
      * Get shelf inventory statistics.
+     * Optimized to use efficient queries with joins instead of multiple whereHas.
      */
     public function getShelfInventoryStatsAttribute(): array
     {
-        $totalShelves = $this->shelves()->count();
-        $occupiedShelves = $this->shelves()
-            ->whereHas('shelfPositions.positionItems', function($q) {
-                $q->where('quantity', '>', 0);
-            })->count();
-        
-        $totalPositions = $this->shelves()
-            ->withCount('shelfPositions')
-            ->get()
-            ->sum('shelf_positions_count');
-            
-        $occupiedPositions = $this->shelves()
-            ->whereHas('shelfPositions.positionItems', function($q) {
-                $q->where('quantity', '>', 0);
-            })->count();
-        
+        // Use a single query with joins and aggregations for better performance
+        $stats = DB::table('warehouse_shelves')
+            ->leftJoin('shelf_positions', 'warehouse_shelves.id', '=', 'shelf_positions.warehouse_shelf_id')
+            ->leftJoin('position_items', function ($join) {
+                $join->on('shelf_positions.id', '=', 'position_items.shelf_position_id')
+                    ->where('position_items.quantity', '>', 0);
+            })
+            ->where('warehouse_shelves.warehouse_id', $this->id)
+            ->selectRaw('
+                COUNT(DISTINCT warehouse_shelves.id) as total_shelves,
+                COUNT(DISTINCT CASE WHEN position_items.id IS NOT NULL THEN warehouse_shelves.id END) as occupied_shelves,
+                COUNT(DISTINCT shelf_positions.id) as total_positions,
+                COUNT(DISTINCT CASE WHEN position_items.id IS NOT NULL THEN shelf_positions.id END) as occupied_positions
+            ')
+            ->first();
+
+        // Get expiring items count
         $expiringItems = PositionItem::whereHas('shelfPosition.warehouseShelf', function($q) {
             $q->where('warehouse_id', $this->id);
         })->expiring(30)->count();
         
+        $totalPositions = (int) ($stats->total_positions ?? 0);
+        $occupiedPositions = (int) ($stats->occupied_positions ?? 0);
+        
         return [
-            'total_shelves' => $totalShelves,
-            'occupied_shelves' => $occupiedShelves,
+            'total_shelves' => (int) ($stats->total_shelves ?? 0),
+            'occupied_shelves' => (int) ($stats->occupied_shelves ?? 0),
             'total_positions' => $totalPositions,
             'occupied_positions' => $occupiedPositions,
             'expiring_items' => $expiringItems,
