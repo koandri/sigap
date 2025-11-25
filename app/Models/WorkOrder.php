@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasFiles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class WorkOrder extends Model
 {
+    use HasFiles;
     /**
      * The attributes that are mass assignable.
      *
@@ -132,14 +134,6 @@ final class WorkOrder extends Model
     public function actions(): HasMany
     {
         return $this->hasMany(WorkOrderAction::class);
-    }
-
-    /**
-     * Get all photos for this work order.
-     */
-    public function photos(): HasMany
-    {
-        return $this->hasMany(WorkOrderPhoto::class);
     }
 
     /**

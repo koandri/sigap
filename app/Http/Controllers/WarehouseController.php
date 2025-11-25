@@ -15,10 +15,10 @@ final class WarehouseController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.warehouses.view')->only(['index', 'show']);
-        $this->middleware('can:manufacturing.warehouses.create')->only(['create', 'store']);
-        $this->middleware('can:manufacturing.warehouses.edit')->only(['edit', 'update']);
-        $this->middleware('can:manufacturing.warehouses.delete')->only(['destroy']);
+        $this->middleware('can:warehouses.view')->only(['index', 'show']);
+        $this->middleware('can:warehouses.create')->only(['create', 'store']);
+        $this->middleware('can:warehouses.edit')->only(['edit', 'update']);
+        $this->middleware('can:warehouses.delete')->only(['destroy']);
     }
 
     /**
@@ -33,7 +33,7 @@ final class WarehouseController extends Controller
             }
         ])->orderBy('name')->paginate(15);
 
-        return view('manufacturing.warehouses.index', compact('warehouses'));
+        return view('warehouses.warehouses.index', compact('warehouses'));
     }
 
     /**
@@ -41,7 +41,7 @@ final class WarehouseController extends Controller
      */
     public function create(): View
     {
-        return view('manufacturing.warehouses.create');
+        return view('warehouses.warehouses.create');
     }
 
     /**
@@ -59,7 +59,7 @@ final class WarehouseController extends Controller
         $warehouse = Warehouse::create($validated);
 
         return redirect()
-            ->route('manufacturing.warehouses.index')
+            ->route('warehouses.warehouses.index')
             ->with('success', "Warehouse '{$warehouse->name}' created successfully.");
     }
 
@@ -70,7 +70,7 @@ final class WarehouseController extends Controller
     {
         $shelfStats = $warehouse->shelf_inventory_stats;
         
-        return view('manufacturing.warehouses.show', compact('warehouse', 'shelfStats'));
+        return view('warehouses.warehouses.show', compact('warehouse', 'shelfStats'));
     }
 
     /**
@@ -78,7 +78,7 @@ final class WarehouseController extends Controller
      */
     public function edit(Warehouse $warehouse): View
     {
-        return view('manufacturing.warehouses.edit', compact('warehouse'));
+        return view('warehouses.warehouses.edit', compact('warehouse'));
     }
 
     /**
@@ -96,7 +96,7 @@ final class WarehouseController extends Controller
         $warehouse->update($validated);
 
         return redirect()
-            ->route('manufacturing.warehouses.index')
+            ->route('warehouses.warehouses.index')
             ->with('success', "Warehouse '{$warehouse->name}' updated successfully.");
     }
 
@@ -110,7 +110,7 @@ final class WarehouseController extends Controller
             $q->where('quantity', '>', 0);
         })->exists()) {
             return redirect()
-                ->route('manufacturing.warehouses.index')
+                ->route('warehouses.warehouses.index')
                 ->with('error', "Cannot delete warehouse '{$warehouse->name}' because it has items with current stock.");
         }
 
@@ -118,7 +118,7 @@ final class WarehouseController extends Controller
         $warehouse->delete();
 
         return redirect()
-            ->route('manufacturing.warehouses.index')
+            ->route('warehouses.warehouses.index')
             ->with('success', "Warehouse '{$name}' deleted successfully.");
     }
 

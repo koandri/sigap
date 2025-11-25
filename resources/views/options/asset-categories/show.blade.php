@@ -72,7 +72,8 @@
                                 <span class="badge bg-secondary text-white">{{ $assetCategory->assets->count() }} assets</span>
                             </div>
                         </div>
-                    </div>
+
+
                 </div>
             </div>
 

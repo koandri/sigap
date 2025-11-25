@@ -14,7 +14,8 @@ final class AssetDisposalService
 {
     public function __construct(
         private readonly WhatsAppService $whatsAppService,
-        private readonly PushoverService $pushoverService
+        private readonly PushoverService $pushoverService,
+        private readonly AssetLifetimeService $assetLifetimeService
     ) {}
     /**
      * Mark asset as disposed and handle related cleanup.
@@ -30,7 +31,7 @@ final class AssetDisposalService
             
             // Get active schedules before deactivating
             $activeSchedules = $asset->maintenanceSchedules()
-                ->where('is_active', true)
+                ->active()
                 ->with(['maintenanceType', 'assignedUser'])
                 ->get();
             
@@ -54,12 +55,14 @@ final class AssetDisposalService
             // Update asset
             $asset->update([
                 'status' => 'disposed',
-                'is_active' => false,
                 'disposed_date' => now(),
                 'disposal_reason' => $reason,
                 'disposed_by' => $disposedBy->id,
                 'disposal_work_order_id' => $workOrder?->id,
             ]);
+
+            // Calculate and store actual lifetime
+            $this->assetLifetimeService->updateAssetLifetimeOnDisposal($asset);
             
             DB::commit();
             

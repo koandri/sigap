@@ -126,7 +126,7 @@
                                                     <i class="fa fa-box"></i>&nbsp; 
                                                     {{ $item->asset->code }} - {{ $item->asset->name }}
                                                 </span>
-                                                @if(!$item->asset->is_active)
+                                                @if($item->asset->status === 'disposed')
                                                     <span class="badge bg-warning">Inactive</span>
                                                 @endif
                                             </div>

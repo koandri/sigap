@@ -34,13 +34,13 @@ final class AssetManagementReportController extends Controller
             
             $activeAssets = Asset::with(['assetCategory', 'department', 'user'])
                 ->where('location_id', $locationId)
-                ->where('is_active', true)
+                ->active()
                 ->orderBy('name')
                 ->get();
             
             $inactiveAssets = Asset::with(['assetCategory', 'department', 'user'])
                 ->where('location_id', $locationId)
-                ->where('is_active', false)
+                ->disposed()
                 ->orderBy('name')
                 ->get();
         }
@@ -74,7 +74,7 @@ final class AssetManagementReportController extends Controller
                 ->where('asset_category_id', $categoryId)
                 ->orderBy('name')
                 ->get()
-                ->groupBy('is_active');
+                ->groupBy(fn($asset) => $asset->status === 'disposed' ? 'inactive' : 'active');
         }
         
         return view('reports.assets.assets-by-category', compact(
@@ -116,8 +116,8 @@ final class AssetManagementReportController extends Controller
                 if ($locationAssets->isNotEmpty()) {
                     $assetsByLocation[$location->name] = [
                         'location' => $location,
-                        'active' => $locationAssets->where('is_active', true),
-                        'inactive' => $locationAssets->where('is_active', false),
+                        'active' => $locationAssets->where('status', '!=', 'disposed'),
+                        'inactive' => $locationAssets->where('status', 'disposed'),
                         'total' => $locationAssets->count(),
                     ];
                 }
@@ -153,13 +153,13 @@ final class AssetManagementReportController extends Controller
             
             $activeAssets = Asset::with(['assetCategory', 'location', 'user'])
                 ->where('department_id', $departmentId)
-                ->where('is_active', true)
+                ->active()
                 ->orderBy('name')
                 ->get();
             
             $inactiveAssets = Asset::with(['assetCategory', 'location', 'user'])
                 ->where('department_id', $departmentId)
-                ->where('is_active', false)
+                ->disposed()
                 ->orderBy('name')
                 ->get();
         }
@@ -192,13 +192,13 @@ final class AssetManagementReportController extends Controller
             
             $activeAssets = Asset::with(['assetCategory', 'location', 'department'])
                 ->where('user_id', $userId)
-                ->where('is_active', true)
+                ->active()
                 ->orderBy('name')
                 ->get();
             
             $inactiveAssets = Asset::with(['assetCategory', 'location', 'department'])
                 ->where('user_id', $userId)
-                ->where('is_active', false)
+                ->disposed()
                 ->orderBy('name')
                 ->get();
         }

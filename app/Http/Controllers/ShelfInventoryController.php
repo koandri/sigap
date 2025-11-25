@@ -24,10 +24,10 @@ final class ShelfInventoryController extends Controller
         private readonly WhatsAppService $whatsAppService,
         private readonly PushoverService $pushoverService
     ) {
-        $this->middleware('can:manufacturing.inventory.view')->only(['index', 'showShelf']);
-        $this->middleware('can:manufacturing.inventory.create')->only(['addItemToPosition']);
-        $this->middleware('can:manufacturing.inventory.edit')->only(['updatePositionItem']);
-        $this->middleware('can:manufacturing.inventory.delete')->only(['removeFromPosition']);
+        $this->middleware('can:warehouses.inventory.view')->only(['index', 'showShelf']);
+        $this->middleware('can:warehouses.inventory.create')->only(['addItemToPosition']);
+        $this->middleware('can:warehouses.inventory.edit')->only(['updatePositionItem']);
+        $this->middleware('can:warehouses.inventory.delete')->only(['removeFromPosition']);
     }
 
     /**
@@ -67,7 +67,7 @@ final class ShelfInventoryController extends Controller
         // Get statistics using efficient queries
         $stats = $this->calculateShelfInventoryStats($warehouse);
 
-        return view('manufacturing.warehouses.shelf-inventory', compact(
+        return view('warehouses.warehouses.shelf-inventory', compact(
             'warehouse', 'shelfGrid', 'shelfColumns', 'stats'
         ));
     }
@@ -222,7 +222,7 @@ final class ShelfInventoryController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('manufacturing.warehouses.shelf-detail', compact(
+        return view('warehouses.warehouses.shelf-detail', compact(
             'warehouse', 
             'shelf', 
             'availableItems',
@@ -291,7 +291,7 @@ final class ShelfInventoryController extends Controller
             $this->sendItemAddedNotification($warehouse, $position, $item, $positionItem);
 
             return redirect()
-                ->route('manufacturing.warehouses.shelf-detail', [$warehouse, $position->warehouseShelf])
+                ->route('warehouses.warehouses.shelf-detail', [$warehouse, $position->warehouseShelf])
                 ->with('success', "Item '{$item->name}' added to position {$position->full_location_code} successfully.");
 
         } catch (\Exception $e) {
@@ -352,7 +352,7 @@ final class ShelfInventoryController extends Controller
         $positionItem->delete();
 
         return redirect()
-            ->route('manufacturing.warehouses.shelf-detail', [$warehouse, $shelf])
+            ->route('warehouses.warehouses.shelf-detail', [$warehouse, $shelf])
             ->with('success', "Item '{$itemName}' removed from position successfully.");
     }
 
@@ -502,7 +502,7 @@ final class ShelfInventoryController extends Controller
             $q->where('warehouse_id', $warehouse->id);
         })->expired()->with(['item.itemCategory', 'shelfPosition.warehouseShelf'])->get();
 
-        return view('manufacturing.warehouses.shelf-report', compact(
+        return view('warehouses.warehouses.shelf-report', compact(
             'warehouse', 'stats', 'expiringItems', 'expiredItems'
         ));
     }

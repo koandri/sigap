@@ -41,6 +41,7 @@ use App\Http\Controllers\KerupukPackConfigurationController;
 use App\Http\Controllers\MaintenanceDashboardController;
 use App\Http\Controllers\AssetCategoryController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AssetLifetimeReportController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MaintenanceScheduleController;
 use App\Http\Controllers\WorkOrderController;
@@ -164,64 +165,10 @@ Route::prefix('forms/{form}/approval-workflows')->name('approval-workflows.')->m
     Route::get('/{workflow}/test', [ApprovalWorkflowController::class, 'test'])->name('test');
 });
 
-// Manufacturing Routes
+// Manufacturing Routes (Production-focused only)
 Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->group(function () {
     // Manufacturing Dashboard
     Route::get('/', [ManufacturingController::class, 'index'])->name('dashboard');
-    
-    // Item Categories
-    Route::resource('item-categories', ItemCategoryController::class)->except(['destroy']);
-    Route::delete('item-categories/{itemCategory}', [ItemCategoryController::class, 'destroy'])->name('item-categories.destroy')->middleware('permission:manufacturing.categories.delete');
-    
-    // Item Import from Excel (MUST be before resource routes)
-    Route::get('items/import', [ItemController::class, 'showImport'])->name('items.import');
-    Route::post('items/import', [ItemController::class, 'import'])->name('items.import.process');
-    
-    // Items
-    Route::resource('items', ItemController::class)->except(['create', 'store', 'destroy']);
-    Route::delete('items/{item}', [ItemController::class, 'destroy'])->name('items.destroy')->middleware('permission:manufacturing.items.delete');
-    
-    // Global Warehouse Routes (must come before resource routes)
-    Route::get('warehouses/picklist', [PicklistController::class, 'index'])->name('warehouses.picklist');
-    Route::post('warehouses/picklist', [PicklistController::class, 'generate'])->name('warehouses.picklist.generate');
-    Route::get('warehouses/overview-report', [WarehouseOverviewController::class, 'index'])->name('warehouses.overview-report');
-    Route::get('warehouses/overview-report/print', [WarehouseOverviewController::class, 'print'])->name('warehouses.overview-report-print');
-    
-    // Warehouses
-    Route::resource('warehouses', WarehouseController::class)->except(['destroy']);
-    Route::delete('warehouses/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouses.destroy')->middleware('permission:manufacturing.inventory');
-    
-    // Shelf-Based Inventory Management
-    Route::get('warehouses/{warehouse}/shelf-inventory', [ShelfInventoryController::class, 'index'])->name('warehouses.shelf-inventory');
-    Route::get('warehouses/{warehouse}/shelves/{shelf}', [ShelfInventoryController::class, 'showShelf'])->name('warehouses.shelf-detail');
-    Route::post('warehouses/{warehouse}/positions/{position}/add-item', [ShelfInventoryController::class, 'addItemToPosition'])->name('warehouses.position.add-item');
-    Route::put('warehouses/{warehouse}/position-items/{positionItem}', [ShelfInventoryController::class, 'updatePositionItem'])->name('warehouses.position-item.update');
-    Route::delete('warehouses/{warehouse}/position-items/{positionItem}', [ShelfInventoryController::class, 'removeFromPosition'])->name('warehouses.position-item.remove');
-    Route::post('warehouses/{warehouse}/position-items/{positionItem}/move', [ShelfInventoryController::class, 'moveItem'])->name('warehouses.position-item.move');
-    Route::get('warehouses/{warehouse}/position-items/{positionItem}/available-positions', [ShelfInventoryController::class, 'getAvailablePositions'])->name('warehouses.position-item.available-positions');
-    Route::post('warehouses/{warehouse}/shelf-bulk-update', [ShelfInventoryController::class, 'bulkUpdate'])->name('warehouses.shelf-bulk-update');
-    Route::get('warehouses/{warehouse}/shelf-report', [ShelfInventoryController::class, 'report'])->name('warehouses.shelf-report');
-    
-    // Shelf and Position Management
-    Route::get('warehouses/{warehouse}/shelf-management', [ShelfManagementController::class, 'index'])->name('warehouses.shelf-management');
-    Route::get('warehouses/{warehouse}/shelves/create', [ShelfManagementController::class, 'createShelf'])->name('warehouses.shelf.create');
-    Route::post('warehouses/{warehouse}/shelves', [ShelfManagementController::class, 'storeShelf'])->name('warehouses.shelf.store');
-    Route::get('warehouses/{warehouse}/shelves/{shelf}/edit', [ShelfManagementController::class, 'editShelf'])->name('warehouses.shelf.edit');
-    Route::put('warehouses/{warehouse}/shelves/{shelf}', [ShelfManagementController::class, 'updateShelf'])->name('warehouses.shelf.update');
-    Route::delete('warehouses/{warehouse}/shelves/{shelf}', [ShelfManagementController::class, 'destroyShelf'])->name('warehouses.shelf.destroy');
-    Route::get('warehouses/{warehouse}/shelves/{shelf}/positions', [ShelfManagementController::class, 'showShelf'])->name('warehouses.shelf-positions');
-    Route::get('warehouses/{warehouse}/shelves/{shelf}/positions/create', [ShelfManagementController::class, 'createPosition'])->name('warehouses.position.create');
-    Route::post('warehouses/{warehouse}/shelves/{shelf}/positions', [ShelfManagementController::class, 'storePosition'])->name('warehouses.position.store');
-    Route::get('warehouses/{warehouse}/shelves/{shelf}/positions/{position}/edit', [ShelfManagementController::class, 'editPosition'])->name('warehouses.position.edit');
-    Route::put('warehouses/{warehouse}/shelves/{shelf}/positions/{position}', [ShelfManagementController::class, 'updatePosition'])->name('warehouses.position.update');
-    Route::delete('warehouses/{warehouse}/shelves/{shelf}/positions/{position}', [ShelfManagementController::class, 'destroyPosition'])->name('warehouses.position.destroy');
-    
-    // Bulk Inventory Management
-    Route::get('warehouses/{warehouse}/bulk-edit', [BulkInventoryController::class, 'index'])->name('warehouses.bulk-edit');
-    Route::get('warehouses/{warehouse}/aisle-positions/{aisle}', [BulkInventoryController::class, 'getAislePositions'])->name('warehouses.aisle-positions');
-    Route::post('warehouses/{warehouse}/bulk-update', [BulkInventoryController::class, 'bulkUpdate'])->name('warehouses.bulk-update');
-    Route::post('warehouses/{warehouse}/bulk-operations', [BulkInventoryController::class, 'bulkUpdate'])->name('warehouses.bulk-operations');
-    Route::get('warehouses/{warehouse}/export', [BulkInventoryController::class, 'export'])->name('warehouses.export');
     
     // Production Planning
     Route::get('production-plans/recipes', [ProductionPlanController::class, 'getRecipes'])->name('production-plans.recipes');
@@ -289,6 +236,55 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     
 });
 
+// Warehouse Management Routes
+Route::prefix('warehouses')->name('warehouses.')->middleware(['auth'])->group(function () {
+    // Warehouse Dashboard
+    Route::get('/', [\App\Http\Controllers\WarehouseDashboardController::class, 'index'])->name('dashboard');
+    
+    // Global Warehouse Routes (must come before resource routes)
+    Route::get('picklist', [PicklistController::class, 'index'])->name('picklist');
+    Route::post('picklist', [PicklistController::class, 'generate'])->name('picklist.generate');
+    Route::get('overview-report', [WarehouseOverviewController::class, 'index'])->name('overview-report');
+    Route::get('overview-report/print', [WarehouseOverviewController::class, 'print'])->name('overview-report.print');
+    
+    // Warehouses Resource
+    Route::resource('warehouses', WarehouseController::class)->except(['destroy']);
+    Route::delete('warehouses/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouses.destroy')->middleware('permission:warehouses.delete');
+    
+    // Shelf-Based Inventory Management
+    Route::get('warehouses/{warehouse}/shelf-inventory', [ShelfInventoryController::class, 'index'])->name('warehouses.shelf-inventory');
+    Route::get('warehouses/{warehouse}/shelves/{shelf}', [ShelfInventoryController::class, 'showShelf'])->name('warehouses.shelf-detail');
+    Route::post('warehouses/{warehouse}/positions/{position}/add-item', [ShelfInventoryController::class, 'addItemToPosition'])->name('warehouses.position.add-item');
+    Route::put('warehouses/{warehouse}/position-items/{positionItem}', [ShelfInventoryController::class, 'updatePositionItem'])->name('warehouses.position-item.update');
+    Route::delete('warehouses/{warehouse}/position-items/{positionItem}', [ShelfInventoryController::class, 'removeFromPosition'])->name('warehouses.position-item.remove');
+    Route::post('warehouses/{warehouse}/position-items/{positionItem}/move', [ShelfInventoryController::class, 'moveItem'])->name('warehouses.position-item.move');
+    Route::get('warehouses/{warehouse}/position-items/{positionItem}/available-positions', [ShelfInventoryController::class, 'getAvailablePositions'])->name('warehouses.position-item.available-positions');
+    Route::post('warehouses/{warehouse}/shelf-bulk-update', [ShelfInventoryController::class, 'bulkUpdate'])->name('warehouses.shelf-bulk-update');
+    Route::get('warehouses/{warehouse}/shelf-report', [ShelfInventoryController::class, 'report'])->name('warehouses.shelf-report');
+    
+    // Shelf and Position Management
+    Route::get('warehouses/{warehouse}/shelf-management', [ShelfManagementController::class, 'index'])->name('warehouses.shelf-management');
+    Route::get('warehouses/{warehouse}/shelves/create', [ShelfManagementController::class, 'createShelf'])->name('warehouses.shelf.create');
+    Route::post('warehouses/{warehouse}/shelves', [ShelfManagementController::class, 'storeShelf'])->name('warehouses.shelf.store');
+    Route::get('warehouses/{warehouse}/shelves/{shelf}/edit', [ShelfManagementController::class, 'editShelf'])->name('warehouses.shelf.edit');
+    Route::put('warehouses/{warehouse}/shelves/{shelf}', [ShelfManagementController::class, 'updateShelf'])->name('warehouses.shelf.update');
+    Route::delete('warehouses/{warehouse}/shelves/{shelf}', [ShelfManagementController::class, 'destroyShelf'])->name('warehouses.shelf.destroy');
+    Route::get('warehouses/{warehouse}/shelves/{shelf}/positions', [ShelfManagementController::class, 'showShelf'])->name('warehouses.shelf-positions');
+    Route::get('warehouses/{warehouse}/shelves/{shelf}/positions/create', [ShelfManagementController::class, 'createPosition'])->name('warehouses.position.create');
+    Route::post('warehouses/{warehouse}/shelves/{shelf}/positions', [ShelfManagementController::class, 'storePosition'])->name('warehouses.position.store');
+    Route::get('warehouses/{warehouse}/shelves/{shelf}/positions/{position}/edit', [ShelfManagementController::class, 'editPosition'])->name('warehouses.position.edit');
+    Route::put('warehouses/{warehouse}/shelves/{shelf}/positions/{position}', [ShelfManagementController::class, 'updatePosition'])->name('warehouses.position.update');
+    Route::delete('warehouses/{warehouse}/shelves/{shelf}/positions/{position}', [ShelfManagementController::class, 'destroyPosition'])->name('warehouses.position.destroy');
+    
+    // Bulk Inventory Management
+    Route::get('warehouses/{warehouse}/bulk-edit', [BulkInventoryController::class, 'index'])->name('warehouses.bulk-edit');
+    Route::get('warehouses/{warehouse}/aisle-positions/{aisle}', [BulkInventoryController::class, 'getAislePositions'])->name('warehouses.aisle-positions');
+    Route::post('warehouses/{warehouse}/bulk-update', [BulkInventoryController::class, 'bulkUpdate'])->name('warehouses.bulk-update');
+    Route::post('warehouses/{warehouse}/bulk-operations', [BulkInventoryController::class, 'bulkUpdate'])->name('warehouses.bulk-operations');
+    Route::post('warehouses/{warehouse}/save-all-changes', [BulkInventoryController::class, 'saveAllChanges'])->name('warehouses.save-all-changes');
+    Route::get('warehouses/{warehouse}/export', [BulkInventoryController::class, 'export'])->name('warehouses.export');
+});
+
 // Options Routes
 Route::prefix('options')->name('options.')->middleware(['auth'])->group(function () {
     Route::resource('asset-categories', AssetCategoryController::class);
@@ -309,6 +305,34 @@ Route::prefix('options')->name('options.')->middleware(['auth'])->group(function
     Route::resource('assets', AssetController::class);
     
     Route::resource('locations', LocationController::class);
+    
+    // Item Categories
+    Route::resource('item-categories', ItemCategoryController::class)->except(['destroy']);
+    Route::delete('item-categories/{itemCategory}', [ItemCategoryController::class, 'destroy'])->name('item-categories.destroy')->middleware('permission:options.item-categories.delete');
+    
+    // Item Import from Excel (MUST be before resource routes)
+    Route::get('items/import', [ItemController::class, 'showImport'])->name('items.import');
+    Route::post('items/import', [ItemController::class, 'import'])->name('items.import.process');
+    
+    // Items
+    Route::resource('items', ItemController::class)->except(['create', 'store', 'destroy']);
+    Route::delete('items/{item}', [ItemController::class, 'destroy'])->name('items.destroy')->middleware('permission:options.items.delete');
+});
+
+// Asset Component and Lifetime Routes (root-level)
+Route::middleware(['auth'])->group(function () {
+    // Component management routes
+    Route::get('assets/{asset}/components', [AssetController::class, 'showComponents'])->name('assets.components');
+    Route::get('assets/{asset}/components/attach', [AssetController::class, 'showAttachForm'])->name('assets.components.attach');
+    Route::post('assets/{asset}/components', [AssetController::class, 'attachComponent'])->name('assets.components.store');
+    Route::get('assets/{component}/detach', [AssetController::class, 'showDetachForm'])->name('assets.components.detach');
+    Route::post('assets/{component}/detach', [AssetController::class, 'detachComponent'])->name('assets.components.detach.store');
+    
+    // Lifetime reporting routes
+    Route::get('reports/asset-lifetime', [AssetLifetimeReportController::class, 'index'])->name('reports.asset-lifetime.index');
+    Route::get('reports/asset-lifetime/category/{category}', [AssetLifetimeReportController::class, 'categoryMetrics'])->name('reports.asset-lifetime.category');
+    Route::get('assets/{asset}/lifetime', [AssetLifetimeReportController::class, 'assetLifetimeReport'])->name('assets.lifetime');
+    Route::get('reports/asset-lifetime/export', [AssetLifetimeReportController::class, 'exportMetrics'])->name('reports.asset-lifetime.export');
 });
 
 // Maintenance Routes
@@ -472,8 +496,6 @@ Route::prefix('api')->name('api.')->middleware('auth')->group(function () {
     Route::post('/test-api-config', [FormFieldOptionsController::class, 'testApiConfig'])->name('test-api-config');
     Route::post('/calculate-fields', [FormSubmissionController::class, 'calculateFields'])->name('calculate-fields');
     
-    // Manufacturing API Routes
-    Route::prefix('manufacturing')->name('manufacturing.')->group(function () {
-        Route::get('/temperature-data', [ManufacturingController::class, 'getTemperatureData'])->name('temperature-data');
-    });
+    // Temperature API Route
+    Route::get('/temperature-data', [HomeController::class, 'getTemperatureData'])->name('temperature-data');
 });

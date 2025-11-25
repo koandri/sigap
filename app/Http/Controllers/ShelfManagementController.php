@@ -16,10 +16,10 @@ final class ShelfManagementController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.inventory.view')->only(['index', 'showShelf']);
-        $this->middleware('can:manufacturing.inventory.create')->only(['createShelf', 'storeShelf', 'createPosition', 'storePosition']);
-        $this->middleware('can:manufacturing.inventory.edit')->only(['editShelf', 'updateShelf', 'editPosition', 'updatePosition']);
-        $this->middleware('can:manufacturing.inventory.delete')->only(['destroyShelf', 'destroyPosition']);
+        $this->middleware('can:warehouses.inventory.view')->only(['index', 'showShelf']);
+        $this->middleware('can:warehouses.inventory.create')->only(['createShelf', 'storeShelf', 'createPosition', 'storePosition']);
+        $this->middleware('can:warehouses.inventory.edit')->only(['editShelf', 'updateShelf', 'editPosition', 'updatePosition']);
+        $this->middleware('can:warehouses.inventory.delete')->only(['destroyShelf', 'destroyPosition']);
     }
 
     /**
@@ -32,7 +32,7 @@ final class ShelfManagementController extends Controller
             ->orderBy('shelf_code')
             ->get();
 
-        return view('manufacturing.warehouses.shelf-management', compact('warehouse', 'shelves'));
+        return view('warehouses.warehouses.shelf-management', compact('warehouse', 'shelves'));
     }
 
     /**
@@ -40,7 +40,7 @@ final class ShelfManagementController extends Controller
      */
     public function createShelf(Warehouse $warehouse): View
     {
-        return view('manufacturing.warehouses.shelf-create', compact('warehouse'));
+        return view('warehouses.warehouses.shelf-create', compact('warehouse'));
     }
 
     /**
@@ -58,7 +58,7 @@ final class ShelfManagementController extends Controller
         $shelf = $warehouse->shelves()->create($validated);
 
         return redirect()
-            ->route('manufacturing.warehouses.shelf-management', $warehouse)
+            ->route('warehouses.warehouses.shelf-management', $warehouse)
             ->with('success', "Shelf '{$shelf->shelf_code}' created successfully.");
     }
 
@@ -67,7 +67,7 @@ final class ShelfManagementController extends Controller
      */
     public function editShelf(Warehouse $warehouse, WarehouseShelf $shelf): View
     {
-        return view('manufacturing.warehouses.shelf-edit', compact('warehouse', 'shelf'));
+        return view('warehouses.warehouses.shelf-edit', compact('warehouse', 'shelf'));
     }
 
     /**
@@ -86,7 +86,7 @@ final class ShelfManagementController extends Controller
         $shelf->update($validated);
 
         return redirect()
-            ->route('manufacturing.warehouses.shelf-management', $warehouse)
+            ->route('warehouses.warehouses.shelf-management', $warehouse)
             ->with('success', "Shelf '{$shelf->shelf_code}' updated successfully.");
     }
 
@@ -100,7 +100,7 @@ final class ShelfManagementController extends Controller
             $q->where('quantity', '>', 0);
         })->exists()) {
             return redirect()
-                ->route('manufacturing.warehouses.shelf-management', $warehouse)
+                ->route('warehouses.warehouses.shelf-management', $warehouse)
                 ->with('error', "Cannot delete shelf '{$shelf->shelf_code}' because it has items in positions.");
         }
 
@@ -108,7 +108,7 @@ final class ShelfManagementController extends Controller
         $shelf->delete();
 
         return redirect()
-            ->route('manufacturing.warehouses.shelf-management', $warehouse)
+            ->route('warehouses.warehouses.shelf-management', $warehouse)
             ->with('success', "Shelf '{$shelfCode}' deleted successfully.");
     }
 
@@ -122,7 +122,7 @@ final class ShelfManagementController extends Controller
             ->orderBy('position_code')
             ->get();
 
-        return view('manufacturing.warehouses.shelf-positions', compact('warehouse', 'shelf', 'positions'));
+        return view('warehouses.warehouses.shelf-positions', compact('warehouse', 'shelf', 'positions'));
     }
 
     /**
@@ -130,7 +130,7 @@ final class ShelfManagementController extends Controller
      */
     public function createPosition(Warehouse $warehouse, WarehouseShelf $shelf): View
     {
-        return view('manufacturing.warehouses.position-create', compact('warehouse', 'shelf'));
+        return view('warehouses.warehouses.position-create', compact('warehouse', 'shelf'));
     }
 
     /**
@@ -147,7 +147,7 @@ final class ShelfManagementController extends Controller
         $position = $shelf->shelfPositions()->create($validated);
 
         return redirect()
-            ->route('manufacturing.warehouses.shelf-positions', [$warehouse, $shelf])
+            ->route('warehouses.warehouses.shelf-positions', [$warehouse, $shelf])
             ->with('success', "Position '{$position->position_code}' created successfully.");
     }
 
@@ -156,7 +156,7 @@ final class ShelfManagementController extends Controller
      */
     public function editPosition(Warehouse $warehouse, WarehouseShelf $shelf, ShelfPosition $position): View
     {
-        return view('manufacturing.warehouses.position-edit', compact('warehouse', 'shelf', 'position'));
+        return view('warehouses.warehouses.position-edit', compact('warehouse', 'shelf', 'position'));
     }
 
     /**
@@ -174,7 +174,7 @@ final class ShelfManagementController extends Controller
         $position->update($validated);
 
         return redirect()
-            ->route('manufacturing.warehouses.shelf-positions', [$warehouse, $shelf])
+            ->route('warehouses.warehouses.shelf-positions', [$warehouse, $shelf])
             ->with('success', "Position '{$position->position_code}' updated successfully.");
     }
 
@@ -186,7 +186,7 @@ final class ShelfManagementController extends Controller
         // Check if position has items
         if ($position->positionItems()->where('quantity', '>', 0)->exists()) {
             return redirect()
-                ->route('manufacturing.warehouses.shelf-positions', [$warehouse, $shelf])
+                ->route('warehouses.warehouses.shelf-positions', [$warehouse, $shelf])
                 ->with('error', "Cannot delete position '{$position->position_code}' because it has items.");
         }
 
@@ -194,7 +194,7 @@ final class ShelfManagementController extends Controller
         $position->delete();
 
         return redirect()
-            ->route('manufacturing.warehouses.shelf-positions', [$warehouse, $shelf])
+            ->route('warehouses.warehouses.shelf-positions', [$warehouse, $shelf])
             ->with('success', "Position '{$positionCode}' deleted successfully.");
     }
 }

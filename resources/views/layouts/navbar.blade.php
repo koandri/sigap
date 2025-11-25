@@ -91,21 +91,11 @@
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.dashboard') }}" href="{{ route('manufacturing.dashboard') }}">
                                     <i class="far fa-chart-line"></i>&nbsp; &nbsp;Dashboard
                                 </a>
-                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.items.*') }}" href="{{ route('manufacturing.items.index') }}">
-                                    <i class="far fa-boxes-stacked"></i>&nbsp; &nbsp;Items
-                                </a>
-                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.item-categories.*') }}" href="{{ route('manufacturing.item-categories.index') }}">
-                                    <i class="far fa-layer-group"></i>&nbsp; &nbsp;Item Categories
-                                </a>
-                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.warehouses.*') }}" href="{{ route('manufacturing.warehouses.index') }}">
-                                    <i class="far fa-warehouse"></i>&nbsp; &nbsp;Warehouses
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.recipes.*') }}" href="{{ route('manufacturing.recipes.index') }}">
-                                    <i class="far fa-book"></i>&nbsp; &nbsp;Recipes
-                                </a>
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.production-plans.*') }}" href="{{ route('manufacturing.production-plans.index') }}">
                                     <i class="far fa-calendar-check"></i>&nbsp; &nbsp;Production Planning
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('manufacturing.recipes.*') }}" href="{{ route('manufacturing.recipes.index') }}">
+                                    <i class="far fa-book"></i>&nbsp; &nbsp;Recipes
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('manufacturing.yield-guidelines.*') }}" href="{{ route('manufacturing.yield-guidelines.index') }}">
                                     <i class="far fa-chart-line"></i>&nbsp; &nbsp;Yield Guidelines
@@ -122,6 +112,32 @@
                                 @endcan
                                 <a class="dropdown-item disabled">
                                     <i class="far fa-gears"></i>&nbsp; &nbsp;Production Execution
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown {{ areActiveRoutes(['warehouses.*']) }}">
+                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="far fa-warehouse"></i>&nbsp;
+                        </span>
+                        <span class="nav-link-title">Warehouse Management</span>
+                    </a>
+                    <div class="dropdown-menu {{ areOpenRoutes(['warehouses.*']) }}">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                <a class="dropdown-item {{ areActiveRoutes('warehouses.dashboard') }}" href="{{ route('warehouses.dashboard') }}">
+                                    <i class="far fa-chart-line"></i>&nbsp; &nbsp;Dashboard
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('warehouses.warehouses.*') }}" href="{{ route('warehouses.warehouses.index') }}">
+                                    <i class="far fa-warehouse"></i>&nbsp; &nbsp;Warehouses
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('warehouses.picklist') }}" href="{{ route('warehouses.picklist') }}">
+                                    <i class="far fa-list-check"></i>&nbsp; &nbsp;Picklists
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('warehouses.overview-report') }}" href="{{ route('warehouses.overview-report') }}">
+                                    <i class="far fa-chart-bar"></i>&nbsp; &nbsp;Overview Report
                                 </a>
                             </div>
                         </div>
@@ -201,14 +217,14 @@
                     </div>
                 </li>
                 @endcanany
-                <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*']) }}">
+                <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*', 'reports.asset-lifetime.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                             <i class="far fa-chart-bar"></i>&nbsp;
                         </span>
                         <span class="nav-link-title">Reports</span>
                     </a>
-                    <div class="dropdown-menu {{ areOpenRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*']) }}">
+                    <div class="dropdown-menu {{ areOpenRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*', 'reports.asset-lifetime.*']) }}">
                         <div class="dropdown-menu-columns">
                             @canany(['dms.reports.view', 'dms.sla.report.view'])
                             <div class="dropdown-menu-column">
@@ -245,6 +261,9 @@
                                 </a>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-user') }}" href="{{ route('reports.assets.by-user') }}">
                                     <i class="far fa-user"></i>&nbsp; &nbsp;by Assigned User
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('reports.asset-lifetime.*') }}" href="{{ route('reports.asset-lifetime.index') }}">
+                                    <i class="far fa-heart-pulse"></i>&nbsp; &nbsp;Lifetime Report
                                 </a>
                             </div>
                             @endcan
@@ -287,6 +306,12 @@
                                 <a class="dropdown-item {{ areActiveRoutes('options.asset-categories.*') }}" href="{{ route('options.asset-categories.index') }}">
                                     <i class="far fa-layer-group"></i>&nbsp; &nbsp;Asset Categories
                                 </a>
+                                <a class="dropdown-item {{ areActiveRoutes('options.items.*') }}" href="{{ route('options.items.index') }}">
+                                    <i class="far fa-boxes-stacked"></i>&nbsp; &nbsp;Items
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('options.item-categories.*') }}" href="{{ route('options.item-categories.index') }}">
+                                    <i class="far fa-layer-group"></i>&nbsp; &nbsp;Item Categories
+                                </a>
                                 <a class="dropdown-item {{ areActiveRoutes('options.locations.*') }}" href="{{ route('options.locations.index') }}">
                                     <i class="far fa-map-marker-alt"></i>&nbsp; &nbsp;Locations
                                 </a>
@@ -316,15 +341,6 @@
                                 <a class="dropdown-item {{ areActiveRoutes('departments.*') }}" href="{{ route('departments.index') }}">
                                     <i class="far fa-building-user"></i>&nbsp; &nbsp;Departments
                                 </a>
-                                <div class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
-                                        Authentication
-                                    </a>
-                                    <div class="dropdown-menu">
-                                        <a href="./sign-in.html" class="dropdown-item"> Sign in </a>
-                                        <a href="./sign-in-link.html" class="dropdown-item"> Sign in link </a>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

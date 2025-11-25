@@ -13,10 +13,10 @@ final class ItemCategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.categories.view')->only(['index', 'show']);
-        $this->middleware('can:manufacturing.categories.create')->only(['create', 'store']);
-        $this->middleware('can:manufacturing.categories.edit')->only(['edit', 'update']);
-        $this->middleware('can:manufacturing.categories.delete')->only(['destroy']);
+        $this->middleware('can:options.item-categories.view')->only(['index', 'show']);
+        $this->middleware('can:options.item-categories.create')->only(['create', 'store']);
+        $this->middleware('can:options.item-categories.edit')->only(['edit', 'update']);
+        $this->middleware('can:options.item-categories.delete')->only(['destroy']);
     }
 
     /**
@@ -28,7 +28,7 @@ final class ItemCategoryController extends Controller
             ->orderBy('name')
             ->paginate(15);
 
-        return view('manufacturing.item-categories.index', compact('categories'));
+        return view('options.item-categories.index', compact('categories'));
     }
 
     /**
@@ -36,7 +36,7 @@ final class ItemCategoryController extends Controller
      */
     public function create(): View
     {
-        return view('manufacturing.item-categories.create');
+        return view('options.item-categories.create');
     }
 
     /**
@@ -52,7 +52,7 @@ final class ItemCategoryController extends Controller
         $category = ItemCategory::create($validated);
 
         return redirect()
-            ->route('item-categories.index')
+            ->route('options.item-categories.index')
             ->with('success', "Item category '{$category->name}' created successfully.");
     }
 
@@ -65,7 +65,7 @@ final class ItemCategoryController extends Controller
             $query->orderBy('name');
         }]);
 
-        return view('manufacturing.item-categories.show', compact('itemCategory'));
+        return view('options.item-categories.show', compact('itemCategory'));
     }
 
     /**
@@ -73,7 +73,7 @@ final class ItemCategoryController extends Controller
      */
     public function edit(ItemCategory $itemCategory): View
     {
-        return view('manufacturing.item-categories.edit', compact('itemCategory'));
+        return view('options.item-categories.edit', compact('itemCategory'));
     }
 
     /**
@@ -89,7 +89,7 @@ final class ItemCategoryController extends Controller
         $itemCategory->update($validated);
 
         return redirect()
-            ->route('item-categories.index')
+            ->route('options.item-categories.index')
             ->with('success', "Item category '{$itemCategory->name}' updated successfully.");
     }
 
@@ -101,7 +101,7 @@ final class ItemCategoryController extends Controller
         // Check if category has items
         if ($itemCategory->items()->count() > 0) {
             return redirect()
-                ->route('item-categories.index')
+                ->route('options.item-categories.index')
                 ->with('error', "Cannot delete category '{$itemCategory->name}' because it has items associated with it.");
         }
 
@@ -109,7 +109,7 @@ final class ItemCategoryController extends Controller
         $itemCategory->delete();
 
         return redirect()
-            ->route('item-categories.index')
+            ->route('options.item-categories.index')
             ->with('success', "Item category '{$name}' deleted successfully.");
     }
 }

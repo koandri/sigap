@@ -8,6 +8,7 @@ use App\Models\MaintenanceSchedule;
 use App\Models\Asset;
 use App\Models\MaintenanceType;
 use App\Models\User;
+use App\Models\WorkOrder;
 use App\Services\MaintenanceService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -101,13 +102,17 @@ final class MaintenanceScheduleController extends Controller
             'checklist.*.required' => 'Checklist item cannot be empty.',
         ]);
 
-        // Create the schedule
-        $schedule = MaintenanceSchedule::create($validated);
+        // Create a temporary schedule instance to calculate next_due_date
+        // We need to set created_at for the calculation, and ensure enum is cast properly
+        $tempSchedule = new MaintenanceSchedule();
+        $tempSchedule->fill($validated);
+        $tempSchedule->created_at = now();
+        
+        // Calculate next due date before creating the schedule
+        $validated['next_due_date'] = $this->maintenanceService->calculateNextDueDate($tempSchedule);
 
-        // Calculate next due date using the service
-        $schedule->update([
-            'next_due_date' => $this->maintenanceService->calculateNextDueDate($schedule)
-        ]);
+        // Create the schedule with next_due_date included
+        $schedule = MaintenanceSchedule::create($validated);
 
         return redirect()
             ->route('maintenance.schedules.index')
@@ -125,7 +130,15 @@ final class MaintenanceScheduleController extends Controller
             'assignedUser'
         ]);
 
-        return view('maintenance.schedules.show', compact('schedule'));
+        // Get related work orders for this schedule (same asset and maintenance type)
+        $workOrders = WorkOrder::where('asset_id', $schedule->asset_id)
+            ->where('maintenance_type_id', $schedule->maintenance_type_id)
+            ->with(['assignedUser', 'maintenanceType'])
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('maintenance.schedules.show', compact('schedule', 'workOrders'));
     }
 
     /**

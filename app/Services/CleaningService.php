@@ -180,8 +180,8 @@ final readonly class CleaningService
         if ($item->hasAsset()) {
             $asset = $item->asset;
             
-            if (!$asset || !$asset->is_active) {
-                // Asset is inactive or disposed - create alert and skip task
+            if (!$asset || $asset->status === 'disposed') {
+                // Asset is disposed - create alert and skip task
                 $this->createScheduleAlert($schedule, $item, $asset);
                 
                 Log::info("Skipped task generation for inactive asset", [
@@ -279,7 +279,7 @@ final readonly class CleaningService
             return; // Alert already exists
         }
 
-        $alertType = $asset && !$asset->is_active ? 'asset_inactive' : 'asset_disposed';
+        $alertType = $asset && $asset->status === 'disposed' ? 'asset_disposed' : 'asset_inactive';
 
         $alert = CleaningScheduleAlert::create([
             'cleaning_schedule_id' => $schedule->id,

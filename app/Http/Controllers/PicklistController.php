@@ -17,7 +17,7 @@ final class PicklistController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.inventory.view')->only(['index', 'generate']);
+        $this->middleware('can:warehouses.inventory.view')->only(['index', 'generate']);
     }
 
     /**
@@ -39,7 +39,7 @@ final class PicklistController extends Controller
         ->orderBy('name')
         ->get();
 
-        return view('manufacturing.warehouses.picklist', compact('warehouses', 'availableItems'));
+        return view('warehouses.warehouses.picklist', compact('warehouses', 'availableItems'));
     }
 
     /**
@@ -130,7 +130,7 @@ final class PicklistController extends Controller
             })
         ];
 
-        return view('manufacturing.warehouses.picklist-results', compact(
+        return view('warehouses.warehouses.picklist-results', compact(
             'picklistResults', 'unfulfilledItems', 'summary'
         ));
     }

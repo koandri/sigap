@@ -15,14 +15,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             ManufacturingPermissionSeeder::class,
+            WarehousePermissionSeeder::class,
+            OptionsPermissionSeeder::class,
             MaintenancePermissionSeeder::class,
             FacilityPermissionSeeder::class,
-            LocationSeeder::class,
-            AssetCategorySeeder::class,
             MaintenanceTypeSeeder::class,
             WarehouseShelfSeeder::class,
             ShelfPositionSeeder::class,
-            AssetSeeder::class,
         ]);
     }
 }

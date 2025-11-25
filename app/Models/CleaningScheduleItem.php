@@ -81,6 +81,6 @@ final class CleaningScheduleItem extends Model
             return true; // Non-asset items are always "active"
         }
 
-        return $this->asset?->is_active ?? false;
+        return $this->asset?->status !== 'disposed';
     }
 }

@@ -1,48 +1,38 @@
-# Manufacturing & Inventory Guide
+# Manufacturing Guide
 
 **SIGaP Manufacturing Module**  
-**Version 1.0**
+**Version 2.0**
 
 ---
 
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Warehouse Management](#warehouse-management)
-3. [Item Management](#item-management)
-4. [Shelf-Based Inventory](#shelf-based-inventory)
-5. [Recipe Management](#recipe-management)
-6. [Production Planning System](#production-planning-system)
-7. [Picklist Generation](#picklist-generation)
-8. [Reports and Analytics](#reports-and-analytics)
-9. [Temperature Sensor Monitoring](#temperature-sensor-monitoring)
+2. [Recipe Management](#recipe-management)
+3. [Production Planning System](#production-planning-system)
+4. [Reports and Analytics](#reports-and-analytics)
 
 ---
 
 ## Overview
 
-The Manufacturing module provides comprehensive warehouse and inventory management with shelf-based organization, Recipe management, Production Planning System, and advanced inventory tracking.
+The Manufacturing module focuses on production workflows, including recipe management, production planning, and production execution tracking.
+
+> **Note:** Warehouse Management, Item Management, and Inventory operations have been moved to separate modules:
+> - **Warehouse Management** - See Warehouse Management module for warehouse and inventory operations
+> - **Item Management** - See Options > Items for item and category management
 
 ### Key Features
 
-- **Multi-Warehouse Management** - Multiple warehouses with shelf-based organization
-- **Shelf-Based Inventory** - Organize by warehouse, shelf, and position
-- **Item Management** - Comprehensive catalog with categories
 - **Recipe Management** - Recipe and ingredient management (replaces BoM)
 - **Production Planning System** - 5-step production planning workflow
-- **FIFO Tracking** - First In, First Out inventory management
-- **Expiry Tracking** - Monitor expiring items
-- **Picklist Generation** - FIFO-based picking lists
-- **Bulk Operations** - Bulk inventory updates
-- **Excel Import/Export** - Import items and export reports
+- **Production Execution** - Track production progress and actuals
+- **Yield Guidelines** - Manage production yield expectations
+- **Packing Blueprints** - Define packing configurations
 
 ---
 
-## Warehouse Management
-
-### Creating a Warehouse
-
-1. Navigate to **Manufacturing > Warehouses**
+## Recipe Management
 
 ![Warehouses List](/guides-imgs/manufacturing-warehouses.png)
 
@@ -112,7 +102,7 @@ The system provides visual representations:
 
 #### Creating Categories
 
-1. Navigate to **Manufacturing > Item Categories**
+1. Navigate to **Options > Item Categories**
 2. Click **"Create Category"**
 3. Enter:
    - **Code**: Category code (e.g., `RM-FISH`)
@@ -134,7 +124,7 @@ The system provides visual representations:
 
 #### Manual Entry
 
-1. Navigate to **Manufacturing > Items**
+1. Navigate to **Options > Items**
 2. Click **"Create Item"**
 3. Fill in item details:
    - **Code**: Unique item code/SKU
@@ -151,7 +141,7 @@ The system provides visual representations:
 
 For bulk item creation:
 
-1. Navigate to **Manufacturing > Items**
+1. Navigate to **Options > Items**
 2. Click **"Import from Excel"**
 3. Download the template
 4. Fill in item data:
@@ -195,7 +185,7 @@ Each item tracks:
 
 ### Adding Items to Positions
 
-1. Navigate to **Manufacturing > Warehouses**
+1. Navigate to **Warehouse Management > Warehouses**
 2. Select warehouse
 3. Click **"Shelf Inventory"**
 4. Navigate to specific shelf and position
@@ -748,7 +738,7 @@ Detailed position-by-position inventory:
 
 Monitor items approaching expiration:
 
-1. Navigate to Manufacturing Dashboard
+1. Navigate to Home Dashboard
 2. View **"Expiring Items"** section
 3. See items expiring in next 30 days
 4. Click for detailed report
@@ -906,7 +896,9 @@ Calculate total inventory value:
 
 ## Temperature Sensor Monitoring
 
-The Manufacturing Dashboard includes a real-time temperature sensor widget that displays temperature data from HomeAssistant sensors. This feature allows you to monitor temperature conditions in your manufacturing facilities.
+> **Note:** The Temperature Sensor widget has been moved to the **Home Dashboard**. It is accessible to users with roles: QC, Production, IT Staff, Super Admin, and Owner.
+
+The Home Dashboard includes a real-time temperature sensor widget that displays temperature data from HomeAssistant sensors. This feature allows you to monitor temperature conditions in your manufacturing facilities.
 
 ![Temperature Sensor Widget](/guides-imgs/manufacturing-temperature-widget.png)
 
@@ -920,8 +912,8 @@ The Temperature Sensor widget provides:
 
 ### Accessing the Widget
 
-1. Navigate to **Manufacturing > Dashboard**
-2. The Temperature Sensor widget is displayed at the top of the dashboard
+1. Navigate to **Home Dashboard** (main dashboard)
+2. The Temperature Sensor widget is displayed on the dashboard (only visible to users with roles: QC, Production, IT Staff, Super Admin, Owner)
 3. The widget shows temperature data for the configured sensor (default: `sensor.tes_temperature`)
 
 ### Using the Widget

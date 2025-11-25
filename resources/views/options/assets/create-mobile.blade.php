@@ -321,13 +321,6 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-check">
-                            <input type="checkbox" name="is_active" class="form-check-input" value="1" 
-                                   {{ old('is_active', true) ? 'checked' : '' }}>
-                            <span class="form-check-label">Active</span>
-                        </label>
-                    </div>
                 </div>
                 <div class="card-footer">
                     <div class="btn-list justify-content-end">

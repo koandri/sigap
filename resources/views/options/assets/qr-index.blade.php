@@ -48,12 +48,14 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Status</label>
-                            <select name="status" class="form-select">
-                                <option value="">All Status</option>
-                                <option value="operational" {{ request('status') === 'operational' ? 'selected' : '' }}>Operational</option>
-                                <option value="down" {{ request('status') === 'down' ? 'selected' : '' }}>Down</option>
-                                <option value="maintenance" {{ request('status') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                            <label class="form-label">Asset Location</label>
+                            <select name="location" class="form-select">
+                                <option value="">All Locations</option>
+                                @foreach($locations as $location)
+                                    <option value="{{ $location->id }}" {{ request('location') == $location->id ? 'selected' : '' }}>
+                                        {{ $location->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
@@ -65,71 +67,79 @@
             </div>
         </div>
 
-        <!-- QR Codes Grid -->
+        <!-- QR Codes Table -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">QR Codes ({{ $assets->total() }})</h3>
             </div>
-            <div class="card-body">
-                @if($assets->count() > 0)
-                    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-                        @foreach($assets as $asset)
-                            <div class="col">
-                                <div class="card h-100">
-                                    <div class="card-body text-center">
-                                        <!-- QR Code -->
-                                        <img src="{{ $asset->qr_code_url }}" 
-                                                alt="QR Code for {{ $asset->code }}" 
-                                                class="img-fluid mb-3"
-                                                style="max-width: 200px;">
-                                        
-                                        <!-- Asset Info -->
-                                        <h4 class="card-title mb-2">
-                                            <a href="{{ route('options.assets.show', $asset) }}">
-                                                {{ $asset->code }}
-                                            </a>
-                                        </h4>
-                                        <p class="text-muted mb-2">{{ $asset->name }}</p>
-                                        
-                                        <div class="mb-2">
-                                            <span class="badge bg-{{ $asset->status === 'operational' ? 'success' : ($asset->status === 'down' ? 'danger' : 'warning') }} text-white">
-                                                {{ ucfirst($asset->status) }}
-                                            </span>
-                                        </div>
-                                        
+            @if($assets->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Asset Code</th>
+                                <th>Asset Name</th>
+                                <th>Asset Category</th>
+                                <th>Asset Location</th>
+                                <th class="text-center">QR Code</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($assets as $asset)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('options.assets.show', $asset) }}">
+                                            {{ $asset->code }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $asset->name }}</td>
+                                    <td>
                                         @if($asset->assetCategory)
-                                            <small class="text-muted d-block mb-2">{{ $asset->assetCategory->name }}</small>
+                                            {{ $asset->assetCategory->name }}
+                                        @else
+                                            <span class="text-muted">-</span>
                                         @endif
-                                        
+                                    </td>
+                                    <td>
                                         @if($asset->location)
-                                            <small class="text-muted d-block mb-3">
-                                                <i class="far fa-map-marker-alt"></i>&nbsp; {{ $asset->location->name }}
-                                            </small>
+                                            <i class="far fa-map-marker-alt"></i>&nbsp; {{ $asset->location->name }}
+                                        @else
+                                            <span class="text-muted">-</span>
                                         @endif
-                                        
-                                        <!-- Actions -->
-                                        <div class="btn-list justify-content-center">
-                                            <a href="{{ route('options.assets.qr-code', $asset) }}" 
-                                               class="btn btn-sm btn-outline-primary">
-                                                <i class="far fa-eye"></i>&nbsp; View
-                                            </a>
-                                            <a href="{{ $asset->qr_code_url }}" 
-                                               download="qr-{{ $asset->code }}.png"
-                                               class="btn btn-sm btn-primary">
-                                                <i class="far fa-download"></i>&nbsp; Download
-                                            </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <img src="{{ $asset->qr_code_url }}" 
+                                                 alt="QR Code for {{ $asset->code }}" 
+                                                 class="img-fluid"
+                                                 style="max-width: 100px; height: auto;">
+                                            <div class="btn-list">
+                                                <a href="{{ route('options.assets.qr-code', $asset) }}" 
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   title="View QR Code">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                                <a href="{{ $asset->qr_code_url }}" 
+                                                   download="qr-{{ $asset->code }}.png"
+                                                   class="btn btn-sm btn-primary"
+                                                   title="Download QR Code">
+                                                    <i class="far fa-download"></i>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    
-                    <!-- Pagination -->
-                    <div class="mt-4">
-                        {{ $assets->links() }}
-                    </div>
-                @else
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="card-footer d-flex align-items-center">
+                    {{ $assets->links() }}
+                </div>
+            @else
+                <div class="card-body">
                     <div class="empty">
                         <div class="empty-img"><img src="{{ asset('assets/tabler/img/undraw_printing_invoices_-5-r4r.svg') }}" height="128" alt="">
                         </div>
@@ -138,19 +148,11 @@
                             No assets with QR codes match your filters.
                         </p>
                     </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
 @endsection
 
-@push('styles')
-<style>
-.card:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    transition: box-shadow 0.3s ease-in-out;
-}
-</style>
-@endpush
 

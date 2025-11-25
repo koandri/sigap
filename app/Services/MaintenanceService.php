@@ -77,20 +77,20 @@ final readonly class MaintenanceService
 
     private function calculateHourlyNextDate(Carbon $baseDate, array $config): Carbon
     {
-        $interval = $config['interval'] ?? 1;
+        $interval = (int) ($config['interval'] ?? 1);
         return $baseDate->copy()->addHours($interval);
     }
 
     private function calculateDailyNextDate(Carbon $baseDate, array $config, ?int $fallbackDays): Carbon
     {
-        $interval = $config['interval'] ?? $fallbackDays ?? 1;
+        $interval = (int) ($config['interval'] ?? $fallbackDays ?? 1);
         return $baseDate->copy()->addDays($interval);
     }
 
     private function calculateWeeklyNextDate(Carbon $baseDate, array $config): Carbon
     {
-        $interval = $config['interval'] ?? 1;
-        $days = $config['days'] ?? [];
+        $interval = (int) ($config['interval'] ?? 1);
+        $days = array_map('intval', $config['days'] ?? []);
         
         if (empty($days)) {
             return $baseDate->copy()->addWeeks($interval);
@@ -103,7 +103,7 @@ final readonly class MaintenanceService
         while (true) {
             $currentDayOfWeek = $nextDate->dayOfWeekIso; // 1=Monday, 7=Sunday
             
-            if (in_array($currentDayOfWeek, $days)) {
+            if (in_array($currentDayOfWeek, $days, true)) {
                 // Check if we're in the right week interval
                 $weeksDiff = $nextDate->diffInWeeks($baseDate);
                 if ($weeksDiff % $interval === 0) {
@@ -122,7 +122,7 @@ final readonly class MaintenanceService
 
     private function calculateMonthlyNextDate(Carbon $baseDate, array $config): Carbon
     {
-        $interval = $config['interval'] ?? 1;
+        $interval = (int) ($config['interval'] ?? 1);
         $type = $config['type'] ?? 'date';
         
         $nextDate = $baseDate->copy()->addMonths($interval);
@@ -132,14 +132,14 @@ final readonly class MaintenanceService
         }
         
         if ($type === 'weekday') {
-            $week = $config['week'] ?? 1; // 1=first, 2=second, 3=third, 4=fourth, 5=last
-            $day = $config['day'] ?? 1; // 1=Monday, 7=Sunday
+            $week = (int) ($config['week'] ?? 1); // 1=first, 2=second, 3=third, 4=fourth, 5=last
+            $day = (int) ($config['day'] ?? 1); // 1=Monday, 7=Sunday
             
             return $this->getNthWeekdayOfMonth($nextDate, $week, $day);
         }
         
         // Default: specific date
-        $date = $config['date'] ?? 1;
+        $date = (int) ($config['date'] ?? 1);
         $nextDate->day = min($date, $nextDate->daysInMonth);
         
         return $nextDate;
@@ -147,8 +147,8 @@ final readonly class MaintenanceService
 
     private function calculateYearlyNextDate(Carbon $baseDate, array $config): Carbon
     {
-        $month = $config['month'] ?? 1;
-        $date = $config['date'] ?? 1;
+        $month = (int) ($config['month'] ?? 1);
+        $date = (int) ($config['date'] ?? 1);
         
         $nextDate = $baseDate->copy()->addYear();
         $nextDate->month = $month;

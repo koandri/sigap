@@ -56,6 +56,11 @@ final class ShelfPosition extends Model
      */
     public function getCurrentItemAttribute()
     {
+        // Use loaded relationship if available to avoid N+1 queries
+        if ($this->relationLoaded('positionItems')) {
+            return $this->positionItems->where('quantity', '>', 0)->first();
+        }
+        
         return $this->positionItems()->where('quantity', '>', 0)->first();
     }
 
@@ -64,6 +69,11 @@ final class ShelfPosition extends Model
      */
     public function getIsOccupiedAttribute(): bool
     {
+        // Use loaded relationship if available to avoid N+1 queries
+        if ($this->relationLoaded('positionItems')) {
+            return $this->positionItems->where('quantity', '>', 0)->isNotEmpty();
+        }
+        
         return $this->positionItems()->where('quantity', '>', 0)->exists();
     }
 
@@ -72,6 +82,7 @@ final class ShelfPosition extends Model
      */
     public function getFullLocationCodeAttribute(): string
     {
+        // Accessor will use loaded relationship if available, otherwise lazy load
         $shelfCode = $this->warehouseShelf?->shelf_code ?? 'Unknown';
         return $shelfCode . '-' . $this->position_code;
     }
@@ -81,6 +92,7 @@ final class ShelfPosition extends Model
      */
     public function getFullLocationNameAttribute(): string
     {
+        // Accessor will use loaded relationship if available, otherwise lazy load
         $shelfName = $this->warehouseShelf?->shelf_name ?? 'Unknown Shelf';
         return $shelfName . ', ' . $this->position_name;
     }

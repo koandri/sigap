@@ -15,10 +15,10 @@ final class ItemController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.items.view')->only(['index', 'show']);
-        $this->middleware('can:manufacturing.items.edit')->only(['edit', 'update']);
-        $this->middleware('can:manufacturing.items.delete')->only(['destroy']);
-        $this->middleware('can:manufacturing.items.import')->only(['showImport', 'import']);
+        $this->middleware('can:options.items.view')->only(['index', 'show']);
+        $this->middleware('can:options.items.edit')->only(['edit', 'update']);
+        $this->middleware('can:options.items.delete')->only(['destroy']);
+        $this->middleware('can:options.items.import')->only(['showImport', 'import']);
     }
 
     /**
@@ -51,7 +51,7 @@ final class ItemController extends Controller
         $items = $query->orderBy('name')->paginate(20);
         $categories = ItemCategory::orderBy('name')->get();
 
-        return view('manufacturing.items.index', compact('items', 'categories'));
+        return view('options.items.index', compact('items', 'categories'));
     }
 
 
@@ -62,7 +62,7 @@ final class ItemController extends Controller
     {
         $item->load(['itemCategory', 'positionItems.shelfPosition.warehouseShelf.warehouse']);
         
-        return view('manufacturing.items.show', compact('item'));
+        return view('options.items.show', compact('item'));
     }
 
     /**
@@ -72,7 +72,7 @@ final class ItemController extends Controller
     {
         $categories = ItemCategory::orderBy('name')->get();
         
-        return view('manufacturing.items.edit', compact('item', 'categories'));
+        return view('options.items.edit', compact('item', 'categories'));
     }
 
     /**
@@ -94,7 +94,7 @@ final class ItemController extends Controller
         $item->update($validated);
 
         return redirect()
-            ->route('manufacturing.items.index')
+            ->route('options.items.index')
             ->with('success', "Item '{$item->name}' updated successfully.");
     }
 
@@ -106,7 +106,7 @@ final class ItemController extends Controller
         // Check if item has positions with stock
         if ($item->positionItems()->where('quantity', '>', 0)->exists()) {
             return redirect()
-                ->route('manufacturing.items.index')
+                ->route('options.items.index')
                 ->with('error', "Cannot delete item '{$item->name}' because it has current stock in warehouses.");
         }
 
@@ -114,7 +114,7 @@ final class ItemController extends Controller
         $item->delete();
 
         return redirect()
-            ->route('manufacturing.items.index')
+            ->route('options.items.index')
             ->with('success', "Item '{$name}' deleted successfully.");
     }
 
@@ -123,7 +123,7 @@ final class ItemController extends Controller
      */
     public function showImport(): View
     {
-        return view('manufacturing.items.import');
+        return view('options.items.import');
     }
 
     /**
@@ -302,13 +302,13 @@ final class ItemController extends Controller
             }
 
             return redirect()
-                ->route('manufacturing.items.import')
+                ->route('options.items.import')
                 ->with('success', $message)
                 ->with('import_stats', $importStats);
 
         } catch (\Exception $e) {
             return redirect()
-                ->route('manufacturing.items.import')
+                ->route('options.items.import')
                 ->with('error', 'Import failed: ' . $e->getMessage());
         }
     }

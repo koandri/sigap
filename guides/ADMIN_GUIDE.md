@@ -206,17 +206,42 @@ SIGaP uses Role-Based Access Control (RBAC):
 - `formsubmissions.delete` - Delete submissions
 - `formsubmissions.approve` - Approve submissions
 
-**Manufacturing:**
+**Manufacturing (Production):**
 - `manufacturing.dashboard.view` - View dashboard
-- `manufacturing.warehouses.view` - View warehouses
-- `manufacturing.warehouses.create` - Create warehouses
-- `manufacturing.warehouses.edit` - Edit warehouses
-- `manufacturing.inventory.view` - View inventory
-- `manufacturing.inventory.create` - Add inventory
-- `manufacturing.inventory.edit` - Update inventory
+- `manufacturing.production-plans.view` - View production plans
+- `manufacturing.production-plans.create` - Create production plans
+- `manufacturing.production-plans.edit` - Edit production plans
+- `manufacturing.production-plans.approve` - Approve production plans
+- `manufacturing.production-plans.start` - Start production
+- `manufacturing.production-plans.record-actuals` - Record production actuals
+- `manufacturing.production-plans.complete` - Complete production plans
 - `manufacturing.recipes.view` - View recipes
 - `manufacturing.recipes.create` - Create recipes
 - `manufacturing.recipes.edit` - Edit recipes
+- `manufacturing.yield-guidelines.view` - View yield guidelines
+- `manufacturing.yield-guidelines.create` - Create yield guidelines
+- `manufacturing.yield-guidelines.edit` - Edit yield guidelines
+
+**Warehouse Management:**
+- `warehouses.dashboard.view` - View warehouse dashboard
+- `warehouses.view` - View warehouses
+- `warehouses.create` - Create warehouses
+- `warehouses.edit` - Edit warehouses
+- `warehouses.delete` - Delete warehouses
+- `warehouses.inventory.view` - View inventory
+- `warehouses.inventory.create` - Add inventory
+- `warehouses.inventory.edit` - Update inventory
+- `warehouses.inventory.delete` - Delete inventory
+
+**Options (Master Data):**
+- `options.items.view` - View items
+- `options.items.edit` - Edit items
+- `options.items.delete` - Delete items
+- `options.items.import` - Import items
+- `options.item-categories.view` - View item categories
+- `options.item-categories.create` - Create item categories
+- `options.item-categories.edit` - Edit item categories
+- `options.item-categories.delete` - Delete item categories
 
 **Maintenance:**
 - `maintenance.dashboard.view` - View dashboard

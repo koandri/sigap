@@ -64,14 +64,6 @@
                             <option value="maintenance" {{ request('status') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Active</label>
-                        <select name="active" class="form-select">
-                            <option value="">All</option>
-                            <option value="true" {{ request('active') === 'true' ? 'selected' : '' }}>Active</option>
-                            <option value="false" {{ request('active') === 'false' ? 'selected' : '' }}>Inactive</option>
-                        </select>
-                    </div>
                     <div class="col-md-3">
                         <label class="form-label">&nbsp;</label>
                         <div class="d-flex gap-2">

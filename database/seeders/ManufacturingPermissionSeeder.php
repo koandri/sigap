@@ -15,32 +15,8 @@ final class ManufacturingPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Manufacturing Permissions
+        // Create Manufacturing Permissions (Production-focused only)
         $permissions = [
-            // Inventory Management
-            'manufacturing.inventory.view',
-            'manufacturing.inventory.create',
-            'manufacturing.inventory.edit',
-            'manufacturing.inventory.delete',
-            
-            // Item Management  
-            'manufacturing.items.view',
-            'manufacturing.items.edit',
-            'manufacturing.items.delete',
-            'manufacturing.items.import',
-            
-            // Warehouse Management
-            'manufacturing.warehouses.view',
-            'manufacturing.warehouses.create',
-            'manufacturing.warehouses.edit',
-            'manufacturing.warehouses.delete',
-            
-            // Item Categories
-            'manufacturing.categories.view',
-            'manufacturing.categories.create', 
-            'manufacturing.categories.edit',
-            'manufacturing.categories.delete',
-            
             // Production Planning
             'manufacturing.production-plans.view',
             'manufacturing.production-plans.create',
@@ -108,18 +84,6 @@ final class ManufacturingPermissionSeeder extends Seeder
         $ppicRole = Role::firstOrCreate(['name' => 'PPIC', 'guard_name' => 'web']);
         $ppicRole->givePermissionTo([
             'manufacturing.dashboard.view',
-            'manufacturing.inventory.view',
-            'manufacturing.inventory.create', 
-            'manufacturing.inventory.edit',
-            'manufacturing.items.view',
-            'manufacturing.items.edit',
-            'manufacturing.items.import',
-            'manufacturing.categories.view',
-            'manufacturing.categories.create',
-            'manufacturing.categories.edit',
-            'manufacturing.warehouses.view',
-            'manufacturing.warehouses.create',
-            'manufacturing.warehouses.edit',
             'manufacturing.production-plans.view',
             'manufacturing.production-plans.create',
             'manufacturing.production-plans.edit',
@@ -148,8 +112,6 @@ final class ManufacturingPermissionSeeder extends Seeder
         $rndRole = Role::firstOrCreate(['name' => 'RnD', 'guard_name' => 'web']);
         $rndRole->givePermissionTo([
             'manufacturing.dashboard.view',
-            'manufacturing.items.view',
-            'manufacturing.categories.view',
             'manufacturing.materials.view',
             'manufacturing.materials.record',
             'manufacturing.materials.edit',
@@ -162,7 +124,6 @@ final class ManufacturingPermissionSeeder extends Seeder
         $productionRole = Role::firstOrCreate(['name' => 'Production', 'guard_name' => 'web']);
         $productionRole->givePermissionTo([
             'manufacturing.dashboard.view',
-            'manufacturing.items.view',
             'manufacturing.production.view',
             'manufacturing.production.record',
             'manufacturing.production.day1',
@@ -176,7 +137,6 @@ final class ManufacturingPermissionSeeder extends Seeder
         $qcRole = Role::firstOrCreate(['name' => 'QC', 'guard_name' => 'web']);
         $qcRole->givePermissionTo([
             'manufacturing.dashboard.view',
-            'manufacturing.items.view',
             'manufacturing.production.view',
             'manufacturing.qc.view',
             'manufacturing.qc.record',
@@ -185,30 +145,10 @@ final class ManufacturingPermissionSeeder extends Seeder
             'manufacturing.reports.view',
         ]);
 
-        // Warehouse Role - Warehouse Management
-        $warehouseRole = Role::firstOrCreate(['name' => 'Warehouse', 'guard_name' => 'web']);
-        $warehouseRole->givePermissionTo([
-            'manufacturing.dashboard.view',
-            'manufacturing.inventory.view',
-            'manufacturing.inventory.create',
-            'manufacturing.inventory.edit',
-            'manufacturing.items.view',
-            'manufacturing.categories.view',
-            'manufacturing.warehouses.view',
-            'manufacturing.warehouses.create',
-            'manufacturing.warehouses.edit',
-            'manufacturing.production.view',
-            'manufacturing.reports.view',
-        ]);
-
         // Admin Central Role - Read-only for accounting integration
         $adminCentralRole = Role::firstOrCreate(['name' => 'Admin Central', 'guard_name' => 'web']);
         $adminCentralRole->givePermissionTo([
             'manufacturing.dashboard.view',
-            'manufacturing.inventory.view',
-            'manufacturing.items.view',
-            'manufacturing.categories.view',
-            'manufacturing.warehouses.view',
             'manufacturing.production-plans.view',
             'manufacturing.yield-guidelines.view',
             'manufacturing.packing-blueprints.view',

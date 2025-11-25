@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasFiles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 final class CleaningSubmission extends Model
 {
+    use HasFiles;
     /**
      * The attributes that are mass assignable.
      *
@@ -19,8 +21,6 @@ final class CleaningSubmission extends Model
         'cleaning_task_id',
         'submitted_by',
         'submitted_at',
-        'before_photo',
-        'after_photo',
         'notes',
     ];
 
@@ -31,8 +31,6 @@ final class CleaningSubmission extends Model
      */
     protected $casts = [
         'submitted_at' => 'datetime',
-        'before_photo' => 'array',
-        'after_photo' => 'array',
     ];
 
     /**
@@ -73,5 +71,25 @@ final class CleaningSubmission extends Model
     public function scopeForDate($query, $date)
     {
         return $query->whereDate('submitted_at', $date);
+    }
+
+    /**
+     * Get the before photo.
+     */
+    public function beforePhoto(): ?File
+    {
+        return $this->photos()
+            ->where('metadata->type', 'before')
+            ->first();
+    }
+
+    /**
+     * Get the after photo.
+     */
+    public function afterPhoto(): ?File
+    {
+        return $this->photos()
+            ->where('metadata->type', 'after')
+            ->first();
     }
 }

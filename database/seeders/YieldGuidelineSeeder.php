@@ -23,14 +23,23 @@ final class YieldGuidelineSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get item categories
+        // Get or create item categories
         $adonanCategory = ItemCategory::where('name', 'Adonan')->first();
         $gelondonganCategory = ItemCategory::where('name', 'Gelondongan')->first();
-        $kerupukKgCategory = ItemCategory::where('name', 'Kerupuk Kg')->first();
-        $kerupukPackCategory = ItemCategory::where('name', 'Kerupuk Pack')->first();
+        
+        // Create missing categories if they don't exist
+        $kerupukKgCategory = ItemCategory::firstOrCreate(
+            ['name' => 'Kerupuk Kg'],
+            ['description' => 'Kerupuk kering dalam satuan kilogram (finished product)']
+        );
+        
+        $kerupukPackCategory = ItemCategory::firstOrCreate(
+            ['name' => 'Kerupuk Pack'],
+            ['description' => 'Kerupuk dalam kemasan/packing (finished product)']
+        );
 
-        if (!$adonanCategory || !$gelondonganCategory || !$kerupukKgCategory || !$kerupukPackCategory) {
-            $this->command->warn('Required item categories not found. Please seed item categories first.');
+        if (!$adonanCategory || !$gelondonganCategory) {
+            $this->command->warn('Required item categories (Adonan, Gelondongan) not found. Please run migrations first.');
             return;
         }
 

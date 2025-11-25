@@ -18,8 +18,8 @@ final class BulkInventoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.inventory.view')->only(['index', 'show']);
-        $this->middleware('can:manufacturing.inventory.edit')->only(['update', 'bulkUpdate', 'bulkAssign', 'bulkClear', 'saveAllChanges']);
+        $this->middleware('can:warehouses.inventory.view')->only(['index', 'show']);
+        $this->middleware('can:warehouses.inventory.edit')->only(['update', 'bulkUpdate', 'bulkAssign', 'bulkClear', 'saveAllChanges']);
     }
 
     /**
@@ -45,7 +45,7 @@ final class BulkInventoryController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('manufacturing.warehouses.bulk-edit', compact('warehouse', 'aisles', 'items', 'availableAisles'));
+        return view('warehouses.warehouses.bulk-edit', compact('warehouse', 'aisles', 'items', 'availableAisles'));
     }
 
     /**
@@ -375,7 +375,7 @@ final class BulkInventoryController extends Controller
         // This would implement Excel export functionality
         // For now, return a success message
         return redirect()
-            ->route('manufacturing.warehouses.bulk-edit', $warehouse)
+            ->route('warehouses.warehouses.bulk-edit', $warehouse)
             ->with('success', 'Export functionality will be implemented in the next phase.');
     }
 

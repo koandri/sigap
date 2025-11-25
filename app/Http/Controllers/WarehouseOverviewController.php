@@ -14,7 +14,7 @@ final class WarehouseOverviewController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.inventory.view')->only(['index']);
+        $this->middleware('can:warehouses.inventory.view')->only(['index']);
     }
 
     /**
@@ -112,7 +112,7 @@ final class WarehouseOverviewController extends Controller
         // Get summary statistics
         $summary = $this->getSummaryStatistics($request);
 
-        return view('manufacturing.warehouses.overview-report', compact(
+        return view('warehouses.warehouses.overview-report', compact(
             'items', 'warehouses', 'categories', 'summary'
         ));
     }
@@ -212,7 +212,7 @@ final class WarehouseOverviewController extends Controller
         // Get summary statistics
         $summary = $this->getSummaryStatistics($request);
 
-        return view('manufacturing.warehouses.overview-report-print', compact(
+        return view('warehouses.warehouses.overview-report-print', compact(
             'items', 'warehouses', 'categories', 'summary'
         ));
     }

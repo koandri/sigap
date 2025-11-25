@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\ComponentType;
+use App\Enums\UsageUnit;
+use App\Http\Requests\AttachComponentRequest;
+use App\Http\Requests\DetachComponentRequest;
 use App\Models\Asset;
 use App\Models\AssetCategory;
-use App\Models\AssetPhoto;
+use App\Models\File;
+use App\Enums\FileCategory;
 use App\Models\Department;
 use App\Models\Location;
 use App\Models\User;
+use App\Services\AssetComponentService;
+use App\Services\AssetLifetimeService;
 use App\Services\FirecrawlService;
 use App\Services\OpenRouterService;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +25,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -27,12 +36,23 @@ use Endroid\QrCode\Writer\PngWriter;
 
 final class AssetController extends Controller
 {
-    public function __construct()
-    {
+    private ImageManager $imageManager;
+
+    public function __construct(
+        private readonly AssetComponentService $componentService,
+        private readonly AssetLifetimeService $lifetimeService
+    ) {
+        // Initialize ImageManager with driver
+        $driver = config('image.driver', 'gd') === 'imagick' 
+            ? new ImagickDriver() 
+            : new GdDriver();
+            
+        $this->imageManager = new ImageManager($driver);
+        
         $this->middleware('can:maintenance.assets.manage')->only([
             'create', 'store', 'edit', 'update', 'destroy',
             'createMobile', 'storeMobile', 'analyzeImages', 'fetchSpecifications',
-            'setPrimaryPhoto', 'deletePhoto'
+            'setPrimaryPhoto', 'deletePhoto', 'showAttachForm', 'attachComponent', 'detachComponent'
         ]);
     }
 
@@ -51,11 +71,6 @@ final class AssetController extends Controller
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
-        }
-
-        // Filter by active status
-        if ($request->filled('active')) {
-            $query->where('is_active', $request->active === 'true');
         }
 
         // Search by name, code, or serial number
@@ -79,12 +94,13 @@ final class AssetController extends Controller
      */
     public function create(): View
     {
-        $categories = AssetCategory::active()->orderBy('name')->get();
+        $categories = AssetCategory::active()->with('usageTypes')->orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $users = User::where('active', true)->orderBy('name')->get();
         $locations = Location::active()->orderBy('name')->get();
+        $assets = Asset::whereNull('parent_asset_id')->orderBy('name')->get();
 
-        return view('options.assets.create', compact('categories', 'departments', 'users', 'locations'));
+        return view('options.assets.create', compact('categories', 'departments', 'users', 'locations', 'assets'));
     }
 
     /**
@@ -92,7 +108,7 @@ final class AssetController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|max:50|unique:assets,code',
             'asset_category_id' => 'required|exists:asset_categories,id',
@@ -106,11 +122,23 @@ final class AssetController extends Controller
             'specifications' => 'nullable',
             'specifications_text' => 'nullable|string',
             'photos' => 'nullable|array|max:10',
-            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'department_id' => 'nullable|exists:departments,id',
             'user_id' => 'nullable|exists:users,id',
-            'is_active' => 'boolean',
-        ]);
+            'parent_asset_id' => 'nullable|exists:assets,id',
+            'component_type' => 'nullable|string|in:consumable,replaceable,integral',
+            'installed_date' => 'nullable|date',
+            'installed_usage_value' => 'nullable|numeric|min:0',
+            'usage_type_id' => 'nullable|exists:asset_category_usage_types,id',
+            'lifetime_unit' => 'nullable|string|in:days,kilometers,machine_hours,cycles',
+            'expected_lifetime_value' => 'nullable|numeric|min:0',
+        ];
+
+        // Only validate photos if files are actually uploaded
+        if ($request->hasFile('photos')) {
+            $rules['photos.*'] = 'image|mimes:jpeg,png,jpg,gif|max:5120';
+        }
+
+        $validated = $request->validate($rules);
 
         // Auto-generate code if not provided
         if (empty($validated['code'])) {
@@ -184,19 +212,75 @@ final class AssetController extends Controller
      */
     public function show(Asset $asset): View
     {
+        $this->authorize('view', $asset);
+        
+        // Eager load all relationships with nested relationships
         $asset->load([
             'assetCategory',
             'location',
             'department',
             'user',
-            'maintenanceSchedules.maintenanceType',
-            'workOrders.maintenanceType',
-            'maintenanceLogs.performedBy',
+            'disposedBy',
+            'disposalWorkOrder',
+            'parentAsset',
+            'childAssets',
+            'maintenanceSchedules' => function($query) {
+                $query->with(['maintenanceType', 'assignedUser']);
+            },
+            'workOrders' => function($query) {
+                $query->with(['maintenanceType', 'assignedUser', 'requestedBy', 'verifiedBy']);
+            },
+            'maintenanceLogs' => function($query) {
+                $query->with(['performedBy', 'workOrder.maintenanceType'])
+                      ->latest('performed_at');
+            },
             'documents',
-            'photos.uploadedBy'
+            'photos.uploadedBy',
         ]);
 
-        return view('options.assets.show', compact('asset'));
+        // Pre-calculate statistics and collections to avoid N+1 queries
+        $pendingWorkOrders = $asset->workOrders()
+            ->whereNotIn('status', ['completed', 'cancelled', 'closed'])
+            ->with(['maintenanceType', 'assignedUser', 'requestedBy'])
+            ->orderByRaw("FIELD(priority, 'urgent', 'high', 'medium', 'low')")
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        $completedWorkOrders = $asset->workOrders()
+            ->whereIn('status', ['completed', 'closed'])
+            ->with(['maintenanceType', 'assignedUser', 'verifiedBy'])
+            ->orderBy('completed_date', 'desc')
+            ->take(10)
+            ->get();
+        
+        $pendingWorkOrdersCount = $pendingWorkOrders->count();
+        $completedWorkOrdersCount = $asset->workOrders()
+            ->whereIn('status', ['completed', 'closed'])
+            ->count();
+
+        // Get next maintenance due date
+        $nextMaintenanceDue = $asset->maintenanceSchedules()
+            ->active()
+            ->whereNotNull('next_due_date')
+            ->orderBy('next_due_date', 'asc')
+            ->first();
+
+        // Get component status summary
+        $componentStatusSummary = [
+            'total' => $asset->childAssets->count(),
+            'active' => $asset->childAssets->where('status', '!=', 'disposed')->count(),
+            'inactive' => $asset->childAssets->where('status', 'disposed')->count(),
+        ];
+
+        return view('options.assets.show', compact(
+            'asset',
+            'pendingWorkOrders',
+            'completedWorkOrders',
+            'pendingWorkOrdersCount',
+            'completedWorkOrdersCount',
+            'nextMaintenanceDue',
+            'componentStatusSummary'
+        ));
     }
 
     /**
@@ -209,8 +293,9 @@ final class AssetController extends Controller
         $departments = Department::orderBy('name')->get();
         $users = User::where('active', true)->orderBy('name')->get();
         $locations = Location::active()->orderBy('name')->get();
+        $assets = Asset::whereNull('parent_asset_id')->where('id', '!=', $asset->id)->orderBy('name')->get();
 
-        return view('options.assets.edit', compact('asset', 'categories', 'departments', 'users', 'locations'));
+        return view('options.assets.edit', compact('asset', 'categories', 'departments', 'users', 'locations', 'assets'));
     }
 
     /**
@@ -218,7 +303,16 @@ final class AssetController extends Controller
      */
     public function update(Request $request, Asset $asset): RedirectResponse
     {
-        $validated = $request->validate([
+        // Debug: Log request information
+        Log::info('Asset update request received', [
+            'method' => $request->method(),
+            'has_photos' => $request->hasFile('photos'),
+            'all_files' => $request->allFiles(),
+            'photos_input' => $request->input('photos'),
+            'content_type' => $request->header('Content-Type'),
+        ]);
+
+        $rules = [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:assets,code,' . $asset->id,
             'asset_category_id' => 'required|exists:asset_categories,id',
@@ -232,11 +326,28 @@ final class AssetController extends Controller
             'specifications' => 'nullable',
             'specifications_text' => 'nullable|string',
             'photos' => 'nullable|array|max:10',
-            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'department_id' => 'nullable|exists:departments,id',
             'user_id' => 'nullable|exists:users,id',
-            'is_active' => 'boolean',
-        ]);
+            'parent_asset_id' => 'nullable|exists:assets,id',
+            'component_type' => 'nullable|string|in:consumable,replaceable,integral',
+            'installed_date' => 'nullable|date',
+            'installed_usage_value' => 'nullable|numeric|min:0',
+            'lifetime_unit' => 'nullable|string|in:days,kilometers,machine_hours,cycles',
+            'expected_lifetime_value' => 'nullable|numeric|min:0',
+        ];
+
+        // Only validate photos if files are actually uploaded
+        if ($request->hasFile('photos')) {
+            $rules['photos.*'] = 'image|mimes:jpeg,png,jpg,gif|max:5120';
+            Log::info('Photos validation rule added');
+        } else {
+            Log::warning('No photos found in request', [
+                'all_input_keys' => array_keys($request->all()),
+                'files_keys' => array_keys($request->allFiles()),
+            ]);
+        }
+
+        $validated = $request->validate($rules);
 
         // Handle specifications - can come as JSON string or array
         if (isset($validated['specifications'])) {
@@ -274,18 +385,6 @@ final class AssetController extends Controller
             $validated['specifications'] = null;
         }
 
-        // Handle multiple photo uploads
-        if ($request->hasFile('photos')) {
-            $photos = $request->file('photos');
-            foreach ($photos as $photo) {
-                if ($photo && $photo->isValid()) {
-                    $imageData = file_get_contents($photo->getRealPath());
-                    $photoBase64 = base64_encode($imageData);
-                    $this->processAndStorePhoto($asset, $photoBase64);
-                }
-            }
-        }
-
         // Check if code changed to regenerate QR
         $codeChanged = $asset->code !== $validated['code'];
         
@@ -296,9 +395,122 @@ final class AssetController extends Controller
             $this->generateAndStoreQRCode($asset);
         }
 
+        // Handle multiple photo uploads
+        $photoUploadErrors = [];
+        $photosUploaded = 0;
+        
+        Log::info('Checking for photos in request', [
+            'hasFile_photos' => $request->hasFile('photos'),
+            'allFiles' => $request->allFiles(),
+            'input_photos' => $request->input('photos'),
+        ]);
+        
+        if ($request->hasFile('photos')) {
+            $photos = $request->file('photos');
+            Log::info('Photos found in request', [
+                'count' => is_array($photos) ? count($photos) : 'not_array',
+                'type' => gettype($photos),
+            ]);
+            
+            if (empty($photos)) {
+                $photoUploadErrors[] = 'No photos were received in the request';
+                Log::warning('Photos array is empty');
+            } else {
+                foreach ($photos as $index => $photo) {
+                    Log::info("Processing photo {$index}", [
+                        'photo_exists' => $photo !== null,
+                        'is_valid' => $photo ? $photo->isValid() : false,
+                        'error_code' => $photo ? $photo->getError() : null,
+                    ]);
+                    
+                    if (!$photo) {
+                        $photoUploadErrors[] = 'Photo ' . ($index + 1) . ': File is null';
+                        continue;
+                    }
+                    
+                    if (!$photo->isValid()) {
+                        $errorMessage = $photo->getError() === UPLOAD_ERR_INI_SIZE || $photo->getError() === UPLOAD_ERR_FORM_SIZE
+                            ? 'File size exceeds maximum allowed size (5MB)'
+                            : 'Invalid file or upload error (Error code: ' . $photo->getError() . ')';
+                        $photoUploadErrors[] = 'Photo ' . ($index + 1) . ': ' . $errorMessage;
+                        Log::warning('Photo invalid', [
+                            'index' => $index,
+                            'error_code' => $photo->getError(),
+                            'error_message' => $errorMessage,
+                        ]);
+                        continue;
+                    }
+                    
+                    try {
+                        $imageData = file_get_contents($photo->getRealPath());
+                        
+                        if ($imageData === false || empty($imageData)) {
+                            $photoUploadErrors[] = 'Photo ' . ($index + 1) . ': Could not read file data';
+                            Log::error('Could not read photo file data', ['index' => $index]);
+                            continue;
+                        }
+                        
+                        $photoBase64 = base64_encode($imageData);
+                        $this->processAndStorePhoto($asset, $photoBase64);
+                        $photosUploaded++;
+                        Log::info('Photo uploaded successfully', ['index' => $index]);
+                    } catch (\Exception $e) {
+                        Log::error('Failed to upload photo ' . ($index + 1) . ': ' . $e->getMessage(), [
+                            'exception' => $e,
+                            'file_name' => $photo->getClientOriginalName(),
+                            'file_size' => $photo->getSize(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
+                        $photoUploadErrors[] = 'Photo ' . ($index + 1) . ' (' . $photo->getClientOriginalName() . '): ' . $e->getMessage();
+                    }
+                }
+            }
+        } else {
+            Log::warning('No photos in request - hasFile returned false', [
+                'request_method' => $request->method(),
+                'content_type' => $request->header('Content-Type'),
+            ]);
+            $photoUploadErrors[] = 'No photos were detected in the upload. Please ensure the form has enctype="multipart/form-data" and files are selected.';
+        }
+
+        // Prepare response message
+        $messages = [];
+        $messageType = 'success';
+        
+        if ($photosUploaded > 0) {
+            $messages[] = "Asset updated successfully. {$photosUploaded} photo(s) uploaded.";
+        } else {
+            $messages[] = 'Asset updated successfully.';
+        }
+        
+        if (!empty($photoUploadErrors)) {
+            $messageType = 'warning';
+            $errorMessage = 'Photo upload issues: ' . implode('; ', $photoUploadErrors);
+            $messages[] = $errorMessage;
+            Log::warning('Photo upload errors during asset update', [
+                'asset_id' => $asset->id,
+                'errors' => $photoUploadErrors,
+            ]);
+        }
+        
+        // If user selected files but none were uploaded, show error
+        if ($request->has('photos_selected') && $photosUploaded === 0 && empty($photoUploadErrors)) {
+            $messageType = 'warning';
+            $messages[] = 'Photos were selected but could not be uploaded. Please check file size (max 5MB) and format (JPEG, PNG, JPG, GIF).';
+        }
+
+        $finalMessage = implode(' ', $messages);
+        
+        Log::info('Asset update completed', [
+            'asset_id' => $asset->id,
+            'photos_uploaded' => $photosUploaded,
+            'has_errors' => !empty($photoUploadErrors),
+            'message_type' => $messageType,
+        ]);
+        
         return redirect()
             ->route('options.assets.show', $asset)
-            ->with('success', 'Asset updated successfully.');
+            ->with($messageType, $finalMessage);
     }
 
     /**
@@ -310,6 +522,13 @@ final class AssetController extends Controller
             return redirect()
                 ->route('options.assets.index')
                 ->with('error', 'Cannot delete asset with existing work orders.');
+        }
+
+        // Check for child components
+        if ($asset->hasComponents()) {
+            return redirect()
+                ->route('options.assets.index')
+                ->with('error', 'Cannot delete asset with child components. Please detach components first.');
         }
 
         // Delete all photos
@@ -355,6 +574,8 @@ final class AssetController extends Controller
      */
     public function qrIndex(Request $request): View
     {
+        $this->authorize('viewAny', Asset::class);
+        
         $query = Asset::with(['assetCategory', 'location'])
             ->whereNotNull('qr_code_path');
 
@@ -363,9 +584,9 @@ final class AssetController extends Controller
             $query->where('asset_category_id', $request->category);
         }
 
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        // Filter by location
+        if ($request->filled('location')) {
+            $query->where('location_id', $request->location);
         }
 
         // Search by name, code
@@ -379,8 +600,9 @@ final class AssetController extends Controller
 
         $assets = $query->orderBy('code')->paginate(24);
         $categories = AssetCategory::active()->orderBy('name')->get();
+        $locations = Location::active()->orderBy('name')->get();
 
-        return view('options.assets.qr-index', compact('assets', 'categories'));
+        return view('options.assets.qr-index', compact('assets', 'categories', 'locations'));
     }
 
     /**
@@ -651,7 +873,6 @@ final class AssetController extends Controller
             'gps_data' => 'nullable|array',
             'department_id' => 'nullable|exists:departments,id',
             'user_id' => 'nullable|exists:users,id',
-            'is_active' => 'boolean',
         ]);
 
         // Auto-generate code if not provided
@@ -693,54 +914,113 @@ final class AssetController extends Controller
     /**
      * Set a photo as primary.
      */
-    public function setPrimaryPhoto(Asset $asset, AssetPhoto $photo): JsonResponse
+    public function setPrimaryPhoto(Asset $asset, File $photo): JsonResponse
     {
-        if ($photo->asset_id !== $asset->id) {
+        try {
+            // Verify photo belongs to this asset
+            if ($photo->fileable_id !== $asset->id || $photo->fileable_type !== Asset::class) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Photo does not belong to this asset'
+                ], 400);
+            }
+
+            // Verify it's a photo
+            if ($photo->file_category !== FileCategory::Photo) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'File is not a photo'
+                ], 400);
+            }
+
+            // Unset all other primary photos
+            $asset->photos()->update(['is_primary' => false]);
+
+            // Set this photo as primary
+            $photo->update(['is_primary' => true]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Primary photo updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to set primary photo: ' . $e->getMessage(), [
+                'photo_id' => $photo->id ?? null,
+                'asset_id' => $asset->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'error' => 'Photo does not belong to this asset'
-            ], 400);
+                'error' => 'An error occurred while setting primary photo: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Unset all other primary photos
-        $asset->photos()->update(['is_primary' => false]);
-
-        // Set this photo as primary
-        $photo->update(['is_primary' => true]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Primary photo updated successfully'
-        ]);
     }
 
     /**
      * Delete a photo.
      */
-    public function deletePhoto(AssetPhoto $photo): JsonResponse
+    public function deletePhoto(Asset $asset, File $photo): JsonResponse
     {
-        $asset = $photo->asset;
-
-        // Delete from S3
-        if ($photo->photo_path) {
-            Storage::disk('s3')->delete($photo->photo_path);
-        }
-
-        $wasPrimary = $photo->is_primary;
-        $photo->delete();
-
-        // If deleted photo was primary, set first remaining photo as primary
-        if ($wasPrimary && $asset) {
-            $firstPhoto = $asset->photos()->orderBy('created_at')->first();
-            if ($firstPhoto) {
-                $firstPhoto->update(['is_primary' => true]);
+        try {
+            // Verify photo belongs to this asset
+            if ($photo->fileable_id !== $asset->id || $photo->fileable_type !== Asset::class) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Photo does not belong to this asset'
+                ], 400);
             }
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Photo deleted successfully'
-        ]);
+            // Verify it's a photo
+            if ($photo->file_category !== FileCategory::Photo) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'File is not a photo'
+                ], 400);
+            }
+
+            $wasPrimary = $photo->is_primary;
+
+            // Delete from S3 (handled by model's boot method, but check anyway)
+            if ($photo->file_path) {
+                try {
+                    Storage::disk('s3')->delete($photo->file_path);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to delete photo from S3: ' . $e->getMessage(), [
+                        'photo_id' => $photo->id,
+                        'file_path' => $photo->file_path,
+                    ]);
+                    // Continue with deletion even if S3 delete fails
+                }
+            }
+
+            // Delete the photo record
+            $photo->delete();
+
+            // If deleted photo was primary, set first remaining photo as primary
+            if ($wasPrimary) {
+                $firstPhoto = $asset->photos()->orderBy('uploaded_at')->first();
+                if ($firstPhoto) {
+                    $firstPhoto->update(['is_primary' => true]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Photo deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete photo: ' . $e->getMessage(), [
+                'photo_id' => $photo->id ?? null,
+                'asset_id' => $asset->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while deleting the photo: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -791,42 +1071,80 @@ final class AssetController extends Controller
                 ];
             }
 
-            // Resize image
-            $image = Image::make($decodedImage);
-            $image->resize(1920, 1080, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            // Resize image using Intervention Image v3
+            $image = $this->imageManager->read($decodedImage);
+            
+            // Get original dimensions
+            $originalWidth = $image->width();
+            $originalHeight = $image->height();
+            $originalAspectRatio = $originalWidth / $originalHeight;
+            
+            // Calculate new dimensions maintaining aspect ratio
+            $maxWidth = 1920;
+            $maxHeight = 1080;
+            $targetAspectRatio = $maxWidth / $maxHeight;
+            
+            if ($originalAspectRatio > $targetAspectRatio) {
+                // Image is wider, scale by width
+                $newWidth = min($originalWidth, $maxWidth);
+                $newHeight = (int) ($newWidth / $originalAspectRatio);
+            } else {
+                // Image is taller, scale by height
+                $newHeight = min($originalHeight, $maxHeight);
+                $newWidth = (int) ($newHeight * $originalAspectRatio);
+            }
+            
+            // Only resize if image is larger than target
+            if ($originalWidth > $maxWidth || $originalHeight > $maxHeight) {
+                $image->resize($newWidth, $newHeight);
+            }
 
             // Generate filename and path
             $filename = 'asset_' . $asset->id . '_' . time() . '_' . uniqid() . '.jpg';
             $folderPath = 'assets/' . $asset->id . '/photos';
             $path = $folderPath . '/' . $filename;
 
-            // Store to S3
-            Storage::disk('s3')->put($path, $image->encode('jpg', 90), 'public');
+            // Encode to JPEG and store to S3
+            $encoded = $image->toJpeg(90);
+            $encodedString = (string) $encoded;
+            Storage::disk('s3')->put($path, $encodedString, 'public');
 
             // Get image dimensions
             $width = $image->width();
             $height = $image->height();
-            $fileSize = strlen($image->encode('jpg', 90));
+            $fileSize = strlen($encodedString);
 
-            // Create AssetPhoto record
-            AssetPhoto::create([
-                'asset_id' => $asset->id,
-                'photo_path' => $path,
+            // Create File record for the photo
+            $metadata = [
+                'width' => $width,
+                'height' => $height,
+                'file_size' => $fileSize,
+                'exif_data' => $exifData,
+                'timezone' => 'Asia/Jakarta',
+            ];
+            
+            // Add captured_at to metadata if available
+            if ($capturedAt) {
+                $metadata['captured_at'] = $capturedAt->toIso8601String();
+            }
+            
+            // Add GPS data to metadata if available
+            if ($photoGpsData) {
+                $metadata['gps_data'] = $photoGpsData;
+            }
+            
+            File::create([
+                'fileable_type' => Asset::class,
+                'fileable_id' => $asset->id,
+                'file_category' => FileCategory::Photo,
+                'file_path' => $path,
+                'file_name' => $filename,
+                'file_size' => $fileSize,
+                'mime_type' => 'image/jpeg',
                 'uploaded_at' => $uploadedAt,
-                'captured_at' => $capturedAt,
-                'is_primary' => $isPrimary,
                 'uploaded_by' => auth()->id(),
-                'gps_data' => $photoGpsData,
-                'metadata' => [
-                    'width' => $width,
-                    'height' => $height,
-                    'file_size' => $fileSize,
-                    'exif_data' => $exifData,
-                    'timezone' => 'Asia/Jakarta',
-                ],
+                'is_primary' => $isPrimary,
+                'metadata' => $metadata,
             ]);
 
         } catch (\Exception $e) {
@@ -907,5 +1225,149 @@ final class AssetController extends Controller
         }
 
         return round($result, 6);
+    }
+
+    /**
+     * Show the form for attaching a component to an asset.
+     */
+    public function showAttachForm(Asset $asset): View
+    {
+        $this->authorize('attachComponent', $asset);
+
+        // Get available assets that can be attached as components
+        // Exclude: the parent asset itself, assets that are already attached to other parents
+        $availableAssets = Asset::where('id', '!=', $asset->id)
+            ->where(function ($query) use ($asset) {
+                $query->whereNull('parent_asset_id')
+                    ->orWhere('parent_asset_id', $asset->id); // Allow reattaching if already attached to this parent
+            })
+            ->active()
+            ->orderBy('name')
+            ->get();
+
+        return view('assets.components.attach', compact('asset', 'availableAssets'));
+    }
+
+    /**
+     * Attach a component to an asset.
+     */
+    public function attachComponent(AttachComponentRequest $request, Asset $asset): RedirectResponse
+    {
+        $this->authorize('attachComponent', $asset);
+
+        $component = Asset::findOrFail($request->component_id);
+        $componentType = ComponentType::from($request->component_type);
+        $installedDate = $request->installed_date ? new \DateTime($request->installed_date) : null;
+        $installedUsageValue = $request->installed_usage_value !== null && $request->installed_usage_value !== '' 
+            ? (float) $request->installed_usage_value 
+            : null;
+
+        try {
+            $this->componentService->attachComponent(
+                $asset,
+                $component,
+                $componentType,
+                $installedDate,
+                $installedUsageValue,
+                $request->installation_notes
+            );
+
+            return redirect()
+                ->route('assets.components', $asset)
+                ->with('success', 'Component attached successfully.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Failed to attach component: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show the form for detaching a component.
+     */
+    public function showDetachForm(Asset $component): View
+    {
+        $this->authorize('detachComponent', $component);
+
+        if (!$component->parentAsset) {
+            abort(404, 'Component does not have a parent asset.');
+        }
+
+        return view('assets.components.detach', compact('component'));
+    }
+
+    /**
+     * Detach a component from its parent asset.
+     */
+    public function detachComponent(DetachComponentRequest $request, Asset $component): RedirectResponse
+    {
+        $this->authorize('detachComponent', $component);
+
+        $parentAsset = $component->parentAsset;
+        $disposedDate = $request->disposed_date ? new \DateTime($request->disposed_date) : null;
+        $disposedUsageValue = $request->disposed_usage_value !== null && $request->disposed_usage_value !== '' 
+            ? (float) $request->disposed_usage_value 
+            : null;
+
+        try {
+            $this->componentService->detachComponent(
+                $component,
+                $disposedDate,
+                $disposedUsageValue,
+                $request->dispose_asset,
+                $request->notes
+            );
+
+            $message = 'Component detached successfully.';
+            if ($request->dispose_asset) {
+                $message .= ' Component has been marked as disposed.';
+            }
+
+            return redirect()
+                ->route('assets.components', $parentAsset)
+                ->with('success', $message);
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Failed to detach component: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show components for an asset.
+     */
+    public function showComponents(Asset $asset): View
+    {
+        $this->authorize('view', $asset);
+
+        $asset->load(['childAssets.parentAsset', 'parentAsset']);
+        $components = $asset->childAssets;
+        $componentTree = $this->componentService->getComponentTree($asset);
+
+        return view('assets.components.index', compact('asset', 'components', 'componentTree'));
+    }
+
+    /**
+     * Show lifetime metrics for an asset.
+     */
+    public function showLifetimeMetrics(Asset $asset): View
+    {
+        $this->authorize('viewLifetimeMetrics', $asset);
+
+        $asset->load(['assetCategory']);
+        $lifetimePercentage = $this->lifetimeService->getLifetimePercentage($asset);
+        $remainingLifetime = $this->lifetimeService->getRemainingLifetime($asset);
+        $expectedLifetime = $this->lifetimeService->getExpectedLifetime($asset);
+        $suggestedLifetime = $this->lifetimeService->suggestExpectedLifetime($asset);
+
+        return view('reports.asset-lifetime.asset', compact(
+            'asset',
+            'lifetimePercentage',
+            'remainingLifetime',
+            'expectedLifetime',
+            'suggestedLifetime'
+        ));
     }
 }

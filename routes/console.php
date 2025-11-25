@@ -84,3 +84,19 @@ Schedule::command('dms:cleanup-expired-access')
     ->onFailure(function () {
         Log::error('Document access cleanup failed');
     });
+
+/**
+ * Schedule recalculation of asset lifetime metrics.
+ * Runs monthly on the 1st at 02:00 Asia/Jakarta timezone.
+ */
+Schedule::command('assets:recalculate-lifetime-metrics --all')
+    ->monthlyOn(1, '02:00')
+    ->timezone('Asia/Jakarta')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onSuccess(function () {
+        Log::info('Asset lifetime metrics recalculation completed successfully');
+    })
+    ->onFailure(function () {
+        Log::error('Asset lifetime metrics recalculation failed');
+    });

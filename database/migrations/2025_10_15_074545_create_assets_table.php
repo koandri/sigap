@@ -29,7 +29,6 @@ return new class extends Migration
             $table->string('qr_code_path')->nullable();
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->boolean('is_active')->default(true);
             $table->date('disposed_date')->nullable();
             $table->text('disposal_reason')->nullable();
             $table->foreignId('disposed_by')->nullable()->constrained('users')->onDelete('set null');

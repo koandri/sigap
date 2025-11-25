@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="page-header">
-    <div class="container-xl">
+    <div class="container-fluid">
         <div class="row g-2 align-items-center">
             <div class="col">
                 <div class="page-pretitle">
@@ -30,7 +30,7 @@
 </div>
 
 <div class="page-body">
-    <div class="container-xl">
+    <div class="container-fluid">
         <!-- Filters -->
         <div class="card mb-3">
             <div class="card-body">
@@ -110,7 +110,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge" style="background-color: {{ $schedule->maintenanceType->color }}">
+                                        <span class="badge text-white" style="background-color: {{ $schedule->maintenanceType->color }}">
                                             {{ $schedule->maintenanceType->name }}
                                         </span>
                                     </td>
@@ -122,7 +122,7 @@
                                     </td>
                                     <td>{{ $schedule->assignedUser?->name ?? 'Unassigned' }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $schedule->is_active ? 'success' : 'secondary' }}">
+                                        <span class="badge bg-{{ $schedule->is_active ? 'success' : 'secondary' }} text-white">
                                             {{ $schedule->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>

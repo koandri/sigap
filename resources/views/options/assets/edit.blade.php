@@ -56,7 +56,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label required">Category</label>
-                                        <select name="asset_category_id" class="form-select @error('asset_category_id') is-invalid @enderror" required>
+                                        <select name="asset_category_id" id="asset-category" class="form-select @error('asset_category_id') is-invalid @enderror" required>
                                             <option value="">Select Category</option>
                                             @foreach($categories as $category)
                                                 <option value="{{ $category->id }}" {{ old('asset_category_id', $asset->asset_category_id) == $category->id ? 'selected' : '' }}>
@@ -203,10 +203,16 @@
                                     @foreach($asset->photos as $photo)
                                     <div class="col-md-3 col-sm-4 col-6">
                                         <div class="card {{ $photo->is_primary ? 'border-primary' : '' }}">
-                                            <img src="{{ Storage::disk('s3')->url($photo->photo_path) }}" 
+                                            @if($photo->file_path)
+                                            <img src="{{ Storage::disk('s3')->url($photo->file_path) }}" 
                                                  class="card-img-top" 
                                                  style="height: 150px; object-fit: cover;" 
                                                  alt="Photo">
+                                            @else
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                                <span class="text-muted small">Photo not available</span>
+                                            </div>
+                                            @endif
                                             <div class="card-body p-2">
                                                 @if($photo->is_primary)
                                                     <span class="badge bg-primary">Primary</span>
@@ -245,7 +251,12 @@
                                             @foreach($asset->specifications as $key => $value)
                                                 @if(!empty($value))
                                                 <div class="col-md-6">
-                                                    <strong class="text-capitalize">{{ str_replace('_', ' ', $key) }}:</strong> {{ $value }}
+                                                    <strong class="text-capitalize">{{ str_replace('_', ' ', $key) }}:</strong> 
+                                                    @if(is_array($value))
+                                                        {{ json_encode($value) }}
+                                                    @else
+                                                        {{ $value }}
+                                                    @endif
                                                 </div>
                                                 @endif
                                             @endforeach
@@ -254,8 +265,10 @@
                                 </div>
                                 @endif
                                 <textarea name="specifications_text" id="specifications-textarea" class="form-control @error('specifications') is-invalid @enderror" 
-                                          rows="4" placeholder="Enter specifications as JSON or key-value pairs (one per line: key: value)">@if($asset->specifications)@foreach($asset->specifications as $key => $value){{ $key }}: {{ $value }}
-@endforeach@endif</textarea>
+                                          rows="4" placeholder="Enter specifications as JSON or key-value pairs (one per line: key: value)">@if($asset->specifications)
+@foreach($asset->specifications as $key => $value){{ $key }}: @if(is_array($value)){{ json_encode($value) }}@else{{ $value }}@endif
+@endforeach
+@endif</textarea>
                                 <small class="form-hint">Edit specifications as key-value pairs (one per line: key: value) or as JSON.</small>
                                 <input type="hidden" name="specifications" id="specifications-input" value="{{ $asset->specifications ? json_encode($asset->specifications) : '' }}">
                                 @error('specifications')
@@ -263,12 +276,100 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-check">
-                                    <input type="checkbox" name="is_active" class="form-check-input" value="1" 
-                                           {{ old('is_active', $asset->is_active) ? 'checked' : '' }}>
-                                    <span class="form-check-label">Active</span>
-                                </label>
+                        </div>
+
+                        <!-- Component and Lifetime Information -->
+                        <div class="card-header">
+                            <h3 class="card-title">Component & Lifetime Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Parent Asset</label>
+                                        <select name="parent_asset_id" id="parent-asset-select" class="form-select @error('parent_asset_id') is-invalid @enderror">
+                                            <option value="">None (Standalone Asset)</option>
+                                            @foreach($assets ?? [] as $parentAsset)
+                                                <option value="{{ $parentAsset->id }}" {{ old('parent_asset_id', $asset->parent_asset_id) == $parentAsset->id ? 'selected' : '' }}>
+                                                    {{ $parentAsset->name }} ({{ $parentAsset->code }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('parent_asset_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <small class="form-hint">Select if this asset is a component of another asset</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Component Type</label>
+                                        <select name="component_type" id="component-type-select" class="form-select @error('component_type') is-invalid @enderror">
+                                            <option value="">Not a Component</option>
+                                            <option value="consumable" {{ old('component_type', $asset->component_type?->value) == 'consumable' ? 'selected' : '' }}>Consumable</option>
+                                            <option value="replaceable" {{ old('component_type', $asset->component_type?->value) == 'replaceable' ? 'selected' : '' }}>Replaceable</option>
+                                            <option value="integral" {{ old('component_type', $asset->component_type?->value) == 'integral' ? 'selected' : '' }}>Integral</option>
+                                        </select>
+                                        @error('component_type')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Installed Date</label>
+                                        <input type="date" name="installed_date" class="form-control @error('installed_date') is-invalid @enderror" 
+                                               value="{{ old('installed_date', $asset->installed_date?->format('Y-m-d')) }}">
+                                        @error('installed_date')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Start Usage Value</label>
+                                        <input type="number" step="0.01" min="0" name="installed_usage_value" class="form-control @error('installed_usage_value') is-invalid @enderror" 
+                                               value="{{ old('installed_usage_value', $asset->installed_usage_value) }}">
+                                        @error('installed_usage_value')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Lifetime Unit</label>
+                                        <select name="lifetime_unit" id="lifetime-unit-select" class="form-select @error('lifetime_unit') is-invalid @enderror">
+                                            <option value="">Select Unit</option>
+                                            <option value="days" {{ old('lifetime_unit', $asset->lifetime_unit?->value) == 'days' ? 'selected' : '' }}>Days</option>
+                                            <option value="kilometers" {{ old('lifetime_unit', $asset->lifetime_unit?->value) == 'kilometers' ? 'selected' : '' }}>Kilometers</option>
+                                            <option value="machine_hours" {{ old('lifetime_unit', $asset->lifetime_unit?->value) == 'machine_hours' ? 'selected' : '' }}>Machine Hours</option>
+                                            <option value="cycles" {{ old('lifetime_unit', $asset->lifetime_unit?->value) == 'cycles' ? 'selected' : '' }}>Cycles</option>
+                                        </select>
+                                        @error('lifetime_unit')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Expected Lifetime Value</label>
+                                        <input type="number" step="0.01" min="0" name="expected_lifetime_value" class="form-control @error('expected_lifetime_value') is-invalid @enderror" 
+                                               value="{{ old('expected_lifetime_value', $asset->expected_lifetime_value) }}">
+                                        @error('expected_lifetime_value')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer">
@@ -290,12 +391,14 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
+
+    
 document.addEventListener('DOMContentLoaded', function() {
     new TomSelect('#location-select', {
         placeholder: '-- Select Location --',
         allowEmptyOption: true
     });
-    
+
     // Convert specifications textarea to JSON before form submission
     const form = document.querySelector('form[action*="assets"]');
     if (form) {
