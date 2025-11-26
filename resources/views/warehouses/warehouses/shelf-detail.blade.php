@@ -224,7 +224,7 @@
                             @if($position->is_occupied)
                                 @php $item = $position->current_item; @endphp
                                 <div class="item-details">
-                                    <div class="item-name">{{ $item->item->name }}</div>
+                                    <div class="item-name">{{ $item->item->label }}</div>
                                     <div class="item-quantity">Quantity: {{ number_format($item->quantity, 2) }} {{ $item->item->unit }}</div>
                                     @if($item->expiry_date)
                                         <div class="item-expiry">
@@ -329,14 +329,8 @@
                                 <option value="{{ $item->id }}" 
                                         data-unit="{{ $item->unit }}"
                                         data-category="{{ $item->itemCategory ? $item->itemCategory->name : '' }}"
-                                        data-item-name="{{ $item->name }}">
-                                    {{ $item->name }} 
-                                    @if($item->itemCategory)
-                                        ({{ $item->itemCategory->name }})
-                                    @endif
-                                    @if($item->unit)
-                                        - {{ $item->unit }}
-                                    @endif
+                                        data-item-name="{{ $item->label }}">
+                                    {{ $item->label }}
                                 </option>
                             @endforeach
                         </select>

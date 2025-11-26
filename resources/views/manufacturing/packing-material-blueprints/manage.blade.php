@@ -196,13 +196,9 @@
                                     <td>
                                         <select name="materials[{{ $index }}][material_item_id]" class="form-select material-select" required>
                                             <option value="">Select material...</option>
-                                            @foreach($materialItems as $materialItem)
-                                            <option value="{{ $materialItem->id }}" 
-                                                {{ $blueprint->material_item_id == $materialItem->id ? 'selected' : '' }}>
-                                                {{ $materialItem->name }}
-                                                @if($materialItem->itemCategory)
-                                                    ({{ $materialItem->itemCategory->name }})
-                                                @endif
+                                            @foreach($materialItems as $id => $label)
+                                            <option value="{{ $id }}" {{ $blueprint->material_item_id == $id ? 'selected' : '' }}>
+                                                {{ $label }}
                                             </option>
                                             @endforeach
                                         </select>
@@ -227,12 +223,9 @@
                                     <td>
                                         <select name="materials[0][material_item_id]" class="form-select material-select" required>
                                             <option value="">Select material...</option>
-                                            @foreach($materialItems as $materialItem)
-                                            <option value="{{ $materialItem->id }}">
-                                                {{ $materialItem->name }}
-                                                @if($materialItem->itemCategory)
-                                                    ({{ $materialItem->itemCategory->name }})
-                                                @endif
+                                            @foreach($materialItems as $id => $label)
+                                            <option value="{{ $id }}">
+                                                {{ $label }}
                                             </option>
                                             @endforeach
                                         </select>
@@ -282,13 +275,14 @@
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script>
 let materialIndex = {{ $item->packingMaterialBlueprints->count() > 0 ? $item->packingMaterialBlueprints->count() : 1 }};
-const materialOptions = {!! json_encode($materialItems->map(function($item) {
-    return [
-        'id' => $item->id,
-        'name' => $item->name,
-        'category' => optional($item->itemCategory)->name ?? '',
-    ];
-})) !!};
+const materialOptions = {!! json_encode(
+    collect($materialItems)->map(function ($label, $id) {
+        return [
+            'id' => $id,
+            'label' => $label,
+        ];
+    })->values()
+) !!};
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeAllSelects();
@@ -321,8 +315,7 @@ function addMaterialRow() {
     let optionsHtml = '<option value="">Select material...</option>';
     materialOptions.forEach(function(material) {
         optionsHtml += `<option value="${material.id}">
-            ${material.name}
-            ${material.category ? `(${material.category})` : ''}
+            ${material.label}
         </option>`;
     });
     

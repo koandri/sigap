@@ -227,7 +227,7 @@
                                         <select class="form-select tom-select" name="item_id" id="bulk-item">
                                             <option value="">Select Item</option>
                                             @foreach($items as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            <option value="{{ $item->id }}">{{ $item->label }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -311,6 +311,7 @@ $(document).ready(function() {
             return [
                 'id' => $item->id,
                 'name' => $item->name,
+                'label' => $item->label,
                 'shortname' => $item->shortname,
                 'unit' => $item->unit
             ];
@@ -691,7 +692,8 @@ $(document).ready(function() {
         // Generate dropdown options from JSON items array
         const itemOptions = allItems.map(item => {
             const selected = currentItem && currentItem.id === item.id ? 'selected' : '';
-            return `<option value="${item.id}" ${selected}>${item.name}</option>`;
+            const label = item.label || item.name;
+            return `<option value="${item.id}" ${selected}>${label}</option>`;
         }).join('');
         
         // Default expiry date (18 months from now)

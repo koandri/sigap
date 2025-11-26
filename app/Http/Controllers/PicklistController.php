@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Warehouse;
 use App\Models\Item;
 use App\Models\PositionItem;
+use App\Services\ItemDropdownService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -23,21 +24,21 @@ final class PicklistController extends Controller
     /**
      * Show the global picklist generation form (across all warehouses).
      */
-    public function index(): View
+    public function index(ItemDropdownService $itemDropdowns): View
     {
         // Get all warehouses
         $warehouses = Warehouse::active()->orderBy('name')->get();
         
-        // Get all available items across all warehouses
+        // Get all available items across all warehouses that currently have stock
         $availableItems = Item::whereHas('positionItems.shelfPosition.warehouseShelf', function($q) {
-            $q->whereHas('warehouse', function($warehouseQuery) {
-                $warehouseQuery->where('is_active', true);
-            });
-        })
-        ->with(['itemCategory', 'positionItems.shelfPosition.warehouseShelf.warehouse'])
-        ->where('is_active', true)
-        ->orderBy('name')
-        ->get();
+                $q->whereHas('warehouse', function($warehouseQuery) {
+                    $warehouseQuery->where('is_active', true);
+                });
+            })
+            ->with(['itemCategory', 'positionItems.shelfPosition.warehouseShelf.warehouse'])
+            ->active()
+            ->orderBy('name')
+            ->get();
 
         return view('warehouses.warehouses.picklist', compact('warehouses', 'availableItems'));
     }

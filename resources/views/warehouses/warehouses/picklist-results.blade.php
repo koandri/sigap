@@ -388,7 +388,7 @@
         <div class="item-section">
             <div class="item-header">
                 <div>
-                    <div class="item-name">{{ $itemResult['item']->name }}</div>
+                    <div class="item-name">{{ $itemResult['item']->label }}</div>
                     <div class="item-category">{{ $itemResult['item']->itemCategory->name ?? 'No Category' }}</div>
                     <div class="item-stats">
                         <div class="item-stat">
@@ -510,9 +510,9 @@
             
             @foreach($unfulfilledItems as $unfulfilled)
             <div class="position-row">
-                <div class="position-info">
+                        <div class="position-info">
                     <div>
-                        <div class="position-location">{{ $unfulfilled['item']->name }}</div>
+                        <div class="position-location">{{ $unfulfilled['item']->label }}</div>
                         <div class="text-muted">{{ $unfulfilled['item']->itemCategory->name ?? 'No Category' }}</div>
                     </div>
                     <div class="text-danger">

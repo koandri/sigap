@@ -894,7 +894,13 @@
 <script>
 // Global variables
 const doughItems = @json($doughItems);
-const ingredientItems = @json($ingredientItems);
+const ingredientItems = @json($ingredientItems->map(function($item) {
+    return [
+        'id' => $item->id,
+        'name' => $item->label,
+        'unit' => $item->unit,
+    ];
+}));
 const adonanItems = @json($adonanItems);
 const gelondonganItems = @json($gelondonganItems);
 const kerupukKeringItems = @json($kerupukKeringItems);

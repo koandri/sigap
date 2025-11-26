@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\PackingMaterialBlueprint;
+use App\Services\ItemDropdownService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,18 +45,18 @@ final class PackingMaterialBlueprintController extends Controller
         return view('manufacturing.packing-material-blueprints.index', compact('packItems', 'search'));
     }
 
-    public function manage(Item $item): View
+    public function manage(Item $item, ItemDropdownService $itemDropdowns): View
     {
         $item->load(['itemCategory', 'packingMaterialBlueprints.materialItem.itemCategory']);
 
-        // Get available material items
-        $materialItems = Item::with('itemCategory:id,name')
-            ->where('is_active', true)
-            ->whereHas('itemCategory', static function ($query): void {
-                $query->whereIn('name', ['Bahan Pembantu Lainnya', 'Plastik', 'Dos']);
-            })
-            ->orderBy('name')
-            ->get(['id', 'name', 'item_category_id']);
+        // Get available material items as id => label, restricted by categories
+        $materialCategoryIds = \App\Models\ItemCategory::whereIn('name', [
+            'Bahan Pembantu Lainnya',
+            'Plastik',
+            'Dos',
+        ])->pluck('id')->all();
+
+        $materialItems = $itemDropdowns->forCategoryIds($materialCategoryIds);
 
         return view('manufacturing.packing-material-blueprints.manage', compact('item', 'materialItems'));
     }

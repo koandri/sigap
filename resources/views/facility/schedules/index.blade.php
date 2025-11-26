@@ -117,7 +117,7 @@
                             <td colspan="7">
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <i class="fa fa-calendar fa-3x text-muted"></i>&nbsp;
+                                        <i class="fa fa-calendar text-muted"></i>&nbsp;
                                     </div>
                                     <p class="empty-title">No cleaning schedules</p>
                                     <p class="empty-subtitle text-muted">

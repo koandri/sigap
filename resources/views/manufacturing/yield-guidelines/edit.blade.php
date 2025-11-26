@@ -160,14 +160,14 @@
                                         <label class="form-label required">From Item</label>
                                         <select name="from_item_id" id="from_item_id" class="form-select @error('from_item_id') is-invalid @enderror" required>
                                             <option value="">Select From Item</option>
-                                            @foreach($adonanItems as $item)
-                                            <option value="{{ $item->id }}" data-stage="adonan" {{ old('from_item_id', $yieldGuideline->from_item_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                            @foreach($adonanItems as $id => $label)
+                                            <option value="{{ $id }}" data-stage="adonan" {{ old('from_item_id', $yieldGuideline->from_item_id) == $id ? 'selected' : '' }}>{{ $label }}</option>
                                             @endforeach
-                                            @foreach($gelondonganItems as $item)
-                                            <option value="{{ $item->id }}" data-stage="gelondongan" {{ old('from_item_id', $yieldGuideline->from_item_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                            @foreach($gelondonganItems as $id => $label)
+                                            <option value="{{ $id }}" data-stage="gelondongan" {{ old('from_item_id', $yieldGuideline->from_item_id) == $id ? 'selected' : '' }}>{{ $label }}</option>
                                             @endforeach
-                                            @foreach($kerupukKgItems as $item)
-                                            <option value="{{ $item->id }}" data-stage="kerupuk_kg" {{ old('from_item_id', $yieldGuideline->from_item_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                            @foreach($kerupukKgItems as $id => $label)
+                                            <option value="{{ $id }}" data-stage="kerupuk_kg" {{ old('from_item_id', $yieldGuideline->from_item_id) == $id ? 'selected' : '' }}>{{ $label }}</option>
                                             @endforeach
                                         </select>
                                         @error('from_item_id')
@@ -180,14 +180,14 @@
                                         <label class="form-label required">To Item</label>
                                         <select name="to_item_id" id="to_item_id" class="form-select @error('to_item_id') is-invalid @enderror" required>
                                             <option value="">Select To Item</option>
-                                            @foreach($gelondonganItems as $item)
-                                            <option value="{{ $item->id }}" data-stage="gelondongan" {{ old('to_item_id', $yieldGuideline->to_item_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                            @foreach($gelondonganItems as $id => $label)
+                                            <option value="{{ $id }}" data-stage="gelondongan" {{ old('to_item_id', $yieldGuideline->to_item_id) == $id ? 'selected' : '' }}>{{ $label }}</option>
                                             @endforeach
-                                            @foreach($kerupukKgItems as $item)
-                                            <option value="{{ $item->id }}" data-stage="kerupuk_kg" {{ old('to_item_id', $yieldGuideline->to_item_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                            @foreach($kerupukKgItems as $id => $label)
+                                            <option value="{{ $id }}" data-stage="kerupuk_kg" {{ old('to_item_id', $yieldGuideline->to_item_id) == $id ? 'selected' : '' }}>{{ $label }}</option>
                                             @endforeach
-                                            @foreach($kerupukPackItems as $item)
-                                            <option value="{{ $item->id }}" data-stage="packing" {{ old('to_item_id', $yieldGuideline->to_item_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                            @foreach($kerupukPackItems as $id => $label)
+                                            <option value="{{ $id }}" data-stage="packing" {{ old('to_item_id', $yieldGuideline->to_item_id) == $id ? 'selected' : '' }}>{{ $label }}</option>
                                             @endforeach
                                         </select>
                                         @error('to_item_id')

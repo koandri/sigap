@@ -78,26 +78,25 @@
                                     @foreach($calculatedData as $index => $data)
                                     <tr class="step2-row">
                                         <td>
-                                            <select name="step2[{{ $index }}][adonan_item_id]" class="form-select" required>
+                                            <select name="step2[{{ $index }}][adonan_item_id]" class="form-select step2-adonan-select" required>
                                                 <option value="">Select Adn</option>
                                                 @foreach($productionPlan->step1 as $step1)
                                                 <option value="{{ $step1->dough_item_id }}" {{ $data['adonan_item_id'] == $step1->dough_item_id ? 'selected' : '' }}>
-                                                    {{ $step1->doughItem->name ?? 'N/A' }}
+                                                    {{ $step1->doughItem?->label ?? $step1->doughItem?->name ?? 'N/A' }}
                                                 </option>
                                                 @endforeach
                                             </select>
                                         </td>
                                         <td>
-                                            <select name="step2[{{ $index }}][gelondongan_item_id]" class="form-select" required>
+                                            <select name="step2[{{ $index }}][gelondongan_item_id]" class="form-select step2-gelondongan-select" required>
                                                 <option value="">Select Gld</option>
                                                 @php
-                                                    $gelondonganItems = \App\Models\Item::whereHas('itemCategory', function($q) {
-                                                        $q->where('name', 'like', '%Gelondongan%');
-                                                    })->where('is_active', true)->get();
+                                                    /** @var \Illuminate\Support\Collection<int,string> $gelondonganItems */
+                                                    $gelondonganItems = app(\App\Services\ItemDropdownService::class)->forGelondonganItems();
                                                 @endphp
-                                                @foreach($gelondonganItems as $item)
-                                                <option value="{{ $item->id }}" {{ $data['gelondongan_item_id'] == $item->id ? 'selected' : '' }}>
-                                                    {{ $item->name }}
+                                                @foreach($gelondonganItems as $id => $label)
+                                                <option value="{{ $id }}" {{ $data['gelondongan_item_id'] == $id ? 'selected' : '' }}>
+                                                    {{ $label }}
                                                 </option>
                                                 @endforeach
                                             </select>
@@ -140,26 +139,25 @@
                                     @foreach($productionPlan->step2 as $index => $step2)
                                     <tr class="step2-row">
                                         <td>
-                                            <select name="step2[{{ $index }}][adonan_item_id]" class="form-select" required>
+                                            <select name="step2[{{ $index }}][adonan_item_id]" class="form-select step2-adonan-select" required>
                                                 <option value="">Select Adn</option>
                                                 @foreach($productionPlan->step1 as $step1)
                                                 <option value="{{ $step1->dough_item_id }}" {{ $step2->adonan_item_id == $step1->dough_item_id ? 'selected' : '' }}>
-                                                    {{ $step1->doughItem->name ?? 'N/A' }}
+                                                    {{ $step1->doughItem?->label ?? $step1->doughItem?->name ?? 'N/A' }}
                                                 </option>
                                                 @endforeach
                                             </select>
                                         </td>
                                         <td>
-                                            <select name="step2[{{ $index }}][gelondongan_item_id]" class="form-select" required>
+                                            <select name="step2[{{ $index }}][gelondongan_item_id]" class="form-select step2-gelondongan-select" required>
                                                 <option value="">Select Gld</option>
                                                 @php
-                                                    $gelondonganItems = \App\Models\Item::whereHas('itemCategory', function($q) {
-                                                        $q->where('name', 'like', '%Gelondongan%');
-                                                    })->where('is_active', true)->get();
+                                                    /** @var \Illuminate\Support\Collection<int,string> $gelondonganItems */
+                                                    $gelondonganItems = app(\App\Services\ItemDropdownService::class)->forGelondonganItems();
                                                 @endphp
-                                                @foreach($gelondonganItems as $item)
-                                                <option value="{{ $item->id }}" {{ $step2->gelondongan_item_id == $item->id ? 'selected' : '' }}>
-                                                    {{ $item->name }}
+                                                @foreach($gelondonganItems as $id => $label)
+                                                <option value="{{ $id }}" {{ $step2->gelondongan_item_id == $id ? 'selected' : '' }}>
+                                                    {{ $label }}
                                                 </option>
                                                 @endforeach
                                             </select>
@@ -220,6 +218,7 @@
 </div>
 
 @push('scripts')
+<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script>
 let rowIndex = {{ count($calculatedData) > 0 ? count($calculatedData) : $productionPlan->step2->count() }};
 
@@ -246,6 +245,9 @@ function addStep2Row() {
     row.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
     
     tbody.appendChild(row);
+    
+    // Initialize TomSelect for new row selects
+    initializeTomSelectForRow(row);
     rowIndex++;
 }
 
@@ -273,6 +275,49 @@ function createEmptyRow() {
         <td><input type="number" name="step2[0][qty_bl_gelondongan]" class="form-control" step="1" min="0" value="0" required></td>
     `;
     return row;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize TomSelect for existing rows
+    document.querySelectorAll('.step2-adonan-select').forEach(function (el) {
+        if (!el.tomselect) {
+            new TomSelect(el, {
+                allowEmptyOption: true,
+                placeholder: 'Select Adn',
+                sortField: { field: 'text', direction: 'asc' },
+            });
+        }
+    });
+
+    document.querySelectorAll('.step2-gelondongan-select').forEach(function (el) {
+        if (!el.tomselect) {
+            new TomSelect(el, {
+                allowEmptyOption: true,
+                placeholder: 'Select Gld',
+                sortField: { field: 'text', direction: 'asc' },
+            });
+        }
+    });
+});
+
+function initializeTomSelectForRow(row) {
+    const adonanSelect = row.querySelector('.step2-adonan-select');
+    if (adonanSelect && !adonanSelect.tomselect) {
+        new TomSelect(adonanSelect, {
+            allowEmptyOption: true,
+            placeholder: 'Select Adn',
+            sortField: { field: 'text', direction: 'asc' },
+        });
+    }
+
+    const gldSelect = row.querySelector('.step2-gelondongan-select');
+    if (gldSelect && !gldSelect.tomselect) {
+        new TomSelect(gldSelect, {
+            allowEmptyOption: true,
+            placeholder: 'Select Gld',
+            sortField: { field: 'text', direction: 'asc' },
+        });
+    }
 }
 
 </script>

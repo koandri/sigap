@@ -55,7 +55,7 @@
                         @forelse($packItems as $packItem)
                         <tr>
                             <td>
-                                <div class="fw-semibold">{{ $packItem->name }}</div>
+                                <div class="fw-semibold">{{ $packItem->label }}</div>
                             </td>
                             <td>
                                 <span class="text-muted">{{ $packItem->itemCategory->name ?? 'N/A' }}</span>

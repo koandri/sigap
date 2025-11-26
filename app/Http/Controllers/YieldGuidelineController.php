@@ -7,8 +7,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreYieldGuidelineRequest;
 use App\Http\Requests\UpdateYieldGuidelineRequest;
 use App\Models\Item;
-use App\Models\ItemCategory;
 use App\Models\YieldGuideline;
+use App\Services\ItemDropdownService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -58,30 +58,13 @@ final class YieldGuidelineController extends Controller
     /**
      * Show the form for creating a new yield guideline.
      */
-    public function create(): View
+    public function create(ItemDropdownService $itemDropdowns): View
     {
-        // Get items that can be used for yield guidelines
-        $adonanCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
-        $gelondonganCategory = ItemCategory::where('name', 'like', '%Gelondongan%')->first();
-        $kerupukKgCategory = ItemCategory::where('name', 'like', '%Kerupuk Kg%')->first()
-            ?? ItemCategory::where('name', 'like', '%Finished Products%')->first();
-        $kerupukPackCategory = ItemCategory::where('name', 'like', '%Kerupuk Pack%')->first();
-
-        $adonanItems = $adonanCategory
-            ? Item::where('item_category_id', $adonanCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
-
-        $gelondonganItems = $gelondonganCategory
-            ? Item::where('item_category_id', $gelondonganCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
-
-        $kerupukKgItems = $kerupukKgCategory
-            ? Item::where('item_category_id', $kerupukKgCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
-
-        $kerupukPackItems = $kerupukPackCategory
-            ? Item::where('item_category_id', $kerupukPackCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
+        // Get items that can be used for yield guidelines (id => label)
+        $adonanItems = $itemDropdowns->forDoughItems();
+        $gelondonganItems = $itemDropdowns->forGelondonganItems();
+        $kerupukKgItems = $itemDropdowns->forKerupukKgItems();
+        $kerupukPackItems = $itemDropdowns->forKerupukPackItems();
 
         return view('manufacturing.yield-guidelines.create', compact(
             'adonanItems',
@@ -116,32 +99,15 @@ final class YieldGuidelineController extends Controller
     /**
      * Show the form for editing the specified yield guideline.
      */
-    public function edit(YieldGuideline $yieldGuideline): View
+    public function edit(YieldGuideline $yieldGuideline, ItemDropdownService $itemDropdowns): View
     {
         $yieldGuideline->load(['fromItem', 'toItem']);
 
-        // Get items that can be used for yield guidelines
-        $adonanCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
-        $gelondonganCategory = ItemCategory::where('name', 'like', '%Gelondongan%')->first();
-        $kerupukKgCategory = ItemCategory::where('name', 'like', '%Kerupuk Kg%')->first()
-            ?? ItemCategory::where('name', 'like', '%Finished Products%')->first();
-        $kerupukPackCategory = ItemCategory::where('name', 'like', '%Kerupuk Pack%')->first();
-
-        $adonanItems = $adonanCategory
-            ? Item::where('item_category_id', $adonanCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
-
-        $gelondonganItems = $gelondonganCategory
-            ? Item::where('item_category_id', $gelondonganCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
-
-        $kerupukKgItems = $kerupukKgCategory
-            ? Item::where('item_category_id', $kerupukKgCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
-
-        $kerupukPackItems = $kerupukPackCategory
-            ? Item::where('item_category_id', $kerupukPackCategory->id)->where('is_active', true)->orderBy('name')->get()
-            : collect([]);
+        // Get items that can be used for yield guidelines (id => label)
+        $adonanItems = $itemDropdowns->forDoughItems();
+        $gelondonganItems = $itemDropdowns->forGelondonganItems();
+        $kerupukKgItems = $itemDropdowns->forKerupukKgItems();
+        $kerupukPackItems = $itemDropdowns->forKerupukPackItems();
 
         return view('manufacturing.yield-guidelines.edit', compact(
             'yieldGuideline',
@@ -182,7 +148,7 @@ final class YieldGuidelineController extends Controller
     /**
      * Get items for a specific stage (AJAX).
      */
-    public function getItemsForStage(Request $request): \Illuminate\Http\JsonResponse
+    public function getItemsForStage(Request $request, ItemDropdownService $itemDropdowns): \Illuminate\Http\JsonResponse
     {
         $stage = $request->input('stage');
 
@@ -190,22 +156,22 @@ final class YieldGuidelineController extends Controller
             return response()->json([]);
         }
 
-        $items = match ($stage) {
-            'adonan' => Item::whereHas('itemCategory', function ($q) {
-                $q->where('name', 'like', '%Adonan%');
-            })->where('is_active', true)->orderBy('name')->get(['id', 'name']),
-            'gelondongan' => Item::whereHas('itemCategory', function ($q) {
-                $q->where('name', 'like', '%Gelondongan%');
-            })->where('is_active', true)->orderBy('name')->get(['id', 'name']),
-            'kerupuk_kg' => Item::whereHas('itemCategory', function ($q) {
-                $q->where('name', 'like', '%Kerupuk Kg%')
-                    ->orWhere('name', 'like', '%Finished Products%');
-            })->where('is_active', true)->orderBy('name')->get(['id', 'name']),
-            'packing' => Item::whereHas('itemCategory', function ($q) {
-                $q->where('name', 'like', '%Kerupuk Pack%');
-            })->where('is_active', true)->orderBy('name')->get(['id', 'name']),
-            default => collect([]),
+        $options = match ($stage) {
+            'adonan' => $itemDropdowns->forDoughItems(),
+            'gelondongan' => $itemDropdowns->forGelondonganItems(),
+            'kerupuk_kg' => $itemDropdowns->forKerupukKgItems(),
+            'packing' => $itemDropdowns->forKerupukPackItems(),
+            default => collect(),
         };
+
+        // Normalize to array of {id, name, label} for consumers
+        $items = $options->map(
+            static fn (string $label, int $id): array => [
+                'id' => $id,
+                'name' => $label,
+                'label' => $label,
+            ]
+        )->values();
 
         return response()->json($items);
     }

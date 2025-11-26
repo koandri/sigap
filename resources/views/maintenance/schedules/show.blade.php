@@ -37,9 +37,9 @@
                         <h3 class="card-title">Schedule Information</h3>
                         <div class="card-actions">
                             @if($schedule->is_active)
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success text-white">Active</span>
                             @else
-                                <span class="badge bg-secondary">Inactive</span>
+                                <span class="badge bg-secondary text-white">Inactive</span>
                             @endif
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted">Maintenance Type</label>
                                 <div class="fw-bold">
-                                    <span class="badge" style="background-color: {{ $schedule->maintenanceType->color }}">
+                                    <span class="badge text-white" style="background-color: {{ $schedule->maintenanceType->color }}">
                                         {{ $schedule->maintenanceType->name }}
                                     </span>
                                 </div>
@@ -93,9 +93,9 @@
                                         {{ $schedule->next_due_date->format('d M Y, g:ia') }}
                                     </span>
                                     @if($schedule->next_due_date < now())
-                                        <span class="badge bg-danger ms-2">Overdue</span>
+                                        <span class="badge bg-danger text-white ms-2">Overdue</span>
                                     @elseif($schedule->next_due_date < now()->addDays(7))
-                                        <span class="badge bg-warning ms-2">Upcoming</span>
+                                        <span class="badge bg-warning text-white ms-2">Upcoming</span>
                                     @endif
                                 </div>
                             </div>
@@ -173,21 +173,21 @@
                                             <td>{{ $workOrder->assignedUser?->name ?? 'Unassigned' }}</td>
                                             <td>
                                                 @if($workOrder->status === 'completed')
-                                                    <span class="badge bg-success">Completed</span>
+                                                    <span class="badge bg-success text-white">Completed</span>
                                                 @elseif($workOrder->status === 'verified')
-                                                    <span class="badge bg-info">Verified</span>
+                                                    <span class="badge bg-info text-white">Verified</span>
                                                 @elseif($workOrder->status === 'pending-verification')
-                                                    <span class="badge bg-warning">Pending Verification</span>
+                                                    <span class="badge bg-warning text-white">Pending Verification</span>
                                                 @elseif($workOrder->status === 'in-progress')
-                                                    <span class="badge bg-primary">In Progress</span>
+                                                    <span class="badge bg-primary text-white">In Progress</span>
                                                 @elseif($workOrder->status === 'assigned')
-                                                    <span class="badge bg-blue">Assigned</span>
+                                                    <span class="badge bg-blue text-white">Assigned</span>
                                                 @elseif($workOrder->status === 'rework')
-                                                    <span class="badge bg-orange">Rework</span>
+                                                    <span class="badge bg-orange text-white">Rework</span>
                                                 @elseif($workOrder->status === 'cancelled')
-                                                    <span class="badge bg-secondary">Cancelled</span>
+                                                    <span class="badge bg-secondary text-white">Cancelled</span>
                                                 @else
-                                                    <span class="badge bg-secondary">Submitted</span>
+                                                    <span class="badge bg-secondary text-white">Submitted</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -222,7 +222,7 @@
                         <div class="mb-3">
                             <div class="text-muted small mb-1">Status</div>
                             <div class="h3 mb-0">
-                                <span class="badge bg-{{ $schedule->is_active ? 'success' : 'secondary' }}">
+                                <span class="badge bg-{{ $schedule->is_active ? 'success' : 'secondary' }} text-white">
                                     {{ $schedule->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </div>

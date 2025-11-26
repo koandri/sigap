@@ -163,7 +163,7 @@
                         <li class="breadcrumb-item active">Manage</li>
                     </ol>
                 </nav>
-                <h2 class="page-title">{{ $item->name }}</h2>
+                <h2 class="page-title">{{ $item->label }}</h2>
                 <p class="text-muted mb-0">
                     Define which Pack SKUs can be used for this Kerupuk Kg item
                     @if($item->itemCategory)
@@ -200,8 +200,8 @@
                 <div class="card-body">
                     <div class="alert alert-info">
                         <i class="far fa-info-circle me-2"></i>
-                        <strong>Configuration Guide:</strong> Specify how many kilograms of <strong>{{ $item->name }}</strong> are required to produce one pack of each Pack SKU.
-                        <br><small>Example: If 5 kg of {{ $item->name }} produces 1 pack of "Surya Bintang Kancing Kuning (Bal)", enter 5.00 in the Kg per Pack field.</small>
+                        <strong>Configuration Guide:</strong> Specify how many kilograms of <strong>{{ $item->label }}</strong> are required to produce one pack of each Pack SKU.
+                        <br><small>Example: If 5 kg of {{ $item->label }} produces 1 pack of "Surya Bintang Kancing Kuning (Bal)", enter 5.00 in the Kg per Pack field.</small>
                     </div>
                     
                     <div class="table-responsive">
@@ -219,13 +219,9 @@
                                     <td>
                                         <select name="configurations[{{ $index }}][pack_item_id]" class="form-select pack-select" required>
                                             <option value="">Select pack SKU...</option>
-                                            @foreach($packItems as $packItem)
-                                            <option value="{{ $packItem->id }}" 
-                                                {{ $config->pack_item_id == $packItem->id ? 'selected' : '' }}>
-                                                {{ $packItem->name }}
-                                                @if($packItem->itemCategory)
-                                                    ({{ $packItem->itemCategory->name }})
-                                                @endif
+                                            @foreach($packItems as $id => $label)
+                                            <option value="{{ $id }}" {{ $config->pack_item_id == $id ? 'selected' : '' }}>
+                                                {{ $label }}
                                             </option>
                                             @endforeach
                                         </select>
@@ -256,13 +252,8 @@
                                     <td>
                                         <select name="configurations[0][pack_item_id]" class="form-select pack-select" required>
                                             <option value="">Select pack SKU...</option>
-                                            @foreach($packItems as $packItem)
-                                            <option value="{{ $packItem->id }}">
-                                                {{ $packItem->name }}
-                                                @if($packItem->itemCategory)
-                                                    ({{ $packItem->itemCategory->name }})
-                                                @endif
-                                            </option>
+                                            @foreach($packItems as $id => $label)
+                                            <option value="{{ $id }}">{{ $label }}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -316,14 +307,15 @@
 @push('scripts')
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script>
-const packOptions = {!! json_encode($packItems->map(function($item) {
-    return [
-        'id' => $item->id,
-        'name' => $item->name,
-        'category' => optional($item->itemCategory)->name ?? '',
-    ];
-})) !!};
-const kerupukKgName = "{{ $item->name }}";
+const packOptions = {!! json_encode(
+    collect($packItems)->map(function ($label, $id) {
+        return [
+            'id' => $id,
+            'label' => $label,
+        ];
+    })->values()
+) !!};
+const kerupukKgName = "{{ $item->label }}";
 let configIndex = {{ $item->kerupukPackConfigurations->count() > 0 ? $item->kerupukPackConfigurations->count() : 1 }};
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -357,8 +349,7 @@ function addPackRow() {
     let optionsHtml = '<option value="">Select pack SKU...</option>';
     packOptions.forEach(function(pack) {
         optionsHtml += `<option value="${pack.id}">
-            ${pack.name}
-            ${pack.category ? `(${pack.category})` : ''}
+            ${pack.label}
         </option>`;
     });
     

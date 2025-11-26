@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\ItemCategory;
+use App\Services\ItemDropdownService;
 use App\Models\Recipe;
 use App\Models\RecipeIngredient;
 use Illuminate\Http\RedirectResponse;
@@ -66,22 +67,10 @@ final class RecipeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(ItemDropdownService $itemDropdowns): View
     {
-        $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
-        $doughItems = $doughCategory
-            ? Item::where('item_category_id', $doughCategory->id)
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get()
-            : collect([]);
-
-        // Get ingredient items from specific categories (only active items)
-        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
-        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        $doughItems = $itemDropdowns->forDoughItems();
+        $ingredientItems = $itemDropdowns->forIngredientItems();
 
         return view('manufacturing.recipes.create', compact('doughItems', 'ingredientItems'));
     }
@@ -153,24 +142,10 @@ final class RecipeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Recipe $recipe): View
+    public function edit(Recipe $recipe, ItemDropdownService $itemDropdowns): View
     {
-        $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
-        $doughItems = $doughCategory
-            ? Item::where('item_category_id', $doughCategory->id)
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get()
-            : collect([]);
-
-        // Get ingredient items from specific categories (only active items)
-        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
-        
-        // Get active ingredient items
-        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        $doughItems = $itemDropdowns->forDoughItems();
+        $ingredientItems = $itemDropdowns->forIngredientItems();
 
         $recipe->load('ingredients.ingredientItem');
 
@@ -260,22 +235,10 @@ final class RecipeController extends Controller
     /**
      * Show the form for duplicating a recipe.
      */
-    public function duplicate(Recipe $recipe): View
+    public function duplicate(Recipe $recipe, ItemDropdownService $itemDropdowns): View
     {
-        $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
-        $doughItems = $doughCategory
-            ? Item::where('item_category_id', $doughCategory->id)
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get()
-            : collect([]);
-
-        // Get ingredient items from specific categories (only active items)
-        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
-        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        $doughItems = $itemDropdowns->forDoughItems();
+        $ingredientItems = $itemDropdowns->forIngredientItems();
 
         $recipe->load('ingredients.ingredientItem');
 

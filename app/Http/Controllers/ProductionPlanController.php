@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\ItemCategory;
 use App\Models\ProductionPlan;
 use App\Models\Recipe;
+use App\Services\ItemDropdownService;
 use App\Services\ProductionDocumentService;
 use App\Services\ProductionPlanningService;
 use Illuminate\Http\RedirectResponse;
@@ -60,26 +61,20 @@ final class ProductionPlanController extends Controller
     /**
      * Show the form for creating a new production plan.
      */
-    public function create(): View
+    public function create(ItemDropdownService $itemDropdowns): View
     {
-        // Get dough items (Adonan) from ItemCategory that have recipes
-        $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
-        $doughItems = $doughCategory
-            ? Item::where('item_category_id', $doughCategory->id)
-                ->where('is_active', true)
-                ->whereHas('recipes', function ($query) {
-                    $query->where('is_active', true);
-                })
+        // Resolve dropdown options via service, then load full Item models for views / JS
+        // Resolve dropdown options via service
+        $doughItems = $itemDropdowns->forDoughItems(true);
+        $ingredientItemIds = $itemDropdowns->forIngredientItems()->keys();
+
+        /** @var \Illuminate\Support\Collection<int, Item> $ingredientItems */
+        $ingredientItems = $ingredientItemIds->isNotEmpty()
+            ? Item::query()
+                ->whereIn('id', $ingredientItemIds->all())
                 ->orderBy('name')
                 ->get()
-            : collect([]);
-
-        // Get ingredient items from specific categories (only active items)
-        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
-        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+            : collect();
 
         return view('manufacturing.production-plans.create', compact('doughItems', 'ingredientItems'));
     }
@@ -147,7 +142,7 @@ final class ProductionPlanController extends Controller
     /**
      * Show the form for editing the specified production plan.
      */
-    public function edit(ProductionPlan $productionPlan): View|RedirectResponse
+    public function edit(ProductionPlan $productionPlan, ItemDropdownService $itemDropdowns): View|RedirectResponse
     {
         if (!$productionPlan->canBeEdited()) {
             return redirect()
@@ -167,24 +162,17 @@ final class ProductionPlanController extends Controller
             'step1.recipeIngredients.ingredientItem',
         ]);
 
-        // Get dough items that have recipes
-        $doughCategory = ItemCategory::where('name', 'like', '%Adonan%')->first();
-        $doughItems = $doughCategory
-            ? Item::where('item_category_id', $doughCategory->id)
-                ->where('is_active', true)
-                ->whereHas('recipes', function ($query) {
-                    $query->where('is_active', true);
-                })
+        // Resolve dropdown options via service, then load full Item models for views / JS
+        // Resolve dropdown options via service
+        $doughItems = $itemDropdowns->forDoughItems(true);
+
+        /** @var \Illuminate\Support\Collection<int, Item> $ingredientItems */
+        $ingredientItems = $ingredientItemIds->isNotEmpty()
+            ? Item::query()
+                ->whereIn('id', $ingredientItemIds->all())
                 ->orderBy('name')
                 ->get()
-            : collect([]);
-
-        // Get ingredient items from specific categories (only active items)
-        $ingredientCategories = ItemCategory::whereIn('name', ['Bahan Baku Lainnya', 'Ikan', 'Tepung', 'Udang'])->pluck('id');
-        $ingredientItems = Item::whereIn('item_category_id', $ingredientCategories)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+            : collect();
 
         return view('manufacturing.production-plans.edit', compact('productionPlan', 'doughItems', 'ingredientItems'));
     }

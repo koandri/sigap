@@ -177,9 +177,9 @@
                                         <select class="form-select @error('dough_item_id') is-invalid @enderror" 
                                                 name="dough_item_id" id="dough-item-select" required>
                                             <option value="">Select Dough Item</option>
-                                            @foreach($doughItems as $item)
-                                            <option value="{{ $item->id }}" {{ old('dough_item_id', $recipe->dough_item_id) == $item->id ? 'selected' : '' }}>
-                                                {{ $item->name }}
+                                            @foreach($doughItems as $id => $label)
+                                            <option value="{{ $id }}" {{ old('dough_item_id', $recipe->dough_item_id) == $id ? 'selected' : '' }}>
+                                                {{ $label }}
                                             </option>
                                             @endforeach
                                         </select>
@@ -263,9 +263,9 @@
                                             <td>
                                                 <select name="ingredients[{{ $index }}][ingredient_item_id]" class="form-select ingredient-item-select" id="ingredient-item-select-{{ $index }}" required>
                                                     <option value="">Select Ingredient</option>
-                                                    @forelse($ingredientItems ?? [] as $item)
-                                                    <option value="{{ $item->id }}" {{ $ingredient->ingredient_item_id == $item->id ? 'selected' : '' }}>
-                                                        {{ $item->name }}
+                                                    @forelse($ingredientItems ?? [] as $id => $label)
+                                                    <option value="{{ $id }}" {{ $ingredient->ingredient_item_id == $id ? 'selected' : '' }}>
+                                                        {{ $label }}
                                                     </option>
                                                     @empty
                                                     <option value="">No ingredients available</option>
@@ -288,8 +288,8 @@
                                             <td>
                                                 <select name="ingredients[0][ingredient_item_id]" class="form-select ingredient-item-select" id="ingredient-item-select-0" required>
                                                     <option value="">Select Ingredient</option>
-                                                    @forelse($ingredientItems ?? [] as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                    @forelse($ingredientItems ?? [] as $id => $label)
+                                                    <option value="{{ $id }}">{{ $label }}</option>
                                                     @empty
                                                     <option value="">No ingredients available</option>
                                                     @endforelse

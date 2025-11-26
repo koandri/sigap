@@ -271,8 +271,8 @@
                                             <td>
                                                 <select name="step1[0][dough_item_id]" class="form-select dough-item-select" id="dough-item-select-0" data-row-index="0" required>
                                                     <option value="">Select Dough Item</option>
-                                                    @foreach($doughItems as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                    @foreach($doughItems as $id => $label)
+                                                    <option value="{{ $id }}">{{ $label }}</option>
                                                     @endforeach
                                                 </select>
                                                 <div class="row g-2 mt-2">
@@ -355,8 +355,8 @@
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-const doughItemsData = @json($doughItems->map(fn($item) => ['value' => (string)$item->id, 'text' => $item->name]));
-const ingredientItems = @json($ingredientItems->map(fn($item) => ['id' => $item->id, 'name' => $item->name, 'unit' => $item->unit]));
+const doughItemsData = @json($doughItems->map(fn($label, $id) => ['value' => (string)$id, 'text' => $label])->values());
+const ingredientItems = @json($ingredientItems->map(fn($item) => ['id' => $item->id, 'name' => $item->label, 'unit' => $item->unit]));
 
 let rowIndex = 1;
 const tomSelectInstances = new Map(); // Store TomSelect instances by row index

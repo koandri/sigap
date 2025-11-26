@@ -233,8 +233,8 @@
                                             <td>
                                                 <select name="step1[{{ $index }}][dough_item_id]" class="form-select dough-item-select" id="dough-item-select-{{ $index }}" required data-row-index="{{ $index }}">
                                                     <option value="">Select Dough Item</option>
-                                                    @foreach($doughItems as $item)
-                                                    <option value="{{ $item->id }}" {{ $step1->dough_item_id == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                                    @foreach($doughItems as $id => $label)
+                                                    <option value="{{ $id }}" {{ $step1->dough_item_id == $id ? 'selected' : '' }}>{{ $label }}</option>
                                                     @endforeach
                                                 </select>
                                                 <div class="row g-2 mt-2">
@@ -288,7 +288,7 @@
                                                                     <select name="step1[{{ $index }}][ingredients][{{ $ingIndex }}][ingredient_item_id]" class="form-select form-select-sm ingredient-item-select" required>
                                                                         <option value="">Select Item</option>
                                                                         @foreach($ingredientItems as $item)
-                                                                        <option value="{{ $item->id }}" {{ $ingredient->ingredient_item_id == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                                                        <option value="{{ $item->id }}" {{ $ingredient->ingredient_item_id == $item->id ? 'selected' : '' }}>{{ $item->label }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </td>
@@ -320,8 +320,8 @@
                                             <td>
                                                 <select name="step1[0][dough_item_id]" class="form-select dough-item-select" id="dough-item-select-0" required data-row-index="0">
                                                     <option value="">Select Dough Item</option>
-                                                    @foreach($doughItems as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                    @foreach($doughItems as $id => $label)
+                                                    <option value="{{ $id }}">{{ $label }}</option>
                                                     @endforeach
                                                 </select>
                                                 <div class="row g-2 mt-2">
@@ -404,8 +404,8 @@
 @push('scripts')
 <script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script>
-const doughItemsData = @json($doughItems->map(fn($item) => ['value' => (string)$item->id, 'text' => $item->name]));
-const ingredientItems = @json($ingredientItems->map(fn($item) => ['id' => $item->id, 'name' => $item->name, 'unit' => $item->unit]));
+const doughItemsData = @json($doughItems->map(fn($label, $id) => ['value' => (string)$id, 'text' => $label])->values());
+const ingredientItems = @json($ingredientItems->map(fn($item) => ['id' => $item->id, 'name' => $item->label, 'unit' => $item->unit]));
 
 // Step 1 data from server
 @php

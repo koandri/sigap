@@ -302,13 +302,13 @@
                         @endphp
                         <div class="available-item" 
                              data-item-id="{{ $item->id }}" 
-                             data-item-name="{{ $item->name }}"
+                             data-item-name="{{ $item->label }}"
                              data-category="{{ $item->itemCategory->name ?? 'No Category' }}"
                              data-available="{{ $totalAvailable }}"
                              data-unit="{{ $item->unit }}">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <div class="fw-bold">{{ $item->name }}</div>
+                                    <div class="fw-bold">{{ $item->label }}</div>
                                     <small class="text-muted">{{ $item->itemCategory->name ?? 'No Category' }}</small>
                                     <br><small class="text-info">Available in: {{ $warehouses }}</small>
                                 </div>

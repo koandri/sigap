@@ -2,6 +2,10 @@
 
 @section('title', 'Step 5: Packing Materials Planning')
 
+@push('css')
+<link rel="stylesheet" href="{{ asset('assets/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css') }}" />
+@endpush
+
 @section('content')
 <div class="page-header d-print-none">
     <div class="container-xl">
@@ -194,6 +198,7 @@
 </div>
 
 @push('scripts')
+<script src="{{ asset('assets/tabler/libs/tom-select/dist/js/tom-select.complete.min.js') }}"></script>
 <script>
 const packingBlueprints = @json($packingBlueprints);
 const packingMaterialItems = @json($packingMaterialItems->map(fn($item) => [
@@ -203,6 +208,21 @@ const packingMaterialItems = @json($packingMaterialItems->map(fn($item) => [
 ]));
 
 let materialCounter = 1000; // Start with high number to avoid conflicts
+
+function initializeAllMaterialSelects() {
+    document.querySelectorAll('.material-select').forEach(select => {
+        if (!select.tomselect) {
+            new TomSelect(select, {
+                placeholder: 'Select Packing Material',
+                sortField: {
+                    field: 'text',
+                    direction: 'asc'
+                },
+                dropdownParent: 'body'
+            });
+        }
+    });
+}
 
 function addMaterial(packSkuIndex, packSkuId, totalQty) {
     const tbody = document.querySelector(`.materials-tbody[data-pack-sku-id="${packSkuId}"]`);
@@ -255,11 +275,23 @@ function addMaterial(packSkuIndex, packSkuId, totalQty) {
     
     tbody.appendChild(newRow);
     
-    // Bind events for new select
+    // Initialize Tom Select and bind events for new select
     const newSelect = newRow.querySelector('.material-select');
-    newSelect.addEventListener('change', function() {
-        updateQtyPerPack(this, totalQty);
-    });
+    if (newSelect) {
+        if (!newSelect.tomselect) {
+            new TomSelect(newSelect, {
+                placeholder: 'Select Packing Material',
+                sortField: {
+                    field: 'text',
+                    direction: 'asc'
+                },
+                dropdownParent: 'body'
+            });
+        }
+        newSelect.addEventListener('change', function() {
+            updateQtyPerPack(this, totalQty);
+        });
+    }
     
     // Renumber all rows
     renumberRows(tbody);
@@ -327,8 +359,11 @@ function updateQtyPerPack(selectElement, totalQty) {
     }
 }
 
-// Bind change events on page load and auto-update for pre-selected items
+// Bind Tom Select + change events on page load and auto-update for pre-selected items
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Tom Select for all existing material selects
+    initializeAllMaterialSelects();
+
     document.querySelectorAll('.material-select').forEach(select => {
         // Get total qty from the badge in the same row
         const row = select.closest('.material-row');

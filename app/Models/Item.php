@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 final class Item extends Model
 {
@@ -118,5 +119,25 @@ final class Item extends Model
     public function getTotalQuantityAttribute(): float
     {
         return (float) $this->positionItems()->sum('quantity');
+    }
+
+    /**
+     * Get the display label for the item, used in dropdowns and search.
+     *
+     * Format: "Item Name - accurate_id" (accurate_id optional if missing).
+     */
+    public function getLabelAttribute(): string
+    {
+        $name = (string) $this->name;
+        $accurateId = (string) ($this->accurate_id ?? '');
+
+        if ($accurateId === '') {
+            return $name;
+        }
+
+        return Str::of($name)
+            ->append(' - ')
+            ->append($accurateId)
+            ->toString();
     }
 }

@@ -55,7 +55,7 @@
                         @forelse($kerupukKgItems as $kerupukItem)
                         <tr>
                             <td>
-                                <div class="fw-semibold">{{ $kerupukItem->name }}</div>
+                                <div class="fw-semibold">{{ $kerupukItem->label }}</div>
                             </td>
                             <td>
                                 <span class="text-muted">{{ $kerupukItem->itemCategory->name ?? 'N/A' }}</span>

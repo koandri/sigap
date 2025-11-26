@@ -7,6 +7,7 @@ use App\Models\Warehouse;
 use App\Models\Item;
 use App\Models\ShelfPosition;
 use App\Models\PositionItem;
+use App\Services\ItemDropdownService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -25,7 +26,7 @@ final class BulkInventoryController extends Controller
     /**
      * Display bulk edit interface for a specific warehouse
      */
-    public function index(Warehouse $warehouse): View
+    public function index(Warehouse $warehouse, ItemDropdownService $itemDropdowns): View
     {
         // Get all available aisles for navigation
         $availableAisles = $warehouse->shelves()
@@ -38,12 +39,9 @@ final class BulkInventoryController extends Controller
         $aisles = collect();
         
         // Get all items for dropdowns - only from 'Kerupuk Pack' category
-        $items = Item::active()
-            ->whereHas('itemCategory', function($q) {
-                $q->where('name', 'Kerupuk Pack');
-            })
-            ->orderBy('name')
-            ->get();
+        $items = $itemDropdowns->forCategoryIds(
+            \App\Models\ItemCategory::where('name', 'like', '%Kerupuk Pack%')->pluck('id')->all()
+        );
 
         return view('warehouses.warehouses.bulk-edit', compact('warehouse', 'aisles', 'items', 'availableAisles'));
     }
@@ -278,6 +276,7 @@ final class BulkInventoryController extends Controller
                 return [
                     "id" => $item->id,
                     "name" => $item->name,
+                    "label" => $item->label,
                     "shortname" => $item->shortname,
                     "unit" => $item->unit
                 ];

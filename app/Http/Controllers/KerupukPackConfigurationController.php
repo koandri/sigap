@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\KerupukPackConfiguration;
+use App\Services\ItemDropdownService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,18 +45,12 @@ final class KerupukPackConfigurationController extends Controller
         return view('manufacturing.kerupuk-pack-configurations.index', compact('kerupukKgItems', 'search'));
     }
 
-    public function manage(Item $item): View
+    public function manage(Item $item, ItemDropdownService $itemDropdowns): View
     {
         $item->load(['itemCategory', 'kerupukPackConfigurations.packItem.itemCategory']);
 
-        // Get available pack items
-        $packItems = Item::with('itemCategory:id,name')
-            ->where('is_active', true)
-            ->whereHas('itemCategory', static function ($query): void {
-                $query->where('name', 'like', '%Kerupuk Pack%');
-            })
-            ->orderBy('name')
-            ->get(['id', 'name', 'item_category_id']);
+        // Get available pack items (id => label)
+        $packItems = $itemDropdowns->forKerupukPackItems();
 
         return view('manufacturing.kerupuk-pack-configurations.manage', compact('item', 'packItems'));
     }
