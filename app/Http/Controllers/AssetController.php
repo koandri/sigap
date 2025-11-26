@@ -1245,7 +1245,7 @@ final class AssetController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('assets.components.attach', compact('asset', 'availableAssets'));
+        return view('options.assets.components.attach', compact('asset', 'availableAssets'));
     }
 
     /**
@@ -1294,7 +1294,7 @@ final class AssetController extends Controller
             abort(404, 'Component does not have a parent asset.');
         }
 
-        return view('assets.components.detach', compact('component'));
+        return view('options.assets.components.detach', compact('component'));
     }
 
     /**
@@ -1346,7 +1346,7 @@ final class AssetController extends Controller
         $components = $asset->childAssets;
         $componentTree = $this->componentService->getComponentTree($asset);
 
-        return view('assets.components.index', compact('asset', 'components', 'componentTree'));
+        return view('options.assets.components.index', compact('asset', 'components', 'componentTree'));
     }
 
     /**

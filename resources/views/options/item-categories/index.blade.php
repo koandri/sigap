@@ -52,12 +52,12 @@
                                 @forelse($categories as $category)
                                 <tr>
                                     <td>
-                                        <div class="flex-fill">
-                                            <div class="font-weight-medium">{{ $category->name }}</div>
-                                            @if($category->description)
-                                            <div class="text-muted">{{ Str::limit($category->description, 50) }}</div>
-                                            @endif
-                                        </div>
+                                        {{ $category->name }}
+                                    </td>
+                                    <td>
+                                        @if($category->description)
+                                        <div class="text-muted">{{ Str::limit($category->description, 50) }}</div>
+                                        @endif
                                     </td>
                                     <td>
                                         <span class="badge bg-blue-lt">{{ $category->items_count }} items</span>

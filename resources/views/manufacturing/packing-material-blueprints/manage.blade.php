@@ -150,7 +150,7 @@
                 <p class="text-muted mb-0">
                     Define materials needed to pack one unit of this SKU
                     @if($item->itemCategory)
-                    • <span class="badge bg-secondary">{{ $item->itemCategory->name }}</span>
+                    • <span class="badge bg-secondary text-white">{{ $item->itemCategory->name }}</span>
                     @endif
                 </p>
             </div>

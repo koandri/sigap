@@ -167,7 +167,7 @@
                 <p class="text-muted mb-0">
                     Define which Pack SKUs can be used for this Kerupuk Kg item
                     @if($item->itemCategory)
-                    • <span class="badge bg-secondary">{{ $item->itemCategory->name }}</span>
+                    • <span class="badge bg-secondary text-white">{{ $item->itemCategory->name }}</span>
                     @endif
                 </p>
             </div>

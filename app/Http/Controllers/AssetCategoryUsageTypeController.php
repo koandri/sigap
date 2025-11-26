@@ -30,7 +30,7 @@ final class AssetCategoryUsageTypeController extends Controller
         
         $usageTypes = $category->usageTypes()->orderBy('name')->get();
 
-        return view('asset-categories.usage-types.index', compact('category', 'usageTypes'));
+        return view('options.asset-categories.usage-types.index', compact('category', 'usageTypes'));
     }
 
     /**
@@ -40,7 +40,7 @@ final class AssetCategoryUsageTypeController extends Controller
     {
         $this->authorize('update', $category);
 
-        return view('asset-categories.usage-types.create', compact('category'));
+        return view('options.asset-categories.usage-types.create', compact('category'));
     }
 
     /**
@@ -69,7 +69,7 @@ final class AssetCategoryUsageTypeController extends Controller
 
         $category = $usageType->assetCategory;
 
-        return view('asset-categories.usage-types.edit', compact('usageType', 'category'));
+        return view('options.asset-categories.usage-types.edit', compact('usageType', 'category'));
     }
 
     /**

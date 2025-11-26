@@ -17,6 +17,10 @@
             <div class="col-auto ms-auto d-print-none">
                 @can('maintenance.assets.manage')
                 <div class="btn-list">
+                    <a href="{{ route('options.asset-categories.usage-types.index', $assetCategory) }}" class="btn btn-outline-primary">
+                        <i class="far fa-tags"></i>&nbsp;
+                        Usage Types
+                    </a>
                     <a href="{{ route('options.asset-categories.edit', $assetCategory) }}" class="btn btn-primary">
                         <i class="far fa-pen"></i>&nbsp;
                         Edit Category
@@ -72,11 +76,10 @@
                                 <span class="badge bg-secondary text-white">{{ $assetCategory->assets->count() }} assets</span>
                             </div>
                         </div>
-
-
                 </div>
             </div>
-
+        </div>
+        <div class="row">
             <div class="col-12">
                 <!-- Assets in this category -->
                 <div class="card">

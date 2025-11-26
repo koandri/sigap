@@ -156,8 +156,8 @@
                         <table class="table table-vcenter card-table">
                             <thead>
                                 <tr>
+                                    <th>Accurate ID</th>
                                     <th>Item</th>
-                                    <th>Short Name</th>
                                     <th>Category</th>
                                     <th>Unit & Pack Size</th>
                                     <th>Status</th>
@@ -168,22 +168,10 @@
                                 @forelse($items as $item)
                                 <tr>
                                     <td>
-                                        <div class="d-flex py-1 align-items-center">
-                                            <div class="flex-fill">
-                                                <div class="font-weight-medium">{{ $item->name }}</div>
-                                                <div class="text-muted">
-                                                    ID: {{ $item->accurate_id }}
-                                                    @if($item->merk) • {{ $item->merk }}@endif
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {{ $item->accurate_id }}
                                     </td>
                                     <td>
-                                        @if($item->shortname)
-                                            <span class="badge bg-gray-lt">{{ $item->shortname }}</span>
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
+                                        {{ $item->name }}
                                     </td>
                                     <td>
                                         <span class="badge bg-blue-lt">{{ $item->itemCategory->name }}</span>

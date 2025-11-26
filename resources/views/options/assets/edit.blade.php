@@ -215,7 +215,7 @@
                                             @endif
                                             <div class="card-body p-2">
                                                 @if($photo->is_primary)
-                                                    <span class="badge bg-primary">Primary</span>
+                                                    <span class="badge bg-primary text-white">Primary</span>
                                                 @endif
                                                 <small class="text-muted d-block">
                                                     {{ $photo->captured_at ? $photo->captured_at->setTimezone('Asia/Jakarta')->format('d M Y') : '-' }}
@@ -386,6 +386,34 @@
 
 @push('css')
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet"/>
+<style>
+    /* Ensure TomSelect controls use a solid white background, consistent with Bootstrap inputs */
+    .ts-wrapper.single .ts-control,
+    .ts-wrapper.multi .ts-control {
+        background-color: #ffffff !important;
+    }
+
+    .ts-wrapper.single .ts-control input,
+    .ts-wrapper.multi .ts-control input {
+        background-color: #ffffff !important;
+    }
+
+    /* Ensure dropdown menu and options are fully opaque on white */
+    .ts-dropdown {
+        background-color: #ffffff !important;
+    }
+
+    .ts-dropdown .ts-dropdown-content {
+        background-color: #ffffff !important;
+    }
+
+    .ts-dropdown .option,
+    .ts-dropdown .option.active,
+    .ts-dropdown .option.selected,
+    .ts-dropdown .option:hover {
+        background-color: #ffffff !important;
+    }
+</style>
 @endpush
 
 @push('scripts')
@@ -394,10 +422,24 @@
 
     
 document.addEventListener('DOMContentLoaded', function() {
-    new TomSelect('#location-select', {
-        placeholder: '-- Select Location --',
-        allowEmptyOption: true
-    });
+    if (typeof TomSelect !== 'undefined') {
+        const selects = [
+            { selector: '#location-select', placeholder: '-- Select Location --' },
+            { selector: '#parent-asset-select', placeholder: '-- Select Parent Asset --' },
+        ];
+
+        selects.forEach(({ selector, placeholder }) => {
+            const el = document.querySelector(selector);
+            if (!el) {
+                return;
+            }
+
+            new TomSelect(selector, {
+                placeholder: placeholder,
+                allowEmptyOption: true,
+            });
+        });
+    }
 
     // Convert specifications textarea to JSON before form submission
     const form = document.querySelector('form[action*="assets"]');

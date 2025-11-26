@@ -43,6 +43,7 @@ use App\Http\Controllers\AssetCategoryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetLifetimeReportController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\AssetCategoryUsageTypeController;
 use App\Http\Controllers\MaintenanceScheduleController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\MaintenanceLogController;
@@ -288,6 +289,30 @@ Route::prefix('warehouses')->name('warehouses.')->middleware(['auth'])->group(fu
 // Options Routes
 Route::prefix('options')->name('options.')->middleware(['auth'])->group(function () {
     Route::resource('asset-categories', AssetCategoryController::class);
+    
+    // Usage Types for Asset Categories
+    Route::prefix('asset-categories/{category}')
+        ->name('asset-categories.')
+        ->group(function () {
+            Route::get('usage-types', [AssetCategoryUsageTypeController::class, 'index'])
+                ->name('usage-types.index');
+            Route::get('usage-types/create', [AssetCategoryUsageTypeController::class, 'create'])
+                ->name('usage-types.create');
+            Route::post('usage-types', [AssetCategoryUsageTypeController::class, 'store'])
+                ->name('usage-types.store');
+        });
+    
+    // Standalone Usage Type operations
+    Route::prefix('usage-types')->name('usage-types.')->group(function () {
+        Route::get('{usageType}/edit', [AssetCategoryUsageTypeController::class, 'edit'])
+            ->name('edit');
+        Route::put('{usageType}', [AssetCategoryUsageTypeController::class, 'update'])
+            ->name('update');
+        Route::delete('{usageType}', [AssetCategoryUsageTypeController::class, 'destroy'])
+            ->name('destroy');
+        Route::post('{usageType}/recalculate', [AssetCategoryUsageTypeController::class, 'recalculateMetrics'])
+            ->name('recalculate');
+    });
     
     // Asset routes - specific routes must be defined BEFORE resource route
     Route::get('assets/create-mobile', [AssetController::class, 'createMobile'])->name('assets.create-mobile');
