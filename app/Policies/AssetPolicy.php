@@ -14,7 +14,7 @@ final class AssetPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('assets.view') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.view') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -22,7 +22,7 @@ final class AssetPolicy
      */
     public function view(User $user, Asset $asset): bool
     {
-        return $user->hasPermissionTo('assets.view') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.view') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -30,7 +30,7 @@ final class AssetPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('assets.create') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.create') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -38,7 +38,7 @@ final class AssetPolicy
      */
     public function update(User $user, Asset $asset): bool
     {
-        return $user->hasPermissionTo('assets.update') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.update') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -51,7 +51,7 @@ final class AssetPolicy
             return false;
         }
 
-        return $user->hasPermissionTo('assets.delete') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.delete') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -59,7 +59,7 @@ final class AssetPolicy
      */
     public function attachComponent(User $user, Asset $asset): bool
     {
-        return $user->hasPermissionTo('assets.update') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.update') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -67,7 +67,7 @@ final class AssetPolicy
      */
     public function detachComponent(User $user, Asset $component): bool
     {
-        return $user->hasPermissionTo('assets.update') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.update') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -75,6 +75,6 @@ final class AssetPolicy
      */
     public function viewLifetimeMetrics(User $user, Asset $asset): bool
     {
-        return $user->hasPermissionTo('assets.view') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.assets.view') || $user->hasRole(['Super Admin', 'Owner']);
     }
 }

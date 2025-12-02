@@ -15,7 +15,7 @@
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
-                @can('maintenance.assets.manage')
+                @can('view', $assetCategory)
                 <div class="btn-list">
                     <a href="{{ route('options.asset-categories.usage-types.index', $assetCategory) }}" class="btn btn-outline-primary">
                         <i class="far fa-tags"></i>&nbsp;

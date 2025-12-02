@@ -55,7 +55,7 @@
                         Create Work Order
                     </a>
                     @endcan
-                    @can('maintenance.assets.manage')
+                    @can('update', $asset)
                     <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-outline-secondary">
                         <i class="far fa-pen"></i>&nbsp;
                         Edit Asset
@@ -338,7 +338,7 @@
                                         @if($asset->photos->count() > 0)
                                             <span class="badge bg-primary text-white">{{ $asset->photos->count() }} photo(s)</span>
                                         @endif
-                                        @can('maintenance.assets.manage')
+                                        @can('update', $asset)
                                         <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-sm btn-primary">
                                             <i class="far fa-plus"></i>&nbsp;Upload Photos
                                         </a>
@@ -385,7 +385,7 @@
                                                         <small class="text-muted d-block">
                                                             <strong>Uploaded:</strong> {{ $photo->uploaded_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
                                                         </small>
-                                                        @can('maintenance.assets.manage')
+                                                        @can('update', $asset)
                                                         <div class="mt-2 d-flex gap-1">
                                                             @if(!$photo->is_primary)
                                                             <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="setPrimaryPhoto({{ $asset->id }}, {{ $photo->id }})">
@@ -412,7 +412,7 @@
                                         <p class="empty-subtitle text-muted">
                                             This asset doesn't have any photos yet.
                                         </p>
-                                        @can('maintenance.assets.manage')
+                                        @can('update', $asset)
                                         <div class="empty-action">
                                             <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-primary">
                                                 <i class="far fa-plus"></i>
@@ -674,7 +674,7 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Components</h3>
-                    @can('maintenance.assets.manage')
+                    @can('attachComponent', $asset)
                     &nbsp;
                     <a href="{{ route('assets.components', $asset) }}" class="btn btn-sm btn-primary">
                         <i class="far fa-puzzle-piece"></i>&nbsp;Manage Components
@@ -744,7 +744,7 @@
                         <p class="empty-subtitle text-muted">
                             This asset has no child components.
                         </p>
-                        @can('maintenance.assets.manage')
+                        @can('attachComponent', $asset)
                         <div class="empty-action">
                             <a href="{{ route('assets.components', $asset) }}" class="btn btn-primary">
                                 <i class="far fa-plus"></i>

@@ -15,7 +15,7 @@
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
-                @can('maintenance.assets.manage')
+                @can('options.asset-categories.update')
                 <div class="btn-list">
                     <a href="{{ route('options.asset-categories.create') }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
@@ -100,7 +100,7 @@
                                             <a href="{{ route('options.asset-categories.show', $category) }}" class="btn btn-sm btn-outline-primary">
                                                 View
                                             </a>
-                                            @can('maintenance.assets.manage')
+                                            @can('options.asset-categories.update')
 
                                             <a href="{{ route('options.asset-categories.edit', $category) }}" class="btn btn-sm btn-outline-secondary">
                                                 Edit
@@ -127,7 +127,7 @@
                         <p class="empty-subtitle text-muted">
                             Get started by creating your first asset category.
                         </p>
-                        @can('maintenance.assets.manage')
+                        @can('options.asset-categories.update')
                         <div class="empty-action">
                             <a href="{{ route('options.asset-categories.create') }}" class="btn btn-primary">
                                 <i class="far fa-plus"></i>&nbsp;

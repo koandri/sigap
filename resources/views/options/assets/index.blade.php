@@ -21,7 +21,7 @@
                         <span class="d-none d-sm-inline">View QR Codes</span>
                         <span class="d-sm-none">QR Codes</span>
                     </a>
-                    @can('maintenance.assets.manage')
+                    @can('create', App\Models\Asset::class)
                     <a href="{{ route('options.assets.create') }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
                         <span class="d-none d-sm-inline">Add Asset</span>
@@ -133,7 +133,7 @@
                                             <a href="{{ route('options.assets.show', $asset) }}" class="btn btn-sm btn-outline-primary">
                                                 View
                                             </a>
-                                            @can('maintenance.assets.manage')
+                                            @can('update', $asset)
                                             <a href="{{ route('options.assets.edit', $asset) }}" class="btn btn-sm btn-outline-secondary">
                                                 Edit
                                             </a>
@@ -159,7 +159,7 @@
                         <p class="empty-subtitle text-muted">
                             Get started by creating your first asset.
                         </p>
-                        @can('maintenance.assets.manage')
+                        @can('create', App\Models\Asset::class)
                         <div class="empty-action">
                             <a href="{{ route('options.assets.create') }}" class="btn btn-primary">
                                 <i class="far fa-plus"></i>&nbsp;

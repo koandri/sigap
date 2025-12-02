@@ -48,6 +48,11 @@ class RoleController extends Controller
 
     public function index()
     {
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.roles.view') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to view roles.');
+        }
+
         // Only Super Admin can see all roles
         if (Auth::user()->hasRole('Super Admin')) {
             $roles = Role::orderBy('name')->paginate(20);
@@ -58,7 +63,7 @@ class RoleController extends Controller
                         ->orderBy('name')
                         ->paginate(20);
         }
-        // Other roles cannot see Super Admin or Owner roles
+        // IT Staff and other roles cannot see Super Admin or Owner roles
         else {
             $roles = Role::whereNotIn('name', ['Super Admin', 'Owner'])
                         ->orderBy('name')
@@ -70,6 +75,11 @@ class RoleController extends Controller
 
     public function create()
     {
+        // IT Staff cannot create new roles
+        if (!Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to create roles.');
+        }
+
         $permissions = Permission::orderBy('name')->get();
         $groupedPermissions = $this->groupPermissionsByPrefix($permissions);
         return view('roles.create', compact('permissions', 'groupedPermissions'));
@@ -96,6 +106,11 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.roles.edit') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to edit roles.');
+        }
+
         // Only Super Admin can edit Super Admin or Owner roles
         if (in_array($role->name, ['Super Admin', 'Owner'])) {
             if (!Auth::user()->hasRole('Super Admin')) {
@@ -112,6 +127,11 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role): RedirectResponse
     {
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.roles.edit') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to edit roles.');
+        }
+
         // Only Super Admin can update Super Admin or Owner roles
         if (in_array($role->name, ['Super Admin', 'Owner'])) {
             if (!Auth::user()->hasRole('Super Admin')) {
@@ -137,6 +157,11 @@ class RoleController extends Controller
 
     public function show(Role $role)
     {
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.roles.view') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to view roles.');
+        }
+
         // Only Super Admin can view Super Admin or Owner roles
         if (in_array($role->name, ['Super Admin', 'Owner'])) {
             if (!Auth::user()->hasRole('Super Admin')) {

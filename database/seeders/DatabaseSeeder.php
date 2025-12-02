@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             DMSPermissionsSeeder::class,
-            AssetPermissionSeeder::class,
             ManufacturingPermissionSeeder::class,
             WarehousePermissionSeeder::class,
             OptionsPermissionSeeder::class,

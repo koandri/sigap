@@ -14,7 +14,7 @@ final class AssetCategoryUsageTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('asset-categories.view') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.asset-categories.view') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -22,7 +22,7 @@ final class AssetCategoryUsageTypePolicy
      */
     public function view(User $user, AssetCategoryUsageType $usageType): bool
     {
-        return $user->hasPermissionTo('asset-categories.view') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.asset-categories.view') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -30,7 +30,7 @@ final class AssetCategoryUsageTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('asset-categories.update') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.asset-categories.update') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -38,7 +38,7 @@ final class AssetCategoryUsageTypePolicy
      */
     public function update(User $user, AssetCategoryUsageType $usageType): bool
     {
-        return $user->hasPermissionTo('asset-categories.update') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.asset-categories.update') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -46,7 +46,7 @@ final class AssetCategoryUsageTypePolicy
      */
     public function delete(User $user, AssetCategoryUsageType $usageType): bool
     {
-        return $user->hasPermissionTo('asset-categories.update') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.asset-categories.update') || $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -54,6 +54,6 @@ final class AssetCategoryUsageTypePolicy
      */
     public function recalculateMetrics(User $user, AssetCategoryUsageType $usageType): bool
     {
-        return $user->hasPermissionTo('asset-categories.update') || $user->hasRole(['Super Admin', 'IT Staff']);
+        return $user->hasPermissionTo('options.asset-categories.update') || $user->hasRole(['Super Admin', 'Owner']);
     }
 }

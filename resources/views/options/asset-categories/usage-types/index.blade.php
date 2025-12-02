@@ -16,7 +16,7 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    @can('maintenance.assets.manage')
+                    @can('create', App\Models\AssetCategoryUsageType::class)
                     <a href="{{ route('options.asset-categories.usage-types.create', $category) }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
                         Add Usage Type
@@ -79,7 +79,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        @can('maintenance.assets.manage')
+                                        @can('update', $usageType)
                                         <div class="btn-list">
                                             <a href="{{ route('options.usage-types.edit', $usageType) }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="far fa-pen"></i>
@@ -107,7 +107,7 @@
                         <p class="empty-subtitle text-muted">
                             Create usage types to differentiate assets within this category.
                         </p>
-                        @can('maintenance.assets.manage')
+                        @can('create', App\Models\AssetCategoryUsageType::class)
                         <div class="empty-action">
                             <a href="{{ route('options.asset-categories.usage-types.create', $category) }}" class="btn btn-primary">
                                 <i class="far fa-plus"></i>

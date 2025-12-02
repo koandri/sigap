@@ -16,7 +16,7 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    @can('maintenance.assets.manage')
+                    @can('attachComponent', $asset)
                     <a href="{{ route('assets.components.attach', $asset) }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
                         Attach Component
@@ -129,7 +129,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        @can('maintenance.assets.manage')
+                                        @can('detachComponent', $asset)
                                         <a href="{{ route('assets.components.detach', $component) }}" class="btn btn-sm btn-outline-danger">
                                             <i class="far fa-unlink"></i>
                                             Detach
@@ -150,7 +150,7 @@
                         <p class="empty-subtitle text-muted">
                             This asset has no child components attached.
                         </p>
-                        @can('maintenance.assets.manage')
+                        @can('attachComponent', $asset)
                         <div class="empty-action">
                             <a href="{{ route('assets.components.attach', $asset) }}" class="btn btn-primary">
                                 <i class="far fa-plus"></i>

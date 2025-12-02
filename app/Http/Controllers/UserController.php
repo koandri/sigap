@@ -64,6 +64,11 @@ final class UserController extends Controller
 
     public function index()
     {
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.users.view') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to view users.');
+        }
+
         $users = User::orderBy('name')->paginate(25);
 
         return view('users.index', compact('users'));
@@ -71,6 +76,11 @@ final class UserController extends Controller
 
     public function create()
     {
+        // Only Super Admin and Owner can create users (IT Staff cannot create, only edit)
+        if (!Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to create users.');
+        }
+
         $locations = Options::forEnum(Location::class);
         $managers = Options::forModels(User::class);
 
@@ -189,17 +199,20 @@ final class UserController extends Controller
 
     public function edit(User $user)
     {
-        $managers = Options::forModels(User::class);
-        $locations = Options::forEnum(Location::class);
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.users.edit') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to edit users.');
+        }
 
+        // IT Staff cannot edit Super Admin or Owner users
         if ($user->hasRole('Super Admin|Owner')) {
-            if (Auth::user()->hasRole('Super Admin|Owner')) {
-                //allow
-            }
-            else {
-                abort(403);
+            if (!Auth::user()->hasRole('Super Admin|Owner')) {
+                abort(403, 'You do not have permission to edit this user.');
             }
         }
+
+        $managers = Options::forModels(User::class);
+        $locations = Options::forEnum(Location::class);
 
         $departments = Department::whereNotIn('id', $user->departments()->pluck('id'))
                                 ->orderBy('name')
@@ -245,6 +258,18 @@ final class UserController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.users.edit') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to edit users.');
+        }
+
+        // IT Staff cannot edit Super Admin or Owner users
+        if ($user->hasRole('Super Admin|Owner')) {
+            if (!Auth::user()->hasRole('Super Admin|Owner')) {
+                abort(403, 'You do not have permission to edit this user.');
+            }
+        }
+
         $validated = Validator::make($request->all(), [
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -306,6 +331,11 @@ final class UserController extends Controller
 
     public function show(User $user)
     {
+        // Check permission
+        if (!Auth::user()->hasPermissionTo('options.users.view') && !Auth::user()->hasRole(['Super Admin', 'Owner'])) {
+            abort(403, 'You do not have permission to view users.');
+        }
+
         // Get all permissions the user has (via roles and direct)
         $allPermissions = $user->getAllPermissions();
         

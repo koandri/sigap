@@ -15,7 +15,7 @@
                 </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
-                @can('maintenance.assets.manage')
+                @can('options.asset-categories.update')
                 <div class="btn-list">
                     <a href="{{ route('options.locations.edit', $location) }}" class="btn btn-primary">
                         <i class="far fa-pen"></i>&nbsp;
