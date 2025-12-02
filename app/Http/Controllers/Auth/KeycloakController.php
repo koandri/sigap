@@ -26,10 +26,10 @@ class KeycloakController extends Controller
      */
     public function handleKeycloakCallback()
     {
+        // Get user from Keycloak
+        $keycloakUser = Socialite::driver('keycloak')->user();
+        
         try {
-            // Get user from Keycloak
-            $keycloakUser = Socialite::driver('keycloak')->user();
-            
             // Check if user exists in local database
             $user = User::where('email', $keycloakUser->getEmail())->first();
             $user = User::firstOrCreate(
