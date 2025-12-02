@@ -33,6 +33,10 @@ This guide provides an overview of SIGaP and directs you to detailed documentati
 
 ### Accessing the System
 
+You can log in to SIGaP using two methods:
+
+#### Method 1: Password Login
+
 1. Navigate to your SIGaP URL in your web browser
 2. Enter your **username** (email address)
 3. Enter your **password**
@@ -44,6 +48,27 @@ This guide provides an overview of SIGaP and directs you to detailed documentati
 - You'll receive initial credentials from your administrator
 - Change your password on first login
 - Update your profile information
+
+#### Method 2: Single Sign-On (SSO) with Keycloak
+
+1. Navigate to your SIGaP URL
+2. Click **"Login with SSO"** button
+3. You'll be redirected to Keycloak login page
+4. Enter your **Keycloak credentials**
+5. Click **"Sign In"**
+6. You'll be automatically logged in to SIGaP
+
+**SSO Benefits:**
+- **One-click login** - No need to remember separate SIGaP password
+- **Automatic account creation** - First-time SSO users get accounts created automatically
+- **Secure authentication** - Uses enterprise-grade Keycloak security
+- **Seamless experience** - Same credentials across multiple systems
+
+**SSO Notes:**
+- Your account must be active in SIGaP to log in
+- If this is your first SSO login, an account will be created automatically
+- You can still use password login if SSO is unavailable
+- Contact IT if you have issues with SSO login
 
 ### Dashboard Overview
 

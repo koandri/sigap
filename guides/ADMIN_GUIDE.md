@@ -132,6 +132,38 @@ For troubleshooting and support:
 4. Notify user of new password
 5. User changes password on next login
 
+### Single Sign-On (SSO) with Keycloak
+
+SIGaP supports **Keycloak Single Sign-On** for seamless authentication.
+
+**How It Works:**
+- Users can log in using their Keycloak credentials
+- **Automatic User Provisioning**: If a user logs in via SSO for the first time, SIGaP automatically creates their account
+- **Existing Users**: SSO links to existing accounts by email address
+- **Account Status**: Only active users can log in via SSO
+
+**Automatic User Creation:**
+When a user logs in via Keycloak for the first time:
+1. System checks if email exists in database
+2. If not found, creates new user account automatically
+3. Sets name from Keycloak profile
+4. Generates random password (user won't need it for SSO login)
+5. Sets account as active
+6. Links Keycloak ID to user account
+7. User is logged in automatically
+
+**Managing SSO Users:**
+- SSO-created users appear in the Users list like any other user
+- Administrators can assign roles and permissions normally
+- Can deactivate accounts if needed (prevents SSO login)
+- Users can still use password login if password is set
+
+**Important Notes:**
+- Inactive users cannot log in via SSO
+- System logs all SSO login attempts
+- Failed SSO logins trigger notifications to IT
+- Users must exist in Keycloak to use SSO
+
 ---
 
 ## Roles and Permissions
@@ -191,22 +223,30 @@ SIGaP uses Role-Based Access Control (RBAC):
 3. Enter role name (e.g., "Quality Inspector")
 4. Select permissions
 
-**Permission Categories:**
+**Important Notes:**
+- **Only Super Admin and Owner can create roles**
+- IT Staff can view and edit existing roles but cannot create new ones
+- Permissions are **grouped by module** for easier management
+- Each group shows related permissions together
 
-**Forms:**
+**Permission Groups (Organized by Module):**
+
+The permissions interface displays permissions grouped by their module prefix:
+
+**Forms Permissions:**
 - `forms.view` - View forms list
 - `forms.create` - Create new forms
 - `forms.edit` - Edit forms
 - `forms.delete` - Delete forms
 
-**Form Submissions:**
+**Form Submissions Permissions:**
 - `formsubmissions.view` - View submissions
 - `formsubmissions.create` - Create submissions
 - `formsubmissions.edit` - Edit submissions
 - `formsubmissions.delete` - Delete submissions
 - `formsubmissions.approve` - Approve submissions
 
-**Manufacturing (Production):**
+**Manufacturing Permissions:**
 - `manufacturing.dashboard.view` - View dashboard
 - `manufacturing.production-plans.view` - View production plans
 - `manufacturing.production-plans.create` - Create production plans
@@ -222,7 +262,7 @@ SIGaP uses Role-Based Access Control (RBAC):
 - `manufacturing.yield-guidelines.create` - Create yield guidelines
 - `manufacturing.yield-guidelines.edit` - Edit yield guidelines
 
-**Warehouse Management:**
+**Warehouses Permissions:**
 - `warehouses.dashboard.view` - View warehouse dashboard
 - `warehouses.view` - View warehouses
 - `warehouses.create` - Create warehouses
@@ -233,7 +273,7 @@ SIGaP uses Role-Based Access Control (RBAC):
 - `warehouses.inventory.edit` - Update inventory
 - `warehouses.inventory.delete` - Delete inventory
 
-**Options (Master Data):**
+**Options Permissions (Master Data):**
 - `options.items.view` - View items
 - `options.items.edit` - Edit items
 - `options.items.delete` - Delete items
@@ -242,8 +282,30 @@ SIGaP uses Role-Based Access Control (RBAC):
 - `options.item-categories.create` - Create item categories
 - `options.item-categories.edit` - Edit item categories
 - `options.item-categories.delete` - Delete item categories
+- `options.assets.view` - View assets
+- `options.assets.create` - Create assets
+- `options.assets.update` - Update assets
+- `options.assets.delete` - Delete assets
+- `options.asset-categories.view` - View asset categories
+- `options.asset-categories.update` - Update asset categories
+- `options.users.view` - View users
+- `options.users.create` - Create users
+- `options.users.edit` - Edit users
+- `options.users.delete` - Delete users
+- `options.roles.view` - View roles
+- `options.roles.create` - Create roles
+- `options.roles.edit` - Edit roles
+- `options.roles.delete` - Delete roles
+- `options.permissions.view` - View permissions
+- `options.permissions.create` - Create permissions
+- `options.permissions.edit` - Edit permissions
+- `options.permissions.delete` - Delete permissions
+- `options.departments.view` - View departments
+- `options.departments.create` - Create departments
+- `options.departments.edit` - Edit departments
+- `options.departments.delete` - Delete departments
 
-**Maintenance:**
+**Maintenance Permissions:**
 - `maintenance.dashboard.view` - View dashboard
 - `maintenance.assets.view` - View assets
 - `maintenance.assets.create` - Create assets
@@ -255,13 +317,11 @@ SIGaP uses Role-Based Access Control (RBAC):
 - `maintenance.workorders.verify` - Verify completed work
 - `maintenance.reports.view` - View reports
 
-**Administration:**
-- `users.view` - View users
-- `users.create` - Create users
-- `users.edit` - Edit users
-- `roles.manage` - Manage roles
-- `permissions.manage` - Manage permissions
-- `departments.manage` - Manage departments
+**DMS Permissions:**
+- `dms.*` - Document Management System permissions (various operations)
+
+**Facility Permissions:**
+- `facility.*` - Facility management permissions (cleaning, schedules, etc.)
 
 5. Click **"Create Role"**
 
@@ -273,6 +333,13 @@ SIGaP uses Role-Based Access Control (RBAC):
 4. Add or remove permissions
 5. Changes affect all users with this role
 6. Click **"Update"**
+
+**Access Restrictions:**
+- **Super Admin role**: Only Super Admin can edit this role
+- **Owner role**: Only Super Admin can edit this role
+- **Other roles**: Super Admin, Owner, and IT Staff (with `options.roles.edit` permission) can edit
+- Permissions are displayed **grouped by module** for easier selection
+- Use checkboxes to select/deselect multiple permissions at once
 
 ### Best Practices
 

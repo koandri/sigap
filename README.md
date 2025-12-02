@@ -89,8 +89,10 @@ This isn't just another business application - it's a **sophisticated enterprise
 ### 👥 Enterprise User & Permission Management
 - **Role-based Access Control (RBAC)**: Granular permissions using Spatie Laravel Permission 6.20+
   - Custom roles with specific permissions
+  - **Grouped permissions UI** - Permissions organized by module for easier management
   - Role inheritance and composition
   - Permission caching for performance
+  - **Role-based access restrictions** - IT Staff cannot modify Super Admin/Owner roles
 - **Department Organization**: Hierarchical department structure with inheritance
   - Department-based form access
   - Cost center tracking
@@ -104,10 +106,11 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Password reset functionality
   - Email verification
   - Session management
-- **External Authentication**: Laravel Socialite with Asana provider
-  - Single Sign-On (SSO) capability
+- **External Authentication**: Laravel Socialite with Keycloak integration
+  - Single Sign-On (SSO) via Keycloak OpenID Connect
   - OAuth2 integration
-  - Automatic user provisioning
+  - Automatic user provisioning (creates new users on first SSO login)
+  - Seamless authentication for existing users
 - **Permission Matrix**: Comprehensive role and permission management
   - Module-specific permissions (forms, manufacturing, maintenance)
   - Action-based permissions (view, create, edit, delete, approve)
