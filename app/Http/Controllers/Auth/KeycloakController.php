@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use App\Services\PushoverService;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+use App\Models\User;
 
 class KeycloakController extends Controller
 {
@@ -33,12 +36,15 @@ class KeycloakController extends Controller
             
             // Check if user exists in local database
             $user = User::where('email', $keycloakUser->getEmail())->first();
-            
+
+            dd($user);
+
             // If user doesn't exist, create a new user
             if (!$user) {
                 $user = new User();
                 $user->name = $keycloakUser->getName();
                 $user->email = $keycloakUser->getEmail();
+                $user->password = Hash::make(Str::random(20));
                 $user->active = true;
                 $user->save();
             }
