@@ -135,20 +135,5 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.borrows.request',
             'dms.borrows.view',
         ]);
-
-        // Regular users - Basic access
-        $user = Role::firstOrCreate(['name' => 'User']);
-        $user->givePermissionTo([
-            'dms.dashboard.view',
-            'dms.documents.view',
-            'dms.instances.view',
-            'dms.instances.create',
-            'dms.access.request',
-            'dms.access.view',
-            'dms.forms.request',
-            'dms.forms.view',
-            'dms.borrows.request',
-            'dms.borrows.view',
-        ]);
     }
 }
