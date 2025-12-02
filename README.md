@@ -436,6 +436,16 @@ This isn't just another business application - it's a **sophisticated enterprise
   - Approval workflow with expiry dates
   - Access logging and audit trail
   - Watermarked PDF downloads for security
+- **Physical Document Borrowing**: Library-style borrowing system
+  - Request to borrow physical document copies
+  - Approval workflow (auto-approve for Super Admin/Owner)
+  - Single copy tracking (one borrower at a time)
+  - Due date management with 7-day default
+  - WhatsApp notifications for status changes and reminders
+  - Daily reminders for due soon and overdue documents
+  - Checkout/return tracking
+  - Borrowed and overdue reports
+  - Access control - only borrow documents you can access
 - **Form Request Management**: Complete printed form lifecycle
   - Request printed forms with quantities
   - Document Control acknowledgment and processing
@@ -456,12 +466,16 @@ This isn't just another business application - it's a **sophisticated enterprise
   - SLA Dashboard with performance metrics
   - Form circulation reports
   - Access request history
+  - Borrowed documents report
+  - Overdue documents report
 - **Dashboard**: Real-time DMS overview
   - Document statistics by type and status
   - Pending approvals by tier
   - Recent access requests
   - Overdue approvals
   - Active form requests
+  - Documents borrowed statistics
+  - Overdue borrows with alerts
   - SLA compliance metrics
 
 ### 🗺️ System Integration

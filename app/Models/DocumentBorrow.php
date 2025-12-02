@@ -104,7 +104,9 @@ final class DocumentBorrow extends Model
 
     public function scopeByUser($query, int $userId)
     {
-        return $query->where('user_id', $userId);
+        return $query->whereHas('borrowRequest', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        });
     }
 
     public function scopeByDocument($query, int $documentId)

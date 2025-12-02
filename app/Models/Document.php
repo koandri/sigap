@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\DocumentBorrowStatus;
 use App\Enums\DocumentType;
 use App\Enums\DocumentVersionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -77,14 +78,14 @@ final class Document extends Model
     public function activeBorrow(): ?DocumentBorrow
     {
         return $this->borrows()
-            ->whereIn('status', ['pending', 'approved', 'checked_out'])
+            ->whereIn('status', [DocumentBorrowStatus::Pending, DocumentBorrowStatus::Approved, DocumentBorrowStatus::CheckedOut])
             ->first();
     }
 
     public function isCurrentlyBorrowed(): bool
     {
         return $this->borrows()
-            ->where('status', 'checked_out')
+            ->where('status', DocumentBorrowStatus::CheckedOut)
             ->exists();
     }
 

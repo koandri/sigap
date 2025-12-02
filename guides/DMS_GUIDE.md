@@ -11,11 +11,12 @@
 2. [Document Management](#document-management)
 3. [Version Control](#version-control)
 4. [Access Requests](#access-requests)
-5. [Form Requests](#form-requests)
-6. [Printed Forms](#printed-forms)
-7. [Document Instances](#document-instances)
-8. [Reports and Analytics](#reports-and-analytics)
-9. [Dashboard](#dashboard)
+5. [Physical Document Borrowing](#physical-document-borrowing)
+6. [Form Requests](#form-requests)
+7. [Printed Forms](#printed-forms)
+8. [Document Instances](#document-instances)
+9. [Reports and Analytics](#reports-and-analytics)
+10. [Dashboard](#dashboard)
 
 ---
 
@@ -27,6 +28,7 @@ The Document Management System (DMS) module provides enterprise-grade document l
 
 - **Document Version Control** - Complete versioning with two-tier approval
 - **Access Request System** - Request and manage document access with watermarked downloads
+- **Physical Document Borrowing** - Library-style borrowing system for physical document copies
 - **Form Request Management** - Complete printed form lifecycle with QR code tracking
 - **Document Instances** - Template-based memos and letters
 - **OnlyOffice Integration** - Collaborative document editing (DOCX/XLSX)
@@ -288,6 +290,110 @@ When viewing a document you have access to:
 **Multiple Access:**
 - Can download unlimited times until expiry date
 - Expired access shows "Access expired" message
+
+---
+
+## Physical Document Borrowing
+
+The Physical Document Borrowing system provides library-style management for borrowing physical copies of documents.
+
+### Overview
+
+Users can borrow physical document copies with:
+- **Approval Workflow** - Super Admin/Owner auto-approved, others need approval
+- **Due Date Management** - Optional due dates (default 7 days)
+- **Single Copy Tracking** - Only one user can borrow a document at a time
+- **WhatsApp Notifications** - All status changes and reminders
+- **Access Control** - Can only borrow documents you have digital access to
+
+### Borrowing a Document
+
+#### Step 1: Request to Borrow
+
+1. Navigate to **DMS > My Borrows**
+2. Click **"Request to Borrow"**
+3. Fill in the borrow request form:
+   - **Document** - Select from available documents
+   - **Due Date** - Optional (defaults to 7 days, can be left empty for no due date)
+   - **Notes** - Optional reason for borrowing
+
+4. Click **"Submit Borrow Request"**
+
+**Important:**
+- You can only borrow documents you have digital access to
+- Documents currently borrowed by others are not available
+- Super Admin/Owner requests are auto-approved
+
+#### Step 2: Approval (if required)
+
+For non-privileged users:
+1. Request goes to **Pending** status
+2. Super Admin/Owner reviews the request
+3. Approver can **Approve** or **Reject** with reason
+
+For Super Admin/Owner:
+- Request automatically approved
+- Can immediately collect the document
+
+#### Step 3: Physical Checkout
+
+When approved, Document Control:
+1. Marks the document as **Checked Out**
+2. Borrower receives WhatsApp notification
+3. Physical document is collected
+
+#### Step 4: Return
+
+When returning:
+1. Document Control marks as **Returned**
+2. Borrower receives confirmation notification
+3. Document becomes available for others to borrow
+
+### Viewing Your Borrows
+
+Navigate to **DMS > My Borrows** to see:
+- Current borrowed documents
+- Pending requests
+- Borrow history
+- Due dates and overdue status
+
+**Status Indicators:**
+- 🟡 **Pending** - Awaiting approval
+- 🔵 **Approved** - Ready for collection
+- 🟢 **Checked Out** - Currently borrowed
+- ✅ **Returned** - Completed
+- ❌ **Rejected** - Request denied
+
+### Managing Pending Approvals (Super Admin/Owner)
+
+1. Navigate to **DMS > Borrow Approvals**
+2. View all pending borrow requests
+3. Click **"Review"** to see request details
+4. **Approve** or **Reject** the request
+
+### Due Dates and Reminders
+
+**Due Date Reminders:**
+- Sent 1 day before due date via WhatsApp
+- Includes document details and due date
+
+**Overdue Notices:**
+- Sent daily for overdue documents
+- Shows number of days overdue
+- Reminder to return immediately
+
+### Reports
+
+**Borrowed Documents Report:**
+- View all currently borrowed documents
+- Filter by status (checked out, all active, returned)
+- Export and print capabilities
+
+**Overdue Documents Report:**
+- List of all overdue borrows
+- Days overdue counter
+- Borrower contact information
+- Quick return actions
 
 ---
 
