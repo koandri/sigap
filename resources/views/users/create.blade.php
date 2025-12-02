@@ -87,7 +87,7 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="roles" class="col-sm-2 col-form-label">Roles</label>
+                                        <label for="roles" class="col-sm-2 col-form-label">Roles <span class="text-danger">*</span></label>
                                         <div class="col-sm-10">
                                             @foreach ($roles as $role)
                                             <div class="col-3">
@@ -100,16 +100,45 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="roles" class="col-sm-2 col-form-label">Permissions</label>
+                                        <div class="col-sm-2"></div>
                                         <div class="col-sm-10">
-                                            @foreach ($permissions as $permission)
-                                            <div class="col-3">
-                                                <label class="form-check">
-                                                    <input class="form-check-input" name="permissions[]" value="{{ $permission->id }}" type="checkbox">
-                                                    <span class="form-check-label">{{ $permission->name }}</span>
-                                                </label>
+                                            <div class="accordion" id="permissionsAccordion">
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#directPermissions" aria-expanded="false" aria-controls="directPermissions">
+                                                            <i class="far fa-exclamation-triangle me-2 text-warning"></i>
+                                                            Advanced: Direct Permissions (Use Sparingly)
+                                                        </button>
+                                                    </h2>
+                                                    <div id="directPermissions" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                                                        <div class="accordion-body">
+                                                            @foreach ($groupedPermissions as $prefix => $group)
+                                                            <div class="mb-4">
+                                                                <h6 class="mb-2 border-bottom pb-1">
+                                                                    <i class="far fa-folder me-2 text-primary"></i>
+                                                                    {{ $group['name'] }}
+                                                                </h6>
+                                                                <div class="row">
+                                                                    @foreach ($group['permissions'] as $permission)
+                                                                    <div class="col-md-4 mb-2">
+                                                                        <label class="form-check">
+                                                                            <input class="form-check-input" name="permissions[]" value="{{ $permission->id }}" type="checkbox">
+                                                                            <span class="form-check-label">
+                                                                                {{ $permission->name }}
+                                                                                @if($permission->description)
+                                                                                    <small class="text-muted d-block">{{ $permission->description }}</small>
+                                                                                @endif
+                                                                            </span>
+                                                                        </label>
+                                                                    </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            @endforeach
                                         </div>
                                     </div>
                                 </div>

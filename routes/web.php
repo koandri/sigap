@@ -89,10 +89,10 @@ Route::post('/auth/keycloak/logout', [KeycloakController::class, 'logout'])->nam
 Route::impersonate();
 
 //Users
-Route::resource('users', UserController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|IT Staff']);
+Route::resource('users', UserController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|Owner|IT Staff']);
 
 //Role
-Route::resource('roles', RoleController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|IT Staff']);
+Route::resource('roles', RoleController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|Owner|IT Staff']);
 
 //Permissions
 Route::resource('permissions', PermissionController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|IT Staff']);

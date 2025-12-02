@@ -39,6 +39,8 @@ class UserSeeder extends Seeder
         $superAdminUser->name = env('SUPER_ADMIN_NAME', 'Super Admin');
         $superAdminUser->email = env('SUPER_ADMIN_EMAIL', 'admin@example.com');
         $superAdminUser->password = Hash::make(env('SUPER_ADMIN_PASSWORD', 'password'));
+        $superAdminUser->mobilephone_no = '62811337678';
+        $superAdminUser->locations = ["GL","TA","BL","GM"];
         $superAdminUser->save();
 
         //assign Super Admin role

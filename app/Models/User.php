@@ -59,11 +59,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine if the user can impersonate other users.
+     * - Super Admin can impersonate everyone
+     * - Owner can impersonate everyone except Super Admin
+     * - Other roles cannot impersonate
+     * 
      * @return bool
      */
     public function canImpersonate()
     {
-        if ($this->hasRole('Super Admin')) {
+        if ($this->hasRole('Super Admin|Owner')) {
             return true;
         }
 
@@ -71,18 +76,36 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine if this user can be impersonated.
+     * - Super Admin cannot be impersonated by anyone
+     * - Owner can be impersonated only by Super Admin
+     * - System user (no-reply) cannot be impersonated
+     * - Other users can be impersonated by Super Admin or Owner
+     * 
      * @return bool
      */
     public function canBeImpersonated()
     {
-        if ($this->hasRole('Super Admin')) {
-            return false;
-        }
-
+        // System user cannot be impersonated
         if ($this->email == 'no-reply@suryagroup.app') {
             return false;
         }
 
+        // Super Admin cannot be impersonated by anyone
+        if ($this->hasRole('Super Admin')) {
+            return false;
+        }
+
+        // Owner can only be impersonated by Super Admin
+        if ($this->hasRole('Owner')) {
+            $impersonator = auth()->user();
+            if ($impersonator && $impersonator->hasRole('Super Admin')) {
+                return true;
+            }
+            return false;
+        }
+
+        // Other users can be impersonated by Super Admin or Owner
         return true;
     }
 

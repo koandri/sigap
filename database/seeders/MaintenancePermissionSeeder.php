@@ -15,23 +15,26 @@ class MaintenancePermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'maintenance.dashboard.view',
-            'maintenance.assets.view',
-            'maintenance.assets.manage',
-            'maintenance.schedules.view',
-            'maintenance.schedules.manage',
-            'maintenance.work-orders.view',
-            'maintenance.work-orders.create',
-            'maintenance.work-orders.complete',
-            'maintenance.work-orders.assign',
-            'maintenance.work-orders.work',
-            'maintenance.work-orders.verify',
-            'maintenance.work-orders.close',
-            'maintenance.reports.view',
+            ['name' => 'maintenance.dashboard.view', 'description' => 'View maintenance dashboard'],
+            ['name' => 'maintenance.assets.view', 'description' => 'View maintenance assets'],
+            ['name' => 'maintenance.assets.manage', 'description' => 'Manage maintenance assets'],
+            ['name' => 'maintenance.schedules.view', 'description' => 'View maintenance schedules'],
+            ['name' => 'maintenance.schedules.manage', 'description' => 'Manage maintenance schedules'],
+            ['name' => 'maintenance.work-orders.view', 'description' => 'View work orders'],
+            ['name' => 'maintenance.work-orders.create', 'description' => 'Create work orders'],
+            ['name' => 'maintenance.work-orders.complete', 'description' => 'Complete work orders'],
+            ['name' => 'maintenance.work-orders.assign', 'description' => 'Assign work orders'],
+            ['name' => 'maintenance.work-orders.work', 'description' => 'Work on assigned work orders'],
+            ['name' => 'maintenance.work-orders.verify', 'description' => 'Verify completed work orders'],
+            ['name' => 'maintenance.work-orders.close', 'description' => 'Close work orders'],
+            ['name' => 'maintenance.reports.view', 'description' => 'View maintenance reports'],
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+        foreach ($permissions as $permissionData) {
+            Permission::firstOrCreate(
+                ['name' => $permissionData['name']],
+                ['description' => $permissionData['description'] ?? null]
+            );
         }
 
         // Create Engineering roles

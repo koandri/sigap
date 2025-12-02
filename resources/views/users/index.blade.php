@@ -59,7 +59,7 @@
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             @canBeImpersonated($user)
                                                             <a href="{{ route('impersonate', $user->id) }}" class="btn btn-outline-warning" title="Impersonate">
-                                                                <i class="far fa-user-dashed"></i>&nbsp; &nbsp;   
+                                                                <i class="far fa-user-dashed"></i>&nbsp;   
                                                             </a>
                                                             @endCanBeImpersonated
                                                             <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary" title="View">

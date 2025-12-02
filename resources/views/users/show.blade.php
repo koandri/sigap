@@ -55,7 +55,7 @@
                                     <div class="row mb-3">
                                         <label for="name" class="col-sm-2 col-form-label">Locations</label>
                                         <div class="col-sm-10">
-                                            <input type="text" name="locations" class="form-control" value="{{ implode(', ', $user->locations) }}" disabled />
+                                            <input type="text" name="locations" class="form-control" value="{{ $user->locations ? implode(', ', $user->locations) : '—' }}" disabled />
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -71,24 +71,100 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="roles" class="col-sm-2 col-form-label">Permissions</label>
+                                        <label for="roles" class="col-sm-2 col-form-label">All Permissions</label>
                                         <div class="col-sm-10">
-                                            @foreach ($user->permissions()->orderBy('name')->get() as $user_permission)
-                                            <div class="col-3">
-                                                <label class="form-check">
-                                                    <input class="form-check-input" name="permissions[]" type="checkbox" value="{{ $user_permission->id }}" checked disabled>
-                                                    <span class="form-check-label">{{ $user_permission->name }}</span>
-                                                </label>
+                                            <div class="alert alert-info mb-3">
+                                                <i class="far fa-info-circle me-2"></i>
+                                                <strong>Permission Summary:</strong> 
+                                                Total: <strong>{{ $allPermissions->count() }}</strong> | 
+                                                From Roles: <strong>{{ $rolePermissions->count() }}</strong> | 
+                                                Direct: <strong>{{ $directPermissions->count() }}</strong>
                                             </div>
-                                            @endforeach
-                                            @foreach ($permissions as $permission)
-                                            <div class="col-3">
-                                                <label class="form-check">
-                                                    <input class="form-check-input" name="permissions[]" value="{{ $permission->id }}" type="checkbox" disabled>
-                                                    <span class="form-check-label">{{ $permission->name }}</span>
-                                                </label>
+                                            
+                                            @if($rolePermissions->count() > 0)
+                                            <div class="mb-4">
+                                                <h5 class="mb-3">
+                                                    <i class="far fa-users me-2 text-primary"></i>
+                                                    Permissions Inherited from Roles ({{ $rolePermissions->count() }})
+                                                </h5>
+                                                @foreach ($groupedRolePermissions as $prefix => $group)
+                                                <div class="mb-3">
+                                                    <h6 class="mb-2 border-bottom pb-1">
+                                                        <i class="far fa-folder me-2 text-primary"></i>
+                                                        {{ $group['name'] }}
+                                                    </h6>
+                                                    <div class="row">
+                                                        @foreach ($group['permissions'] as $permission)
+                                                        <div class="col-md-4 mb-2">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" checked disabled>
+                                                                <label class="form-check-label">
+                                                                    <strong>{{ $permission->name }}</strong>
+                                                                    @if($permission->description)
+                                                                        <small class="text-muted d-block">{{ $permission->description }}</small>
+                                                                    @endif
+                                                                    <small class="text-primary d-block mt-1">
+                                                                        <i class="far fa-users me-1"></i>
+                                                                        Via: {{ $user->roles->filter(fn($role) => $role->hasPermissionTo($permission))->pluck('name')->implode(', ') }}
+                                                                    </small>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                @endforeach
                                             </div>
-                                            @endforeach
+                                            @endif
+
+                                            @if($directPermissions->count() > 0)
+                                            <div class="mb-4">
+                                                <h5 class="mb-3">
+                                                    <i class="far fa-exclamation-triangle me-2 text-warning"></i>
+                                                    Direct Permissions ({{ $directPermissions->count() }})
+                                                    <small class="text-muted">- Bypass role-based access</small>
+                                                </h5>
+                                                <div class="alert alert-warning mb-3">
+                                                    <i class="far fa-exclamation-triangle me-2"></i>
+                                                    These permissions are assigned directly to the user, bypassing role-based access control. 
+                                                    Consider moving these to appropriate roles for better maintainability.
+                                                </div>
+                                                @foreach ($groupedDirectPermissions as $prefix => $group)
+                                                <div class="mb-3">
+                                                    <h6 class="mb-2 border-bottom pb-1">
+                                                        <i class="far fa-folder me-2 text-warning"></i>
+                                                        {{ $group['name'] }}
+                                                    </h6>
+                                                    <div class="row">
+                                                        @foreach ($group['permissions'] as $permission)
+                                                        <div class="col-md-4 mb-2">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" checked disabled>
+                                                                <label class="form-check-label">
+                                                                    <strong>{{ $permission->name }}</strong>
+                                                                    @if($permission->description)
+                                                                        <small class="text-muted d-block">{{ $permission->description }}</small>
+                                                                    @endif
+                                                                    <small class="text-warning d-block mt-1">
+                                                                        <i class="far fa-user me-1"></i>
+                                                                        Direct assignment
+                                                                    </small>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            @endif
+
+                                            @if($allPermissions->count() === 0)
+                                            <div class="alert alert-secondary">
+                                                <i class="far fa-info-circle me-2"></i>
+                                                This user has no permissions assigned (neither via roles nor directly).
+                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="row mb-3">

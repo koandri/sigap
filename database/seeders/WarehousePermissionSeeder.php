@@ -18,23 +18,26 @@ final class WarehousePermissionSeeder extends Seeder
         // Create Warehouse Permissions
         $permissions = [
             // Warehouse Dashboard
-            'warehouses.dashboard.view',
+            ['name' => 'warehouses.dashboard.view', 'description' => 'View warehouse dashboard'],
             
             // Warehouse Management
-            'warehouses.view',
-            'warehouses.create',
-            'warehouses.edit',
-            'warehouses.delete',
+            ['name' => 'warehouses.view', 'description' => 'View warehouses'],
+            ['name' => 'warehouses.create', 'description' => 'Create warehouses'],
+            ['name' => 'warehouses.edit', 'description' => 'Edit warehouses'],
+            ['name' => 'warehouses.delete', 'description' => 'Delete warehouses'],
             
             // Inventory Management (for warehouse operations)
-            'warehouses.inventory.view',
-            'warehouses.inventory.create',
-            'warehouses.inventory.edit',
-            'warehouses.inventory.delete',
+            ['name' => 'warehouses.inventory.view', 'description' => 'View warehouse inventory'],
+            ['name' => 'warehouses.inventory.create', 'description' => 'Create warehouse inventory records'],
+            ['name' => 'warehouses.inventory.edit', 'description' => 'Edit warehouse inventory records'],
+            ['name' => 'warehouses.inventory.delete', 'description' => 'Delete warehouse inventory records'],
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        foreach ($permissions as $permissionData) {
+            Permission::firstOrCreate(
+                ['name' => $permissionData['name'], 'guard_name' => 'web'],
+                ['description' => $permissionData['description'] ?? null]
+            );
         }
 
         // Create Warehouse Roles and assign permissions

@@ -36,6 +36,13 @@
                                             <input type="text" name="name" class="form-control" max="50" maxlength="50" required />
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <label for="description" class="col-sm-2 col-form-label">Description</label>
+                                        <div class="col-sm-10">
+                                            <textarea name="description" class="form-control" rows="3" maxlength="500">{{ old('description') }}</textarea>
+                                            <small class="form-hint">Optional: Describe what this permission allows users to do.</small>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-footer clearfix">
                                     <button type="submit" class="btn btn-primary">Submit</button>

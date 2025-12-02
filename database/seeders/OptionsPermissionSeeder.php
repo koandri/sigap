@@ -18,20 +18,23 @@ final class OptionsPermissionSeeder extends Seeder
         // Create Options Permissions for Items and Item Categories
         $permissions = [
             // Item Management  
-            'options.items.view',
-            'options.items.edit',
-            'options.items.delete',
-            'options.items.import',
+            ['name' => 'options.items.view', 'description' => 'View items'],
+            ['name' => 'options.items.edit', 'description' => 'Edit items'],
+            ['name' => 'options.items.delete', 'description' => 'Delete items'],
+            ['name' => 'options.items.import', 'description' => 'Import items'],
             
             // Item Categories
-            'options.item-categories.view',
-            'options.item-categories.create', 
-            'options.item-categories.edit',
-            'options.item-categories.delete',
+            ['name' => 'options.item-categories.view', 'description' => 'View item categories'],
+            ['name' => 'options.item-categories.create', 'description' => 'Create item categories'],
+            ['name' => 'options.item-categories.edit', 'description' => 'Edit item categories'],
+            ['name' => 'options.item-categories.delete', 'description' => 'Delete item categories'],
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        foreach ($permissions as $permissionData) {
+            Permission::firstOrCreate(
+                ['name' => $permissionData['name'], 'guard_name' => 'web'],
+                ['description' => $permissionData['description'] ?? null]
+            );
         }
 
         // Assign permissions to roles

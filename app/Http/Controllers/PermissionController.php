@@ -26,6 +26,7 @@ class PermissionController extends Controller
     {   
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|max:50|unique:permissions',
+            'description' => 'nullable|string|max:500',
             'guard_name' => 'required|string',
         ])->validate();
 
@@ -43,6 +44,7 @@ class PermissionController extends Controller
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|max:50|unique:permissions,name,' . $permission->id,
+            'description' => 'nullable|string|max:500',
             'guard_name' => 'required|string',
         ])->validate();
 

@@ -39,6 +39,7 @@
                                                 <tr>
                                                     <th style="width: 20px">#</th>
                                                     <th>Name</th>
+                                                    <th>Description</th>
                                                     <th style="width: 100px">Actions</th>
                                                 </tr>
                                             </thead>
@@ -47,6 +48,7 @@
                                                 <tr>
                                                     <td>{{ $permission->id }}</td>
                                                     <td>{{ $permission->name }}</td>
+                                                    <td>{{ $permission->description ?? '—' }}</td>
                                                     <td>
                                                         <div class="btn-group btn-group-sm" role="group">
                                                             <a href="{{ route('permissions.show', $permission) }}" class="btn btn-outline-secondary" title="View">

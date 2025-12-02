@@ -27,6 +27,41 @@ final class UserController extends Controller
         private readonly WhatsAppService $whatsAppService,
         private readonly PushoverService $pushoverService
     ) {}
+
+    /**
+     * Group permissions by their prefix (module name)
+     * 
+     * @param \Illuminate\Database\Eloquent\Collection $permissions
+     * @return array
+     */
+    private function groupPermissionsByPrefix($permissions): array
+    {
+        $grouped = [];
+        
+        foreach ($permissions as $permission) {
+            // Extract prefix: first part before dot, or whole name if no dot
+            $parts = explode('.', $permission->name);
+            $prefix = $parts[0];
+            
+            // Handle hyphenated prefixes (e.g., "asset-categories" -> "Asset Categories")
+            $groupName = ucwords(str_replace(['-', '_'], ' ', $prefix)) . ' Permissions';
+            
+            if (!isset($grouped[$prefix])) {
+                $grouped[$prefix] = [
+                    'name' => $groupName,
+                    'permissions' => []
+                ];
+            }
+            
+            $grouped[$prefix]['permissions'][] = $permission;
+        }
+        
+        // Sort groups alphabetically
+        ksort($grouped);
+        
+        return $grouped;
+    }
+
     public function index()
     {
         $users = User::orderBy('name')->paginate(25);
@@ -41,20 +76,29 @@ final class UserController extends Controller
 
         $departments = Department::all();
 
+        // Only Super Admin can assign Super Admin and Owner roles
         if (Auth::user()->hasRole('Super Admin')) {
             $roles = Role::orderBy('name')->get();
-
             $permissions = Permission::orderBy('name')->get();
         }
+        // Owner can assign Owner role
+        elseif (Auth::user()->hasRole('Owner')) {
+            $roles = Role::whereNotIn('name', array('Super Admin'))
+                        ->orderBy('name')
+                        ->get();
+            $permissions = Permission::orderBy('name')->get();
+        }
+        // Other roles cannot assign Super Admin or Owner roles
         else {
             $roles = Role::whereNotIn('name', array('Super Admin', 'Owner'))
                         ->orderBy('name')
                         ->get();
-
             $permissions = Permission::orderBy('name')->get();
         }
 
-        return view('users.create', compact('locations', 'managers', 'departments', 'roles', 'permissions'));
+        $groupedPermissions = $this->groupPermissionsByPrefix($permissions);
+
+        return view('users.create', compact('locations', 'managers', 'departments', 'roles', 'permissions', 'groupedPermissions'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -80,6 +124,29 @@ final class UserController extends Controller
         }
 
         $validated = $validator->validated();
+
+        // Validate role assignments based on current user's role
+        if ($request->has('roles')) {
+            $requestedRoles = Role::whereIn('id', $request->roles)->pluck('name')->toArray();
+            
+            // Only Super Admin can assign Super Admin or Owner roles
+            if (in_array('Super Admin', $requestedRoles) || in_array('Owner', $requestedRoles)) {
+                if (!Auth::user()->hasRole('Super Admin')) {
+                    return redirect('/users/create')
+                        ->withErrors(['roles' => 'You do not have permission to assign Super Admin or Owner roles.'])
+                        ->withInput();
+                }
+            }
+            
+            // Owner cannot assign Super Admin role
+            if (in_array('Super Admin', $requestedRoles)) {
+                if (!Auth::user()->hasRole('Super Admin')) {
+                    return redirect('/users/create')
+                        ->withErrors(['roles' => 'You do not have permission to assign Super Admin role.'])
+                        ->withInput();
+                }
+            }
+        }
 
         //create a new random password
         $plain_password = Str::password(8);
@@ -138,6 +205,7 @@ final class UserController extends Controller
                                 ->orderBy('name')
                                 ->get();
 
+        // Only Super Admin can assign Super Admin and Owner roles
         if (Auth::user()->hasRole('Super Admin')) {
             $roles = Role::whereNotIn('id', $user->roles()->pluck('id'))
                         ->orderBy('name')
@@ -147,8 +215,20 @@ final class UserController extends Controller
                                     ->orderBy('name')
                                     ->get();
         }
+        // Owner can assign Owner role
+        elseif (Auth::user()->hasRole('Owner')) {
+            $roles = Role::whereNotIn('name', array('Super Admin'))
+                        ->whereNotIn('id', $user->roles()->pluck('id'))
+                        ->orderBy('name')
+                        ->get();
+            
+            $permissions = Permission::whereNotIn('id', $user->permissions()->pluck('id'))
+                                    ->orderBy('name')
+                                    ->get();
+        }
+        // Other roles cannot assign Super Admin or Owner roles
         else {
-            $roles = Role::whereNotIn('name', array(['Super Admin', 'Owner']))
+            $roles = Role::whereNotIn('name', array('Super Admin', 'Owner'))
                         ->whereNotIn('id', $user->roles()->pluck('id'))
                         ->orderBy('name')
                         ->get();
@@ -158,7 +238,9 @@ final class UserController extends Controller
                                     ->get();
         }
 
-        return view('users.edit', compact('user', 'managers', 'locations', 'departments', 'roles', 'permissions'));
+        $groupedPermissions = $this->groupPermissionsByPrefix($permissions);
+
+        return view('users.edit', compact('user', 'managers', 'locations', 'departments', 'roles', 'permissions', 'groupedPermissions'));
     }
 
     public function update(Request $request, User $user): RedirectResponse
@@ -177,6 +259,29 @@ final class UserController extends Controller
             'permissions.*' => 'integer|exists:permissions,id',
             'active' => 'required|boolean',
         ])->validate();
+
+        // Validate role assignments based on current user's role
+        if ($request->has('roles')) {
+            $requestedRoles = Role::whereIn('id', $request->roles)->pluck('name')->toArray();
+            
+            // Only Super Admin can assign Super Admin or Owner roles
+            if (in_array('Super Admin', $requestedRoles) || in_array('Owner', $requestedRoles)) {
+                if (!Auth::user()->hasRole('Super Admin')) {
+                    return redirect()->route('users.edit', $user)
+                        ->withErrors(['roles' => 'You do not have permission to assign Super Admin or Owner roles.'])
+                        ->withInput();
+                }
+            }
+            
+            // Owner cannot assign Super Admin role
+            if (in_array('Super Admin', $requestedRoles)) {
+                if (!Auth::user()->hasRole('Super Admin')) {
+                    return redirect()->route('users.edit', $user)
+                        ->withErrors(['roles' => 'You do not have permission to assign Super Admin role.'])
+                        ->withInput();
+                }
+            }
+        }
 
         //Update User Details
         $user->update($validated);
@@ -201,9 +306,23 @@ final class UserController extends Controller
 
     public function show(User $user)
     {
-        $permissions = Permission::orderBy('name')->get();
+        // Get all permissions the user has (via roles and direct)
+        $allPermissions = $user->getAllPermissions();
+        
+        // Get direct permissions (not via roles)
+        $directPermissions = $user->permissions;
+        
+        // Get permissions inherited from roles (all permissions minus direct permissions)
+        $directPermissionIds = $directPermissions->pluck('id')->toArray();
+        $rolePermissions = $allPermissions->reject(function ($permission) use ($directPermissionIds) {
+            return in_array($permission->id, $directPermissionIds);
+        });
 
-        return view('users.show', compact('user', 'permissions'));
+        // Group permissions for display
+        $groupedRolePermissions = $this->groupPermissionsByPrefix($rolePermissions);
+        $groupedDirectPermissions = $this->groupPermissionsByPrefix($directPermissions);
+
+        return view('users.show', compact('user', 'allPermissions', 'rolePermissions', 'directPermissions', 'groupedRolePermissions', 'groupedDirectPermissions'));
     }
 
     public function editmyprofile(Request $request)

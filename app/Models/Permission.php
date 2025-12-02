@@ -8,4 +8,10 @@ use Spatie\Permission\Models\Permission As PermissionModel;
 class Permission extends PermissionModel
 {
     use HasFactory;
+    
+    protected $fillable = [
+        'name',
+        'description',
+        'guard_name',
+    ];
 }
