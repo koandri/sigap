@@ -31,21 +31,17 @@ class KeycloakController extends Controller
             $keycloakUser = Socialite::driver('keycloak')->user();
             
             // Check if user exists in local database
-            $user = User::where('email', $keycloakUser->getEmail())->first();
-
-
             $user = User::firstOrCreate(
                 ['email' => $keycloakUser->getEmail()],
-                ['name' => $keycloakUser->getName(), 'email' => $keycloakUser->getEmail()]
+                ['name' => $keycloakUser->getName(), 'email' => $keycloakUser->getEmail(), 'active' => true]
             );
             
-            // If user doesn't exist, create a new user
+            // If user doesn't exist, deny access
             if (!$user) {
-                $user = new User();
-                $user->name = $keycloakUser->getName();
-                $user->email = $keycloakUser->getEmail();
-                $user->active = true;
-                $user->save();
+                return redirect()->route('login')
+                    ->withErrors([
+                        'error' => 'Your account is not registered in this application. Please contact the IT Staff.'
+                    ]);
             }
 
             if (!$user->active) {
