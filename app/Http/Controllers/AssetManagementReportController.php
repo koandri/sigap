@@ -19,7 +19,7 @@ final class AssetManagementReportController extends Controller
      */
     public function assetsByLocation(Request $request): View
     {
-        $this->authorize('asset.reports.view');
+        $this->authorize('options.asset-reports.view');
         
         $locationId = $request->get('location_id');
         
@@ -58,7 +58,7 @@ final class AssetManagementReportController extends Controller
      */
     public function assetsByCategory(Request $request): View
     {
-        $this->authorize('asset.reports.view');
+        $this->authorize('options.asset-reports.view');
         
         $categoryId = $request->get('category_id');
         
@@ -89,7 +89,7 @@ final class AssetManagementReportController extends Controller
      */
     public function assetsByCategoryAndLocation(Request $request): View
     {
-        $this->authorize('asset.reports.view');
+        $this->authorize('options.asset-reports.view');
         
         $categoryId = $request->get('category_id');
         $locationIds = $request->get('location_ids', []);
@@ -138,7 +138,7 @@ final class AssetManagementReportController extends Controller
      */
     public function assetsByDepartment(Request $request): View
     {
-        $this->authorize('asset.reports.view');
+        $this->authorize('options.asset-reports.view');
         
         $departmentId = $request->get('department_id');
         
@@ -177,7 +177,7 @@ final class AssetManagementReportController extends Controller
      */
     public function assetsByUser(Request $request): View
     {
-        $this->authorize('asset.reports.view');
+        $this->authorize('options.asset-reports.view');
         
         $userId = $request->get('user_id');
         

@@ -54,7 +54,6 @@ final class DMSPermissionsSeeder extends Seeder
             // Reports
             ['name' => 'dms.sla.report.view', 'description' => 'View SLA reports'],
             ['name' => 'dms.reports.view', 'description' => 'View DMS reports'],
-            ['name' => 'asset.reports.view', 'description' => 'View asset reports'],
 
             // Document borrowing permissions
             ['name' => 'dms.borrows.request', 'description' => 'Request to borrow documents'],

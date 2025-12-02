@@ -262,7 +262,7 @@
                                 @endcan
                             </div>
                             @endcanany
-                            @can('asset.reports.view')
+                            @can('options.asset-reports.view')
                             <div class="dropdown-menu-column">
                                 <h6 class="dropdown-header">Assets</h6>
                                 <a class="dropdown-item {{ areActiveRoutes('reports.assets.by-location') }}" href="{{ route('reports.assets.by-location') }}">

@@ -39,6 +39,9 @@ final class OptionsPermissionSeeder extends Seeder
             ['name' => 'options.asset-categories.view', 'description' => 'View asset categories'],
             ['name' => 'options.asset-categories.update', 'description' => 'Update asset categories'],
             
+            // Asset Reports
+            ['name' => 'options.asset-reports.view', 'description' => 'View asset reports'],
+            
             // User Management
             ['name' => 'options.users.view', 'description' => 'View users'],
             ['name' => 'options.users.create', 'description' => 'Create new users'],
@@ -145,6 +148,7 @@ final class OptionsPermissionSeeder extends Seeder
             'options.assets.delete',
             'options.asset-categories.view',
             'options.asset-categories.update',
+            'options.asset-reports.view',
             
             // User permissions (view and edit, but restrictions will be applied in controller)
             'options.users.view',
@@ -182,6 +186,7 @@ final class OptionsPermissionSeeder extends Seeder
             $engineeringRole->givePermissionTo([
                 'options.assets.view',
                 'options.asset-categories.view',
+                'options.asset-reports.view',
                 'options.locations.view',
             ]);
         }
