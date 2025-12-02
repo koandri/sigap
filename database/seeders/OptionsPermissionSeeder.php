@@ -62,6 +62,12 @@ final class OptionsPermissionSeeder extends Seeder
             ['name' => 'options.departments.create', 'description' => 'Create new departments'],
             ['name' => 'options.departments.edit', 'description' => 'Edit departments'],
             ['name' => 'options.departments.delete', 'description' => 'Delete departments'],
+            
+            // Location Management
+            ['name' => 'options.locations.view', 'description' => 'View locations'],
+            ['name' => 'options.locations.create', 'description' => 'Create new locations'],
+            ['name' => 'options.locations.edit', 'description' => 'Edit locations'],
+            ['name' => 'options.locations.delete', 'description' => 'Delete locations'],
         ];
 
         foreach ($permissions as $permissionData) {
@@ -158,6 +164,12 @@ final class OptionsPermissionSeeder extends Seeder
             'options.departments.create',
             'options.departments.edit',
             'options.departments.delete',
+            
+            // Location permissions (full access)
+            'options.locations.view',
+            'options.locations.create',
+            'options.locations.edit',
+            'options.locations.delete',
         ];
         
         // Sync permissions (this will remove old ones and add new ones)
@@ -169,6 +181,7 @@ final class OptionsPermissionSeeder extends Seeder
             $engineeringRole->givePermissionTo([
                 'options.assets.view',
                 'options.asset-categories.view',
+                'options.locations.view',
             ]);
         }
 
