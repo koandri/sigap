@@ -71,8 +71,9 @@ final class OptionsPermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permissionData) {
-            $permission = Permission::firstOrCreate(
-                ['name' => $permissionData['name'], 'guard_name' => 'web']
+            Permission::firstOrCreate(
+                ['name' => $permissionData['name'], 'guard_name' => 'web'],
+                ['description' => $permissionData['description'] ?? null]
             );
         }
 

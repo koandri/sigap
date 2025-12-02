@@ -13,8 +13,10 @@ final class LocationController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:maintenance.assets.manage')->only(['create', 'store', 'edit', 'update', 'destroy']);
-        $this->middleware('can:maintenance.assets.view')->only(['index', 'show']);
+        $this->middleware('can:options.locations.view')->only(['index', 'show']);
+        $this->middleware('can:options.locations.create')->only(['create', 'store']);
+        $this->middleware('can:options.locations.edit')->only(['edit', 'update']);
+        $this->middleware('can:options.locations.delete')->only(['destroy']);
     }
 
     /**
