@@ -37,8 +37,6 @@ class KeycloakController extends Controller
             // Check if user exists in local database
             $user = User::where('email', $keycloakUser->getEmail())->first();
 
-            dd($user);
-
             // If user doesn't exist, create a new user
             if (!$user) {
                 $user = new User();
