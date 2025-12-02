@@ -63,6 +63,8 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentVersionController;
 use App\Http\Controllers\DocumentApprovalController;
 use App\Http\Controllers\DocumentAccessController;
+use App\Http\Controllers\DocumentBorrowController;
+use App\Http\Controllers\DocumentBorrowReportController;
 use App\Http\Controllers\CorrespondenceController;
 use App\Http\Controllers\FormRequestController;
 use App\Http\Controllers\PrintedFormController;
@@ -466,6 +468,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('document-access-requests', [DocumentAccessController::class, 'pendingRequests'])->name('document-access-requests.pending');
     Route::post('document-access-requests/{request}/approve', [DocumentAccessController::class, 'approve'])->name('document-access-requests.approve');
     Route::post('document-access-requests/{request}/reject', [DocumentAccessController::class, 'reject'])->name('document-access-requests.reject');
+    
+    // Document Borrowing
+    Route::get('document-borrows', [DocumentBorrowController::class, 'index'])->name('document-borrows.index');
+    Route::get('document-borrows/create', [DocumentBorrowController::class, 'create'])->name('document-borrows.create');
+    Route::post('document-borrows', [DocumentBorrowController::class, 'store'])->name('document-borrows.store');
+    Route::get('document-borrows/pending', [DocumentBorrowController::class, 'pending'])->name('document-borrows.pending');
+    Route::get('document-borrows/{borrow}', [DocumentBorrowController::class, 'show'])->name('document-borrows.show');
+    Route::get('document-borrows/{borrow}/review', [DocumentBorrowController::class, 'review'])->name('document-borrows.review');
+    Route::post('document-borrows/{borrow}/approve', [DocumentBorrowController::class, 'approve'])->name('document-borrows.approve');
+    Route::post('document-borrows/{borrow}/reject', [DocumentBorrowController::class, 'reject'])->name('document-borrows.reject');
+    Route::post('document-borrows/{borrow}/checkout', [DocumentBorrowController::class, 'checkout'])->name('document-borrows.checkout');
+    Route::post('document-borrows/{borrow}/return', [DocumentBorrowController::class, 'returnDocument'])->name('document-borrows.return');
+    Route::post('document-borrows/{borrow}/cancel', [DocumentBorrowController::class, 'cancel'])->name('document-borrows.cancel');
+    
+    // Document Borrow Reports
+    Route::get('reports/dms/borrowed-documents', [DocumentBorrowReportController::class, 'borrowedDocuments'])->name('reports.dms.borrowed-documents');
+    Route::get('reports/dms/overdue-documents', [DocumentBorrowReportController::class, 'overdueDocuments'])->name('reports.dms.overdue-documents');
     
     // Correspondences
     Route::get('correspondences', [CorrespondenceController::class, 'index'])->name('correspondences.index');

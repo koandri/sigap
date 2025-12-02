@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Pagination\Paginator;
 use App\Models\WorkOrder;
 use App\Models\DocumentInstance;
+use App\Models\DocumentBorrow;
 use App\Policies\WorkOrderPolicy;
 use App\Policies\DocumentInstancePolicy;
+use App\Policies\DocumentBorrowPolicy;
 use Illuminate\Support\Facades\Event;
 
 
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         // Register policies
         Gate::policy(WorkOrder::class, WorkOrderPolicy::class);
         Gate::policy(DocumentInstance::class, DocumentInstancePolicy::class);
+        Gate::policy(DocumentBorrow::class, DocumentBorrowPolicy::class);
 
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Super Admin') ? true : null;

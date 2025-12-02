@@ -222,4 +222,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(FormRequest::class, 'requested_by');
     }
+
+    /**
+     * Document borrows made by this user.
+     */
+    public function documentBorrows(): HasMany
+    {
+        return $this->hasMany(DocumentBorrow::class);
+    }
+
+    /**
+     * Document access requests made by this user.
+     */
+    public function documentAccessRequests(): HasMany
+    {
+        return $this->hasMany(DocumentAccessRequest::class);
+    }
 }

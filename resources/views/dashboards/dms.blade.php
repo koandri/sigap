@@ -72,6 +72,46 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="subheader">Documents Borrowed</div>
+                            </div>
+                            <div class="h1 mb-3">{{ $stats['documents_borrowed'] }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card {{ $stats['overdue_borrows'] > 0 ? 'border-danger' : '' }}">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="subheader {{ $stats['overdue_borrows'] > 0 ? 'text-danger' : '' }}">
+                                    @if($stats['overdue_borrows'] > 0)
+                                        <i class="far fa-exclamation-triangle"></i>&nbsp;
+                                    @endif
+                                    Overdue Borrows
+                                </div>
+                            </div>
+                            <div class="h1 mb-3 {{ $stats['overdue_borrows'] > 0 ? 'text-danger' : '' }}">{{ $stats['overdue_borrows'] }}</div>
+                        </div>
+                    </div>
+                </div>
+                @if(auth()->user()->hasRole(['Super Admin', 'Owner']) && $stats['pending_borrow_approvals'] > 0)
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="subheader text-warning">
+                                    <i class="far fa-clock"></i>&nbsp;
+                                    Pending Borrow Approvals
+                                </div>
+                            </div>
+                            <div class="h1 mb-3 text-warning">{{ $stats['pending_borrow_approvals'] }}</div>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
 
             <!-- Quick Actions -->
@@ -127,6 +167,22 @@
                                     </a>
                                 </div>
                                 @endcan
+                                @can('create', App\Models\DocumentBorrow::class)
+                                <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                                    <a href="{{ route('document-borrows.create') }}" class="btn btn-outline-info w-100">
+                                        <i class="far fa-book"></i>&nbsp;
+                                        Borrow Document
+                                    </a>
+                                </div>
+                                @endcan
+                                @if(auth()->user()->hasRole(['Super Admin', 'Owner']))
+                                <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                                    <a href="{{ route('document-borrows.pending') }}" class="btn btn-outline-warning w-100">
+                                        <i class="far fa-hourglass-half"></i>&nbsp;
+                                        Borrow Approvals
+                                    </a>
+                                </div>
+                                @endif
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('reports.document-management.masterlist') }}" class="btn btn-outline-secondary w-100">
                                         <i class="far fa-list"></i>&nbsp;
@@ -190,15 +246,74 @@
                 </div>
             </div>
 
+            <!-- Overdue Borrows -->
+            @if(isset($overdueBorrows) && $overdueBorrows->count() > 0)
+            <div class="row row-deck row-cards mt-3">
+                <div class="col-12">
+                    <div class="card border-danger">
+                        <div class="card-header">
+                            <h3 class="card-title text-danger">
+                                <i class="far fa-exclamation-triangle"></i>&nbsp;
+                                Overdue Document Borrows
+                            </h3>
+                            <div class="card-actions">
+                                <a href="{{ route('reports.dms.overdue-documents') }}" class="btn btn-sm btn-outline-danger">
+                                    View Full Report
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-vcenter">
+                                    <thead>
+                                        <tr>
+                                            <th>Document</th>
+                                            <th>Borrower</th>
+                                            <th>Due Date</th>
+                                            <th>Days Overdue</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($overdueBorrows as $borrow)
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold">{{ $borrow->document->title }}</div>
+                                                    <div class="text-muted">{{ $borrow->document->document_number }}</div>
+                                                </td>
+                                                <td>{{ $borrow->user->name }}</td>
+                                                <td>{{ $borrow->due_date->format('d M Y') }}</td>
+                                                <td>
+                                                    <span class="badge bg-danger">
+                                                        {{ $borrow->days_overdue }} days
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('document-borrows.show', $borrow) }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="far fa-eye"></i>&nbsp;
+                                                        View
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Overdue Requests -->
             @if($overdueRequests->count() > 0)
-            <div class="row row-deck row-cards">
+            <div class="row row-deck row-cards mt-3">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title text-warning">
                                 <i class="far fa-exclamation-triangle"></i>&nbsp;
-                                Overdue Requests
+                                Overdue Form Requests
                             </h3>
                         </div>
                         <div class="card-body">

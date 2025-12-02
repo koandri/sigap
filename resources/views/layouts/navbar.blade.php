@@ -44,14 +44,14 @@
                         </div>
                     </div>
                 </li>
-                <li class="nav-item dropdown {{ areActiveRoutes(['documents.*', 'documents.versions.*', 'document-versions.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-dashboard', 'correspondences.*']) }}">
+                <li class="nav-item dropdown {{ areActiveRoutes(['documents.*', 'documents.versions.*', 'document-versions.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-dashboard', 'correspondences.*', 'document-borrows.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                             <i class="far fa-file-lines"></i>&nbsp;
                         </span>
                         <span class="nav-link-title">Document Management</span>
                     </a>
-                    <div class="dropdown-menu {{ areOpenRoutes(['documents.*', 'documents.versions.*', 'document-versions.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-dashboard', 'correspondences.*']) }}">
+                    <div class="dropdown-menu {{ areOpenRoutes(['documents.*', 'documents.versions.*', 'document-versions.*', 'document-access.*', 'my-document-access', 'form-requests.*', 'printed-forms.*', 'dms-dashboard', 'correspondences.*', 'document-borrows.*']) }}">
                         <div class="dropdown-menu-columns">
                             <div class="dropdown-menu-column">
                                 <a class="dropdown-item {{ areActiveRoutes('dms-dashboard') }}" href="{{ route('dms-dashboard') }}">
@@ -63,6 +63,16 @@
                                 <a class="dropdown-item {{ areActiveRoutes('my-document-access') }}" href="{{ route('my-document-access') }}">
                                     <i class="far fa-eye"></i>&nbsp; &nbsp;My Documents
                                 </a>
+                                @can('viewAny', App\Models\DocumentBorrow::class)
+                                <a class="dropdown-item {{ areActiveRoutes('document-borrows.index') }}" href="{{ route('document-borrows.index') }}">
+                                    <i class="far fa-book"></i>&nbsp; &nbsp;My Borrows
+                                </a>
+                                @endcan
+                                @if(auth()->user()->hasRole(['Super Admin', 'Owner']))
+                                <a class="dropdown-item {{ areActiveRoutes('document-borrows.pending') }}" href="{{ route('document-borrows.pending') }}">
+                                    <i class="far fa-hourglass-half"></i>&nbsp; &nbsp;Borrow Approvals
+                                </a>
+                                @endif
                                 <a class="dropdown-item {{ areActiveRoutes('form-requests.*') }}" href="{{ route('form-requests.index') }}">
                                     <i class="far fa-file-text"></i>&nbsp; &nbsp;Form Requests
                                 </a>
@@ -217,14 +227,14 @@
                     </div>
                 </li>
                 @endcanany
-                <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*', 'reports.asset-lifetime.*']) }}">
+                <li class="nav-item dropdown {{ areActiveRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*', 'reports.asset-lifetime.*', 'reports.dms.*']) }}">
                     <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                             <i class="far fa-chart-bar"></i>&nbsp;
                         </span>
                         <span class="nav-link-title">Reports</span>
                     </a>
-                    <div class="dropdown-menu {{ areOpenRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*', 'reports.asset-lifetime.*']) }}">
+                    <div class="dropdown-menu {{ areOpenRoutes(['reports.assets.*', 'reports.facility.*', 'reports.document-management.*', 'reports.asset-lifetime.*', 'reports.dms.*']) }}">
                         <div class="dropdown-menu-columns">
                             @canany(['dms.reports.view', 'dms.sla.report.view'])
                             <div class="dropdown-menu-column">
@@ -240,6 +250,14 @@
                                 @can('dms.sla.report.view')
                                 <a class="dropdown-item {{ areActiveRoutes('reports.document-management.sla') }}" href="{{ route('reports.document-management.sla') }}">
                                     <i class="far fa-chart-bar"></i>&nbsp; &nbsp;SLA Report
+                                </a>
+                                @endcan
+                                @can('dms.borrows.view')
+                                <a class="dropdown-item {{ areActiveRoutes('reports.dms.borrowed-documents') }}" href="{{ route('reports.dms.borrowed-documents') }}">
+                                    <i class="far fa-book"></i>&nbsp; &nbsp;Borrowed Documents
+                                </a>
+                                <a class="dropdown-item {{ areActiveRoutes('reports.dms.overdue-documents') }}" href="{{ route('reports.dms.overdue-documents') }}">
+                                    <i class="far fa-exclamation-triangle"></i>&nbsp; &nbsp;Overdue Documents
                                 </a>
                                 @endcan
                             </div>

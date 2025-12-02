@@ -45,6 +45,12 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.sla.report.view',
             'dms.reports.view',
             'asset.reports.view',
+
+            // Document borrowing permissions
+            'dms.borrows.request',
+            'dms.borrows.approve',
+            'dms.borrows.manage',
+            'dms.borrows.view',
         ];
 
         foreach ($permissions as $permission) {
@@ -77,6 +83,10 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.admin',
             'dms.outgoing_letters.create',
             'dms.internal_memos.create',
+            'dms.borrows.request',
+            'dms.borrows.approve',
+            'dms.borrows.manage',
+            'dms.borrows.view',
         ]);
 
         // Owner - All permissions
@@ -99,6 +109,10 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.admin',
             'dms.outgoing_letters.create',
             'dms.internal_memos.create',
+            'dms.borrows.request',
+            'dms.borrows.approve',
+            'dms.borrows.manage',
+            'dms.borrows.view',
         ]);
 
         // Document Control - Process forms and manage documents
@@ -116,6 +130,8 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.forms.process',
             'dms.forms.view',
             'dms.internal_memos.create',
+            'dms.borrows.manage',
+            'dms.borrows.view',
         ]);
 
         // Manager - Approve documents and manage team access
@@ -134,6 +150,8 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.forms.request',
             'dms.forms.view',
             'dms.internal_memos.create',
+            'dms.borrows.request',
+            'dms.borrows.view',
         ]);
 
         // Regular users - Basic access
@@ -144,6 +162,8 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.access.view',
             'dms.forms.request',
             'dms.forms.view',
+            'dms.borrows.request',
+            'dms.borrows.view',
         ]);
     }
 }

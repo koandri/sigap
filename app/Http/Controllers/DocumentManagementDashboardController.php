@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\DocumentBorrow;
 use App\Models\FormRequest;
 use App\Models\PrintedForm;
 use App\Models\DocumentInstance;
 use App\Models\User;
 use App\Enums\DocumentInstanceStatus;
 use App\Services\FormRequestService;
+use App\Services\DocumentBorrowService;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -18,12 +20,15 @@ use Illuminate\Support\Facades\Auth;
 final class DocumentManagementDashboardController extends Controller
 {
     public function __construct(
-        private readonly FormRequestService $formRequestService
+        private readonly FormRequestService $formRequestService,
+        private readonly DocumentBorrowService $borrowService
     ) {}
 
     public function index(): View
     {
         $user = Auth::user();
+        
+        $borrowStats = $this->borrowService->getStatistics();
         
         $stats = [
             'total_documents' => Document::count(),
@@ -31,12 +36,16 @@ final class DocumentManagementDashboardController extends Controller
             'pending_correspondence_approvals' => $this->getPendingCorrespondenceApprovalsCount($user),
             'pending_form_requests' => FormRequest::where('status', 'requested')->count(),
             'circulating_forms' => PrintedForm::whereIn('status', ['issued', 'circulating'])->count(),
+            'documents_borrowed' => $borrowStats['total_borrowed'],
+            'overdue_borrows' => $borrowStats['total_overdue'],
+            'pending_borrow_approvals' => $borrowStats['pending_approvals'],
         ];
 
         $recentActivities = collect($this->getRecentActivities());
         $overdueRequests = $this->formRequestService->getOverdueRequests();
+        $overdueBorrows = $this->borrowService->getOverdueBorrows();
         
-        return view('dashboards.dms', compact('stats', 'recentActivities', 'overdueRequests'));
+        return view('dashboards.dms', compact('stats', 'recentActivities', 'overdueRequests', 'overdueBorrows'));
     }
 
     private function getPendingDocumentApprovalsCount(): int

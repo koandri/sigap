@@ -69,6 +69,25 @@ final class Document extends Model
         return $this->hasMany(DocumentAccessRequest::class);
     }
 
+    public function borrows(): HasMany
+    {
+        return $this->hasMany(DocumentBorrow::class);
+    }
+
+    public function activeBorrow(): ?DocumentBorrow
+    {
+        return $this->borrows()
+            ->whereIn('status', ['pending', 'approved', 'checked_out'])
+            ->first();
+    }
+
+    public function isCurrentlyBorrowed(): bool
+    {
+        return $this->borrows()
+            ->where('status', 'checked_out')
+            ->exists();
+    }
+
     public function scopeByDepartment($query, int $departmentId)
     {
         return $query->where('department_id', $departmentId);

@@ -86,6 +86,24 @@ Schedule::command('dms:cleanup-expired-access')
     });
 
 /**
+ * Schedule document borrow reminders.
+ * Runs daily at 08:00 Asia/Jakarta timezone to:
+ * - Send reminders for documents due within 1 day
+ * - Send overdue notices for documents past due date
+ */
+Schedule::command('borrows:send-reminders --all')
+    ->dailyAt('08:00')
+    ->timezone('Asia/Jakarta')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onSuccess(function () {
+        Log::info('Document borrow reminders sent successfully');
+    })
+    ->onFailure(function () {
+        Log::error('Document borrow reminders failed');
+    });
+
+/**
  * Schedule recalculation of asset lifetime metrics.
  * Runs monthly on the 1st at 02:00 Asia/Jakarta timezone.
  */
