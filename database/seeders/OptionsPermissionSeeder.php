@@ -68,7 +68,6 @@ final class OptionsPermissionSeeder extends Seeder
             $permission = Permission::firstOrCreate(
                 ['name' => $permissionData['name'], 'guard_name' => 'web']
             );
-            $this->command->info("Created/Found: {$permission->name}");
         }
 
         // Assign permissions to roles

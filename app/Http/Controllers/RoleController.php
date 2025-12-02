@@ -97,8 +97,9 @@ class RoleController extends Controller
         $role = Role::create($validated);
 
         // Sync permissions if provided
-        if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
+        if ($request->has('permissions') && !empty($request->permissions)) {
+            $permissions = Permission::whereIn('id', $request->permissions)->get();
+            $role->syncPermissions($permissions);
         }
 
         return redirect()->route('roles.index')->with(['success' => 'A new role created!']);
@@ -149,8 +150,12 @@ class RoleController extends Controller
         $role->update($validated);
 
         // Sync permissions (empty array if not provided)
-        $permissions = $request->has('permissions') ? $request->permissions : [];
-        $role->syncPermissions($permissions);
+        if ($request->has('permissions') && !empty($request->permissions)) {
+            $permissions = Permission::whereIn('id', $request->permissions)->get();
+            $role->syncPermissions($permissions);
+        } else {
+            $role->syncPermissions([]);
+        }
 
         return redirect()->route('roles.index')->with(['success' => 'Role has been updated!']);
     }
