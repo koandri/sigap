@@ -14,6 +14,7 @@ final class LocationController extends Controller
     public function __construct()
     {
         $this->middleware('can:maintenance.assets.manage')->only(['create', 'store', 'edit', 'update', 'destroy']);
+        $this->middleware('can:maintenance.assets.view')->only(['index', 'show']);
     }
 
     /**

@@ -22,7 +22,9 @@ final class DocumentManagementDashboardController extends Controller
     public function __construct(
         private readonly FormRequestService $formRequestService,
         private readonly DocumentBorrowService $borrowService
-    ) {}
+    ) {
+        $this->middleware('can:dms.dashboard.view')->only(['index']);
+    }
 
     public function index(): View
     {

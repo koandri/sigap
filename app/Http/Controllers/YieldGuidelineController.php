@@ -17,7 +17,7 @@ final class YieldGuidelineController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:manufacturing.yield-guidelines.view')->only(['index', 'show']);
+        $this->middleware('can:manufacturing.yield-guidelines.view')->only(['index', 'show', 'getItemsForStage']);
         $this->middleware('can:manufacturing.yield-guidelines.create')->only(['create', 'store']);
         $this->middleware('can:manufacturing.yield-guidelines.edit')->only(['edit', 'update']);
         $this->middleware('can:manufacturing.yield-guidelines.delete')->only(['destroy']);

@@ -19,7 +19,7 @@ final class MaintenanceScheduleController extends Controller
     public function __construct(
         private readonly MaintenanceService $maintenanceService
     ) {
-        $this->middleware('can:maintenance.schedules.manage')->only(['create', 'store', 'edit', 'update', 'destroy']);
+        $this->middleware('can:maintenance.schedules.manage')->only(['create', 'store', 'edit', 'update', 'destroy', 'trigger']);
     }
 
     /**

@@ -24,7 +24,18 @@ final class ProductionPlanController extends Controller
         private readonly ProductionPlanningService $planningService,
         private readonly ProductionDocumentService $documentService
     ) {
-        $this->middleware('can:manufacturing.production-plans.view')->only(['index', 'show']);
+        $this->middleware('can:manufacturing.production-plans.view')->only([
+            'index', 
+            'show', 
+            'getRecipes', 
+            'getRecipeIngredients',
+            'showWetProductionWorkOrder',
+            'showDryProductionWorkOrder',
+            'showJcRoAdonan',
+            'showJcRoGelondongan',
+            'showJcRoKerupukKg',
+            'showJcRoKerupukPack'
+        ]);
         $this->middleware('can:manufacturing.production-plans.create')->only(['create', 'store']);
         $this->middleware('can:manufacturing.production-plans.edit')->only(['edit', 'update']);
         $this->middleware('can:manufacturing.production-plans.delete')->only(['destroy']);

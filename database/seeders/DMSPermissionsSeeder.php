@@ -14,6 +14,9 @@ final class DMSPermissionsSeeder extends Seeder
     {
         // Create DMS permissions
         $permissions = [
+            // Dashboard permission
+            ['name' => 'dms.dashboard.view', 'description' => 'View DMS dashboard'],
+            
             // Document permissions
             ['name' => 'dms.documents.view', 'description' => 'View documents in the DMS system'],
             ['name' => 'dms.documents.create', 'description' => 'Create new documents'],
@@ -88,6 +91,7 @@ final class DMSPermissionsSeeder extends Seeder
         // Document Control - Process forms and manage documents
         $documentControl = Role::firstOrCreate(['name' => 'Document Control']);
         $documentControl->givePermissionTo([
+            'dms.dashboard.view',
             'dms.documents.view',
             'dms.documents.create',
             'dms.documents.edit',
@@ -111,6 +115,7 @@ final class DMSPermissionsSeeder extends Seeder
         // Manager - Approve documents and manage team access
         $manager = Role::firstOrCreate(['name' => 'Manager']);
         $manager->givePermissionTo([
+            'dms.dashboard.view',
             'dms.documents.view',
             'dms.documents.create',
             'dms.documents.edit',
@@ -135,6 +140,7 @@ final class DMSPermissionsSeeder extends Seeder
         // Regular users - Basic access
         $user = Role::firstOrCreate(['name' => 'User']);
         $user->givePermissionTo([
+            'dms.dashboard.view',
             'dms.documents.view',
             'dms.instances.view',
             'dms.instances.create',

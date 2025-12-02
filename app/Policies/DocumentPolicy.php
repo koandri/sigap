@@ -11,6 +11,16 @@ use Illuminate\Auth\Access\Response;
 final class DocumentPolicy
 {
     /**
+     * Determine whether the user can view any documents.
+     */
+    public function viewAny(User $user): bool
+    {
+        // Check if user has permission to view documents
+        return $user->hasPermissionTo('dms.documents.view') || 
+               $user->hasRole(['Super Admin', 'Owner']);
+    }
+
+    /**
      * Determine whether the user can view the document.
      */
     public function view(User $user, Document $document): bool

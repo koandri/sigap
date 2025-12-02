@@ -22,6 +22,8 @@ final class DocumentController extends Controller
 
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Document::class);
+        
         $user = auth()->user();
         $documents = $this->documentService->getDocumentsAccessibleByUser($user);
         
