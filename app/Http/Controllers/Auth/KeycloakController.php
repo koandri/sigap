@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use App\Services\PushoverService;
 
@@ -26,16 +27,12 @@ class KeycloakController extends Controller
      */
     public function handleKeycloakCallback()
     {
-        // Get user from Keycloak
-        $keycloakUser = Socialite::driver('keycloak')->user();
-        
         try {
+            // Get user from Keycloak
+            $keycloakUser = Socialite::driver('keycloak')->user();
+            
             // Check if user exists in local database
             $user = User::where('email', $keycloakUser->getEmail())->first();
-            $user = User::firstOrCreate(
-                ['email' => $keycloakUser->getEmail()],
-                ['name' => $keycloakUser->getName(), 'email' => $keycloakUser->getEmail(), 'active' => true]
-            );
             
             // If user doesn't exist, create a new user
             if (!$user) {
@@ -49,7 +46,7 @@ class KeycloakController extends Controller
             if (!$user->active) {
                 return redirect()->route('login')
                     ->withErrors([
-                        'error' => 'Your account is not not active. Please contact the IT Staff.'
+                        'error' => 'Your account is not active. Please contact the IT Staff.'
                     ]);
             }
             
@@ -65,12 +62,16 @@ class KeycloakController extends Controller
             return redirect()->intended('/dashboard');
             
         } catch (\Exception $e) {  
-            $message = "SIGaP SSO login attempt for non-existent user (" . $keycloakUser->getEmail() . ") from IP: " . request()->ip();
+            // Log the actual error for debugging
+            Log::error('Keycloak SSO Error', [
+                'error' => $e->getMessage(),
+                'ip' => request()->ip()
+            ]);
 
             $this->pushoverService->sendWhatsAppFailureNotification(
-                'Invalid SIGaP SSO Login Attempt',
+                'SIGaP SSO Login Error',
                 env('WAHA_DEFAULT_CHAT_ID'),
-                $message
+                "SSO login error from IP: " . request()->ip() . ". Error: " . $e->getMessage()
             );
 
             return redirect()->route('login')
