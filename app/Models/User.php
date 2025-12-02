@@ -224,11 +224,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Document borrow requests made by this user.
+     * Document borrows made by this user.
      */
-    public function documentBorrowRequests(): HasMany
+    public function documentBorrows(): HasMany
     {
-        return $this->hasMany(DocumentBorrowRequest::class);
+        return $this->hasMany(DocumentBorrow::class);
     }
 
     /**

@@ -20,48 +20,32 @@ final class DocumentBorrowService
     ) {}
 
     /**
-     * Create a borrow request for multiple documents.
+     * Create a borrow request.
      * Auto-approves for Super Admin/Owner roles.
-     * 
-     * @param User $user
-     * @param array $data ['notes' => string, 'documents' => [['document_id' => int, 'due_date' => string|null], ...]]
-     * @return DocumentBorrowRequest
      */
-    public function createBorrowRequest(User $user, array $data): DocumentBorrowRequest
+    public function createBorrowRequest(Document $document, User $user, array $data): DocumentBorrow
     {
-        return DB::transaction(function () use ($user, $data) {
+        return DB::transaction(function () use ($document, $user, $data) {
             $isPrivilegedUser = $user->hasRole(['Super Admin', 'Owner']);
 
-            // Create the parent request
-            $request = DocumentBorrowRequest::create([
+            $borrow = DocumentBorrow::create([
+                'document_id' => $document->id,
                 'user_id' => $user->id,
-                'notes' => $data['notes'] ?? null,
                 'status' => $isPrivilegedUser ? DocumentBorrowStatus::Approved : DocumentBorrowStatus::Pending,
+                'due_date' => $data['due_date'] ?? null,
+                'notes' => $data['notes'] ?? null,
                 'approved_by' => $isPrivilegedUser ? $user->id : null,
                 'approved_at' => $isPrivilegedUser ? now() : null,
             ]);
 
-            // Create borrow items for each document
-            foreach ($data['documents'] as $docData) {
-                DocumentBorrow::create([
-                    'borrow_request_id' => $request->id,
-                    'document_id' => $docData['document_id'],
-                    'status' => $isPrivilegedUser ? DocumentBorrowStatus::Approved : DocumentBorrowStatus::Pending,
-                    'due_date' => $docData['due_date'] ?? null,
-                ]);
-            }
-
-            // Reload to include items
-            $request->load('items.document');
-
             // Send notifications
             if ($isPrivilegedUser) {
-                $this->notifyBorrowApproved($request);
+                $this->notifyBorrowApproved($borrow);
             } else {
-                $this->notifyApproversOfNewRequest($request);
+                $this->notifyApproversOfNewRequest($borrow);
             }
 
-            return $request;
+            return $borrow;
         });
     }
 
