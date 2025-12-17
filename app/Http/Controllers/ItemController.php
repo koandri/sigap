@@ -135,7 +135,7 @@ final class ItemController extends Controller
         set_time_limit(300); // 5 minutes
         
         $validated = $request->validate([
-            'excel_file' => 'required|file|mimetypes:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/zip|max:10240', // 10MB max
+            'excel_file' => 'required|file|mimes:xlsx,xls,zip|max:10240', // 10MB max
         ]);
 
         try {

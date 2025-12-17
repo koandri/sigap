@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Services\HiddenFieldService;
 use App\Services\ApprovalService;
-use App\Helpers\MimeTypeHelper;
 
 use App\Models\User;
 use App\Models\Form;
@@ -248,16 +247,24 @@ class FormSubmissionController extends Controller
                         ];
                         
                         if (!empty($allowedExtensions)) {
-                            $mimeTypes = MimeTypeHelper::extensionsToMimetypes($allowedExtensions);
-                            $rules["fields.{$field->field_code}.*"][] = 'mimetypes:' . $mimeTypes;
+                            // Add 'zip' for docx/xlsx files that may be detected as zip
+                            $extensions = $allowedExtensions;
+                            if (array_intersect(['docx', 'xlsx'], $extensions)) {
+                                $extensions[] = 'zip';
+                            }
+                            $rules["fields.{$field->field_code}.*"][] = 'mimes:' . implode(',', array_unique($extensions));
                         }
                     } else {
                         $fieldRules[] = 'file';
                         $fieldRules[] = 'max:' . $maxFileSize;
                         
                         if (!empty($allowedExtensions)) {
-                            $mimeTypes = MimeTypeHelper::extensionsToMimetypes($allowedExtensions);
-                            $fieldRules[] = 'mimetypes:' . $mimeTypes;
+                            // Add 'zip' for docx/xlsx files that may be detected as zip
+                            $extensions = $allowedExtensions;
+                            if (array_intersect(['docx', 'xlsx'], $extensions)) {
+                                $extensions[] = 'zip';
+                            }
+                            $fieldRules[] = 'mimes:' . implode(',', array_unique($extensions));
                         }
                     }
                     break;

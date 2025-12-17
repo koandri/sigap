@@ -107,7 +107,7 @@ final class WorkOrderController extends Controller
             'maintenance_type_id' => 'required|exists:maintenance_types,id',
             'priority' => 'required|in:low,medium,high,urgent',
             'description' => 'required|string|max:1000',
-            'photos.*' => 'nullable|image|mimetypes:image/jpeg,image/png,image/gif|max:5120',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'photo_captions.*' => 'nullable|string|max:255',
         ]);
 
@@ -492,7 +492,7 @@ final class WorkOrderController extends Controller
         $this->authorize('work', $workOrder);
 
         $validated = $request->validate([
-            'photo' => 'required|image|mimetypes:image/jpeg,image/png,image/gif|max:5120',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'photo_type' => 'required|in:progress,before,after,issue',
             'caption' => 'nullable|string|max:255',
         ]);

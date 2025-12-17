@@ -176,7 +176,7 @@ final class PrintedFormController extends Controller
         $this->authorize('process', $printedForm->formRequestItem->formRequest);
         
         $request->validate([
-            'scanned_file' => 'required|file|mimetypes:application/pdf|max:10240', // 10MB max
+            'scanned_file' => 'required|file|mimes:pdf|max:10240', // 10MB max
         ]);
 
         $filePath = $request->file('scanned_file')->store('documents/scanned', 's3');
@@ -368,7 +368,7 @@ final class PrintedFormController extends Controller
         // Build dynamic validation rules for files mapped by form ID
         $fileRules = [];
         foreach ($formIds as $formId) {
-            $fileRules["scanned_files.{$formId}"] = 'required|file|mimetypes:application/pdf|max:10240';
+            $fileRules["scanned_files.{$formId}"] = 'required|file|mimes:pdf|max:10240';
         }
         $request->validate($fileRules);
 

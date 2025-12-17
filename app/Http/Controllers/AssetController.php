@@ -135,7 +135,7 @@ final class AssetController extends Controller
 
         // Only validate photos if files are actually uploaded
         if ($request->hasFile('photos')) {
-            $rules['photos.*'] = 'image|mimetypes:image/jpeg,image/png,image/gif|max:5120';
+            $rules['photos.*'] = 'image|mimes:jpeg,png,jpg,gif|max:5120';
         }
 
         $validated = $request->validate($rules);
@@ -338,7 +338,7 @@ final class AssetController extends Controller
 
         // Only validate photos if files are actually uploaded
         if ($request->hasFile('photos')) {
-            $rules['photos.*'] = 'image|mimetypes:image/jpeg,image/png,image/gif|max:5120';
+            $rules['photos.*'] = 'image|mimes:jpeg,png,jpg,gif|max:5120';
             Log::info('Photos validation rule added');
         } else {
             Log::warning('No photos found in request', [
