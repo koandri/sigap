@@ -246,7 +246,7 @@ final class FormRequestController extends Controller
         $this->authorize('process', $printedForm->formRequestItem->formRequest);
         
         $request->validate([
-            'scanned_file' => 'required|file|mimes:pdf|max:10240', // 10MB max
+            'scanned_file' => 'required|file|mimetypes:application/pdf|max:10240', // 10MB max
         ]);
 
         $filePath = $request->file('scanned_file')->store('documents/scanned', 's3');

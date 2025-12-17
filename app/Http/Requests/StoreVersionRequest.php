@@ -23,7 +23,7 @@ final class StoreVersionRequest extends FormRequest
         return [
             'creation_method' => 'required|in:scratch,upload,copy',
             'file_type' => 'required_if:creation_method,scratch|in:docx,xlsx',
-            'source_file' => 'required_if:creation_method,upload|file|mimes:docx,xlsx,pdf,jpg,jpeg,png',
+            'source_file' => 'required_if:creation_method,upload|file|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png,application/zip',
             'source_version_id' => [
                 'required_if:creation_method,copy',
                 function ($attribute, $value, $fail) use ($document) {

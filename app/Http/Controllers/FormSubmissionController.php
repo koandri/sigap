@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Services\HiddenFieldService;
 use App\Services\ApprovalService;
+use App\Helpers\MimeTypeHelper;
 
 use App\Models\User;
 use App\Models\Form;
@@ -247,14 +248,16 @@ class FormSubmissionController extends Controller
                         ];
                         
                         if (!empty($allowedExtensions)) {
-                            $rules["fields.{$field->field_code}.*"][] = 'mimes:' . implode(',', $allowedExtensions);
+                            $mimeTypes = MimeTypeHelper::extensionsToMimetypes($allowedExtensions);
+                            $rules["fields.{$field->field_code}.*"][] = 'mimetypes:' . $mimeTypes;
                         }
                     } else {
                         $fieldRules[] = 'file';
                         $fieldRules[] = 'max:' . $maxFileSize;
                         
                         if (!empty($allowedExtensions)) {
-                            $fieldRules[] = 'mimes:' . implode(',', $allowedExtensions);
+                            $mimeTypes = MimeTypeHelper::extensionsToMimetypes($allowedExtensions);
+                            $fieldRules[] = 'mimetypes:' . $mimeTypes;
                         }
                     }
                     break;
