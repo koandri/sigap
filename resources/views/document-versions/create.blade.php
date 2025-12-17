@@ -68,7 +68,7 @@
                             
                             <div class="mb-3" id="source_file_group" style="display: none;">
                                 <label class="form-label required">Source File</label>
-                                <input type="file" name="source_file" id="source_file" class="form-control" accept=".docx,.xlsx,.pdf,.jpg,.jpeg,.png">
+                                <input type="file" name="source_file" id="source_file" class="form-control" accept=".docx,.xlsx,.pdf,.jpg,.jpeg,.png,.zip">
                                 <div class="form-hint">Supported formats: DOCX, XLSX, PDF, JPG, JPEG, PNG</div>
                                 @error('source_file')
                                     <div class="invalid-feedback">{{ $message }}</div>
