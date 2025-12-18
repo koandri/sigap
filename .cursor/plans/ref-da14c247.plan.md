@@ -1,4 +1,24 @@
-<!-- da14c247-8863-40e1-be87-a42233b74a79 72eecaf5-3a78-45e1-9ef7-7de325416db7 -->
+---
+name: "Refactor Plan: Item Dropdowns & TomSelect"
+overview: ""
+todos:
+  - id: 6ea95566-515f-4ff8-88e7-ba2ae7276803
+    content: Scan all Blade views to identify every Item-related <select>, catalogue them with file paths, context, current filters, and TomSelect usage.
+    status: pending
+  - id: c82ee09a-2a44-4a85-b76b-141f47840b7e
+    content: Define and implement a single Item label accessor on the Item model and update references to use it for dropdowns.
+    status: pending
+  - id: 6610a03e-5b27-4517-93a8-724c7048e1cc
+    content: Create an ItemDropdownService (or similar helper) that centralizes Item filtering and returns id => label collections for dropdowns.
+    status: pending
+  - id: 9f794edf-ba80-4c6c-9b44-653faeedbcf2
+    content: Update controllers and services to use the Item dropdown provider instead of ad-hoc Item queries for dropdowns.
+    status: pending
+  - id: abde9f3f-74a0-495f-ad3b-38498d69ecc0
+    content: Convert all remaining Item dropdowns to use TomSelect, update Blade markup to use the standard label, and validate behavior across all affected flows.
+    status: pending
+---
+
 # Refactor Plan: Item Dropdowns & TomSelect
 
 ### 1. Discovery: Identify all Item dropdown usages
@@ -98,11 +118,3 @@
 - How to use `ItemDropdownService` and its filters.
 - How to initialise TomSelect for a new Item dropdown.
 - Encourage future work to follow this pattern instead of introducing ad-hoc Item dropdown implementations.
-
-### To-dos
-
-- [ ] Scan all Blade views to identify every Item-related <select>, catalogue them with file paths, context, current filters, and TomSelect usage.
-- [ ] Define and implement a single Item label accessor on the Item model and update references to use it for dropdowns.
-- [ ] Create an ItemDropdownService (or similar helper) that centralizes Item filtering and returns id => label collections for dropdowns.
-- [ ] Update controllers and services to use the Item dropdown provider instead of ad-hoc Item queries for dropdowns.
-- [ ] Convert all remaining Item dropdowns to use TomSelect, update Blade markup to use the standard label, and validate behavior across all affected flows.

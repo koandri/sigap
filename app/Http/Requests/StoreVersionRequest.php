@@ -10,6 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class StoreVersionRequest extends FormRequest
 {
+    
     public function authorize(): bool
     {
         $document = $this->route('document');
@@ -22,8 +23,9 @@ final class StoreVersionRequest extends FormRequest
         
         return [
             'creation_method' => 'required|in:scratch,upload,copy',
-            'file_type' => 'required_if:creation_method,scratch|in:docx,xlsx',
-            'source_file' => 'required_if:creation_method,upload|file|mimes:docx,xlsx,pdf,jpg,jpeg,png,zip',
+            'file_type' => 'required_if:creation_method,scratch|nullable|in:docx,xlsx',
+            // Use mimes rule with zip included - DOCX/XLSX files are ZIP archives and may be detected as application/zip
+            'source_file' => 'required_if:creation_method,upload|file|mimes:docx,xlsx,zip,pdf,jpg,jpeg,png',
             'source_version_id' => [
                 'required_if:creation_method,copy',
                 function ($attribute, $value, $fail) use ($document) {
@@ -38,6 +40,13 @@ final class StoreVersionRequest extends FormRequest
             ],
             'revision_description' => 'nullable|string|max:1000',
             'is_ncr_paper' => 'nullable|boolean',
+        ];
+    }
+    
+    public function messages(): array
+    {
+        return [
+            'source_file.mimes' => 'The selected file type is invalid. Allowed types: DOCX, XLSX, PDF, JPG, JPEG, PNG, ZIP',
         ];
     }
 }

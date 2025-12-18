@@ -1,4 +1,51 @@
-<!-- 4f786e04-86a6-4a63-a10d-0d3ff95fd983 0fbb8045-d8e5-4557-b9ed-d1857241470a -->
+---
+name: Physical Document Borrowing Feature
+overview: ""
+todos:
+  - id: fc1f67c4-6f9a-40d3-b212-ce6508cbf70c
+    content: Create document_borrows migration
+    status: pending
+  - id: cfb8d39d-f2fe-4c12-8cff-fa8c8801fb6c
+    content: Create DocumentBorrowStatus enum
+    status: pending
+  - id: 1ce656e0-041a-4660-b831-14da7bbf564d
+    content: Create DocumentBorrow model with relationships and scopes
+    status: pending
+  - id: 950aa46f-d939-4201-bb0e-3c08d171eda8
+    content: Create DocumentBorrowService with business logic and WhatsApp notifications
+    status: pending
+  - id: 3677898e-bac6-4010-bb8b-79307107ae44
+    content: Create DocumentBorrowPolicy for authorization
+    status: pending
+  - id: 4fc4669d-cb2b-405f-99b2-a56a966d0981
+    content: Create StoreBorrowRequest validation
+    status: pending
+  - id: 0007f80b-780e-42b8-8ba5-d8c36ee9f310
+    content: Create DocumentBorrowController with all actions
+    status: pending
+  - id: 164508eb-a912-4107-b8dc-1cb4924f1aa2
+    content: Create Blade views for borrowing (index, create, show, pending, review)
+    status: pending
+  - id: 01523f45-53c9-46d1-989a-7b79893f04b1
+    content: Add borrowed/overdue widgets to DMS dashboard
+    status: pending
+  - id: 5fb45d9c-3f65-4c6d-a463-9d0c8f95cfbc
+    content: Create DocumentBorrowReportController and report views
+    status: pending
+  - id: afc6a489-b83c-4ee2-8907-7cc27898d334
+    content: Add borrow permissions to DMSPermissionsSeeder
+    status: pending
+  - id: 65cbb638-106d-4e27-b663-daf3a98136fb
+    content: Add routes to web.php
+    status: pending
+  - id: 6931710c-87cb-4233-852b-c9df949dc405
+    content: Add menu items to DMS sidebar
+    status: pending
+  - id: 674fd9c2-54a8-4c6b-a121-4da9555a5a5f
+    content: Create SendBorrowReminders scheduled command
+    status: pending
+---
+
 # Physical Document Borrowing Feature
 
 ## Summary
@@ -181,20 +228,3 @@ User Request → [Super Admin/Owner: Auto-approve] → Checked Out → Returned
             → [Other users: Pending] → Approved → Checked Out → Returned
                                      → Rejected
 ```
-
-### To-dos
-
-- [ ] Create document_borrows migration
-- [ ] Create DocumentBorrowStatus enum
-- [ ] Create DocumentBorrow model with relationships and scopes
-- [ ] Create DocumentBorrowService with business logic and WhatsApp notifications
-- [ ] Create DocumentBorrowPolicy for authorization
-- [ ] Create StoreBorrowRequest validation
-- [ ] Create DocumentBorrowController with all actions
-- [ ] Create Blade views for borrowing (index, create, show, pending, review)
-- [ ] Add borrowed/overdue widgets to DMS dashboard
-- [ ] Create DocumentBorrowReportController and report views
-- [ ] Add borrow permissions to DMSPermissionsSeeder
-- [ ] Add routes to web.php
-- [ ] Add menu items to DMS sidebar
-- [ ] Create SendBorrowReminders scheduled command

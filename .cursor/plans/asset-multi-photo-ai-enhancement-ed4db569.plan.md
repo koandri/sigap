@@ -1,4 +1,51 @@
-<!-- ed4db569-ac9d-4b2d-81ff-28bb55aa46ba 66667750-2813-4889-85d1-6da11941ed62 -->
+---
+name: Asset Multi-Photo AI Enhancement Plan
+overview: ""
+todos:
+  - id: 9b43ab8b-838a-42f2-8a76-95ab5b5e3bb3
+    content: Create asset_photos migration table with all required fields (photo_path, uploaded_at, captured_at, is_primary, uploaded_by, gps_data, metadata)
+    status: pending
+  - id: 53630531-a279-402a-aa8d-ddf02aaf66eb
+    content: Create migration to make assets.image_path nullable for backward compatibility
+    status: pending
+  - id: 96497efd-4919-4e70-8e42-4323c54a1750
+    content: Create AssetPhoto model with relationships and casts
+    status: pending
+  - id: 93765d4e-1630-42bd-8ae9-82d143a45751
+    content: Update Asset model to add hasMany(AssetPhoto) relationship and primaryPhoto() method
+    status: pending
+  - id: d723731b-eb1a-4330-9b00-0c175af923ec
+    content: Create OpenRouterService with analyzeAssetImage() method for AI-powered asset recognition
+    status: pending
+  - id: d29126ba-6fff-466b-b0b2-4eaf39516987
+    content: Create FirecrawlService with searchSpecifications() and extractSpecifications() methods
+    status: pending
+  - id: 7b2f0550-d838-47a6-9db3-2fea3a21a3af
+    content: Add analyzeImage() and fetchSpecifications() API endpoints to AssetController
+    status: pending
+  - id: ea618b5c-61f0-492b-b33b-251de4cb0c8d
+    content: Create createMobile() method and mobile-optimized view for camera-based asset creation
+    status: pending
+  - id: 64a522ec-d514-4804-b448-4dfd2dc793f9
+    content: Update AssetController store() method to handle multiple photo uploads with EXIF extraction
+    status: pending
+  - id: e1c1b578-f2ac-4c42-8abb-52865442f16a
+    content: Add photo management methods (setPrimaryPhoto, deletePhoto) to AssetController
+    status: pending
+  - id: d99ad4e0-3317-4923-93c0-aa6c053f7e44
+    content: Create mobile asset creation view with camera capture, AI analysis, and auto-fill functionality
+    status: pending
+  - id: 547eb8f1-25a8-4551-81cb-c2a0defff051
+    content: Update standard asset create/edit views to support multiple photos and photo gallery
+    status: pending
+  - id: 76028a78-7c81-41c9-8c4f-5fe8f4cd36da
+    content: Add routes for mobile creation, photo management, and AI analysis endpoints
+    status: pending
+  - id: 22092ba4-70b8-4746-98f9-bf2cbc88059c
+    content: Update config/services.php and .env.example with OpenRouter and Firecrawl API keys
+    status: pending
+---
+
 # Asset Multi-Photo AI Enhancement Plan
 
 ## Overview
@@ -292,20 +339,3 @@ Add service configurations:
 - Keep `image_path` nullable in database
 - Update all views to use `asset_photos` table
 - Helper method `Asset->getImagePath()` provides fallback for any existing test data
-
-### To-dos
-
-- [ ] Create asset_photos migration table with all required fields (photo_path, uploaded_at, captured_at, is_primary, uploaded_by, gps_data, metadata)
-- [ ] Create migration to make assets.image_path nullable for backward compatibility
-- [ ] Create AssetPhoto model with relationships and casts
-- [ ] Update Asset model to add hasMany(AssetPhoto) relationship and primaryPhoto() method
-- [ ] Create OpenRouterService with analyzeAssetImage() method for AI-powered asset recognition
-- [ ] Create FirecrawlService with searchSpecifications() and extractSpecifications() methods
-- [ ] Add analyzeImage() and fetchSpecifications() API endpoints to AssetController
-- [ ] Create createMobile() method and mobile-optimized view for camera-based asset creation
-- [ ] Update AssetController store() method to handle multiple photo uploads with EXIF extraction
-- [ ] Add photo management methods (setPrimaryPhoto, deletePhoto) to AssetController
-- [ ] Create mobile asset creation view with camera capture, AI analysis, and auto-fill functionality
-- [ ] Update standard asset create/edit views to support multiple photos and photo gallery
-- [ ] Add routes for mobile creation, photo management, and AI analysis endpoints
-- [ ] Update config/services.php and .env.example with OpenRouter and Firecrawl API keys
