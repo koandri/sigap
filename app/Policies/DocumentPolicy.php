@@ -17,7 +17,7 @@ final class DocumentPolicy
     {
         // Check if user has permission to view documents
         return $user->hasPermissionTo('dms.documents.view') || 
-               $user->hasRole(['Super Admin', 'Owner']);
+               $user->hasRole(['Super Admin', 'Owner', 'Document Control']);
     }
 
     /**
@@ -25,8 +25,8 @@ final class DocumentPolicy
      */
     public function view(User $user, Document $document): bool
     {
-        // Super Admin and Owner can view any document
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Super Admin, Owner, and Document Control can view any document
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return true;
         }
 
@@ -78,8 +78,8 @@ final class DocumentPolicy
      */
     public function requestAccess(User $user, Document $document): bool
     {
-        // Super Admin and Owner don't need to request access
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Super Admin, Owner, and Document Control don't need to request access
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return false;
         }
 

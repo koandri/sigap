@@ -87,7 +87,7 @@ final class DMSPermissionsSeeder extends Seeder
         $owner = Role::firstOrCreate(['name' => 'Owner']);
         $owner->givePermissionTo($permissionNames);
 
-        // Document Control - Process forms and manage documents
+        // Document Control - Process forms and manage documents (no approval permissions)
         $documentControl = Role::firstOrCreate(['name' => 'Document Control']);
         $documentControl->givePermissionTo([
             'dms.dashboard.view',
@@ -96,7 +96,6 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.documents.edit',
             'dms.versions.create',
             'dms.versions.edit',
-            'dms.versions.approve',
             'dms.versions.view',
             'dms.instances.view',
             'dms.instances.create',

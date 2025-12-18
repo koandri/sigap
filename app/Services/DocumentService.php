@@ -78,8 +78,8 @@ final class DocumentService
 
     public function checkUserCanAccess(User $user, Document $document): bool
     {
-        // Super Admin and Owner can access any document
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Super Admin, Owner, and Document Control can access any document
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return true;
         }
 
@@ -127,8 +127,8 @@ final class DocumentService
     {
         $query = Document::with(['department', 'activeVersion', 'accessibleDepartments']);
 
-        // Super Admin and Owner can see all documents
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Super Admin, Owner, and Document Control can see all documents
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return $query->get();
         }
 

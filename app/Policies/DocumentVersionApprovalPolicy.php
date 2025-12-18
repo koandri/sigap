@@ -17,7 +17,7 @@ final class DocumentVersionApprovalPolicy
     {
         // Users with approval permission can view pending approvals
         return $user->hasPermissionTo('dms.versions.approve') || 
-               $user->hasRole(['Super Admin', 'Owner', 'Document Control']);
+               $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**

@@ -16,8 +16,8 @@ final class DocumentVersionPolicy
      */
     public function view(User $user, DocumentVersion $version): bool
     {
-        // Super Admin and Owner can view any version
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Super Admin, Owner, and Document Control can view any version
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return true;
         }
 

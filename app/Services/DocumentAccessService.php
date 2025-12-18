@@ -71,8 +71,8 @@ final class DocumentAccessService
 
     public function checkAccess(User $user, DocumentVersion $version): bool
     {
-        // Super Admin and Owner always have access
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Super Admin, Owner, and Document Control always have access
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return true;
         }
 
@@ -117,8 +117,8 @@ final class DocumentAccessService
 
     public function getUserAccessibleDocuments(User $user): Collection
     {
-        // Super Admin and Owner can see all active document versions
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Super Admin, Owner, and Document Control can see all active document versions
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return DocumentVersion::with(['document', 'document.department', 'accessRequests'])
                 ->whereHas('document')
                 ->get();
