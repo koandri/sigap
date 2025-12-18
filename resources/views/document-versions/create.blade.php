@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileTypeGroup = document.getElementById('file_type_group');
     const sourceFileGroup = document.getElementById('source_file_group');
     const sourceVersionGroup = document.getElementById('source_version_group');
+    const sourceFileInput = document.getElementById('source_file');
+    const form = document.querySelector('form[action*="versions.store"]');
     
     creationMethod.addEventListener('change', function() {
         // Hide all groups first
