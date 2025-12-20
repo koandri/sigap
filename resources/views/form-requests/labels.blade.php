@@ -51,8 +51,8 @@
         }
         
         .label-row {
-            width: 115mm;
-            height: 42mm;
+            width: 108mm;
+            height: 28mm;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -63,8 +63,8 @@
         }
         
         .label {
-            width: 35mm;
-            height: 38mm;
+            width: 36mm;
+            height: 28mm;
             border: 2px solid #000;
             padding: 0;
             display: flex;
@@ -86,13 +86,13 @@
             right: 0;
             background: #fff;
             border-bottom: 1px solid #000;
-            padding: 0.5mm 0.5mm;
-            font-size: 5pt;
+            padding: 0.3mm 0.5mm;
+            font-size: 4.5pt;
             font-weight: bold;
             text-align: center;
             color: #333;
             line-height: 1;
-            max-height: 5mm;
+            max-height: 3.5mm;
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -108,30 +108,30 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.5mm;
-            margin-top: 2mm;
+            padding: 0.3mm;
+            margin-top: 1.5mm;
             width: 100%;
         }
         
         .qr-code {
-            width: 31mm;
-            height: 31mm;
+            width: 20mm;
+            height: 20mm;
             margin: 0 auto;
             display: block;
         }
         
         .form-number {
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 5pt;
             color: #0066cc;
             text-align: center;
-            padding-bottom: 0.5mm;
+            padding-bottom: 0.3mm;
         }
         
         /* Print styles */
         @media print {
             @page {
-                size: 115mm 42mm;
+                size: 108mm 28mm;
                 margin: 0;
             }
             
@@ -161,7 +161,7 @@
         <ul>
             <li>Click the Print button below</li>
             <li>Select your label printer</li>
-            <li>Set paper size to: <strong>115mm × 42mm</strong> (or Custom)</li>
+            <li>Set paper size to: <strong>108mm × 28mm</strong> (or Custom: 10.8cm × 2.8cm)</li>
             <li>Set margins to: <strong>None</strong></li>
             <li>Print!</li>
         </ul>
