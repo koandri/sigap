@@ -65,41 +65,38 @@
         .label {
             width: 36mm;
             height: 28mm;
-            border: 2px solid #000;
+            border: none;
             padding: 0;
+            padding-top: 1.5mm;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             position: relative;
         }
         
         .label.empty {
-            border: 1px dashed #ccc;
+            border: none;
             visibility: hidden;
         }
         
         .form-name-border {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            width: 100%;
             background: #fff;
-            border-bottom: 1px solid #000;
+            border: none;
             padding: 0.3mm 0.5mm;
             font-size: 4.5pt;
             font-weight: bold;
             text-align: center;
             color: #333;
-            line-height: 1;
-            max-height: 3.5mm;
+            line-height: 1.1;
+            max-height: 4mm;
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            z-index: 1;
         }
         
         .label-content {
@@ -109,7 +106,7 @@
             align-items: center;
             justify-content: center;
             padding: 0.3mm;
-            margin-top: 1.5mm;
+            margin-top: 0.5mm;
             width: 100%;
         }
         
@@ -122,7 +119,7 @@
         
         .form-number {
             font-weight: bold;
-            font-size: 5pt;
+            font-size: 7pt;
             color: #0066cc;
             text-align: center;
             padding-bottom: 0.3mm;
