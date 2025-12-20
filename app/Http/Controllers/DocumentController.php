@@ -139,6 +139,8 @@ final class DocumentController extends Controller
     {
         $this->authorize('update', $document);
         
+        $document->load('accessibleDepartments');
+        
         $departments = Department::all();
         $documentTypes = DocumentType::cases();
         
