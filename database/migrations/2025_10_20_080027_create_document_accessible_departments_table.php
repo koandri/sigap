@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('document_accessible_departments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained()->onDelete('cascade');
-            $table->foreignId('department_id')->constrained('roles')->onDelete('cascade');
+            $table->foreignId('department_id')->constrained('departments')->onDelete('cascade');
             $table->timestamps();
             
             $table->unique(['document_id', 'department_id']);

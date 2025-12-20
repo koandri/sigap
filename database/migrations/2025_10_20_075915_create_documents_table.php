@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('document_type');
-            $table->foreignId('department_id')->constrained('roles');
+            $table->foreignId('department_id')->constrained('departments');
             $table->foreignId('created_by')->constrained('users');
             $table->json('physical_location')->nullable(); // room_no, shelf_no, folder_no
             $table->timestamps();

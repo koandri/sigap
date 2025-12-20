@@ -19,13 +19,13 @@ final class UpdateDocumentRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'document_type' => 'required|string',
-            'department_id' => 'required|exists:roles,id',
+            'department_id' => 'required|exists:departments,id',
             'physical_location' => 'nullable|array',
             'physical_location.room_no' => 'nullable|string',
             'physical_location.shelf_no' => 'nullable|string',
             'physical_location.folder_no' => 'nullable|string',
             'accessible_departments' => 'nullable|array',
-            'accessible_departments.*' => 'exists:roles,id',
+            'accessible_departments.*' => 'exists:departments,id',
         ];
     }
 }
