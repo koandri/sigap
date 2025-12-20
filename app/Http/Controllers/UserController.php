@@ -194,7 +194,7 @@ final class UserController extends Controller
             );
         }
 
-        return redirect()->route('roles.index')->with(['success' => 'A new user created!']);
+        return redirect()->route('users.index')->with(['success' => 'A new user created!']);
     }
 
     public function edit(User $user)
