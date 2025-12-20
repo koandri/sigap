@@ -35,8 +35,23 @@ final class DocumentPolicy
         // Check if user's departments have access
         $userDepartmentIds = $user->departments->pluck('id')->toArray();
         
-        $hasDepartmentAccess = in_array($document->department_id, $userDepartmentIds) ||
-            $document->accessibleDepartments()->whereIn('departments.id', $userDepartmentIds)->exists();
+        if (empty($userDepartmentIds)) {
+            return false;
+        }
+        
+        // Check if document's department matches user's department
+        $hasDepartmentAccess = in_array($document->department_id, $userDepartmentIds);
+        
+        // If not, check if document has accessible departments that match user's departments
+        if (!$hasDepartmentAccess) {
+            // Load accessible departments if not already loaded
+            if (!$document->relationLoaded('accessibleDepartments')) {
+                $document->load('accessibleDepartments');
+            }
+            
+            $accessibleDepartmentIds = $document->accessibleDepartments->pluck('id')->toArray();
+            $hasDepartmentAccess = !empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
+        }
 
         if (!$hasDepartmentAccess) {
             return false;
