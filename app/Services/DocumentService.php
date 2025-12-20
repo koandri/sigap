@@ -89,14 +89,49 @@ final class DocumentService
             $user->load('departments');
         }
         
-        $userDepartmentIds = $user->departments->pluck('id')->toArray();
+        $userDepartmentIds = $user->departments->pluck('id')->map(fn($id) => (int)$id)->toArray();
         
         if (empty($userDepartmentIds)) {
+            \Log::warning('DocumentService::checkUserCanAccess: User has no departments', [
+                'user_id' => $user->id,
+                'document_id' => $document->id,
+            ]);
             return false;
         }
         
-        // Check if document's department matches user's department
-        $hasDepartmentAccess = in_array($document->department_id, $userDepartmentIds);
+        // Verify document's department_id is valid
+        if (!$document->department_id) {
+            \Log::warning('DocumentService::checkUserCanAccess: Document has no department_id', [
+                'user_id' => $user->id,
+                'document_id' => $document->id,
+            ]);
+            return false;
+        }
+        
+        // Verify document's department exists
+        try {
+            $documentDepartment = $document->department;
+            if (!$documentDepartment) {
+                \Log::warning('DocumentService::checkUserCanAccess: Document department_id does not exist', [
+                    'user_id' => $user->id,
+                    'document_id' => $document->id,
+                    'document_department_id' => $document->department_id,
+                ]);
+                return false;
+            }
+        } catch (\Exception $e) {
+            \Log::error('DocumentService::checkUserCanAccess: Error loading document department', [
+                'user_id' => $user->id,
+                'document_id' => $document->id,
+                'document_department_id' => $document->department_id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+        
+        // Check if document's department matches user's department (ensure both are integers)
+        $documentDeptId = (int)$document->department_id;
+        $hasDepartmentAccess = in_array($documentDeptId, $userDepartmentIds, true);
         
         // If not, check if document has accessible departments that match user's departments
         if (!$hasDepartmentAccess) {
@@ -105,11 +140,18 @@ final class DocumentService
                 $document->load('accessibleDepartments');
             }
             
-            $accessibleDepartmentIds = $document->accessibleDepartments->pluck('id')->toArray();
+            $accessibleDepartmentIds = $document->accessibleDepartments->pluck('id')->map(fn($id) => (int)$id)->toArray();
             $hasDepartmentAccess = !empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
         }
 
         if (!$hasDepartmentAccess) {
+            \Log::debug('DocumentService::checkUserCanAccess: Access denied', [
+                'user_id' => $user->id,
+                'user_department_ids' => $userDepartmentIds,
+                'document_id' => $document->id,
+                'document_department_id' => $documentDeptId,
+                'accessible_department_ids' => $document->accessibleDepartments->pluck('id')->map(fn($id) => (int)$id)->toArray() ?? [],
+            ]);
             return false;
         }
 
