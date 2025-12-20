@@ -127,16 +127,25 @@
                                                     <td>
                                                         <div class="btn-list">
                                                             @if($version->isActive())
-                                                                <a href="{{ route('document-versions.view', $version) }}" class="btn btn-sm btn-outline-primary">
-                                                                    <i class="far fa-eye"></i>&nbsp;
-                                                                    View
-                                                                </a>
+                                                                @can('view', $version)
+                                                                    <a href="{{ route('document-versions.view', $version) }}" class="btn btn-sm btn-outline-primary">
+                                                                        <i class="far fa-eye"></i>&nbsp;
+                                                                        View
+                                                                    </a>
+                                                                @else
+                                                                    <span class="btn btn-sm btn-outline-secondary disabled" title="You need to request access to view this document">
+                                                                        <i class="far fa-eye-slash"></i>&nbsp;
+                                                                        View (Access Required)
+                                                                    </span>
+                                                                @endcan
                                                             @endif
                                                             @if($version->canBeEdited())
-                                                                <a href="{{ route('document-versions.editor', $version) }}" class="btn btn-sm btn-outline-secondary">
-                                                                    <i class="far fa-edit"></i>&nbsp;
-                                                                    Edit
-                                                                </a>
+                                                                @can('edit', $version)
+                                                                    <a href="{{ route('document-versions.editor', $version) }}" class="btn btn-sm btn-outline-secondary">
+                                                                        <i class="far fa-edit"></i>&nbsp;
+                                                                        Edit
+                                                                    </a>
+                                                                @endcan
                                                             @endif
                                                         </div>
                                                     </td>
@@ -176,11 +185,39 @@
                                 @endcan
                             @endif
                             
-                            @if($document->document_type->requiresAccessRequest() && !auth()->user()->hasRole(['Super Admin', 'Owner']))
-                                <a href="{{ route('documents.request-access', $document) }}" class="btn btn-outline-info w-100 mb-2">
-                                    <i class="far fa-eye"></i>&nbsp;
-                                    Request Access
-                                </a>
+                            @if($document->document_type->requiresAccessRequest() && !auth()->user()->hasRole(['Super Admin', 'Owner', 'Document Control']))
+                                @php
+                                    $user = auth()->user();
+                                    $hasActiveAccess = false;
+                                    if ($document->activeVersion) {
+                                        $hasActiveAccess = $user->documentAccessRequests()
+                                            ->where('document_version_id', $document->activeVersion->id)
+                                            ->where('status', 'approved')
+                                            ->where(function ($query) {
+                                                $query->whereNull('approved_expiry_date')
+                                                      ->orWhere('approved_expiry_date', '>', now());
+                                            })
+                                            ->exists();
+                                    }
+                                    // Check if user is in document's department (they get automatic access)
+                                    $userDeptIds = $user->departments->pluck('id')->toArray();
+                                    $isInDocumentDept = in_array($document->department_id, $userDeptIds);
+                                    $isInAccessibleDept = $document->accessibleDepartments->pluck('id')->intersect($userDeptIds)->isNotEmpty();
+                                    $hasDepartmentAccess = $isInDocumentDept || $isInAccessibleDept;
+                                @endphp
+                                @if(!$hasActiveAccess && !$hasDepartmentAccess)
+                                    <a href="{{ route('documents.request-access', $document) }}" class="btn btn-outline-info w-100 mb-2">
+                                        <i class="far fa-eye"></i>&nbsp;
+                                        Request Access
+                                    </a>
+                                @elseif(!$hasActiveAccess && $hasDepartmentAccess)
+                                    <div class="alert alert-info mb-2">
+                                        <small>
+                                            <i class="far fa-info-circle"></i>&nbsp;
+                                            You have access to this document through your department membership.
+                                        </small>
+                                    </div>
+                                @endif
                             @endif
                             
                             @if($document->document_type->value === 'form')

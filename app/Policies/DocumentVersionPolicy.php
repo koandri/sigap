@@ -146,7 +146,34 @@ final class DocumentVersionPolicy
             return true;
         }
 
-        // Check if user has active access
+        // Check if user is in the document's department or accessible departments
+        // Department members get automatic access even for documents requiring access requests
+        if (!$user->relationLoaded('departments')) {
+            $user->load('departments');
+        }
+        
+        $userDepartmentIds = $user->departments->pluck('id')->map(fn($id) => (int)$id)->toArray();
+        $documentDeptId = (int)$version->document->department_id;
+        
+        // Check if user is in document's department
+        $isInDocumentDept = in_array($documentDeptId, $userDepartmentIds, true);
+        
+        // Check if user is in accessible departments
+        $isInAccessibleDept = false;
+        if (!$isInDocumentDept) {
+            if (!$version->document->relationLoaded('accessibleDepartments')) {
+                $version->document->load('accessibleDepartments');
+            }
+            $accessibleDepartmentIds = $version->document->accessibleDepartments->pluck('id')->map(fn($id) => (int)$id)->toArray();
+            $isInAccessibleDept = !empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
+        }
+        
+        // If user is in document's department or accessible departments, grant automatic access
+        if ($isInDocumentDept || $isInAccessibleDept) {
+            return true;
+        }
+
+        // For users outside the departments, check if they have active access request
         return $user->documentAccessRequests()
             ->where('document_version_id', $version->id)
             ->where('status', 'approved')

@@ -126,13 +126,16 @@ final class DocumentController extends Controller
     {
         $user = auth()->user();
         
-        if (!$this->documentService->checkUserCanAccess($user, $document)) {
-            abort(403, 'You do not have access to this document.');
-        }
-
+        // Allow viewing the document show page for all authenticated users
+        // This allows users to see document details and request access
+        // Actual document version viewing is controlled by DocumentVersionPolicy
+        
         $document->load(['department', 'creator', 'versions.creator', 'accessibleDepartments']);
         
-        return view('documents.show', compact('document'));
+        // Check if user can actually view document content (for UI purposes)
+        $canViewContent = $this->documentService->checkUserCanAccess($user, $document);
+        
+        return view('documents.show', compact('document', 'canViewContent'));
     }
 
     public function edit(Document $document): View
