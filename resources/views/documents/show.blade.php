@@ -204,12 +204,12 @@
                     </div>
 
                     <!-- Accessible Departments -->
-                    @if($document->accessibleDepartments->count() > 0)
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Accessible Departments</h3>
-                            </div>
-                            <div class="card-body">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Accessible Departments</h3>
+                        </div>
+                        <div class="card-body">
+                            @if($document->accessibleDepartments->count() > 0)
                                 <ul class="list-unstyled">
                                     @foreach($document->accessibleDepartments as $department)
                                         <li class="mb-1">
@@ -217,9 +217,15 @@
                                         </li>
                                     @endforeach
                                 </ul>
-                            </div>
+                            @else
+                                <div class="text-muted">
+                                    <i class="far fa-info-circle"></i>&nbsp;
+                                    No additional departments have access to this document.
+                                    <br><small>Only the owner department can access this document.</small>
+                                </div>
+                            @endif
                         </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>

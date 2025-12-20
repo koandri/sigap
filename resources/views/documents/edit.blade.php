@@ -52,7 +52,7 @@
                                         <select name="document_type" class="form-select @error('document_type') is-invalid @enderror">
                                             <option value="">Select document type</option>
                                             @foreach($documentTypes as $type)
-                                                <option value="{{ $type->value }}" {{ (old('document_type', $document->document_type) == $type->value) ? 'selected' : '' }}>
+                                                <option value="{{ $type->value }}" {{ (old('document_type', $document->document_type?->value) == $type->value) ? 'selected' : '' }}>
                                                     {{ $type->label() }}
                                                 </option>
                                             @endforeach
