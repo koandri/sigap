@@ -146,6 +146,8 @@ final class DocumentPolicy
 
     /**
      * Determine whether the user can request access to the document.
+     * Users can request access even if they're in the same department,
+     * as long as they don't already have an active access request.
      */
     public function requestAccess(User $user, Document $document): bool
     {
@@ -164,7 +166,9 @@ final class DocumentPolicy
             return false;
         }
 
-        // Check if user already has active access
+        // Check if user already has active access request (approved)
+        // Note: Department members can still request access even though they have automatic access
+        // This allows them to have explicit access records for tracking/auditing purposes
         if ($this->hasActiveAccess($user, $document)) {
             return false;
         }

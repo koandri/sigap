@@ -127,17 +127,14 @@
                                                     <td>
                                                         <div class="btn-list">
                                                             @if($version->isActive())
-                                                                @can('view', $version)
-                                                                    <a href="{{ route('document-versions.view', $version) }}" class="btn btn-sm btn-outline-primary">
-                                                                        <i class="far fa-eye"></i>&nbsp;
-                                                                        View
-                                                                    </a>
-                                                                @else
-                                                                    <span class="btn btn-sm btn-outline-secondary disabled" title="You need to request access to view this document">
-                                                                        <i class="far fa-eye-slash"></i>&nbsp;
-                                                                        View (Access Required)
-                                                                    </span>
-                                                                @endcan
+                                                                @if(auth()->user()->hasRole(['Super Admin', 'Owner', 'Document Control']))
+                                                                    @can('view', $version)
+                                                                        <a href="{{ route('document-versions.view', $version) }}" class="btn btn-sm btn-outline-primary">
+                                                                            <i class="far fa-eye"></i>&nbsp;
+                                                                            View
+                                                                        </a>
+                                                                    @endcan
+                                                                @endif
                                                             @endif
                                                             @if($version->canBeEdited())
                                                                 @can('edit', $version)
@@ -199,24 +196,12 @@
                                             })
                                             ->exists();
                                     }
-                                    // Check if user is in document's department (they get automatic access)
-                                    $userDeptIds = $user->departments->pluck('id')->toArray();
-                                    $isInDocumentDept = in_array($document->department_id, $userDeptIds);
-                                    $isInAccessibleDept = $document->accessibleDepartments->pluck('id')->intersect($userDeptIds)->isNotEmpty();
-                                    $hasDepartmentAccess = $isInDocumentDept || $isInAccessibleDept;
                                 @endphp
-                                @if(!$hasActiveAccess && !$hasDepartmentAccess)
+                                @if(!$hasActiveAccess)
                                     <a href="{{ route('documents.request-access', $document) }}" class="btn btn-outline-info w-100 mb-2">
                                         <i class="far fa-eye"></i>&nbsp;
                                         Request Access
                                     </a>
-                                @elseif(!$hasActiveAccess && $hasDepartmentAccess)
-                                    <div class="alert alert-info mb-2">
-                                        <small>
-                                            <i class="far fa-info-circle"></i>&nbsp;
-                                            You have access to this document through your department membership.
-                                        </small>
-                                    </div>
                                 @endif
                             @endif
                             
