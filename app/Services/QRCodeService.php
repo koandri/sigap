@@ -62,7 +62,7 @@ final class QRCodeService
 
     public function generateQRCode(PrintedForm $printedForm): string
     {
-        $url = route('printed-forms.show', $printedForm);
+        $formNumber = $printedForm->form_number;
         
         // Check if logo exists
         $logoPath = public_path('imgs/qr_logo.png');
@@ -72,7 +72,7 @@ final class QRCodeService
             writer: new PngWriter(),
             writerOptions: [],
             validateResult: false,
-            data: $url,
+            data: $formNumber,
             encoding: new Encoding('UTF-8'),
             errorCorrectionLevel: ErrorCorrectionLevel::High,
             size: 200,

@@ -66,11 +66,11 @@
             width: 36mm;
             height: 28mm;
             border: none;
-            padding: 0;
+            padding: 1mm 0 0 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             position: relative;
         }
         
