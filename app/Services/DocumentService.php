@@ -156,8 +156,11 @@ final class DocumentService
         }
 
         // For documents that require access requests, check if user has active access
+        // BUT: Users in the document's department or accessible departments get automatic access
+        // Access requests are only required for users outside these departments
         if ($document->document_type->requiresAccessRequest()) {
-            return $this->hasActiveAccess($user, $document);
+            // User has department access, so they get automatic access even for documents requiring access requests
+            return true;
         }
 
         return true;
