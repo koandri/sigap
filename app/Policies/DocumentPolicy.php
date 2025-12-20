@@ -32,9 +32,11 @@ final class DocumentPolicy
             return true;
         }
 
-        // Check if user's department has access
-        $hasDepartmentAccess = $document->department_id === $user->role_id ||
-            $document->accessibleDepartments()->where('department_id', $user->role_id)->exists();
+        // Check if user's departments have access
+        $userDepartmentIds = $user->departments->pluck('id')->toArray();
+        
+        $hasDepartmentAccess = in_array($document->department_id, $userDepartmentIds) ||
+            $document->accessibleDepartments()->whereIn('departments.id', $userDepartmentIds)->exists();
 
         if (!$hasDepartmentAccess) {
             return false;
