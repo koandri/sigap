@@ -12,12 +12,14 @@ final class DocumentPolicy
 {
     /**
      * Determine whether the user can view any documents.
+     * All authenticated users can access the Document Index page.
+     * The service method will filter documents based on user's department access.
      */
     public function viewAny(User $user): bool
     {
-        // Check if user has permission to view documents
-        return $user->hasPermissionTo('dms.documents.view') || 
-               $user->hasRole(['Super Admin', 'Owner', 'Document Control']);
+        // All authenticated users can view the Document Index page
+        // Documents are filtered by department access in the service layer
+        return true;
     }
 
     /**

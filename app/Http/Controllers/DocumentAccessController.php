@@ -29,6 +29,11 @@ final class DocumentAccessController extends Controller
         private readonly WatermarkService $watermarkService
     ) {}
 
+    /**
+     * Display the user's accessible documents.
+     * All authenticated users can access this page.
+     * The service method filters documents based on user's access permissions.
+     */
     public function myAccess(Request $request): View
     {
         $user = Auth::user();
