@@ -32,31 +32,44 @@ final class DocumentPolicy
             return true;
         }
 
-        // Check if user's roles have access
-        // Document's department_id references the roles table, not departments table
-        // Load roles if not already loaded
-        if (!$user->relationLoaded('roles')) {
-            $user->load('roles');
+        // Check if user's departments have access
+        // Load departments if not already loaded
+        if (!$user->relationLoaded('departments')) {
+            $user->load('departments');
         }
         
-        $userRoleIds = $user->roles->pluck('id')->toArray();
+        $userDepartmentNames = $user->departments->pluck('name')->toArray();
         
-        if (empty($userRoleIds)) {
+        if (empty($userDepartmentNames)) {
             return false;
         }
         
-        // Check if document's department (role) matches user's role
-        $hasDepartmentAccess = in_array($document->department_id, $userRoleIds);
+        // Get document's department role (document's department_id references roles table)
+        // Get the role name from the document's department_id (which is a role ID)
+        $documentDepartmentRole = \Spatie\Permission\Models\Role::find($document->department_id);
+        $hasDepartmentAccess = false;
         
-        // If not, check if document has accessible departments (roles) that match user's roles
+        if ($documentDepartmentRole && in_array($documentDepartmentRole->name, $userDepartmentNames)) {
+            $hasDepartmentAccess = true;
+        }
+        
+        // If not, check if document has accessible departments (roles) that match user's department names
         if (!$hasDepartmentAccess) {
             // Load accessible departments if not already loaded
+            // Note: accessibleDepartments relationship might be loading roles, not departments
+            // We need to check the role names from accessible departments
             if (!$document->relationLoaded('accessibleDepartments')) {
                 $document->load('accessibleDepartments');
             }
             
-            $accessibleDepartmentIds = $document->accessibleDepartments->pluck('id')->toArray();
-            $hasDepartmentAccess = !empty(array_intersect($userRoleIds, $accessibleDepartmentIds));
+            // Get role IDs from accessible departments and check their names
+            $accessibleDepartmentRoleIds = $document->accessibleDepartments->pluck('id')->toArray();
+            if (!empty($accessibleDepartmentRoleIds)) {
+                $accessibleRoleNames = \Spatie\Permission\Models\Role::whereIn('id', $accessibleDepartmentRoleIds)
+                    ->pluck('name')
+                    ->toArray();
+                $hasDepartmentAccess = !empty(array_intersect($userDepartmentNames, $accessibleRoleNames));
+            }
         }
 
         if (!$hasDepartmentAccess) {
