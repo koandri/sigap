@@ -66,11 +66,11 @@
             width: 36mm;
             height: 28mm;
             border: none;
-            padding: 0.5mm 0 0.5mm 0;
+            padding: 0.8mm 0 0.3mm 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             position: relative;
         }
         
@@ -83,19 +83,21 @@
             width: 100%;
             background: #fff;
             border: none;
-            padding: 0.2mm 0.5mm;
-            font-size: 4.5pt;
+            padding: 0 0.5mm;
+            font-size: 4pt;
             font-weight: bold;
             text-align: center;
             color: #333;
             line-height: 1;
-            max-height: 3.5mm;
+            max-height: 3mm;
+            min-height: 3mm;
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             word-wrap: break-word;
             overflow-wrap: break-word;
+            flex-shrink: 0;
         }
         
         .label-content {
@@ -103,16 +105,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-evenly;
             padding: 0;
-            margin: 0.3mm 0;
+            margin: 0;
             width: 100%;
         }
         
         .qr-code {
             width: 19mm;
             height: 19mm;
-            margin: 0 auto;
+            margin: 0;
             display: block;
         }
         
@@ -122,7 +124,7 @@
             color: #0066cc;
             text-align: center;
             padding: 0;
-            margin-top: 0.3mm;
+            margin: 0;
         }
         
         /* Print styles */
