@@ -91,8 +91,8 @@
         }
         
         .qr-code {
-            width: 19mm;
-            height: 19mm;
+            width: 15mm;
+            height: 15mm;
             margin: 0;
             display: block;
         }
