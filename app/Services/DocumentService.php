@@ -200,7 +200,12 @@ final class DocumentService
             $user->load('departments');
         }
         
-        $userDepartmentIds = $user->departments->pluck('id')->toArray();
+        $userDepartmentIds = $user->departments->pluck('id')->map(fn($id) => (int)$id)->toArray();
+        
+        // If user has no departments, return empty Eloquent Collection
+        if (empty($userDepartmentIds)) {
+            return $query->whereRaw('1 = 0')->get(); // Returns empty Eloquent Collection
+        }
         
         return $query->where(function ($q) use ($userDepartmentIds) {
             $q->whereIn('department_id', $userDepartmentIds)
