@@ -66,7 +66,7 @@
             width: 36mm;
             height: 28mm;
             border: none;
-            padding: 1mm 0 0 0;
+            padding: 0 0 0 0;
             display: flex;
             flex-direction: column;
             align-items: center;
