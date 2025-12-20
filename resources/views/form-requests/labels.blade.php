@@ -66,38 +66,17 @@
             width: 36mm;
             height: 28mm;
             border: none;
-            padding: 0.8mm 0 0.3mm 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             position: relative;
         }
         
         .label.empty {
             border: none;
             visibility: hidden;
-        }
-        
-        .form-name-border {
-            width: 100%;
-            background: #fff;
-            border: none;
-            padding: 0 0.5mm;
-            font-size: 4pt;
-            font-weight: bold;
-            text-align: center;
-            color: #333;
-            line-height: 1;
-            max-height: 3mm;
-            min-height: 3mm;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            flex-shrink: 0;
         }
         
         .label-content {
@@ -177,7 +156,6 @@
     <div class="label-row">
         @foreach($row as $label)
         <div class="label">
-            <div class="form-name-border">{{ $label['form_name'] ?? 'N/A' }}</div>
             <div class="label-content">
                 <img src="{{ $label['qr_code'] }}" class="qr-code" alt="QR Code">
                 <div class="form-number">{{ $label['form_number'] }}</div>
