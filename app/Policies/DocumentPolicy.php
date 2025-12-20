@@ -33,6 +33,11 @@ final class DocumentPolicy
         }
 
         // Check if user's departments have access
+        // Load departments if not already loaded
+        if (!$user->relationLoaded('departments')) {
+            $user->load('departments');
+        }
+        
         $userDepartmentIds = $user->departments->pluck('id')->toArray();
         
         if (empty($userDepartmentIds)) {
