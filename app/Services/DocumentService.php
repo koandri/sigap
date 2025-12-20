@@ -83,22 +83,23 @@ final class DocumentService
             return true;
         }
 
-        // Check if user's departments have access
-        // Load departments if not already loaded
-        if (!$user->relationLoaded('departments')) {
-            $user->load('departments');
+        // Check if user's roles have access
+        // Document's department_id references the roles table, not departments table
+        // Load roles if not already loaded
+        if (!$user->relationLoaded('roles')) {
+            $user->load('roles');
         }
         
-        $userDepartmentIds = $user->departments->pluck('id')->toArray();
+        $userRoleIds = $user->roles->pluck('id')->toArray();
         
-        if (empty($userDepartmentIds)) {
+        if (empty($userRoleIds)) {
             return false;
         }
         
-        // Check if document's department matches user's department
-        $hasDepartmentAccess = in_array($document->department_id, $userDepartmentIds);
+        // Check if document's department (role) matches user's role
+        $hasDepartmentAccess = in_array($document->department_id, $userRoleIds);
         
-        // If not, check if document has accessible departments that match user's departments
+        // If not, check if document has accessible departments (roles) that match user's roles
         if (!$hasDepartmentAccess) {
             // Load accessible departments if not already loaded
             if (!$document->relationLoaded('accessibleDepartments')) {
@@ -106,7 +107,7 @@ final class DocumentService
             }
             
             $accessibleDepartmentIds = $document->accessibleDepartments->pluck('id')->toArray();
-            $hasDepartmentAccess = !empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
+            $hasDepartmentAccess = !empty(array_intersect($userRoleIds, $accessibleDepartmentIds));
         }
 
         if (!$hasDepartmentAccess) {
@@ -152,13 +153,18 @@ final class DocumentService
             return $query->get();
         }
 
-        // Filter by department access
-        $userDepartmentIds = $user->departments->pluck('id')->toArray();
+        // Filter by role access (document's department_id references roles table)
+        // Load roles if not already loaded
+        if (!$user->relationLoaded('roles')) {
+            $user->load('roles');
+        }
         
-        return $query->where(function ($q) use ($userDepartmentIds) {
-            $q->whereIn('department_id', $userDepartmentIds)
-              ->orWhereHas('accessibleDepartments', function ($subQ) use ($userDepartmentIds) {
-                  $subQ->whereIn('departments.id', $userDepartmentIds);
+        $userRoleIds = $user->roles->pluck('id')->toArray();
+        
+        return $query->where(function ($q) use ($userRoleIds) {
+            $q->whereIn('department_id', $userRoleIds)
+              ->orWhereHas('accessibleDepartments', function ($subQ) use ($userRoleIds) {
+                  $subQ->whereIn('roles.id', $userRoleIds);
               });
         })->get();
     }
