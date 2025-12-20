@@ -28,6 +28,7 @@ final class PrintedFormController extends Controller
             'status' => $request->input('status', []),
             'issued_to' => $request->input('issued_to', []),
             'form_number' => $request->input('form_number'),
+            'form_numbers' => $request->input('form_numbers'),
             'date_from' => $request->input('date_from'),
             'date_to' => $request->input('date_to'),
         ];
@@ -52,7 +53,18 @@ final class PrintedFormController extends Controller
             $query->whereIn('issued_to', $filters['issued_to']);
         }
         
-        if ($filters['form_number']) {
+        // Handle multiple form numbers (from barcode scanner)
+        if ($filters['form_numbers']) {
+            $formNumbers = json_decode($filters['form_numbers'], true);
+            if (is_array($formNumbers) && !empty($formNumbers)) {
+                $query->where(function($q) use ($formNumbers) {
+                    foreach ($formNumbers as $formNumber) {
+                        $q->orWhere('form_number', 'like', '%' . $formNumber . '%');
+                    }
+                });
+            }
+        } elseif ($filters['form_number']) {
+            // Fallback to single form number search
             $query->where('form_number', 'like', '%' . $filters['form_number'] . '%');
         }
         

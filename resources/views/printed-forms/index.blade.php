@@ -22,6 +22,16 @@
         background-color: #0d6efd !important;
         color: #fff !important;
     }
+    #scanned-forms-container .badge {
+        display: inline-flex;
+        align-items: center;
+    }
+    #scanned-forms-container .btn-close {
+        padding: 0;
+        width: 0.75rem;
+        height: 0.75rem;
+        background-size: 0.75rem;
+    }
 </style>
 @endpush
 
@@ -76,7 +86,13 @@
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Form No</label>
                         <div class="col">
-                            <input type="text" name="form_number" class="form-control" value="{{ $filters['form_number'] ?? '' }}" placeholder="Search...">
+                            <input type="text" name="form_number" id="form-number-input" class="form-control" value="{{ $filters['form_number'] ?? '' }}" placeholder="Type or scan form number(s)...">
+                            <input type="hidden" name="form_numbers" id="form-numbers-hidden" value="{{ $filters['form_numbers'] ?? '' }}">
+                            <small class="form-hint">
+                                <i class="far fa-barcode"></i>&nbsp;
+                                You can scan barcodes or type multiple form numbers. Separate with spaces, commas, or press Enter. Example: <code>FR-001 FR-002 FR-003</code>
+                            </small>
+                            <div id="scanned-forms-container" class="mt-2"></div>
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -404,6 +420,158 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     @endif
+
+    // Barcode Scanner Multi-Form-Number Functionality
+    const formNumberInput = document.getElementById('form-number-input');
+    const formNumbersHidden = document.getElementById('form-numbers-hidden');
+    const scannedFormsContainer = document.getElementById('scanned-forms-container');
+    let scannedFormNumbers = [];
+    
+    // Initialize with existing filter values
+    if (formNumbersHidden && formNumbersHidden.value) {
+        try {
+            scannedFormNumbers = JSON.parse(formNumbersHidden.value);
+            renderScannedForms();
+        } catch(e) {
+            // If not JSON, treat as single value
+            if (formNumbersHidden.value) {
+                scannedFormNumbers = [formNumbersHidden.value];
+                renderScannedForms();
+            }
+        }
+    } else if (formNumberInput && formNumberInput.value) {
+        // Fallback to form_number if form_numbers doesn't exist
+        scannedFormNumbers = [formNumberInput.value];
+        renderScannedForms();
+    }
+    
+    function renderScannedForms() {
+        if (!scannedFormsContainer) return;
+        
+        if (scannedFormNumbers.length === 0) {
+            scannedFormsContainer.innerHTML = '';
+            return;
+        }
+        
+        let html = '<div class="d-flex flex-wrap gap-2">';
+        scannedFormNumbers.forEach((formNumber, index) => {
+            html += `
+                <span class="badge bg-primary-lt" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                    <i class="far fa-barcode me-1"></i>
+                    ${escapeHtml(formNumber)}
+                    <button type="button" class="btn-close btn-close-white ms-2" 
+                            style="font-size: 0.75rem; opacity: 0.7;" 
+                            data-index="${index}" 
+                            aria-label="Remove"></button>
+                </span>
+            `;
+        });
+        html += '</div>';
+        scannedFormsContainer.innerHTML = html;
+        
+        // Update hidden field
+        if (formNumbersHidden) {
+            formNumbersHidden.value = JSON.stringify(scannedFormNumbers);
+        }
+        
+        // Attach remove handlers
+        scannedFormsContainer.querySelectorAll('.btn-close').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                removeScannedForm(index);
+            });
+        });
+    }
+    
+    function removeScannedForm(index) {
+        scannedFormNumbers.splice(index, 1);
+        renderScannedForms();
+    }
+    
+    function addScannedForm(formNumber) {
+        const trimmed = formNumber.trim();
+        if (!trimmed) return;
+        
+        // Support multiple formats: space-separated, comma-separated, or newline-separated
+        const separators = /[\s,;|]+/; // Split by space, comma, semicolon, or pipe
+        const formNumbers = trimmed.split(separators)
+            .map(num => num.trim())
+            .filter(num => num.length > 0);
+        
+        let addedCount = 0;
+        formNumbers.forEach(num => {
+            // Avoid duplicates
+            if (!scannedFormNumbers.includes(num)) {
+                scannedFormNumbers.push(num);
+                addedCount++;
+            }
+        });
+        
+        if (addedCount > 0) {
+            renderScannedForms();
+        }
+        
+        // Clear input
+        if (formNumberInput) {
+            formNumberInput.value = '';
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Handle Enter key or barcode scanner input
+    if (formNumberInput) {
+        formNumberInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addScannedForm(this.value);
+            }
+        });
+        
+        // Optional: Auto-detect rapid input from barcode scanner
+        let scanBuffer = '';
+        let scanTimeout = null;
+        
+        formNumberInput.addEventListener('input', function(e) {
+            scanBuffer = this.value;
+            
+            // Clear existing timeout
+            if (scanTimeout) {
+                clearTimeout(scanTimeout);
+            }
+            
+            // Set timeout to detect end of scan (barcode scanners are typically very fast)
+            // If input stops for more than 100ms, it's likely manual typing
+            scanTimeout = setTimeout(() => {
+                scanBuffer = '';
+            }, 100);
+        });
+        
+        // Detect when scanner sends "Enter" automatically
+        formNumberInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (this.value.trim()) {
+                    addScannedForm(this.value);
+                }
+            }
+        });
+    }
+    
+    // Clear scanned forms when clear filter button is clicked
+    const clearFilterBtn = document.querySelector('a[href="{{ route('printed-forms.index') }}"]');
+    if (clearFilterBtn) {
+        clearFilterBtn.addEventListener('click', function(e) {
+            scannedFormNumbers = [];
+            if (formNumbersHidden) formNumbersHidden.value = '';
+            if (formNumberInput) formNumberInput.value = '';
+            if (scannedFormsContainer) scannedFormsContainer.innerHTML = '';
+        });
+    }
     const selectAll = document.getElementById('selectAll');
     const formCheckboxes = document.querySelectorAll('.form-checkbox');
     const bulkActions = document.getElementById('bulkActions');
