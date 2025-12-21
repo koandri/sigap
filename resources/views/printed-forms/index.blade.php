@@ -255,7 +255,7 @@
 
 <!-- Bulk Update Modal -->
 <div class="modal modal-blur fade" id="bulkUpdateModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form method="POST" id="bulkUpdateSubmitForm" action="{{ route('printed-forms.bulk-return') }}">
                 @csrf
@@ -298,7 +298,7 @@
 
 <!-- Bulk Receive Modal -->
 <div class="modal modal-blur fade" id="bulkReceiveModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form method="POST" id="bulkReceiveSubmitForm" action="{{ route('printed-forms.bulk-receive') }}">
                 @csrf
@@ -325,7 +325,7 @@
 
 <!-- Bulk Upload Scans Modal -->
 <div class="modal modal-blur fade" id="bulkUploadScansModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form method="POST" id="bulkUploadScansSubmitForm" action="{{ route('printed-forms.bulk-upload-scans') }}" enctype="multipart/form-data">
                 @csrf
@@ -358,7 +358,7 @@
 
 <!-- Bulk Update Location Modal -->
 <div class="modal modal-blur fade" id="bulkUpdateLocationModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form method="POST" id="bulkUpdateLocationSubmitForm" action="{{ route('printed-forms.bulk-update-location') }}">
                 @csrf

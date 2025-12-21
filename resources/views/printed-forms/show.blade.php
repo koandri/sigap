@@ -348,7 +348,7 @@
 
 <!-- Return Form Modal -->
 <div class="modal modal-blur fade" id="returnModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form method="POST" action="{{ route('printed-forms.return', $printedForm->id) }}">
                 @csrf
@@ -384,7 +384,7 @@
 
 <!-- Upload Scanned Form Modal -->
 <div class="modal modal-blur fade" id="uploadModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form method="POST" action="{{ route('printed-forms.upload-scan', $printedForm->id) }}" enctype="multipart/form-data">
                 @csrf
@@ -410,7 +410,7 @@
 
 <!-- Update Physical Location Modal -->
 <div class="modal modal-blur fade" id="locationModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <form method="POST" action="{{ route('printed-forms.update-location', $printedForm->id) }}">
                 @csrf

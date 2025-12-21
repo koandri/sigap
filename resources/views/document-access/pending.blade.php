@@ -116,7 +116,7 @@
 
                                                 <!-- Approve Modal -->
                                                 <div class="modal fade" id="approveModal{{ $request->id }}" tabindex="-1" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                                         <div class="modal-content">
                                                             <form method="POST" action="{{ route('document-access-requests.approve', $request) }}">
                                                                 @csrf
@@ -179,7 +179,7 @@
 
                                                 <!-- Reject Modal -->
                                                 <div class="modal fade" id="rejectModal{{ $request->id }}" tabindex="-1" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                                         <div class="modal-content">
                                                             <form method="POST" action="{{ route('document-access-requests.reject', $request) }}">
                                                                 @csrf
