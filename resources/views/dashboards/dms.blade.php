@@ -148,7 +148,7 @@
                                     </a>
                                 </div>
                                 @php
-                                    $canApproveCorrespondence = auth()->user()->can('approve', \App\Models\DocumentInstance::class);
+                                    $canApproveCorrespondence = auth()->user()->can('approveAny', \App\Models\DocumentInstance::class);
                                     $pendingCorrApprovals = $stats['pending_correspondence_approvals'] ?? 0;
                                 @endphp
                                 @if($pendingCorrApprovals > 0 || $canApproveCorrespondence)
@@ -159,7 +159,7 @@
                                     </a>
                                 </div>
                                 @endif
-                                @can('approve', App\Models\DocumentAccessRequest::class)
+                                @can('approveAny', App\Models\DocumentAccessRequest::class)
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('document-access-requests.pending') }}" class="btn btn-outline-danger w-100">
                                         <i class="far fa-user-lock"></i>&nbsp;

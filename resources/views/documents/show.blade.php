@@ -77,16 +77,38 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
+                                        <label class="form-label">Physical Location</label>
+                                        <div class="form-control-plaintext">{{ $document->physical_location_string }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Accessible Departments</label>
+                                        <div class="form-control-plaintext">
+                                            @if($document->accessibleDepartments->count() > 0)
+                                                @foreach($document->accessibleDepartments as $department)
+                                                    <span class="badge bg-blue-lt">{{ $department->name }}</span>
+                                                @endforeach
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
                                         <label class="form-label">Created By</label>
                                         <div class="form-control-plaintext">{{ $document->creator->name }}</div>
                                     </div>
                                 </div>
                             </div>
+
                             
-                            <div class="mb-3">
-                                <label class="form-label">Physical Location</label>
-                                <div class="form-control-plaintext">{{ $document->physical_location_string }}</div>
-                            </div>
+                            
+                            
                         </div>
                     </div>
 
@@ -221,30 +243,6 @@
                                         </a>
                                     @endcan
                                 @endcan
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Accessible Departments -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Accessible Departments</h3>
-                        </div>
-                        <div class="card-body">
-                            @if($document->accessibleDepartments->count() > 0)
-                                <ul class="list-unstyled">
-                                    @foreach($document->accessibleDepartments as $department)
-                                        <li class="mb-1">
-                                            <span class="badge bg-blue-lt">{{ $department->name }}</span>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <div class="text-muted">
-                                    <i class="far fa-info-circle"></i>&nbsp;
-                                    No additional departments have access to this document.
-                                    <br><small>Only the owner department can access this document.</small>
-                                </div>
                             @endif
                         </div>
                     </div>

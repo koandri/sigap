@@ -37,6 +37,20 @@ final class DocumentAccessRequestPolicy
     }
 
     /**
+     * Determine whether the user can approve any access requests.
+     */
+    public function approveAny(User $user): bool
+    {
+        // Super Admin and Owner can approve any access request
+        if ($user->hasRole(['Super Admin', 'Owner'])) {
+            return true;
+        }
+
+        // Check if user has approve permission
+        return $user->hasPermissionTo('dms.access.approve');
+    }
+
+    /**
      * Determine whether the user can approve access requests.
      */
     public function approve(User $user, DocumentAccessRequest $accessRequest): bool

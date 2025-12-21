@@ -63,8 +63,16 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">Department</label>
-                                        <div class="form-control-plaintext">{{ $document->department?->name ?? 'N/A' }}</div>
+                                        <label class="form-label">Accessible Departments</label>
+                                        <div class="form-control-plaintext">
+                                            @if($document->accessibleDepartments->count() > 0)
+                                                @foreach($document->accessibleDepartments as $dept)
+                                                    <span class="badge bg-blue-lt me-1">{{ $dept->name }}</span>
+                                                @endforeach
+                                            @else
+                                                {{ $document->department?->name ?? 'N/A' }}
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -112,7 +120,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="requested_expiry_date" class="form-label">Requested Expiry Date (Optional)</label>
+                                    <label for="requested_expiry_date" class="form-label" id="expiry_date_label">Requested Expiry Date <span id="expiry_required_indicator"></span></label>
                                     <input type="datetime-local" 
                                            name="requested_expiry_date" 
                                            id="requested_expiry_date" 
@@ -122,7 +130,7 @@
                                     @error('requested_expiry_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <div class="form-hint">
+                                    <div class="form-hint" id="expiry_hint">
                                         Leave empty for no expiry date. The approver may modify this date.
                                     </div>
                                 </div>
@@ -156,7 +164,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card">
+                    <div class="card mb-4">
                         <div class="card-header">
                             <h3 class="card-title">Document Information</h3>
                         </div>
@@ -179,7 +187,20 @@
 
                             <div class="mb-3">
                                 <label class="form-label">File Size</label>
-                                <div class="text-muted">{{ number_format($activeVersion->file_size / 1024, 2) }} KB</div>
+                                <div class="text-muted">
+                                    @php
+                                        $fileSize = 0;
+                                        if ($activeVersion->file_path && \Illuminate\Support\Facades\Storage::disk('s3')->exists($activeVersion->file_path)) {
+                                            try {
+                                                $fileSize = \Illuminate\Support\Facades\Storage::disk('s3')->size($activeVersion->file_path);
+                                            } catch (\Exception $e) {
+                                                $fileSize = 0;
+                                            }
+                                        }
+                                        $fileSizeKB = $fileSize > 0 ? number_format($fileSize / 1024, 2) : 0;
+                                    @endphp
+                                    {{ $fileSizeKB }} KB
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -202,9 +223,15 @@
                         </div>
                         <div class="card-body">
                             <div class="alert alert-info">
-                                <i class="far fa-info-circle"></i>&nbsp;
-                                <strong>Access Control Required</strong><br>
-                                This document requires approval before access is granted. Your request will be reviewed by the document owner or department head.
+                                <div class="alert-icon">
+                                    <i class="far fa-circle-info"></i>&nbsp;
+                                </div>
+                                <div>
+                                    <h4 class="alert-heading">Access Control Required</h4>
+                                    <div class="alert-description">
+                                    This document requires approval before access is granted. Your request will be reviewed by the document owner or department head.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -213,4 +240,37 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const accessTypeSelect = document.getElementById('access_type');
+    const expiryDateInput = document.getElementById('requested_expiry_date');
+    const expiryDateLabel = document.getElementById('expiry_date_label');
+    const expiryRequiredIndicator = document.getElementById('expiry_required_indicator');
+    const expiryHint = document.getElementById('expiry_hint');
+    
+    function updateExpiryDateRequirement() {
+        const selectedValue = accessTypeSelect.value;
+        const isMultipleAccess = selectedValue === 'multiple';
+        
+        if (isMultipleAccess) {
+            expiryDateInput.setAttribute('required', 'required');
+            expiryRequiredIndicator.innerHTML = '<span class="text-danger">*</span>';
+            expiryHint.textContent = 'Required for Multiple Access. The approver may modify this date.';
+        } else {
+            expiryDateInput.removeAttribute('required');
+            expiryRequiredIndicator.innerHTML = '';
+            expiryHint.textContent = 'Leave empty for no expiry date. The approver may modify this date.';
+        }
+    }
+    
+    // Set initial state based on old input
+    updateExpiryDateRequirement();
+    
+    // Update when access type changes
+    accessTypeSelect.addEventListener('change', updateExpiryDateRequirement);
+});
+</script>
+@endpush
 @endsection

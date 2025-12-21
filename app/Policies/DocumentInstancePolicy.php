@@ -49,6 +49,17 @@ final class DocumentInstancePolicy
                $user->hasPermissionTo('dms.instances.delete');
     }
 
+    public function approveAny(User $user): bool
+    {
+        // Super Admin and Owner can approve any instance
+        if ($user->hasRole(['Super Admin', 'Owner'])) {
+            return true;
+        }
+
+        // Check if user has the approve permission
+        return $user->hasPermissionTo('dms.instances.approve');
+    }
+
     public function approve(User $user, DocumentInstance $instance): bool
     {
         // Super Admin, Owner, or user's manager can approve
@@ -58,7 +69,7 @@ final class DocumentInstancePolicy
 
         // Check if user is the creator's manager
         $creator = $instance->creator;
-        if ($creator->manager_id === $user->id) {
+        if ($creator && $creator->manager_id === $user->id) {
             return true;
         }
 

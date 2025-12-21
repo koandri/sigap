@@ -116,6 +116,9 @@ final class DocumentAccessController extends Controller
                 ->with('warning', 'Access requests are only available for documents with an active version. This document does not have an active version yet.');
         }
 
+        // Load accessible departments relationship
+        $document->load('accessibleDepartments');
+        
         $accessTypes = AccessType::cases();
         
         return view('document-access.request-form', compact('document', 'activeVersion', 'accessTypes'));
