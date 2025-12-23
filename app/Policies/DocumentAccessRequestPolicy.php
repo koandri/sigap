@@ -6,7 +6,6 @@ namespace App\Policies;
 
 use App\Models\DocumentAccessRequest;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 final class DocumentAccessRequestPolicy
 {
@@ -41,13 +40,8 @@ final class DocumentAccessRequestPolicy
      */
     public function approveAny(User $user): bool
     {
-        // Super Admin and Owner can approve any access request
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
-            return true;
-        }
-
-        // Check if user has approve permission
-        return $user->hasPermissionTo('dms.access.approve');
+        // Only Super Admin and Owner can approve access requests
+        return $user->hasRole(['Super Admin', 'Owner']);
     }
 
     /**
@@ -55,18 +49,13 @@ final class DocumentAccessRequestPolicy
      */
     public function approve(User $user, DocumentAccessRequest $accessRequest): bool
     {
-        // Super Admin and Owner can approve any access request
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
-            return true;
-        }
-
-        // Check if user has approve permission
-        if (!$user->hasPermissionTo('dms.access.approve')) {
+        // Only Super Admin and Owner can approve access requests
+        if (! $user->hasRole(['Super Admin', 'Owner'])) {
             return false;
         }
 
         // Check if access request is pending
-        if (!$accessRequest->isPending()) {
+        if (! $accessRequest->isPending()) {
             return false;
         }
 
