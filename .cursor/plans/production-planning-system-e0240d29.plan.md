@@ -352,9 +352,7 @@ Recipe functionality is now complete. The system supports standard recipes only 
 
 #### Task 7.5: Update Controller to Load Recipe Ingredients
 
-**File:** `app/Http/Controllers/ProductionPlanController.php`
-
-**Status:** ✅ Complete
+**File:** `app/Http/Controllers/ProductionPlanController.php`**Status:** ✅ Complete
 
 - `show()` method eager loads recipe ingredients
 - `edit()` method loads recipe ingredients
@@ -362,9 +360,7 @@ Recipe functionality is now complete. The system supports standard recipes only 
 
 #### Task 7.6: Add Recipe Ingredients AJAX Endpoint
 
-**File:** `app/Http/Controllers/ProductionPlanController.php`
-
-**Status:** ✅ Complete
+**File:** `app/Http/Controllers/ProductionPlanController.php`**Status:** ✅ Complete
 
 - `getRecipeIngredients()` method exists and returns JSON
 - Route: `GET /manufacturing/production-plans/recipe-ingredients?recipe_id={id}`
@@ -372,9 +368,7 @@ Recipe functionality is now complete. The system supports standard recipes only 
 
 #### Task 7.7: Update Show View to Display Ingredients
 
-**File:** `resources/views/manufacturing/production-plans/show.blade.php`
-
-**Status:** ✅ Complete
+**File:** `resources/views/manufacturing/production-plans/show.blade.php`**Status:** ✅ Complete
 
 - Ingredients are displayed in expandable sections
 - Shows per-batch and total required quantities
@@ -391,9 +385,7 @@ Recipe functionality is now complete. The system supports standard recipes only 
 
 #### Task 7.9: Add Recipe Copy/Duplicate Functionality
 
-**Status:** ✅ Complete
-
-**Files Created/Modified:**
+**Status:** ✅ Complete**Files Created/Modified:**
 
 - `app/Http/Controllers/RecipeController.php` - Added `duplicate()` and `storeDuplicate()` methods
 - `resources/views/manufacturing/recipes/duplicate.blade.php` - New view for copying recipes
@@ -554,7 +546,7 @@ Implement actual production tracking to record real production quantities and co
 
 #### Status Transitions
 
-```
+```javascript
 approved → in_production → completed
 ```
 
@@ -595,134 +587,128 @@ approved → in_production → completed
 1. Create all 6 migrations with proper foreign keys and indexes
 2. Create all 6 models with:
 
-   - Proper relationships (belongsTo ProductionActual, belongsTo ProductionPlan, belongsTo Items)
-   - Casts for numeric fields
-   - Accessor methods for totals
+- Proper relationships (belongsTo ProductionActual, belongsTo ProductionPlan, belongsTo Items)
+- Casts for numeric fields
+- Accessor methods for totals
 
 3. Update `ProductionPlan` model:
 
-   - Add `hasOne(ProductionActual::class)` relationship
-   - Add `scopeInProduction()` and `scopeCompleted()` scopes
-   - Add `isInProduction()` and `isCompleted()` helper methods
+- Add `hasOne(ProductionActual::class)` relationship
+- Add `scopeInProduction()` and `scopeCompleted()` scopes
+- Add `isInProduction()` and `isCompleted()` helper methods
 
 4. Add relationships from planned steps to actual steps (for easy comparison)
 
 #### Task 8.2: Service Layer
 
-**File:** `app/Services/ProductionActualService.php` (new)
-
-**Methods to Implement:**
+**File:** `app/Services/ProductionActualService.php` (new)**Methods to Implement:**
 
 1. **`startProduction(ProductionPlan $plan, User $user, ?Carbon $productionDate = null): ProductionActual`**
 
-   - Create ProductionActual record
-   - Change plan status from `approved` to `in_production`
-   - Set production_date (defaults to plan's production_start_date)
-   - Record who started production
+- Create ProductionActual record
+- Change plan status from `approved` to `in_production`
+- Set production_date (defaults to plan's production_start_date)
+- Record who started production
 
 2. **`recordStep1(ProductionActual $actual, array $data): void`**
 
-   - Validate data matches planned Step 1 structure
-   - Create ProductionActualStep1 records
-   - Link to corresponding ProductionPlanStep1 records
+- Validate data matches planned Step 1 structure
+- Create ProductionActualStep1 records
+- Link to corresponding ProductionPlanStep1 records
 
 3. **`recordStep2(ProductionActual $actual, array $data): void`**
 
-   - Similar to recordStep1 but for Step 2
+- Similar to recordStep1 but for Step 2
 
 4. **`recordStep3(ProductionActual $actual, array $data): void`**
 
-   - Similar to recordStep1 but for Step 3
+- Similar to recordStep1 but for Step 3
 
 5. **`recordStep4(ProductionActual $actual, array $data): void`**
 
-   - Similar to recordStep1 but for Step 4
+- Similar to recordStep1 but for Step 4
 
 6. **`recordStep5(ProductionActual $actual, array $data): void`**
 
-   - Similar to recordStep1 but for Step 5
+- Similar to recordStep1 but for Step 5
 
 7. **`completeProduction(ProductionActual $actual): void`**
 
-   - Validate all steps have actual data
-   - Change plan status from `in_production` to `completed`
-   - Record completion timestamp
+- Validate all steps have actual data
+- Change plan status from `in_production` to `completed`
+- Record completion timestamp
 
 8. **`calculateVariances(ProductionPlan $plan): array`**
 
-   - Compare planned vs actual for each step
-   - Calculate absolute variance and percentage variance
-   - Return structured array with variance status (on_target, minor_variance, major_variance)
-   - Variance thresholds:
-     - On target: ≤ 5% variance
-     - Minor variance: 5-15% variance
-     - Major variance: > 15% variance
+- Compare planned vs actual for each step
+- Calculate absolute variance and percentage variance
+- Return structured array with variance status (on_target, minor_variance, major_variance)
+- Variance thresholds:
+    - On target: ≤ 5% variance
+    - Minor variance: 5-15% variance
+    - Major variance: > 15% variance
 
 9. **`getProductionProgress(ProductionPlan $plan): array`**
 
-   - Calculate completion percentage
-   - Return which steps are complete/incomplete
-   - Return overall status
+- Calculate completion percentage
+- Return which steps are complete/incomplete
+- Return overall status
 
-**File:** Update `app/Services/ProductionPlanningService.php`
-
-**Methods to Add:**
+**File:** Update `app/Services/ProductionPlanningService.php`**Methods to Add:**
 
 - `startProduction(ProductionPlan $plan, User $user): ProductionPlan`
 - `markAsCompleted(ProductionPlan $plan): ProductionPlan`
 
 #### Task 8.3: Controllers
 
-**File:** `app/Http/Controllers/ProductionActualController.php` (new)
-
-**Methods to Implement:**
+**File:** `app/Http/Controllers/ProductionActualController.php` (new)**Methods to Implement:**
 
 1. **`start(ProductionPlan $productionPlan): RedirectResponse`**
 
-   - Validate plan is approved
-   - Call service to start production
-   - Redirect to execution view
+- Validate plan is approved
+- Call service to start production
+- Redirect to execution view
 
 2. **`show(ProductionPlan $productionPlan): View`**
 
-   - Load plan with actual data
-   - Calculate variances
-   - Display comparison view
+- Load plan with actual data
+- Calculate variances
+- Display comparison view
 
 3. **`execute(ProductionPlan $productionPlan): View`**
 
-   - Show production execution form
-   - Display planned quantities (read-only)
-   - Input fields for actual quantities
-   - Progress indicator
+- Show production execution form
+- Display planned quantities (read-only)
+- Input fields for actual quantities
+- Progress indicator
 
 4. **`recordStep1(ProductionPlan $productionPlan, Request $request): RedirectResponse`**
 
-   - Validate actual Step 1 data
-   - Call service to record Step 1 actuals
-   - Redirect back to execution view
+- Validate actual Step 1 data
+- Call service to record Step 1 actuals
+- Redirect back to execution view
 
 5. **`recordStep2(ProductionPlan $productionPlan, Request $request): RedirectResponse`**
 
-   - Similar to recordStep1
+- Similar to recordStep1
 
 6. **`recordStep3(ProductionPlan $productionPlan, Request $request): RedirectResponse`**
 
-   - Similar to recordStep1
+- Similar to recordStep1
 
 7. **`recordStep4(ProductionPlan $productionPlan, Request $request): RedirectResponse`**
 
-   - Similar to recordStep1
+- Similar to recordStep1
 
 8. **`recordStep5(ProductionPlan $productionPlan, Request $request): RedirectResponse`**
 
-   - Similar to recordStep1
+- Similar to recordStep1
 
 9. **`complete(ProductionPlan $productionPlan): RedirectResponse`**
 
-   - Validate all steps complete
-   - Call service to mark as completed
-   - Redirect to comparison view
+- Validate all steps complete
+- Call service to mark as completed
+- Redirect to comparison view
 
 **Routes to Add:**
 
@@ -747,49 +733,51 @@ Route::post('production-plans/{productionPlan}/complete', [ProductionActualContr
     ->name('production-plans.complete');
 ```
 
+
+
 #### Task 8.4: Views
 
 **Files to Create:**
 
 1. **`resources/views/manufacturing/production-plans/execute.blade.php`**
 
-   - Production execution form
-   - Tabbed interface (similar to show view)
-   - Each tab shows:
-     - Planned quantities (read-only, grayed out)
-     - Input fields for actual quantities
-     - Real-time variance calculation (color-coded)
-   - Progress indicator showing completion status
-   - "Save Step X" buttons for each step
-   - "Mark as Complete" button (when all steps done)
+- Production execution form
+- Tabbed interface (similar to show view)
+- Each tab shows:
+    - Planned quantities (read-only, grayed out)
+    - Input fields for actual quantities
+    - Real-time variance calculation (color-coded)
+- Progress indicator showing completion status
+- "Save Step X" buttons for each step
+- "Mark as Complete" button (when all steps done)
 
 2. **`resources/views/manufacturing/production-plans/actuals.blade.php`**
 
-   - Comparison report view
-   - Side-by-side comparison tables
-   - Planned | Actual | Variance columns
-   - Color-coded variance cells:
-     - Green: On target (≤5%)
-     - Yellow: Minor variance (5-15%)
-     - Red: Major variance (>15%)
-   - Summary cards:
-     - Overall completion percentage
-     - Total variance by step
-     - Items with major variances
-   - Export to Excel/PDF buttons
+- Comparison report view
+- Side-by-side comparison tables
+- Planned | Actual | Variance columns
+- Color-coded variance cells:
+    - Green: On target (≤5%)
+    - Yellow: Minor variance (5-15%)
+    - Red: Major variance (>15%)
+- Summary cards:
+    - Overall completion percentage
+    - Total variance by step
+    - Items with major variances
+- Export to Excel/PDF buttons
 
 **Files to Modify:**
 
 1. **`resources/views/manufacturing/production-plans/show.blade.php`**
 
-   - Add "Start Production" button (when status is `approved`)
-   - Add "View Actuals" button (when status is `in_production` or `completed`)
-   - Add "Continue Production" button (when status is `in_production`)
+- Add "Start Production" button (when status is `approved`)
+- Add "View Actuals" button (when status is `in_production` or `completed`)
+- Add "Continue Production" button (when status is `in_production`)
 
 2. **`resources/views/manufacturing/production-plans/index.blade.php`**
 
-   - Add filter for `in_production` and `completed` statuses
-   - Show status badges with appropriate colors
+- Add filter for `in_production` and `completed` statuses
+- Show status badges with appropriate colors
 
 #### Task 8.5: Form Request Validation
 
@@ -810,9 +798,7 @@ Route::post('production-plans/{productionPlan}/complete', [ProductionActualContr
 
 #### Task 8.6: Permissions
 
-**Update:** `database/seeders/ManufacturingPermissionSeeder.php`
-
-**Add Permissions:**
+**Update:** `database/seeders/ManufacturingPermissionSeeder.php`**Add Permissions:**
 
 - `manufacturing.production-plans.start` - Start production
 - `manufacturing.production-plans.record-actuals` - Record actual production
@@ -862,20 +848,22 @@ private function getVarianceStatus(float $percent): string
 }
 ```
 
+
+
 ### UI/UX Features
 
 #### Production Execution Page:
 
 - **Progress Bar**: Visual indicator showing completion status (0-100%)
 - **Step Indicators**: 
-  - ✅ Step completed
-  - ⏳ Step in progress (has partial data)
-  - ⏸️ Step not started
+- ✅ Step completed
+- ⏳ Step in progress (has partial data)
+- ⏸️ Step not started
 - **Real-time Variance**: As user enters actual quantities, show variance calculation
 - **Color Coding**: 
-  - Green background: On target
-  - Yellow background: Minor variance
-  - Red background: Major variance
+- Green background: On target
+- Yellow background: Minor variance
+- Red background: Major variance
 - **Navigation**: Easy navigation between steps
 - **Save Indicators**: Show last saved timestamp for each step
 
@@ -883,10 +871,10 @@ private function getVarianceStatus(float $percent): string
 
 - **Side-by-side Tables**: Planned | Actual | Variance | Status
 - **Summary Dashboard**: 
-  - Overall completion percentage
-  - Total variance by step
-  - Top items with major variances
-  - Production efficiency metrics
+- Overall completion percentage
+- Total variance by step
+- Top items with major variances
+- Production efficiency metrics
 - **Export Options**: Excel, PDF, CSV
 - **Filtering**: Filter by step, item, variance status
 
@@ -919,7 +907,7 @@ private function getVarianceStatus(float $percent): string
 
 ### Data Model Relationships
 
-```
+```javascript
 ProductionPlan
   ├── hasOne ProductionActual
   │     ├── hasMany ProductionActualStep1
@@ -945,9 +933,11 @@ ProductionPlan
         └── hasOne ProductionActualStep5
 ```
 
+
+
 ### Example Comparison View Structure
 
-```
+```javascript
 Step 1: Dough Production - Planned vs Actual
 ┌─────────────────────────────────────────────────────────────────┐
 │ Item      │ Channel │ Planned │ Actual │ Variance │ Status     │
@@ -965,6 +955,8 @@ Summary:
 - Major Variance: 1 item
 - Average Variance: -2.5%
 ```
+
+
 
 ### Testing Checklist
 
@@ -1014,30 +1006,31 @@ Summary:
 
 ### Phase 8.4: Work Orders and JCRO Reports Updates
 
-**Status:** ✅ Complete
-
-**Changes Implemented:**
+**Status:** ✅ Complete**Changes Implemented:**
 
 1. **Work Orders Visibility:**
-   - Work Orders (Surat Perintah Kerja) are now only displayed if actual production has not started
-   - Hidden when `$productionPlan->actual` exists or status is `in_production` or `completed`
+
+- Work Orders (Surat Perintah Kerja) are now only displayed if actual production has not started
+- Hidden when `$productionPlan->actual` exists or status is `in_production` or `completed`
 
 2. **JCRO Reports Data Source:**
-   - JCRO Reports now automatically use actual production data if available, otherwise use plan data
-   - Service methods updated to check for actual data first, then fall back to plan data
-   - All JCRO views updated to clearly indicate data source with visual indicators:
-     - Blue banner: "BERDASARKAN PRODUKSI AKTUAL" (Based on Actual Production)
-     - Orange banner: "BERDASARKAN RENCANA PRODUKSI" (Based on Production Plan)
-   - Actual production date displayed when using actual data
+
+- JCRO Reports now automatically use actual production data if available, otherwise use plan data
+- Service methods updated to check for actual data first, then fall back to plan data
+- All JCRO views updated to clearly indicate data source with visual indicators:
+    - Blue banner: "BERDASARKAN PRODUKSI AKTUAL" (Based on Actual Production)
+    - Orange banner: "BERDASARKAN RENCANA PRODUKSI" (Based on Production Plan)
+- Actual production date displayed when using actual data
 
 3. **Service Layer Updates:**
-   - `ProductionDocumentService` updated with methods to aggregate actual production data
-   - All JCRO data methods now return `isBasedOnActual` flag and `actual` object
-   - New private methods added for aggregating actual data from ProductionActual steps
+
+- `ProductionDocumentService` updated with methods to aggregate actual production data
+- All JCRO data methods now return `isBasedOnActual` flag and `actual` object
+- New private methods added for aggregating actual data from ProductionActual steps
 
 **TODO:**
+
 - [ ] Verify JCRO Reports for Actual Production after Phase 8 (Actual Production Tracking) implementation is completed
-  - Test all 4 JCRO reports (Adonan, Gelondongan, Kerupuk Kg, Kerupuk Pack) with actual production data
-  - Verify data accuracy and calculations match actual production quantities
-  - Verify visual indicators correctly show "BERDASARKAN PRODUKSI AKTUAL" when actual data exists
-  - Verify fallback to plan data when actual data is not available
+- Test all 4 JCRO reports (Adonan, Gelondongan, Kerupuk Kg, Kerupuk Pack) with actual production data
+- Verify data accuracy and calculations match actual production quantities
+- Verify visual indicators correctly show "BERDASARKAN PRODUKSI AKTUAL" when actual data exists

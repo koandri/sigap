@@ -196,4 +196,3 @@ As `dms_admin`:
 ### dms-evidence — Save findings
 
 - Summarize pass/fail per step.
-- List console errors and failed requests.
