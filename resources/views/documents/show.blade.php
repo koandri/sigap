@@ -195,7 +195,7 @@
                             <h3 class="card-title">Quick Actions</h3>
                         </div>
                         <div class="card-body">
-                            @if($document->document_type->canHaveVersions())
+                            @if($document->document_type->canHaveVersions() || in_array($document->document_type, [App\Enums\DocumentType::IncomingLetter, App\Enums\DocumentType::Other]))
                                 @can('create', [App\Models\DocumentVersion::class, $document])
                                     <a href="{{ route('documents.versions.create', $document) }}" class="btn btn-primary w-100 mb-2">
                                         <i class="far fa-plus"></i>&nbsp;

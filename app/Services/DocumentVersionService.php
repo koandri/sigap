@@ -26,7 +26,11 @@ final class DocumentVersionService
         return DB::transaction(function () use ($document, $data) {
             $version = $document->versions()->create($data);
 
-            // All versions start as draft and require approval
+            // For IncomingLetter and Other types, auto-activate (skip approval workflow)
+            if (in_array($document->document_type, [\App\Enums\DocumentType::IncomingLetter, \App\Enums\DocumentType::Other])) {
+                $this->activateVersion($version);
+            }
+            // All other versions start as draft and require approval
             // No automatic activation for first version
 
             return $version;
@@ -215,6 +219,11 @@ final class DocumentVersionService
 
     public function canUserEdit(DocumentVersion $version, User $user): bool
     {
+        // For IncomingLetter and Other types, allow editing if user is creator
+        if (in_array($version->document->document_type, [\App\Enums\DocumentType::IncomingLetter, \App\Enums\DocumentType::Other])) {
+            return $version->created_by === $user->id;
+        }
+
         return $version->isDraft() &&
                $version->created_by === $user->id &&
                $version->document->document_type->canHaveVersions();

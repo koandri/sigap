@@ -7,7 +7,6 @@ namespace App\Policies;
 use App\Models\Document;
 use App\Models\DocumentVersion;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 final class DocumentVersionPolicy
 {
@@ -22,7 +21,7 @@ final class DocumentVersionPolicy
         }
 
         // Check if user has access to the document
-        if (!$user->can('view', $version->document)) {
+        if (! $user->can('view', $version->document)) {
             return false;
         }
 
@@ -52,17 +51,23 @@ final class DocumentVersionPolicy
 
         // Check if user is in the document's department
         $userDepartment = $user->roles()->where('name', $document->department->name)->exists();
-        if (!$userDepartment) {
+        if (! $userDepartment) {
             return false;
         }
 
+        // For IncomingLetter and Other types, allow version creation (they auto-activate, no approval needed)
+        $documentType = $document->document_type;
+        if (in_array($documentType, [\App\Enums\DocumentType::IncomingLetter, \App\Enums\DocumentType::Other])) {
+            return true;
+        }
+
         // Check if document type supports versions
-        if (!$document->document_type->canHaveVersions()) {
+        if (! $document->document_type->canHaveVersions()) {
             return false;
         }
 
         // Check if user has a manager (required for approval workflow)
-        if (!$user->manager_id) {
+        if (! $user->manager_id) {
             return false;
         }
 
@@ -105,12 +110,12 @@ final class DocumentVersionPolicy
     public function approve(User $user, DocumentVersion $version): bool
     {
         // Check if user has approve permission
-        if (!$user->hasPermissionTo('dms.versions.approve')) {
+        if (! $user->hasPermissionTo('dms.versions.approve')) {
             return false;
         }
 
         // Check if version is pending approval
-        if (!$version->isPending()) {
+        if (! $version->isPending()) {
             return false;
         }
 
@@ -119,7 +124,7 @@ final class DocumentVersionPolicy
             ->where('status', 'pending')
             ->first();
 
-        if (!$pendingApproval) {
+        if (! $pendingApproval) {
             return false;
         }
 
@@ -142,32 +147,32 @@ final class DocumentVersionPolicy
     private function checkAccessPermissions(User $user, DocumentVersion $version): bool
     {
         // If document doesn't require access request, user can view
-        if (!$version->document->document_type->requiresAccessRequest()) {
+        if (! $version->document->document_type->requiresAccessRequest()) {
             return true;
         }
 
         // Check if user is in the document's department or accessible departments
         // Department members get automatic access even for documents requiring access requests
-        if (!$user->relationLoaded('departments')) {
+        if (! $user->relationLoaded('departments')) {
             $user->load('departments');
         }
-        
-        $userDepartmentIds = $user->departments->pluck('id')->map(fn($id) => (int)$id)->toArray();
-        $documentDeptId = (int)$version->document->department_id;
-        
+
+        $userDepartmentIds = $user->departments->pluck('id')->map(fn ($id) => (int) $id)->toArray();
+        $documentDeptId = (int) $version->document->department_id;
+
         // Check if user is in document's department
         $isInDocumentDept = in_array($documentDeptId, $userDepartmentIds, true);
-        
+
         // Check if user is in accessible departments
         $isInAccessibleDept = false;
-        if (!$isInDocumentDept) {
-            if (!$version->document->relationLoaded('accessibleDepartments')) {
+        if (! $isInDocumentDept) {
+            if (! $version->document->relationLoaded('accessibleDepartments')) {
                 $version->document->load('accessibleDepartments');
             }
-            $accessibleDepartmentIds = $version->document->accessibleDepartments->pluck('id')->map(fn($id) => (int)$id)->toArray();
-            $isInAccessibleDept = !empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
+            $accessibleDepartmentIds = $version->document->accessibleDepartments->pluck('id')->map(fn ($id) => (int) $id)->toArray();
+            $isInAccessibleDept = ! empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
         }
-        
+
         // If user is in document's department or accessible departments, grant automatic access
         if ($isInDocumentDept || $isInAccessibleDept) {
             return true;
@@ -179,7 +184,7 @@ final class DocumentVersionPolicy
             ->where('status', 'approved')
             ->where(function ($query) {
                 $query->whereNull('approved_expiry_date')
-                      ->orWhere('approved_expiry_date', '>', now());
+                    ->orWhere('approved_expiry_date', '>', now());
             })
             ->exists();
     }
