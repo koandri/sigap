@@ -204,27 +204,13 @@
                                 @endcan
                             @endif
                             
-                            @if($document->document_type->requiresAccessRequest() && !auth()->user()->hasRole(['Super Admin', 'Owner', 'Document Control']))
-                                @php
-                                    $user = auth()->user();
-                                    $hasActiveAccess = false;
-                                    if ($document->activeVersion) {
-                                        $hasActiveAccess = $user->documentAccessRequests()
-                                            ->where('document_version_id', $document->activeVersion->id)
-                                            ->where('status', 'approved')
-                                            ->where(function ($query) {
-                                                $query->whereNull('approved_expiry_date')
-                                                      ->orWhere('approved_expiry_date', '>', now());
-                                            })
-                                            ->exists();
-                                    }
-                                @endphp
-                                @if(!$hasActiveAccess)
+                            @if($document->document_type->requiresAccessRequest())
+                                @can('requestAccess', $document)
                                     <a href="{{ route('documents.request-access', $document) }}" class="btn btn-outline-info w-100 mb-2">
                                         <i class="far fa-eye"></i>&nbsp;
                                         Request Access
                                     </a>
-                                @endif
+                                @endcan
                             @endif
                             
                             @if($document->document_type->value === 'form')

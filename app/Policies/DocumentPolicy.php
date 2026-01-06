@@ -161,8 +161,8 @@ final class DocumentPolicy
             return false;
         }
 
-        // Check if user has request permission
-        if (! $user->hasPermissionTo('dms.access.request')) {
+        // User must be able to view the document to request access
+        if (! $this->view($user, $document)) {
             return false;
         }
 
