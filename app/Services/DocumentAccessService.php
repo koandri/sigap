@@ -22,6 +22,40 @@ final class DocumentAccessService
     public function createAccessRequest(DocumentVersion $version, User $user, array $data): DocumentAccessRequest
     {
         return DB::transaction(function () use ($version, $user, $data) {
+            // Safety check: prevent duplicate pending requests
+            $existingPending = DocumentAccessRequest::where('document_version_id', $version->id)
+                ->where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->exists();
+
+            if ($existingPending) {
+                throw new \Exception('You already have a pending access request for this document. Please wait for approval or rejection before submitting a new request.');
+            }
+
+            // Check for valid approved requests
+            $approvedRequest = DocumentAccessRequest::where('document_version_id', $version->id)
+                ->where('user_id', $user->id)
+                ->where('status', 'approved')
+                ->where(function ($query) {
+                    $query->whereNull('approved_expiry_date')
+                        ->orWhere('approved_expiry_date', '>', now());
+                })
+                ->first();
+
+            if ($approvedRequest) {
+                // For one-time access, check if it's been used
+                if ($approvedRequest->getEffectiveAccessType()->isOneTime()) {
+                    $hasBeenUsed = $this->hasUsedOneTimeAccess($approvedRequest);
+                    // If one-time access hasn't been used, it's still valid
+                    if (! $hasBeenUsed) {
+                        throw new \Exception('You already have a valid approved access request for this document. Please use your existing access or wait until it expires.');
+                    }
+                } else {
+                    // Multiple access that hasn't expired is still valid
+                    throw new \Exception('You already have a valid approved access request for this document. Please use your existing access or wait until it expires.');
+                }
+            }
+
             $request = DocumentAccessRequest::create([
                 'document_version_id' => $version->id,
                 'user_id' => $user->id,

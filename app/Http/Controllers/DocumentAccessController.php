@@ -106,6 +106,7 @@ final class DocumentAccessController extends Controller
     public function requestAccess(Document $document): View|RedirectResponse
     {
         $this->authorize('view', $document);
+        $this->authorize('requestAccess', $document);
 
         // Super Admin and Owner don't need to request access
         if (Auth::user()->hasRole(['Super Admin', 'Owner'])) {

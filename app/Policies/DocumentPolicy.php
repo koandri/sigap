@@ -6,7 +6,6 @@ namespace App\Policies;
 
 use App\Models\Document;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 final class DocumentPolicy
 {
@@ -34,41 +33,44 @@ final class DocumentPolicy
 
         // Check if user's departments have access
         // Load departments if not already loaded
-        if (!$user->relationLoaded('departments')) {
+        if (! $user->relationLoaded('departments')) {
             $user->load('departments');
         }
-        
-        $userDepartmentIds = $user->departments->pluck('id')->map(fn($id) => (int)$id)->toArray();
-        
+
+        $userDepartmentIds = $user->departments->pluck('id')->map(fn ($id) => (int) $id)->toArray();
+
         if (empty($userDepartmentIds)) {
             \Log::warning('DocumentPolicy@view: User has no departments', [
                 'user_id' => $user->id,
                 'document_id' => $document->id,
             ]);
+
             return false;
         }
-        
+
         // Verify document's department_id is valid
-        if (!$document->department_id) {
+        if (! $document->department_id) {
             \Log::warning('DocumentPolicy@view: Document has no department_id', [
                 'user_id' => $user->id,
                 'document_id' => $document->id,
             ]);
+
             return false;
         }
-        
+
         // Verify document's department exists (in case of data inconsistency)
         // Also ensure we have the department_id as integer for comparison
-        $documentDeptId = (int)$document->department_id;
-        
+        $documentDeptId = (int) $document->department_id;
+
         try {
             $documentDepartment = $document->department;
-            if (!$documentDepartment) {
+            if (! $documentDepartment) {
                 \Log::warning('DocumentPolicy@view: Document department_id does not exist in departments table', [
                     'user_id' => $user->id,
                     'document_id' => $document->id,
                     'document_department_id' => $documentDeptId,
                 ]);
+
                 return false;
             }
         } catch (\Exception $e) {
@@ -78,31 +80,33 @@ final class DocumentPolicy
                 'document_department_id' => $documentDeptId,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
-        
+
         // Check if document's department matches user's department (ensure both are integers)
         $hasDepartmentAccess = in_array($documentDeptId, $userDepartmentIds, true);
-        
+
         // If not, check if document has accessible departments that match user's departments
-        if (!$hasDepartmentAccess) {
+        if (! $hasDepartmentAccess) {
             // Load accessible departments if not already loaded
-            if (!$document->relationLoaded('accessibleDepartments')) {
+            if (! $document->relationLoaded('accessibleDepartments')) {
                 $document->load('accessibleDepartments');
             }
-            
-            $accessibleDepartmentIds = $document->accessibleDepartments->pluck('id')->map(fn($id) => (int)$id)->toArray();
-            $hasDepartmentAccess = !empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
+
+            $accessibleDepartmentIds = $document->accessibleDepartments->pluck('id')->map(fn ($id) => (int) $id)->toArray();
+            $hasDepartmentAccess = ! empty(array_intersect($userDepartmentIds, $accessibleDepartmentIds));
         }
 
-        if (!$hasDepartmentAccess) {
+        if (! $hasDepartmentAccess) {
             \Log::debug('DocumentPolicy@view: Access denied', [
                 'user_id' => $user->id,
                 'user_department_ids' => $userDepartmentIds,
                 'document_id' => $document->id,
                 'document_department_id' => $documentDeptId,
-                'accessible_department_ids' => $document->accessibleDepartments->pluck('id')->map(fn($id) => (int)$id)->toArray() ?? [],
+                'accessible_department_ids' => $document->accessibleDepartments->pluck('id')->map(fn ($id) => (int) $id)->toArray() ?? [],
             ]);
+
             return false;
         }
 
@@ -146,8 +150,9 @@ final class DocumentPolicy
 
     /**
      * Determine whether the user can request access to the document.
-     * Users can request access even if they're in the same department,
-     * as long as they don't already have an active access request.
+     * Users cannot request access if:
+     * - There's a pending request waiting for approval
+     * - There's a valid approved request (one-time not used, or multiple access not expired)
      */
     public function requestAccess(User $user, Document $document): bool
     {
@@ -157,20 +162,55 @@ final class DocumentPolicy
         }
 
         // Check if user has request permission
-        if (!$user->hasPermissionTo('dms.access.request')) {
+        if (! $user->hasPermissionTo('dms.access.request')) {
             return false;
         }
 
         // Check if document requires access request
-        if (!$document->document_type->requiresAccessRequest()) {
+        if (! $document->document_type->requiresAccessRequest()) {
             return false;
         }
 
-        // Check if user already has active access request (approved)
-        // Note: Department members can still request access even though they have automatic access
-        // This allows them to have explicit access records for tracking/auditing purposes
-        if ($this->hasActiveAccess($user, $document)) {
-            return false;
+        // Check if user already has a pending request for this document
+        // Users can request multiple times, but only if there's no pending request
+        $activeVersion = $document->activeVersion;
+        if ($activeVersion) {
+            // Check for pending requests
+            $hasPendingRequest = $user->documentAccessRequests()
+                ->where('document_version_id', $activeVersion->id)
+                ->where('status', 'pending')
+                ->exists();
+
+            if ($hasPendingRequest) {
+                return false;
+            }
+
+            // Check for valid approved requests
+            // A request is valid if:
+            // - For multiple access: not expired (expiry date is null or in the future)
+            // - For one-time access: not used yet (no access logs exist)
+            $approvedRequest = $user->documentAccessRequests()
+                ->where('document_version_id', $activeVersion->id)
+                ->where('status', 'approved')
+                ->where(function ($query) {
+                    $query->whereNull('approved_expiry_date')
+                        ->orWhere('approved_expiry_date', '>', now());
+                })
+                ->first();
+
+            if ($approvedRequest) {
+                // For one-time access, check if it's been used
+                if ($approvedRequest->getEffectiveAccessType()->isOneTime()) {
+                    $hasBeenUsed = $approvedRequest->accessLogs()->exists();
+                    // If one-time access hasn't been used, it's still valid
+                    if (! $hasBeenUsed) {
+                        return false;
+                    }
+                } else {
+                    // Multiple access that hasn't expired is still valid
+                    return false;
+                }
+            }
         }
 
         return true;
@@ -182,7 +222,7 @@ final class DocumentPolicy
     private function hasActiveAccess(User $user, Document $document): bool
     {
         $activeVersion = $document->activeVersion;
-        if (!$activeVersion) {
+        if (! $activeVersion) {
             return false;
         }
 
@@ -191,7 +231,7 @@ final class DocumentPolicy
             ->where('status', 'approved')
             ->where(function ($query) {
                 $query->whereNull('approved_expiry_date')
-                      ->orWhere('approved_expiry_date', '>', now());
+                    ->orWhere('approved_expiry_date', '>', now());
             })
             ->exists();
     }
