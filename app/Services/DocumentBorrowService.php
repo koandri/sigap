@@ -120,12 +120,12 @@ final class DocumentBorrowService
         $errors = [];
 
         // Check if user has digital access to the document
-        if (!$this->documentService->checkUserCanAccess($user, $document)) {
+        if (! $this->documentService->checkUserCanAccess($user, $document)) {
             $errors[] = 'You do not have access to this document.';
         }
 
         // Check if document is available (not currently borrowed)
-        if (!$this->isDocumentAvailable($document)) {
+        if (! $this->isDocumentAvailable($document)) {
             $errors[] = 'This document is currently borrowed by another user.';
         }
 
@@ -145,7 +145,7 @@ final class DocumentBorrowService
      */
     public function isDocumentAvailable(Document $document): bool
     {
-        return !$document->borrows()
+        return ! $document->borrows()
             ->whereIn('status', [
                 DocumentBorrowStatus::Pending,
                 DocumentBorrowStatus::Approved,
@@ -233,7 +233,7 @@ final class DocumentBorrowService
 
         // Filter out documents that are currently borrowed or have pending requests
         return $accessibleDocuments->filter(function ($document) use ($user) {
-            return $this->isDocumentAvailable($document) && !$this->userHasActiveBorrow($user, $document);
+            return $this->isDocumentAvailable($document) && ! $this->userHasActiveBorrow($user, $document);
         });
     }
 
@@ -297,7 +297,7 @@ final class DocumentBorrowService
         try {
             $borrow->load(['document', 'user', 'approver']);
 
-            if (!$borrow->user->mobilephone_no) {
+            if (! $borrow->user->mobilephone_no) {
                 return;
             }
 
@@ -325,7 +325,7 @@ final class DocumentBorrowService
         try {
             $borrow->load(['document', 'user', 'approver']);
 
-            if (!$borrow->user->mobilephone_no) {
+            if (! $borrow->user->mobilephone_no) {
                 return;
             }
 
@@ -353,7 +353,7 @@ final class DocumentBorrowService
         try {
             $borrow->load(['document', 'user']);
 
-            if (!$borrow->user->mobilephone_no) {
+            if (! $borrow->user->mobilephone_no) {
                 return;
             }
 
@@ -381,7 +381,7 @@ final class DocumentBorrowService
         try {
             $borrow->load(['document', 'user']);
 
-            if (!$borrow->user->mobilephone_no) {
+            if (! $borrow->user->mobilephone_no) {
                 return;
             }
 
@@ -409,7 +409,7 @@ final class DocumentBorrowService
         try {
             $borrow->load(['document', 'user']);
 
-            if (!$borrow->user->mobilephone_no) {
+            if (! $borrow->user->mobilephone_no) {
                 return;
             }
 
@@ -437,7 +437,7 @@ final class DocumentBorrowService
         try {
             $borrow->load(['document', 'user']);
 
-            if (!$borrow->user->mobilephone_no) {
+            if (! $borrow->user->mobilephone_no) {
                 return;
             }
 
@@ -463,65 +463,65 @@ final class DocumentBorrowService
 
     private function formatNewRequestMessage(DocumentBorrow $borrow): string
     {
-        $dueDate = $borrow->due_date ? $borrow->due_date->format('d M Y') : 'No due date';
+        $dueDate = $borrow->due_date ? $borrow->due_date->format('d/m/Y') : 'No due date';
 
-        return "📚 *New Document Borrow Request*\n\n" .
-            "Document: {$borrow->document->title}\n" .
-            "Doc Number: {$borrow->document->document_number}\n" .
-            "Requested by: {$borrow->user->name}\n" .
-            "Due Date: {$dueDate}\n" .
-            ($borrow->notes ? "Notes: {$borrow->notes}\n" : '') .
+        return "📚 *New Document Borrow Request*\n\n".
+            "Document: {$borrow->document->title}\n".
+            "Doc Number: {$borrow->document->document_number}\n".
+            "Requested by: {$borrow->user->name}\n".
+            "Due Date: {$dueDate}\n".
+            ($borrow->notes ? "Notes: {$borrow->notes}\n" : '').
             "\nPlease review this request in SIGAP.";
     }
 
     private function formatApprovedMessage(DocumentBorrow $borrow): string
     {
-        $dueDate = $borrow->due_date ? $borrow->due_date->format('d M Y') : 'No due date';
+        $dueDate = $borrow->due_date ? $borrow->due_date->format('d/m/Y') : 'No due date';
 
-        return "✅ *Document Borrow Request Approved*\n\n" .
-            "Document: {$borrow->document->title}\n" .
-            "Doc Number: {$borrow->document->document_number}\n" .
-            "Due Date: {$dueDate}\n" .
-            "Approved by: {$borrow->approver->name}\n" .
+        return "✅ *Document Borrow Request Approved*\n\n".
+            "Document: {$borrow->document->title}\n".
+            "Doc Number: {$borrow->document->document_number}\n".
+            "Due Date: {$dueDate}\n".
+            "Approved by: {$borrow->approver->name}\n".
             "\nYou can now collect the document from Document Control.";
     }
 
     private function formatRejectedMessage(DocumentBorrow $borrow): string
     {
-        return "❌ *Document Borrow Request Rejected*\n\n" .
-            "Document: {$borrow->document->title}\n" .
-            "Doc Number: {$borrow->document->document_number}\n" .
-            "Rejected by: {$borrow->approver->name}\n" .
+        return "❌ *Document Borrow Request Rejected*\n\n".
+            "Document: {$borrow->document->title}\n".
+            "Doc Number: {$borrow->document->document_number}\n".
+            "Rejected by: {$borrow->approver->name}\n".
             "Reason: {$borrow->rejection_reason}";
     }
 
     private function formatCheckedOutMessage(DocumentBorrow $borrow): string
     {
-        $dueDate = $borrow->due_date ? $borrow->due_date->format('d M Y') : 'No due date';
+        $dueDate = $borrow->due_date ? $borrow->due_date->format('d/m/Y') : 'No due date';
 
-        return "📖 *Document Checked Out*\n\n" .
-            "Document: {$borrow->document->title}\n" .
-            "Doc Number: {$borrow->document->document_number}\n" .
-            "Checkout Date: " . now()->format('d M Y H:i') . "\n" .
-            "Due Date: {$dueDate}\n" .
+        return "📖 *Document Checked Out*\n\n".
+            "Document: {$borrow->document->title}\n".
+            "Doc Number: {$borrow->document->document_number}\n".
+            'Checkout Date: '.now()->format('d/m/Y H:i')."\n".
+            "Due Date: {$dueDate}\n".
             "\nPlease return the document by the due date.";
     }
 
     private function formatReturnedMessage(DocumentBorrow $borrow): string
     {
-        return "✅ *Document Returned Successfully*\n\n" .
-            "Document: {$borrow->document->title}\n" .
-            "Doc Number: {$borrow->document->document_number}\n" .
-            "Returned Date: " . now()->format('d M Y H:i') . "\n" .
+        return "✅ *Document Returned Successfully*\n\n".
+            "Document: {$borrow->document->title}\n".
+            "Doc Number: {$borrow->document->document_number}\n".
+            'Returned Date: '.now()->format('d/m/Y H:i')."\n".
             "\nThank you for returning the document.";
     }
 
     private function formatDueReminderMessage(DocumentBorrow $borrow): string
     {
-        return "⏰ *Document Return Reminder*\n\n" .
-            "Document: {$borrow->document->title}\n" .
-            "Doc Number: {$borrow->document->document_number}\n" .
-            "Due Date: " . $borrow->due_date->format('d M Y') . "\n" .
+        return "⏰ *Document Return Reminder*\n\n".
+            "Document: {$borrow->document->title}\n".
+            "Doc Number: {$borrow->document->document_number}\n".
+            'Due Date: '.$borrow->due_date->format('d/m/Y')."\n".
             "\nPlease remember to return the document by the due date.";
     }
 
@@ -529,11 +529,11 @@ final class DocumentBorrowService
     {
         $daysOverdue = $borrow->days_overdue;
 
-        return "⚠️ *OVERDUE: Document Return Required*\n\n" .
-            "Document: {$borrow->document->title}\n" .
-            "Doc Number: {$borrow->document->document_number}\n" .
-            "Due Date: " . $borrow->due_date->format('d M Y') . "\n" .
-            "Days Overdue: {$daysOverdue}\n" .
+        return "⚠️ *OVERDUE: Document Return Required*\n\n".
+            "Document: {$borrow->document->title}\n".
+            "Doc Number: {$borrow->document->document_number}\n".
+            'Due Date: '.$borrow->due_date->format('d/m/Y')."\n".
+            "Days Overdue: {$daysOverdue}\n".
             "\nPlease return the document immediately.";
     }
 
@@ -542,7 +542,7 @@ final class DocumentBorrowService
      */
     private function formatPhoneNumber(?string $phone): ?string
     {
-        if (!$phone) {
+        if (! $phone) {
             return null;
         }
 
@@ -551,10 +551,9 @@ final class DocumentBorrowService
 
         // Handle Indonesian numbers
         if (str_starts_with($phone, '0')) {
-            $phone = '62' . substr($phone, 1);
+            $phone = '62'.substr($phone, 1);
         }
 
-        return $phone . '@c.us';
+        return $phone.'@c.us';
     }
 }
-

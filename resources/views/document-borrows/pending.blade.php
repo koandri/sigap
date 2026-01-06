@@ -60,13 +60,13 @@
                                             </td>
                                             <td>
                                                 @if($borrow->due_date)
-                                                    {{ $borrow->due_date->format('d M Y') }}
+                                                    {{ $borrow->due_date->format('d/m/Y') }}
                                                 @else
                                                     <span class="text-muted">No due date</span>
                                                 @endif
                                             </td>
                                             <td>
-                                                {{ $borrow->created_at->format('d M Y H:i') }}
+                                                {{ $borrow->created_at->format('d/m/Y H:i') }}
                                                 <div class="text-muted">{{ $borrow->created_at->diffForHumans() }}</div>
                                             </td>
                                             <td>

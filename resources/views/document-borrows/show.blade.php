@@ -99,7 +99,7 @@
                                     </div>
                                     <div class="card timeline-event-card">
                                         <div class="card-body">
-                                            <div class="text-muted float-end">{{ $borrow->created_at->format('d M Y H:i') }}</div>
+                                            <div class="text-muted float-end">{{ $borrow->created_at->format('d/m/Y H:i') }}</div>
                                             <h4>Request Submitted</h4>
                                             <p class="text-muted mb-0">
                                                 Requested by {{ $borrow->user->name }}
@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="card timeline-event-card">
                                         <div class="card-body">
-                                            <div class="text-muted float-end">{{ $borrow->approved_at->format('d M Y H:i') }}</div>
+                                            <div class="text-muted float-end">{{ $borrow->approved_at->format('d/m/Y H:i') }}</div>
                                             <h4>{{ $borrow->isRejected() ? 'Request Rejected' : 'Request Approved' }}</h4>
                                             <p class="text-muted mb-0">
                                                 By {{ $borrow->approver?->name ?? 'System' }}
@@ -138,7 +138,7 @@
                                     </div>
                                     <div class="card timeline-event-card">
                                         <div class="card-body">
-                                            <div class="text-muted float-end">{{ $borrow->checkout_at->format('d M Y H:i') }}</div>
+                                            <div class="text-muted float-end">{{ $borrow->checkout_at->format('d/m/Y H:i') }}</div>
                                             <h4>Document Checked Out</h4>
                                             <p class="text-muted mb-0">
                                                 Physical document collected
@@ -155,7 +155,7 @@
                                     </div>
                                     <div class="card timeline-event-card">
                                         <div class="card-body">
-                                            <div class="text-muted float-end">{{ $borrow->returned_at->format('d M Y H:i') }}</div>
+                                            <div class="text-muted float-end">{{ $borrow->returned_at->format('d/m/Y H:i') }}</div>
                                             <h4>Document Returned</h4>
                                             <p class="text-muted mb-0">
                                                 Physical document returned successfully
@@ -216,7 +216,7 @@
                                 <label class="form-label">Due Date</label>
                                 <div class="form-control-plaintext">
                                     @if($borrow->due_date)
-                                        {{ $borrow->due_date->format('d M Y') }}
+                                        {{ $borrow->due_date->format('d/m/Y') }}
                                     @else
                                         <span class="text-muted">No due date</span>
                                     @endif

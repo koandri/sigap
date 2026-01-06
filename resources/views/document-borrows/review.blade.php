@@ -78,7 +78,7 @@
                                 <div class="datagrid-item">
                                     <div class="datagrid-title">Requested At</div>
                                     <div class="datagrid-content">
-                                        {{ $borrow->created_at->format('d M Y H:i') }}
+                                        {{ $borrow->created_at->format('d/m/Y H:i') }}
                                         <div class="text-muted">{{ $borrow->created_at->diffForHumans() }}</div>
                                     </div>
                                 </div>
@@ -86,7 +86,7 @@
                                     <div class="datagrid-title">Requested Due Date</div>
                                     <div class="datagrid-content">
                                         @if($borrow->due_date)
-                                            {{ $borrow->due_date->format('d M Y') }}
+                                            {{ $borrow->due_date->format('d/m/Y') }}
                                         @else
                                             <span class="text-muted">No due date requested</span>
                                         @endif

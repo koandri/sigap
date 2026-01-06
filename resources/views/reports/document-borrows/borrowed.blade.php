@@ -145,21 +145,21 @@
                                             </td>
                                             <td>
                                                 @if($borrow->due_date)
-                                                    {{ $borrow->due_date->format('d M Y') }}
+                                                    {{ $borrow->due_date->format('d/m/Y') }}
                                                 @else
                                                     <span class="text-muted">No due date</span>
                                                 @endif
                                             </td>
                                             <td>
                                                 @if($borrow->checkout_at)
-                                                    {{ $borrow->checkout_at->format('d M Y H:i') }}
+                                                    {{ $borrow->checkout_at->format('d/m/Y H:i') }}
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
                                             <td>
                                                 @if($borrow->returned_at)
-                                                    {{ $borrow->returned_at->format('d M Y H:i') }}
+                                                    {{ $borrow->returned_at->format('d/m/Y H:i') }}
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif

@@ -18,7 +18,8 @@ final class StoreBorrowRequest extends FormRequest
     public function authorize(): bool
     {
         // All authenticated users can submit borrow requests
-        return Auth::check();
+        // Route is already protected by 'auth' middleware, so we can safely return true
+        return true;
     }
 
     /**

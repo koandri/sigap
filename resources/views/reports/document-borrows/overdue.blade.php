@@ -127,7 +127,7 @@
                                             </td>
                                             <td>
                                                 <span class="text-danger fw-bold">
-                                                    {{ $borrow->due_date->format('d M Y') }}
+                                                    {{ $borrow->due_date->format('d/m/Y') }}
                                                 </span>
                                             </td>
                                             <td>
@@ -136,7 +136,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                {{ $borrow->checkout_at->format('d M Y H:i') }}
+                                                {{ $borrow->checkout_at->format('d/m/Y H:i') }}
                                             </td>
                                             <td>
                                                 <div class="btn-group">
