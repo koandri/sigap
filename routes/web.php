@@ -1,80 +1,72 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Auth\KeycloakController;
-
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\DepartmentController;
-
-use App\Http\Controllers\FormController;
-use App\Http\Controllers\FormVersionController;
-use App\Http\Controllers\FormFieldController;
-use App\Http\Controllers\FormSubmissionController;
-use App\Http\Controllers\ApprovalWorkflowController;
 use App\Http\Controllers\Api\FormFieldOptionsController;
-
-use App\Http\Controllers\FileController;
-
-// Manufacturing Controllers
-use App\Http\Controllers\ManufacturingController;
-use App\Http\Controllers\ItemCategoryController;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\WarehouseController;
-use App\Http\Controllers\ShelfInventoryController;
-use App\Http\Controllers\ShelfManagementController;
-use App\Http\Controllers\BulkInventoryController;
-use App\Http\Controllers\PicklistController;
-use App\Http\Controllers\WarehouseOverviewController;
-use App\Http\Controllers\ProductionPlanController;
-use App\Http\Controllers\ProductionPlanStepController;
-use App\Http\Controllers\ProductionActualController;
-use App\Http\Controllers\YieldGuidelineController;
-use App\Http\Controllers\RecipeController;
-use App\Http\Controllers\PackingMaterialBlueprintController;
-use App\Http\Controllers\KerupukPackConfigurationController;
-
-// Maintenance Controllers
-use App\Http\Controllers\MaintenanceDashboardController;
+use App\Http\Controllers\ApprovalWorkflowController;
 use App\Http\Controllers\AssetCategoryController;
+use App\Http\Controllers\AssetCategoryUsageTypeController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetLifetimeReportController;
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\AssetCategoryUsageTypeController;
-use App\Http\Controllers\MaintenanceScheduleController;
-use App\Http\Controllers\WorkOrderController;
-use App\Http\Controllers\MaintenanceLogController;
-use App\Http\Controllers\MaintenanceCalendarController;
 use App\Http\Controllers\AssetManagementReportController;
-
-// Facility Management Routes
-use App\Http\Controllers\FacilityDashboardController;
-use App\Http\Controllers\CleaningScheduleController;
-use App\Http\Controllers\CleaningTaskController;
+use App\Http\Controllers\Auth\KeycloakController;
+use App\Http\Controllers\BulkInventoryController;
 use App\Http\Controllers\CleaningApprovalController;
 use App\Http\Controllers\CleaningRequestController;
-use App\Http\Controllers\FacilityManagementReportController;
-
-// Document Management System Routes
-use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\DocumentVersionController;
-use App\Http\Controllers\DocumentApprovalController;
+use App\Http\Controllers\CleaningScheduleController;
+use App\Http\Controllers\CleaningTaskController;
+use App\Http\Controllers\CorrespondenceController;
+// Manufacturing Controllers
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DocumentAccessController;
+use App\Http\Controllers\DocumentApprovalController;
 use App\Http\Controllers\DocumentBorrowController;
 use App\Http\Controllers\DocumentBorrowReportController;
-use App\Http\Controllers\CorrespondenceController;
-use App\Http\Controllers\FormRequestController;
-use App\Http\Controllers\PrintedFormController;
-use App\Http\Controllers\GuideController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentManagementDashboardController;
 use App\Http\Controllers\DocumentManagementLocationReportController;
 use App\Http\Controllers\DocumentManagementMasterlistReportController;
 use App\Http\Controllers\DocumentManagementSlaReportController;
+use App\Http\Controllers\DocumentVersionController;
+use App\Http\Controllers\FacilityDashboardController;
+use App\Http\Controllers\FacilityManagementReportController;
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\FormController;
+use App\Http\Controllers\FormFieldController;
+// Maintenance Controllers
+use App\Http\Controllers\FormRequestController;
+use App\Http\Controllers\FormSubmissionController;
+use App\Http\Controllers\FormVersionController;
+use App\Http\Controllers\GuideController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ItemCategoryController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\KerupukPackConfigurationController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\MaintenanceCalendarController;
+use App\Http\Controllers\MaintenanceDashboardController;
+// Facility Management Routes
+use App\Http\Controllers\MaintenanceLogController;
+use App\Http\Controllers\MaintenanceScheduleController;
+use App\Http\Controllers\ManufacturingController;
+use App\Http\Controllers\PackingMaterialBlueprintController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PicklistController;
+// Document Management System Routes
+use App\Http\Controllers\PrintedFormController;
+use App\Http\Controllers\ProductionActualController;
+use App\Http\Controllers\ProductionPlanController;
+use App\Http\Controllers\ProductionPlanStepController;
+use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ShelfInventoryController;
+use App\Http\Controllers\ShelfManagementController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WarehouseOverviewController;
+use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\YieldGuidelineController;
+use Illuminate\Support\Facades\Route;
 
-//Basic
+// Basic
 Route::get('/', [HomeController::class, 'index'])->name('home')->middleware(['auth', 'verified']);
 Route::get('/editmyprofile', [UserController::class, 'editmyprofile'])->name('editmyprofile')->middleware('auth');
 
@@ -85,25 +77,25 @@ Route::get('/auth/keycloak/callback', [KeycloakController::class, 'handleKeycloa
 
 Route::post('/auth/keycloak/logout', [KeycloakController::class, 'logout'])->name('keycloak.logout');
 
-//Impersonate
+// Impersonate
 Route::impersonate();
 
-//Users
+// Users
 Route::resource('users', UserController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|Owner|IT Staff']);
 
-//Role
+// Role
 Route::resource('roles', RoleController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|Owner|IT Staff']);
 
-//Permissions
+// Permissions
 Route::resource('permissions', PermissionController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|IT Staff']);
 
-//Departments
+// Departments
 Route::resource('departments', DepartmentController::class)->except(['destroy'])->middleware(['auth', 'role:Super Admin|IT Staff']);
 
-//Forms
+// Forms
 Route::resource('forms', FormController::class)->middleware(['auth', 'role:Super Admin|IT Staff']);
 
-//Form Versions
+// Form Versions
 Route::prefix('forms/{form}/versions')->name('formversions.')->middleware(['auth'])->group(function () {
     Route::get('/', [FormVersionController::class, 'index'])->name('index');
     Route::get('/create', [FormVersionController::class, 'create'])->name('create');
@@ -172,37 +164,37 @@ Route::prefix('forms/{form}/approval-workflows')->name('approval-workflows.')->m
 Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->group(function () {
     // Manufacturing Dashboard
     Route::get('/', [ManufacturingController::class, 'index'])->name('dashboard');
-    
+
     // Production Planning
     Route::get('production-plans/recipes', [ProductionPlanController::class, 'getRecipes'])->name('production-plans.recipes');
     Route::get('production-plans/recipe-ingredients', [ProductionPlanController::class, 'getRecipeIngredients'])->name('production-plans.recipe-ingredients');
     Route::resource('production-plans', ProductionPlanController::class);
     Route::post('production-plans/{productionPlan}/approve', [ProductionPlanController::class, 'approve'])->name('production-plans.approve');
-    
+
     // Production Plan Documents (Work Orders and JC/RO Reports)
     Route::get('production-plans/{productionPlan}/work-order/wet', [ProductionPlanController::class, 'showWetProductionWorkOrder'])->name('production-plans.work-order.wet');
     Route::get('production-plans/{productionPlan}/work-order/dry', [ProductionPlanController::class, 'showDryProductionWorkOrder'])->name('production-plans.work-order.dry');
-    
+
     // Combined JC/RO Reports
     Route::get('production-plans/{productionPlan}/jc-ro/adonan', [ProductionPlanController::class, 'showJcRoAdonan'])->name('production-plans.jc-ro.adonan');
     Route::get('production-plans/{productionPlan}/jc-ro/gelondongan', [ProductionPlanController::class, 'showJcRoGelondongan'])->name('production-plans.jc-ro.gelondongan');
     Route::get('production-plans/{productionPlan}/jc-ro/kerupuk-kg', [ProductionPlanController::class, 'showJcRoKerupukKg'])->name('production-plans.jc-ro.kerupuk-kg');
     Route::get('production-plans/{productionPlan}/jc-ro/kerupuk-pack', [ProductionPlanController::class, 'showJcRoKerupukPack'])->name('production-plans.jc-ro.kerupuk-pack');
-    
+
     // Yield Guidelines Management
     Route::resource('yield-guidelines', YieldGuidelineController::class);
     Route::get('yield-guidelines/items', [YieldGuidelineController::class, 'getItemsForStage'])->name('yield-guidelines.items');
-    
+
     // Packing Material Blueprints
     Route::get('packing-material-blueprints', [PackingMaterialBlueprintController::class, 'index'])->name('packing-material-blueprints.index');
     Route::get('packing-material-blueprints/{item}', [PackingMaterialBlueprintController::class, 'manage'])->name('packing-material-blueprints.manage');
     Route::put('packing-material-blueprints/{item}', [PackingMaterialBlueprintController::class, 'update'])->name('packing-material-blueprints.update');
-    
+
     // Kerupuk Pack Configurations
     Route::get('kerupuk-pack-configurations', [KerupukPackConfigurationController::class, 'index'])->name('kerupuk-pack-configurations.index');
     Route::get('kerupuk-pack-configurations/{item}', [KerupukPackConfigurationController::class, 'manage'])->name('kerupuk-pack-configurations.manage');
     Route::put('kerupuk-pack-configurations/{item}', [KerupukPackConfigurationController::class, 'update'])->name('kerupuk-pack-configurations.update');
-    
+
     // Production Plan Steps
     Route::get('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'step2'])->name('production-plans.step2');
     Route::post('production-plans/{productionPlan}/step2', [ProductionPlanStepController::class, 'storeStep2'])->name('production-plans.step2.store');
@@ -215,12 +207,12 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::delete('production-plans/{productionPlan}/step4', [ProductionPlanStepController::class, 'deleteStep4'])->name('production-plans.step4.delete');
     Route::get('production-plans/{productionPlan}/step5', [ProductionPlanStepController::class, 'step5'])->name('production-plans.step5');
     Route::post('production-plans/{productionPlan}/step5', [ProductionPlanStepController::class, 'storeStep5'])->name('production-plans.step5.store');
-    
+
     // Recipes
     Route::resource('recipes', RecipeController::class);
     Route::get('recipes/{recipe}/duplicate', [RecipeController::class, 'duplicate'])->name('recipes.duplicate');
     Route::post('recipes/{recipe}/duplicate', [RecipeController::class, 'storeDuplicate'])->name('recipes.duplicate.store');
-    
+
     // Production Actuals (Actual Production Tracking)
     Route::post('production-plans/{productionPlan}/start', [ProductionActualController::class, 'start'])->name('production-plans.start');
     Route::get('production-plans/{productionPlan}/execute', [ProductionActualController::class, 'execute'])->name('production-plans.execute');
@@ -236,24 +228,24 @@ Route::prefix('manufacturing')->name('manufacturing.')->middleware(['auth'])->gr
     Route::post('production-plans/{productionPlan}/actuals/step5', [ProductionActualController::class, 'recordStep5'])->name('production-plans.actuals.step5');
     Route::delete('production-plans/{productionPlan}/actuals/step5/{actualStep5}', [ProductionActualController::class, 'deleteStep5'])->name('production-plans.actuals.step5.delete');
     Route::post('production-plans/{productionPlan}/complete', [ProductionActualController::class, 'complete'])->name('production-plans.complete');
-    
+
 });
 
 // Warehouse Management Routes
 Route::prefix('warehouses')->name('warehouses.')->middleware(['auth'])->group(function () {
     // Warehouse Dashboard
     Route::get('/', [\App\Http\Controllers\WarehouseDashboardController::class, 'index'])->name('dashboard');
-    
+
     // Global Warehouse Routes (must come before resource routes)
     Route::get('picklist', [PicklistController::class, 'index'])->name('picklist');
     Route::post('picklist', [PicklistController::class, 'generate'])->name('picklist.generate');
     Route::get('overview-report', [WarehouseOverviewController::class, 'index'])->name('overview-report');
     Route::get('overview-report/print', [WarehouseOverviewController::class, 'print'])->name('overview-report.print');
-    
+
     // Warehouses Resource
     Route::resource('warehouses', WarehouseController::class)->except(['destroy']);
     Route::delete('warehouses/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouses.destroy')->middleware('permission:warehouses.delete');
-    
+
     // Shelf-Based Inventory Management
     Route::get('warehouses/{warehouse}/shelf-inventory', [ShelfInventoryController::class, 'index'])->name('warehouses.shelf-inventory');
     Route::get('warehouses/{warehouse}/shelves/{shelf}', [ShelfInventoryController::class, 'showShelf'])->name('warehouses.shelf-detail');
@@ -264,7 +256,7 @@ Route::prefix('warehouses')->name('warehouses.')->middleware(['auth'])->group(fu
     Route::get('warehouses/{warehouse}/position-items/{positionItem}/available-positions', [ShelfInventoryController::class, 'getAvailablePositions'])->name('warehouses.position-item.available-positions');
     Route::post('warehouses/{warehouse}/shelf-bulk-update', [ShelfInventoryController::class, 'bulkUpdate'])->name('warehouses.shelf-bulk-update');
     Route::get('warehouses/{warehouse}/shelf-report', [ShelfInventoryController::class, 'report'])->name('warehouses.shelf-report');
-    
+
     // Shelf and Position Management
     Route::get('warehouses/{warehouse}/shelf-management', [ShelfManagementController::class, 'index'])->name('warehouses.shelf-management');
     Route::get('warehouses/{warehouse}/shelves/create', [ShelfManagementController::class, 'createShelf'])->name('warehouses.shelf.create');
@@ -278,7 +270,7 @@ Route::prefix('warehouses')->name('warehouses.')->middleware(['auth'])->group(fu
     Route::get('warehouses/{warehouse}/shelves/{shelf}/positions/{position}/edit', [ShelfManagementController::class, 'editPosition'])->name('warehouses.position.edit');
     Route::put('warehouses/{warehouse}/shelves/{shelf}/positions/{position}', [ShelfManagementController::class, 'updatePosition'])->name('warehouses.position.update');
     Route::delete('warehouses/{warehouse}/shelves/{shelf}/positions/{position}', [ShelfManagementController::class, 'destroyPosition'])->name('warehouses.position.destroy');
-    
+
     // Bulk Inventory Management
     Route::get('warehouses/{warehouse}/bulk-edit', [BulkInventoryController::class, 'index'])->name('warehouses.bulk-edit');
     Route::get('warehouses/{warehouse}/aisle-positions/{aisle}', [BulkInventoryController::class, 'getAislePositions'])->name('warehouses.aisle-positions');
@@ -291,7 +283,7 @@ Route::prefix('warehouses')->name('warehouses.')->middleware(['auth'])->group(fu
 // Options Routes
 Route::prefix('options')->name('options.')->middleware(['auth'])->group(function () {
     Route::resource('asset-categories', AssetCategoryController::class);
-    
+
     // Usage Types for Asset Categories
     Route::prefix('asset-categories/{category}')
         ->name('asset-categories.')
@@ -303,7 +295,7 @@ Route::prefix('options')->name('options.')->middleware(['auth'])->group(function
             Route::post('usage-types', [AssetCategoryUsageTypeController::class, 'store'])
                 ->name('usage-types.store');
         });
-    
+
     // Standalone Usage Type operations
     Route::prefix('usage-types')->name('usage-types.')->group(function () {
         Route::get('{usageType}/edit', [AssetCategoryUsageTypeController::class, 'edit'])
@@ -315,32 +307,32 @@ Route::prefix('options')->name('options.')->middleware(['auth'])->group(function
         Route::post('{usageType}/recalculate', [AssetCategoryUsageTypeController::class, 'recalculateMetrics'])
             ->name('recalculate');
     });
-    
+
     // Asset routes - specific routes must be defined BEFORE resource route
     Route::get('assets/create-mobile', [AssetController::class, 'createMobile'])->name('assets.create-mobile');
     Route::post('assets/store-mobile', [AssetController::class, 'storeMobile'])->name('assets.store-mobile');
-            Route::get('assets/test-openrouter', [AssetController::class, 'testOpenRouter'])->name('assets.test-openrouter');
-            Route::post('assets/analyze-images', [AssetController::class, 'analyzeImages'])->name('assets.analyze-images');
-            Route::post('assets/fetch-specifications', [AssetController::class, 'fetchSpecifications'])->name('assets.fetch-specifications');
+    Route::get('assets/test-openrouter', [AssetController::class, 'testOpenRouter'])->name('assets.test-openrouter');
+    Route::post('assets/analyze-images', [AssetController::class, 'analyzeImages'])->name('assets.analyze-images');
+    Route::post('assets/fetch-specifications', [AssetController::class, 'fetchSpecifications'])->name('assets.fetch-specifications');
     Route::get('assets/qr-codes/all', [AssetController::class, 'qrIndex'])->name('assets.qr-index');
     Route::get('assets/{asset}/qr-code', [AssetController::class, 'generateQR'])->name('assets.qr-code');
     Route::post('assets/{asset}/photos', [AssetController::class, 'store'])->name('assets.photos.store');
     Route::put('assets/{asset}/photos/{photo}/primary', [AssetController::class, 'setPrimaryPhoto'])->name('assets.photos.primary');
     Route::delete('assets/{asset}/photos/{photo}', [AssetController::class, 'deletePhoto'])->name('assets.photos.destroy');
-    
+
     // Resource route must be defined last
     Route::resource('assets', AssetController::class);
-    
+
     Route::resource('locations', LocationController::class);
-    
+
     // Item Categories
     Route::resource('item-categories', ItemCategoryController::class)->except(['destroy']);
     Route::delete('item-categories/{itemCategory}', [ItemCategoryController::class, 'destroy'])->name('item-categories.destroy')->middleware('permission:options.item-categories.delete');
-    
+
     // Item Import from Excel (MUST be before resource routes)
     Route::get('items/import', [ItemController::class, 'showImport'])->name('items.import');
     Route::post('items/import', [ItemController::class, 'import'])->name('items.import.process');
-    
+
     // Items
     Route::resource('items', ItemController::class)->except(['create', 'store', 'destroy']);
     Route::delete('items/{item}', [ItemController::class, 'destroy'])->name('items.destroy')->middleware('permission:options.items.delete');
@@ -354,7 +346,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('assets/{asset}/components', [AssetController::class, 'attachComponent'])->name('assets.components.store');
     Route::get('assets/{component}/detach', [AssetController::class, 'showDetachForm'])->name('assets.components.detach');
     Route::post('assets/{component}/detach', [AssetController::class, 'detachComponent'])->name('assets.components.detach.store');
-    
+
     // Lifetime reporting routes
     Route::get('reports/asset-lifetime', [AssetLifetimeReportController::class, 'index'])->name('reports.asset-lifetime.index');
     Route::get('reports/asset-lifetime/category/{category}', [AssetLifetimeReportController::class, 'categoryMetrics'])->name('reports.asset-lifetime.category');
@@ -391,10 +383,10 @@ Route::post('facility/request', [CleaningRequestController::class, 'store'])->na
 Route::prefix('facility')->name('facility.')->middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/', [FacilityDashboardController::class, 'index'])->name('dashboard');
-    
+
     // Cleaning Schedules
     Route::resource('schedules', CleaningScheduleController::class);
-    
+
     // Cleaning Tasks
     Route::get('tasks', [CleaningTaskController::class, 'index'])->name('tasks.index');
     Route::get('tasks/my-tasks', [CleaningTaskController::class, 'myTasks'])->name('tasks.my-tasks');
@@ -403,14 +395,14 @@ Route::prefix('facility')->name('facility.')->middleware(['auth'])->group(functi
     Route::get('tasks/{task}/submit', [CleaningTaskController::class, 'submitForm'])->name('tasks.submit');
     Route::post('tasks/{task}/submit', [CleaningTaskController::class, 'submitTask'])->name('tasks.submit.post');
     Route::post('tasks/bulk-assign', [CleaningTaskController::class, 'bulkAssign'])->name('tasks.bulk-assign');
-    
+
     // Approvals
     Route::get('approvals', [CleaningApprovalController::class, 'index'])->name('approvals.index');
     Route::get('approvals/{approval}/review', [CleaningApprovalController::class, 'review'])->name('approvals.review');
     Route::post('approvals/{approval}/approve', [CleaningApprovalController::class, 'approve'])->name('approvals.approve');
     Route::post('approvals/{approval}/reject', [CleaningApprovalController::class, 'reject'])->name('approvals.reject');
     Route::post('approvals/mass-approve', [CleaningApprovalController::class, 'massApprove'])->name('approvals.mass-approve');
-    
+
     // Requests (staff view)
     Route::get('requests', [CleaningRequestController::class, 'index'])->name('requests.index');
     Route::get('requests/{cleaningRequest}/handle', [CleaningRequestController::class, 'handleForm'])->name('requests.handle-form');
@@ -425,14 +417,14 @@ Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function
     Route::get('assets/by-category-location', [AssetManagementReportController::class, 'assetsByCategoryAndLocation'])->name('assets.by-category-location');
     Route::get('assets/by-department', [AssetManagementReportController::class, 'assetsByDepartment'])->name('assets.by-department');
     Route::get('assets/by-user', [AssetManagementReportController::class, 'assetsByUser'])->name('assets.by-user');
-    
+
     // Facility Management Reports
     Route::get('facility/daily', [FacilityManagementReportController::class, 'dailyReport'])->name('facility.daily');
     Route::get('facility/daily/pdf', [FacilityManagementReportController::class, 'dailyReportPdf'])->name('facility.daily-pdf');
     Route::get('facility/weekly', [FacilityManagementReportController::class, 'weeklyReport'])->name('facility.weekly');
     Route::get('facility/weekly/pdf', [FacilityManagementReportController::class, 'weeklyReportPdf'])->name('facility.weekly-pdf');
     Route::get('facility/cell-details', [FacilityManagementReportController::class, 'cellDetails'])->name('facility.cell-details');
-    
+
     // Document Management Reports
     Route::prefix('document-management')->name('document-management.')->group(function () {
         Route::get('locations', [DocumentManagementLocationReportController::class, 'index'])->name('locations.index');
@@ -449,18 +441,18 @@ Route::post('document-versions/{version}/onlyoffice-callback', [DocumentVersionC
 Route::middleware(['auth'])->group(function () {
     // Documents
     Route::resource('documents', DocumentController::class);
-    
+
     // Versions
     Route::resource('documents.versions', DocumentVersionController::class);
     Route::post('document-versions/{version}/submit', [DocumentVersionController::class, 'submitForApproval'])->name('document-versions.submit');
     Route::get('document-versions/{version}/editor', [DocumentVersionController::class, 'edit'])->name('document-versions.editor');
     Route::get('document-versions/{version}/view', [DocumentVersionController::class, 'viewPDF'])->name('document-versions.view');
-    
+
     // Approvals
     Route::get('document-approvals', [DocumentApprovalController::class, 'index'])->name('document-approvals.index');
     Route::post('document-approvals/{approval}/approve', [DocumentApprovalController::class, 'approve'])->name('document-approvals.approve');
     Route::post('document-approvals/{approval}/reject', [DocumentApprovalController::class, 'reject'])->name('document-approvals.reject');
-    
+
     // Access Requests
     Route::get('my-document-access', [DocumentAccessController::class, 'myAccess'])->name('my-document-access');
     Route::get('documents/{document}/request-access', [DocumentAccessController::class, 'requestAccess'])->name('documents.request-access');
@@ -468,7 +460,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('document-access-requests', [DocumentAccessController::class, 'pendingRequests'])->name('document-access-requests.pending');
     Route::post('document-access-requests/{request}/approve', [DocumentAccessController::class, 'approve'])->name('document-access-requests.approve');
     Route::post('document-access-requests/{request}/reject', [DocumentAccessController::class, 'reject'])->name('document-access-requests.reject');
-    
+    Route::get('document-access/{version}/view', [DocumentAccessController::class, 'viewDocument'])->name('document-access.view');
+
     // Document Borrowing
     Route::get('document-borrows', [DocumentBorrowController::class, 'index'])->name('document-borrows.index');
     Route::get('document-borrows/create', [DocumentBorrowController::class, 'create'])->name('document-borrows.create');
@@ -481,11 +474,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('document-borrows/{borrow}/checkout', [DocumentBorrowController::class, 'checkout'])->name('document-borrows.checkout');
     Route::post('document-borrows/{borrow}/return', [DocumentBorrowController::class, 'returnDocument'])->name('document-borrows.return');
     Route::post('document-borrows/{borrow}/cancel', [DocumentBorrowController::class, 'cancel'])->name('document-borrows.cancel');
-    
+
     // Document Borrow Reports
     Route::get('reports/dms/borrowed-documents', [DocumentBorrowReportController::class, 'borrowedDocuments'])->name('reports.dms.borrowed-documents');
     Route::get('reports/dms/overdue-documents', [DocumentBorrowReportController::class, 'overdueDocuments'])->name('reports.dms.overdue-documents');
-    
+
     // Correspondences
     Route::get('correspondences', [CorrespondenceController::class, 'index'])->name('correspondences.index');
     Route::get('correspondences/create', [CorrespondenceController::class, 'create'])->name('correspondences.create');
@@ -497,7 +490,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('correspondences/{instance}/approve', [CorrespondenceController::class, 'approve'])->name('correspondences.approve');
     Route::post('correspondences/{instance}/reject', [CorrespondenceController::class, 'reject'])->name('correspondences.reject');
     Route::get('correspondences/{instance}/download-pdf', [CorrespondenceController::class, 'downloadPdf'])->name('correspondences.download-pdf');
-    
+
     // Form Requests
     Route::resource('form-requests', FormRequestController::class);
     Route::post('form-requests/{form_request}/acknowledge', [FormRequestController::class, 'acknowledge'])->name('form-requests.acknowledge');
@@ -505,7 +498,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('form-requests/{form_request}/ready', [FormRequestController::class, 'markReady'])->name('form-requests.ready');
     Route::get('form-requests/{form_request}/labels', [FormRequestController::class, 'printLabels'])->name('form-requests.labels');
     Route::post('form-requests/{form_request}/collect', [FormRequestController::class, 'collect'])->name('form-requests.collect');
-    
+
     // Printed Forms
     Route::get('printed-forms', [PrintedFormController::class, 'index'])->name('printed-forms.index');
     Route::get('printed-forms/{printedForm}', [PrintedFormController::class, 'show'])->name('printed-forms.show');
@@ -518,10 +511,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('printed-forms/{printedForm}/upload-scan', [PrintedFormController::class, 'uploadScans'])->name('printed-forms.upload-scan');
     Route::post('printed-forms/{printedForm}/update-location', [PrintedFormController::class, 'updatePhysicalLocation'])->name('printed-forms.update-location');
     Route::get('printed-forms/{printedForm}/view-scanned', [PrintedFormController::class, 'viewScanned'])->name('printed-forms.view-scanned');
-    
+
     // Document Management Dashboard
     Route::get('dms-dashboard', [DocumentManagementDashboardController::class, 'index'])->name('dms-dashboard');
-    
+
     // User Guides
     Route::prefix('guides')->name('guides.')->group(function () {
         Route::get('/', [GuideController::class, 'index'])->name('index');
@@ -539,7 +532,7 @@ Route::prefix('api')->name('api.')->middleware('auth')->group(function () {
     });
     Route::post('/test-api-config', [FormFieldOptionsController::class, 'testApiConfig'])->name('test-api-config');
     Route::post('/calculate-fields', [FormSubmissionController::class, 'calculateFields'])->name('calculate-fields');
-    
+
     // Temperature API Route
     Route::get('/temperature-data', [HomeController::class, 'getTemperatureData'])->name('temperature-data');
 });

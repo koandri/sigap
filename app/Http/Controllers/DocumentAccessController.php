@@ -192,25 +192,43 @@ final class DocumentAccessController extends Controller
         // Log the access
         $this->accessService->logAccess($user, $version, request()->ip());
 
-        // Apply watermark if needed
         $filePath = $version->file_path;
 
         if (! Storage::disk('s3')->exists($filePath)) {
             abort(404, 'Document file not found.');
         }
 
-        // For documents that require watermarking
-        if ($version->document->document_type->requiresAccessRequest()) {
+        // Check if user has an access request (not full access via role)
+        $hasAccessRequest = $user->documentAccessRequests()
+            ->where('document_version_id', $version->id)
+            ->where('status', 'approved')
+            ->where(function ($query) {
+                $query->whereNull('approved_expiry_date')
+                    ->orWhere('approved_expiry_date', '>', now());
+            })
+            ->exists();
+
+        // For users accessing via access requests, ALWAYS return watermarked PDF
+        // Super Admin, Owner, and Document Control get original file
+        if ($hasAccessRequest || ($version->document->document_type->requiresAccessRequest() && ! $user->hasRole(['Super Admin', 'Owner', 'Document Control']))) {
+            // Only allow PDF access for access requests
+            if ($version->file_type !== 'pdf') {
+                abort(400, 'Only PDF documents can be accessed through access requests. Please contact administrator.');
+            }
+
             $watermarkedPath = $this->watermarkService->applyWatermarkToPdf($filePath, $user);
             $content = Storage::disk('s3')->get($watermarkedPath);
+            $mimeType = 'application/pdf';
+            $filename = $version->document->title.'.pdf';
         } else {
+            // Full access users (Super Admin, Owner, Document Control) get original file
             $content = Storage::disk('s3')->get($filePath);
+            $mimeType = MimeTypeHelper::getMimeType($version->file_type);
+            $filename = $version->document->title.'.'.$version->file_type;
         }
-
-        $mimeType = MimeTypeHelper::getMimeType($version->file_type);
 
         return response($content)
             ->header('Content-Type', $mimeType)
-            ->header('Content-Disposition', 'inline; filename="'.$version->document->title.'.'.$version->file_type.'"');
+            ->header('Content-Disposition', 'inline; filename="'.$filename.'"');
     }
 }
