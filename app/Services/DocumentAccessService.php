@@ -52,15 +52,22 @@ final class DocumentAccessService
             // Refresh and load relationships before notifying
             $request->refresh();
             $request->load(['documentVersion.document', 'user']);
-
-            // Notify requester
-            $this->notifyRequester($request, 'approved');
         });
+
+        // Notify requester outside transaction to prevent rollback on notification failure
+        try {
+            $this->notifyRequester($request, 'approved');
+        } catch (\Exception $e) {
+            Log::error('Failed to notify requester after approval', [
+                'access_request_id' => $request->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function rejectAccessRequest(DocumentAccessRequest $request, User $approver, string $reason): void
     {
-        DB::transaction(function () use ($request, $approver, $reason) {
+        DB::transaction(function () use ($request, $approver) {
             $request->update([
                 'approved_by' => $approver->id,
                 'status' => 'rejected',
@@ -70,10 +77,17 @@ final class DocumentAccessService
             // Refresh and load relationships before notifying
             $request->refresh();
             $request->load(['documentVersion.document', 'user']);
-
-            // Notify requester
-            $this->notifyRequester($request, 'rejected', $reason);
         });
+
+        // Notify requester outside transaction to prevent rollback on notification failure
+        try {
+            $this->notifyRequester($request, 'rejected', $reason);
+        } catch (\Exception $e) {
+            Log::error('Failed to notify requester after rejection', [
+                'access_request_id' => $request->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function checkAccess(User $user, DocumentVersion $version): bool
