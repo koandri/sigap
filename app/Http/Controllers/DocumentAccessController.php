@@ -14,6 +14,7 @@ use App\Models\Document;
 use App\Models\DocumentAccessRequest;
 use App\Models\DocumentVersion;
 use App\Services\DocumentAccessService;
+use App\Services\OnlyOfficeService;
 use App\Services\WatermarkService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,8 @@ final class DocumentAccessController extends Controller
 {
     public function __construct(
         private readonly DocumentAccessService $accessService,
-        private readonly WatermarkService $watermarkService
+        private readonly WatermarkService $watermarkService,
+        private readonly OnlyOfficeService $onlyOfficeService
     ) {}
 
     /**
@@ -211,9 +213,19 @@ final class DocumentAccessController extends Controller
         // For users accessing via access requests, ALWAYS return watermarked PDF
         // Super Admin, Owner, and Document Control get original file
         if ($hasAccessRequest || ($version->document->document_type->requiresAccessRequest() && ! $user->hasRole(['Super Admin', 'Owner', 'Document Control']))) {
-            // Only allow PDF access for access requests
+            // Convert to PDF if not already PDF
             if ($version->file_type !== 'pdf') {
-                abort(400, 'Only PDF documents can be accessed through access requests. Please contact administrator.');
+                try {
+                    $pdfPath = $this->onlyOfficeService->convertToPDF($version);
+                    $filePath = $pdfPath; // Use converted PDF for watermarking
+                } catch (\Exception $e) {
+                    \Log::error('Failed to convert document to PDF for access request', [
+                        'version_id' => $version->id,
+                        'file_type' => $version->file_type,
+                        'error' => $e->getMessage(),
+                    ]);
+                    abort(500, 'Failed to convert document to PDF. Please contact administrator.');
+                }
             }
 
             $watermarkedPath = $this->watermarkService->applyWatermarkToPdf($filePath, $user);
