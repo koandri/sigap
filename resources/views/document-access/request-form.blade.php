@@ -121,12 +121,17 @@
 
                                 <div class="mb-3">
                                     <label for="requested_expiry_date" class="form-label" id="expiry_date_label">Requested Expiry Date <span id="expiry_required_indicator"></span></label>
-                                    <input type="datetime-local" 
-                                           name="requested_expiry_date" 
-                                           id="requested_expiry_date" 
+                                    <input type="text" 
+                                           name="requested_expiry_date_display" 
+                                           id="requested_expiry_date_display" 
                                            class="form-control @error('requested_expiry_date') is-invalid @enderror"
-                                           value="{{ old('requested_expiry_date') }}"
-                                           min="{{ now()->format('Y-m-d\TH:i') }}">
+                                           value="{{ old('requested_expiry_date') ? \Carbon\Carbon::parse(old('requested_expiry_date'))->format('d/m/Y H:i') : '' }}"
+                                           data-date-format="DD/MM/YYYY HH:mm"
+                                           placeholder="DD/MM/YYYY HH:mm"
+                                           autocomplete="off">
+                                    <input type="hidden" 
+                                           name="requested_expiry_date" 
+                                           id="requested_expiry_date">
                                     @error('requested_expiry_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -245,21 +250,109 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const accessTypeSelect = document.getElementById('access_type');
-    const expiryDateInput = document.getElementById('requested_expiry_date');
+    const expiryDateDisplay = document.getElementById('requested_expiry_date_display');
+    const expiryDateHidden = document.getElementById('requested_expiry_date');
     const expiryDateLabel = document.getElementById('expiry_date_label');
     const expiryRequiredIndicator = document.getElementById('expiry_required_indicator');
     const expiryHint = document.getElementById('expiry_hint');
+    const form = expiryDateDisplay.closest('form');
+    
+    // Initialize LitePicker for datetime input
+    if (typeof Litepicker !== 'undefined') {
+        const minDate = new Date();
+        minDate.setMinutes(minDate.getMinutes() + 1); // 1 minute from now
+        
+        const picker = new Litepicker({
+            element: expiryDateDisplay,
+            format: 'DD/MM/YYYY HH:mm',
+            autoRefresh: true,
+            allowRepick: true,
+            minDate: minDate,
+            timePicker: true,
+            timePickerOptions: {
+                format: 'HH:mm',
+                step: 15
+            },
+            dropdowns: {
+                months: true,
+                years: true
+            },
+            buttonText: {
+                previousMonth: '<',
+                nextMonth: '>'
+            }
+        });
+        
+        // Convert datetime format when picker value changes
+        expiryDateDisplay.addEventListener('change', function() {
+            convertDateForSubmit();
+        });
+    }
+    
+    // Convert DD/MM/YYYY HH:mm to YYYY-MM-DD HH:mm for form submission
+    function convertDateForSubmit() {
+        const value = expiryDateDisplay.value.trim();
+        if (!value) {
+            expiryDateHidden.value = '';
+            return;
+        }
+        
+        // Parse DD/MM/YYYY HH:mm format
+        // Expected format: "DD/MM/YYYY HH:mm" or "DD/MM/YYYY HH:mm:ss"
+        const dateTimeMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?$/);
+        if (dateTimeMatch) {
+            const day = dateTimeMatch[1];
+            const month = dateTimeMatch[2];
+            const year = dateTimeMatch[3];
+            const hours = dateTimeMatch[4];
+            const minutes = dateTimeMatch[5];
+            
+            // Validate datetime
+            const date = new Date(year, month - 1, day, hours, minutes);
+            if (date.getDate() == day && 
+                date.getMonth() == month - 1 && 
+                date.getFullYear() == year &&
+                date.getHours() == hours &&
+                date.getMinutes() == minutes) {
+                expiryDateHidden.value = `${year}-${month}-${day} ${hours}:${minutes}:00`;
+            } else {
+                expiryDateHidden.value = '';
+            }
+        } else {
+            // Fallback: try to parse as just date (DD/MM/YYYY)
+            const dateMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (dateMatch) {
+                const day = dateMatch[1];
+                const month = dateMatch[2];
+                const year = dateMatch[3];
+                
+                const date = new Date(year, month - 1, day);
+                if (date.getDate() == day && date.getMonth() == month - 1 && date.getFullYear() == year) {
+                    expiryDateHidden.value = `${year}-${month}-${day} 23:59:59`;
+                } else {
+                    expiryDateHidden.value = '';
+                }
+            } else {
+                expiryDateHidden.value = '';
+            }
+        }
+    }
+    
+    // Convert on form submit
+    form.addEventListener('submit', function(e) {
+        convertDateForSubmit();
+    });
     
     function updateExpiryDateRequirement() {
         const selectedValue = accessTypeSelect.value;
         const isMultipleAccess = selectedValue === 'multiple';
         
         if (isMultipleAccess) {
-            expiryDateInput.setAttribute('required', 'required');
+            expiryDateDisplay.setAttribute('required', 'required');
             expiryRequiredIndicator.innerHTML = '<span class="text-danger">*</span>';
             expiryHint.textContent = 'Required for Multiple Access. The approver may modify this date.';
         } else {
-            expiryDateInput.removeAttribute('required');
+            expiryDateDisplay.removeAttribute('required');
             expiryRequiredIndicator.innerHTML = '';
             expiryHint.textContent = 'Leave empty for no expiry date. The approver may modify this date.';
         }
@@ -270,6 +363,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update when access type changes
     accessTypeSelect.addEventListener('change', updateExpiryDateRequirement);
+    
+    // Convert initial value if present
+    if (expiryDateDisplay.value) {
+        convertDateForSubmit();
+    }
 });
 </script>
 @endpush

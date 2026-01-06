@@ -6,9 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\ItemCategory;
-use App\Models\Warehouse;
 use App\Models\PositionItem;
 use App\Models\ShelfPosition;
+use App\Models\Warehouse;
 use Illuminate\View\View;
 
 final class WarehouseDashboardController extends Controller
@@ -47,7 +47,7 @@ final class WarehouseDashboardController extends Controller
         // Get warehouses with stock counts
         $warehousesWithStock = Warehouse::active()
             ->withCount(['shelves as stocked_shelves_count' => function ($query) {
-                $query->whereHas('shelfPositions.positionItems', function($q) {
+                $query->whereHas('shelfPositions.positionItems', function ($q) {
                     $q->where('quantity', '>', 0);
                 });
             }])
@@ -61,23 +61,3 @@ final class WarehouseDashboardController extends Controller
         ));
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

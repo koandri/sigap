@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enums\AccessType;
 use App\Models\Document;
 use App\Models\DocumentAccessRequest;
 use App\Models\DocumentVersion;
@@ -82,17 +81,17 @@ final class DocumentAccessService
             ->where('status', 'approved')
             ->where(function ($query) {
                 $query->whereNull('approved_expiry_date')
-                      ->orWhere('approved_expiry_date', '>', now());
+                    ->orWhere('approved_expiry_date', '>', now());
             })
             ->first();
 
-        if (!$accessRequest) {
+        if (! $accessRequest) {
             return false;
         }
 
         // For one-time access, check if already used
         if ($accessRequest->getEffectiveAccessType()->isOneTime()) {
-            return !$this->hasUsedOneTimeAccess($accessRequest);
+            return ! $this->hasUsedOneTimeAccess($accessRequest);
         }
 
         return true;
@@ -127,11 +126,11 @@ final class DocumentAccessService
         $query = DocumentVersion::with(['document', 'document.department', 'accessRequests'])
             ->whereHas('accessRequests', function ($q) use ($user) {
                 $q->where('user_id', $user->id)
-                  ->where('status', 'approved')
-                  ->where(function ($subQ) {
-                      $subQ->whereNull('approved_expiry_date')
-                           ->orWhere('approved_expiry_date', '>', now());
-                  });
+                    ->where('status', 'approved')
+                    ->where(function ($subQ) {
+                        $subQ->whereNull('approved_expiry_date')
+                            ->orWhere('approved_expiry_date', '>', now());
+                    });
             });
 
         // Filter out one-time access that has been used
@@ -141,12 +140,12 @@ final class DocumentAccessService
                 ->where('status', 'approved')
                 ->first();
 
-            if (!$accessRequest) {
+            if (! $accessRequest) {
                 return false;
             }
 
             if ($accessRequest->getEffectiveAccessType()->isOneTime()) {
-                return !$this->hasUsedOneTimeAccess($accessRequest);
+                return ! $this->hasUsedOneTimeAccess($accessRequest);
             }
 
             return true;
@@ -198,35 +197,35 @@ final class DocumentAccessService
         $message = "📄 *Document Access Request*\n\n";
         $message .= "Document: *{$request->documentVersion->document->title}*\n";
         $message .= "Requested by: {$request->user->name}\n";
-        $message .= "Access type: {$request->access_type}\n";
-        
+        $message .= "Access type: {$request->access_type->label()}\n";
+
         if ($request->requested_expiry_date) {
-            $message .= "Requested expiry: " . $request->requested_expiry_date->format('d M Y') . "\n";
+            $message .= 'Requested expiry: '.$request->requested_expiry_date->format('d M Y')."\n";
         }
-        
-        $message .= "\nPlease review: " . route('document-access-requests.pending');
+
+        $message .= "\nPlease review: ".route('document-access-requests.pending');
 
         foreach ($approvers as $approver) {
             $this->sendNotificationToUser($approver, $message, 'Document Access Request');
         }
     }
 
-    private function notifyRequester(DocumentAccessRequest $request, string $status, string $reason = null): void
+    private function notifyRequester(DocumentAccessRequest $request, string $status, ?string $reason = null): void
     {
         if ($status === 'approved') {
             $message = "✅ *Document Access Approved*\n\n";
             $message .= "Document: *{$request->documentVersion->document->title}*\n";
             $message .= "Access type: {$request->getEffectiveAccessType()->label()}\n";
-            
+
             if ($request->approved_expiry_date) {
-                $message .= "Expiry date: " . $request->approved_expiry_date->format('d M Y') . "\n";
+                $message .= 'Expiry date: '.$request->approved_expiry_date->format('d M Y')."\n";
             }
-            
-            $message .= "\nView document: " . route('documents.show', $request->documentVersion->document);
+
+            $message .= "\nView document: ".route('documents.show', $request->documentVersion->document);
         } else {
             $message = "❌ *Document Access Rejected*\n\n";
             $message .= "Document: *{$request->documentVersion->document->title}*\n";
-            
+
             if ($reason) {
                 $message .= "Reason: {$reason}\n";
             }
@@ -242,19 +241,19 @@ final class DocumentAccessService
     {
         // Check if user has mobile phone number
         if (empty($user->mobilephone_no)) {
-            Log::warning("User has no mobile phone number for WhatsApp notification", [
+            Log::warning('User has no mobile phone number for WhatsApp notification', [
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'notification_type' => $notificationType,
             ]);
-            
+
             // Send failure notification via Pushover
             $this->pushoverService->sendWhatsAppFailureNotification(
                 $notificationType,
-                $user->name . ' (No Phone)',
+                $user->name.' (No Phone)',
                 $message
             );
-            
+
             return false;
         }
 
@@ -264,9 +263,9 @@ final class DocumentAccessService
         // Try to send via WhatsApp
         $whatsAppSuccess = $this->whatsAppService->sendMessage($chatId, $message);
 
-        if (!$whatsAppSuccess) {
+        if (! $whatsAppSuccess) {
             // WhatsApp failed, send notification via Pushover
-            Log::warning("WhatsApp notification failed, sending Pushover fallback", [
+            Log::warning('WhatsApp notification failed, sending Pushover fallback', [
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'chat_id' => $chatId,
@@ -275,7 +274,7 @@ final class DocumentAccessService
 
             $this->pushoverService->sendWhatsAppFailureNotification(
                 $notificationType,
-                $user->name . ' (' . $user->mobilephone_no . ')',
+                $user->name.' ('.$user->mobilephone_no.')',
                 $message
             );
 
@@ -284,5 +283,4 @@ final class DocumentAccessService
 
         return true;
     }
-
 }
