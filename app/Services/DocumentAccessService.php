@@ -179,31 +179,34 @@ final class DocumentAccessService
                 ->get();
         }
 
+        // Get all document versions with approved access requests (including expired)
         $query = DocumentVersion::with(['document', 'document.department', 'accessRequests'])
             ->whereHas('accessRequests', function ($q) use ($user) {
                 $q->where('user_id', $user->id)
-                    ->where('status', 'approved')
-                    ->where(function ($subQ) {
-                        $subQ->whereNull('approved_expiry_date')
-                            ->orWhere('approved_expiry_date', '>', now());
-                    });
+                    ->where('status', 'approved');
             });
 
-        // Filter out one-time access that has been used
+        // Get unique document versions with their most recent approved access request
         return $query->get()->filter(function ($version) use ($user) {
-            $accessRequest = $user->documentAccessRequests()
-                ->where('document_version_id', $version->id)
+            // Get the most recent approved access request for this version
+            $accessRequest = $version->accessRequests
+                ->where('user_id', $user->id)
                 ->where('status', 'approved')
+                ->sortByDesc('approved_at')
+                ->sortByDesc('id')
                 ->first();
 
             if (! $accessRequest) {
                 return false;
             }
 
+            // For one-time access, check if it's been used
             if ($accessRequest->getEffectiveAccessType()->isOneTime()) {
-                return ! $this->hasUsedOneTimeAccess($accessRequest);
+                // Still show it even if used, but access will be denied
+                return true;
             }
 
+            // Show all approved requests (active and expired)
             return true;
         });
     }

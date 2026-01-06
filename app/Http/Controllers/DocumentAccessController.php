@@ -64,7 +64,14 @@ final class DocumentAccessController extends Controller
 
         if ($filters['access_type']) {
             $accessibleDocuments = $accessibleDocuments->filter(function ($version) use ($filters, $user) {
-                $accessRequest = $version->accessRequests->where('user_id', $user->id)->first();
+                // Get the most recent approved access request
+                $accessRequest = $version->accessRequests
+                    ->where('user_id', $user->id)
+                    ->where('status', 'approved')
+                    ->sortByDesc('approved_at')
+                    ->sortByDesc('id')
+                    ->first();
+
                 if (! $accessRequest) {
                     return $filters['access_type'] === 'full';
                 }
@@ -79,6 +86,9 @@ final class DocumentAccessController extends Controller
                        stripos($version->document->document_number, $filters['search']) !== false;
             });
         }
+
+        // Eager load access logs for one-time access checks
+        $accessibleDocuments->load(['accessRequests.accessLogs']);
 
         // Convert to paginated collection
         $perPage = 20;

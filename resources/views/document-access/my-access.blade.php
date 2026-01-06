@@ -87,12 +87,39 @@
                                         <th>Type</th>
                                         <th>Department</th>
                                         <th>Access Type</th>
+                                        <th>Status</th>
                                         <th>Expiry Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($accessibleDocuments as $version)
+                                        @php
+                                            // Get the most recent approved access request for this user
+                                            $accessRequest = $version->accessRequests
+                                                ->where('user_id', auth()->id())
+                                                ->where('status', 'approved')
+                                                ->sortByDesc('approved_at')
+                                                ->sortByDesc('id')
+                                                ->first();
+                                            
+                                            // Check if access is active
+                                            $isActive = false;
+                                            if ($accessRequest) {
+                                                if ($accessRequest->getEffectiveAccessType()->isOneTime()) {
+                                                    // For one-time access, check if it's been used
+                                                    $isActive = $accessRequest->relationLoaded('accessLogs') 
+                                                        ? $accessRequest->accessLogs->isEmpty()
+                                                        : !$accessRequest->accessLogs()->exists();
+                                                } else {
+                                                    // For multiple access, check if not expired
+                                                    $isActive = $accessRequest->isActive();
+                                                }
+                                            } else {
+                                                // Full access (no access request)
+                                                $isActive = true;
+                                            }
+                                        @endphp
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -107,13 +134,21 @@
                                             </td>
                                             <td>{{ $version->document->department?->name ?? 'N/A' }}</td>
                                             <td>
-                                                @php
-                                                    $accessRequest = $version->accessRequests->where('user_id', auth()->id())->first();
-                                                @endphp
                                                 @if($accessRequest)
                                                     <span class="badge bg-info text-white">{{ $accessRequest->getEffectiveAccessType()->label() }}</span>
                                                 @else
                                                     <span class="badge bg-success text-white">Full Access</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($accessRequest)
+                                                    @if($isActive)
+                                                        <span class="badge bg-success">Active</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">Expired</span>
+                                                    @endif
+                                                @else
+                                                    <span class="badge bg-success">Active</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -124,10 +159,17 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <a href="{{ route('document-access.view', $version) }}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="far fa-eye"></i>&nbsp;
-                                                    View
-                                                </a>
+                                                @if($isActive)
+                                                    <a href="{{ route('document-access.view', $version) }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="far fa-eye"></i>&nbsp;
+                                                        View
+                                                    </a>
+                                                @else
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled title="Access expired or already used">
+                                                        <i class="far fa-eye-slash"></i>&nbsp;
+                                                        View
+                                                    </button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
