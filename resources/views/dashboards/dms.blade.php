@@ -167,14 +167,12 @@
                                     </a>
                                 </div>
                                 @endcan
-                                @can('create', App\Models\DocumentBorrow::class)
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('document-borrows.create') }}" class="btn btn-outline-info w-100">
                                         <i class="far fa-book"></i>&nbsp;
                                         Borrow Document
                                     </a>
                                 </div>
-                                @endcan
                                 @if(auth()->user()->hasRole(['Super Admin', 'Owner']))
                                 <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
                                     <a href="{{ route('document-borrows.pending') }}" class="btn btn-outline-warning w-100">

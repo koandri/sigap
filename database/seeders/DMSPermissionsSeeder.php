@@ -56,8 +56,6 @@ final class DMSPermissionsSeeder extends Seeder
             ['name' => 'dms.reports.view', 'description' => 'View DMS reports'],
 
             // Document borrowing permissions
-            ['name' => 'dms.borrows.request', 'description' => 'Request to borrow documents'],
-            ['name' => 'dms.borrows.approve', 'description' => 'Approve document borrowing requests'],
             ['name' => 'dms.borrows.manage', 'description' => 'Manage document borrowing (full control)'],
             ['name' => 'dms.borrows.view', 'description' => 'View document borrowing requests'],
         ];
@@ -131,7 +129,6 @@ final class DMSPermissionsSeeder extends Seeder
             'dms.forms.request',
             'dms.forms.view',
             'dms.internal_memos.create',
-            'dms.borrows.request',
             'dms.borrows.view',
         ]);
     }

@@ -21,7 +21,9 @@ final class DocumentBorrowPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('dms.borrows.view');
+        // All authenticated users can view the borrows index page
+        // The controller will filter to show only their own (or all for privileged roles)
+        return true;
     }
 
     /**
@@ -34,13 +36,12 @@ final class DocumentBorrowPolicy
             return true;
         }
 
-        // Super Admin and Owner can view all
-        if ($user->hasRole(['Super Admin', 'Owner'])) {
+        // Document Control, Super Admin, and Owner can view all
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
             return true;
         }
 
-        // Users with manage permission can view all
-        return $user->hasPermissionTo('dms.borrows.manage');
+        return false;
     }
 
     /**
@@ -48,7 +49,8 @@ final class DocumentBorrowPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('dms.borrows.request');
+        // All authenticated users can create borrow requests
+        return true;
     }
 
     /**
@@ -56,12 +58,7 @@ final class DocumentBorrowPolicy
      */
     public function borrow(User $user, Document $document): bool
     {
-        // Must have request permission
-        if (!$user->hasPermissionTo('dms.borrows.request')) {
-            return false;
-        }
-
-        // Must have access to the document
+        // All authenticated users can borrow, but must have access to the document
         return $this->documentService->checkUserCanAccess($user, $document);
     }
 
@@ -71,7 +68,7 @@ final class DocumentBorrowPolicy
     public function approve(User $user, DocumentBorrow $borrow): bool
     {
         // Only Super Admin and Owner can approve
-        if (!$user->hasRole(['Super Admin', 'Owner'])) {
+        if (! $user->hasRole(['Super Admin', 'Owner'])) {
             return false;
         }
 
@@ -85,7 +82,7 @@ final class DocumentBorrowPolicy
     public function reject(User $user, DocumentBorrow $borrow): bool
     {
         // Only Super Admin and Owner can reject
-        if (!$user->hasRole(['Super Admin', 'Owner'])) {
+        if (! $user->hasRole(['Super Admin', 'Owner'])) {
             return false;
         }
 
@@ -99,7 +96,7 @@ final class DocumentBorrowPolicy
     public function checkout(User $user, DocumentBorrow $borrow): bool
     {
         // Super Admin, Owner, or users with manage permission
-        if (!$user->hasRole(['Super Admin', 'Owner']) && !$user->hasPermissionTo('dms.borrows.manage')) {
+        if (! $user->hasRole(['Super Admin', 'Owner']) && ! $user->hasPermissionTo('dms.borrows.manage')) {
             return false;
         }
 
@@ -113,7 +110,7 @@ final class DocumentBorrowPolicy
     public function return(User $user, DocumentBorrow $borrow): bool
     {
         // Super Admin, Owner, or users with manage permission
-        if (!$user->hasRole(['Super Admin', 'Owner']) && !$user->hasPermissionTo('dms.borrows.manage')) {
+        if (! $user->hasRole(['Super Admin', 'Owner']) && ! $user->hasPermissionTo('dms.borrows.manage')) {
             return false;
         }
 
@@ -143,4 +140,3 @@ final class DocumentBorrowPolicy
         return $user->hasRole(['Super Admin', 'Owner']);
     }
 }
-

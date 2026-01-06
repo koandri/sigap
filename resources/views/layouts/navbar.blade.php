@@ -63,11 +63,12 @@
                                 <a class="dropdown-item {{ areActiveRoutes('my-document-access') }}" href="{{ route('my-document-access') }}">
                                     <i class="far fa-eye"></i>&nbsp; &nbsp;My Documents
                                 </a>
-                                @can('viewAny', App\Models\DocumentBorrow::class)
                                 <a class="dropdown-item {{ areActiveRoutes('document-borrows.index') }}" href="{{ route('document-borrows.index') }}">
                                     <i class="far fa-book"></i>&nbsp; &nbsp;My Borrows
                                 </a>
-                                @endcan
+                                <a class="dropdown-item {{ areActiveRoutes('document-borrows.create') }}" href="{{ route('document-borrows.create') }}">
+                                    <i class="far fa-plus"></i>&nbsp; &nbsp;Request to Borrow
+                                </a>
                                 @if(auth()->user()->hasRole(['Super Admin', 'Owner']))
                                 <a class="dropdown-item {{ areActiveRoutes('document-borrows.pending') }}" href="{{ route('document-borrows.pending') }}">
                                     <i class="far fa-hourglass-half"></i>&nbsp; &nbsp;Borrow Approvals

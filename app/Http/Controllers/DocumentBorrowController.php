@@ -30,9 +30,17 @@ final class DocumentBorrowController extends Controller
         $user = Auth::user();
         $status = $request->get('status');
 
+        // Document Control, Super Admin, and Owner can see all borrows
+        // Other users see only their own
         $query = DocumentBorrow::with(['document', 'approver'])
-            ->byUser($user->id)
             ->orderBy('created_at', 'desc');
+
+        if ($user->hasRole(['Super Admin', 'Owner', 'Document Control'])) {
+            // Show all borrows for privileged roles
+        } else {
+            // Show only user's own borrows
+            $query->byUser($user->id);
+        }
 
         if ($status) {
             $query->where('status', $status);
@@ -49,8 +57,6 @@ final class DocumentBorrowController extends Controller
      */
     public function create(): View
     {
-        $this->authorize('create', DocumentBorrow::class);
-
         $user = Auth::user();
         $documents = $this->borrowService->getAvailableDocumentsForUser($user);
 
@@ -66,8 +72,6 @@ final class DocumentBorrowController extends Controller
     public function store(StoreBorrowRequest $request): RedirectResponse
     {
         $document = Document::findOrFail($request->document_id);
-        
-        $this->authorize('borrow', $document);
 
         $borrow = $this->borrowService->createBorrowRequest(
             $document,
@@ -201,4 +205,3 @@ final class DocumentBorrowController extends Controller
         return view('document-borrows.review', compact('borrow'));
     }
 }
-

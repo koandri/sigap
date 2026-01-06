@@ -17,7 +17,8 @@ final class StoreBorrowRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->hasPermissionTo('dms.borrows.request');
+        // All authenticated users can submit borrow requests
+        return Auth::check();
     }
 
     /**
@@ -60,14 +61,14 @@ final class StoreBorrowRequest extends FormRequest
             }
 
             $document = Document::find($this->document_id);
-            if (!$document) {
+            if (! $document) {
                 return;
             }
 
             $borrowService = app(DocumentBorrowService::class);
             $result = $borrowService->canBorrow(Auth::user(), $document);
 
-            if (!$result['can_borrow']) {
+            if (! $result['can_borrow']) {
                 foreach ($result['errors'] as $error) {
                     $validator->errors()->add('document_id', $error);
                 }
@@ -75,4 +76,3 @@ final class StoreBorrowRequest extends FormRequest
         });
     }
 }
-

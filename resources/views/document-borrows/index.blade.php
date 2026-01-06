@@ -13,12 +13,10 @@
                     </h2>
                 </div>
                 <div class="col-auto ms-auto">
-                    @can('create', App\Models\DocumentBorrow::class)
                     <a href="{{ route('document-borrows.create') }}" class="btn btn-primary">
                         <i class="far fa-plus"></i>&nbsp;
                         Request to Borrow
                     </a>
-                    @endcan
                 </div>
             </div>
         </div>
@@ -151,14 +149,12 @@
                             <p class="empty-subtitle text-muted">
                                 You haven't borrowed any documents yet.
                             </p>
-                            @can('create', App\Models\DocumentBorrow::class)
                             <div class="empty-action">
                                 <a href="{{ route('document-borrows.create') }}" class="btn btn-primary">
                                     <i class="far fa-plus"></i>&nbsp;
                                     Request to Borrow
                                 </a>
                             </div>
-                            @endcan
                         </div>
                     @endif
                 </div>
