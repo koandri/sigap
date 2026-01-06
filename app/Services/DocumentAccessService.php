@@ -49,6 +49,10 @@ final class DocumentAccessService
                 'approved_at' => now(),
             ]);
 
+            // Refresh and load relationships before notifying
+            $request->refresh();
+            $request->load(['documentVersion.document', 'user']);
+
             // Notify requester
             $this->notifyRequester($request, 'approved');
         });
@@ -62,6 +66,10 @@ final class DocumentAccessService
                 'status' => 'rejected',
                 'approved_at' => now(),
             ]);
+
+            // Refresh and load relationships before notifying
+            $request->refresh();
+            $request->load(['documentVersion.document', 'user']);
 
             // Notify requester
             $this->notifyRequester($request, 'rejected', $reason);
@@ -212,6 +220,21 @@ final class DocumentAccessService
 
     private function notifyRequester(DocumentAccessRequest $request, string $status, ?string $reason = null): void
     {
+        // Ensure relationships are loaded
+        if (! $request->relationLoaded('documentVersion')) {
+            $request->load('documentVersion.document');
+        }
+
+        // Safety check: if documentVersion or document is null, skip notification
+        if (! $request->documentVersion || ! $request->documentVersion->document) {
+            Log::warning('Cannot notify requester: documentVersion or document is null', [
+                'access_request_id' => $request->id,
+                'status' => $status,
+            ]);
+
+            return;
+        }
+
         if ($status === 'approved') {
             $message = "✅ *Document Access Approved*\n\n";
             $message .= "Document: *{$request->documentVersion->document->title}*\n";

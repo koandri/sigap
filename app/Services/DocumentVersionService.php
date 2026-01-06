@@ -7,12 +7,12 @@ namespace App\Services;
 use App\Enums\DocumentVersionStatus;
 use App\Models\Document;
 use App\Models\DocumentVersion;
+use App\Models\DocumentVersionApproval;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 final class DocumentVersionService
 {
@@ -20,14 +20,15 @@ final class DocumentVersionService
         private readonly WhatsAppService $whatsAppService,
         private readonly PushoverService $pushoverService
     ) {}
+
     public function createVersion(Document $document, array $data): DocumentVersion
     {
         return DB::transaction(function () use ($document, $data) {
             $version = $document->versions()->create($data);
-            
+
             // All versions start as draft and require approval
             // No automatic activation for first version
-            
+
             return $version;
         });
     }
@@ -35,7 +36,7 @@ final class DocumentVersionService
     public function createVersionFromScratch(Document $document, string $fileType): DocumentVersion
     {
         $versionNumber = $this->generateNextVersionNumber($document);
-        
+
         return $this->createVersion($document, [
             'version_number' => $versionNumber,
             'file_path' => '', // Will be set by OnlyOffice
@@ -49,7 +50,7 @@ final class DocumentVersionService
     public function createVersionFromUpload(Document $document, string $filePath, string $fileType): DocumentVersion
     {
         $versionNumber = $this->generateNextVersionNumber($document);
-        
+
         return $this->createVersion($document, [
             'version_number' => $versionNumber,
             'file_path' => $filePath,
@@ -63,10 +64,10 @@ final class DocumentVersionService
     public function createVersionFromCopy(Document $document, DocumentVersion $sourceVersion): DocumentVersion
     {
         $versionNumber = $this->generateNextVersionNumber($document);
-        
+
         // Copy the file
         $newFilePath = $this->copyFile($document->id, $sourceVersion->file_path);
-        
+
         return $this->createVersion($document, [
             'version_number' => $versionNumber,
             'file_path' => $newFilePath,
@@ -81,7 +82,7 @@ final class DocumentVersionService
     {
         DB::transaction(function () use ($version) {
             $creator = $version->creator;
-            
+
             // Check if creator has a manager assigned
             if ($creator->manager_id) {
                 // Create manager approval request
@@ -98,11 +99,11 @@ final class DocumentVersionService
             } else {
                 // No manager assigned, skip to management representative
                 $managementRep = $this->getManagementRepresentative();
-                
-                if (!$managementRep) {
+
+                if (! $managementRep) {
                     throw new \Exception('No manager or management representative found for approval. Please contact an administrator.');
                 }
-                
+
                 $version->approvals()->create([
                     'approver_id' => $managementRep->id,
                     'approval_tier' => 'management_representative',
@@ -121,24 +122,28 @@ final class DocumentVersionService
         $this->notifyApprovers($version);
     }
 
-    public function approveVersion(DocumentVersion $version, User $approver, ?string $notes = null): void
+    public function approveVersion(DocumentVersionApproval $approval, User $approver, ?string $notes = null): void
     {
         $wasActivated = false;
-        
-        DB::transaction(function () use ($version, $approver, $notes, &$wasActivated) {
-            // Update approval record
-            $approval = $version->approvals()
-                ->where('approver_id', $approver->id)
-                ->where('status', 'pending')
-                ->first();
 
-            if ($approval) {
-                $approval->update([
-                    'status' => 'approved',
-                    'notes' => $notes,
-                    'approved_at' => now(),
-                ]);
+        DB::transaction(function () use ($approval, $approver, $notes, &$wasActivated) {
+            // Ensure approval is pending and belongs to the approver
+            if (! $approval->isPending()) {
+                throw new \Exception('Approval is not in pending status.');
             }
+
+            if ($approval->approver_id !== $approver->id && ! $approver->hasRole(['Super Admin', 'Owner'])) {
+                throw new \Exception('You are not authorized to approve this document version.');
+            }
+
+            // Update approval record
+            $approval->update([
+                'status' => 'approved',
+                'notes' => $notes,
+                'approved_at' => now(),
+            ]);
+
+            $version = $approval->documentVersion;
 
             // Check if all approvals are complete
             if ($this->allApprovalsComplete($version)) {
@@ -151,29 +156,34 @@ final class DocumentVersionService
         });
 
         // Reload version with relationships and notify creator
-        $version->load(['creator', 'document']);
-        
+        $approval->load(['documentVersion.creator', 'documentVersion.document']);
+        $version = $approval->documentVersion;
+
         if ($wasActivated) {
             $this->notifyCreatorApproved($version);
         }
     }
 
-    public function rejectVersion(DocumentVersion $version, User $approver, string $notes): void
+    public function rejectVersion(DocumentVersionApproval $approval, User $approver, string $notes): void
     {
-        DB::transaction(function () use ($version, $approver, $notes) {
-            // Update approval record
-            $approval = $version->approvals()
-                ->where('approver_id', $approver->id)
-                ->where('status', 'pending')
-                ->first();
-
-            if ($approval) {
-                $approval->update([
-                    'status' => 'rejected',
-                    'notes' => $notes,
-                    'approved_at' => now(),
-                ]);
+        DB::transaction(function () use ($approval, $approver, $notes) {
+            // Ensure approval is pending and belongs to the approver
+            if (! $approval->isPending()) {
+                throw new \Exception('Approval is not in pending status.');
             }
+
+            if ($approval->approver_id !== $approver->id && ! $approver->hasRole(['Super Admin', 'Owner'])) {
+                throw new \Exception('You are not authorized to reject this document version.');
+            }
+
+            // Update approval record
+            $approval->update([
+                'status' => 'rejected',
+                'notes' => $notes,
+                'approved_at' => now(),
+            ]);
+
+            $version = $approval->documentVersion;
 
             // Update version status back to draft
             $version->update([
@@ -182,7 +192,8 @@ final class DocumentVersionService
         });
 
         // Reload version with relationships and notify creator
-        $version->load(['creator', 'document']);
+        $approval->load(['documentVersion.creator', 'documentVersion.document']);
+        $version = $approval->documentVersion;
         $this->notifyCreatorRejected($version, $notes);
     }
 
@@ -204,7 +215,7 @@ final class DocumentVersionService
 
     public function canUserEdit(DocumentVersion $version, User $user): bool
     {
-        return $version->isDraft() && 
+        return $version->isDraft() &&
                $version->created_by === $user->id &&
                $version->document->document_type->canHaveVersions();
     }
@@ -241,11 +252,11 @@ final class DocumentVersionService
     {
         $documentServerUrl = config('dms.onlyoffice.server_url', 'https://office.suryagroup.app');
         $callbackUrl = route('document-versions.onlyoffice-callback', $version);
-        
+
         return [
             'document' => [
                 'fileType' => $version->file_type,
-                'key' => $version->id . '_' . time(),
+                'key' => $version->id.'_'.time(),
                 'title' => $version->document->title,
                 'url' => Storage::disk('s3')->url($version->file_path),
             ],
@@ -278,7 +289,7 @@ final class DocumentVersionService
             ->orderByRaw('CAST(version_number AS UNSIGNED) DESC')
             ->first();
 
-        if (!$latestVersion) {
+        if (! $latestVersion) {
             return 0;
         }
 
@@ -288,11 +299,11 @@ final class DocumentVersionService
     private function copyFile(int $documentId, string $sourcePath): string
     {
         $extension = pathinfo($sourcePath, PATHINFO_EXTENSION);
-        $filename = uniqid() . '.' . $extension;
-        $newPath = 'documents/versions/' . $documentId . '/' . $filename;
-        
+        $filename = uniqid().'.'.$extension;
+        $newPath = 'documents/versions/'.$documentId.'/'.$filename;
+
         Storage::disk('s3')->copy($sourcePath, $newPath);
-        
+
         return $newPath;
     }
 
@@ -364,21 +375,22 @@ final class DocumentVersionService
     {
         $approvers = collect();
         $approverIds = [];
-        
+
         // Get pending approvers from approvals
         foreach ($version->approvals()->where('status', 'pending')->get() as $approval) {
             $approver = $approval->approver;
-            if ($approver && !in_array($approver->id, $approverIds)) {
+            if ($approver && ! in_array($approver->id, $approverIds)) {
                 $approvers->push($approver);
                 $approverIds[] = $approver->id;
             }
         }
 
         if ($approvers->isEmpty()) {
-            Log::warning("No approvers found for document version", [
+            Log::warning('No approvers found for document version', [
                 'version_id' => $version->id,
                 'document_title' => $version->document->title,
             ]);
+
             return;
         }
 
@@ -386,12 +398,12 @@ final class DocumentVersionService
         $message .= "Document: *{$version->document->title}*\n";
         $message .= "Version: {$version->version_number}\n";
         $message .= "Submitted by: {$version->creator->name}\n";
-        
+
         if ($version->revision_description) {
             $message .= "Revision: {$version->revision_description}\n";
         }
-        
-        $message .= "\nPlease review: " . route('document-approvals.index');
+
+        $message .= "\nPlease review: ".route('document-approvals.index');
 
         foreach ($approvers as $approver) {
             $this->sendNotificationToUser($approver, $message, 'Document Version Approval Request');
@@ -404,8 +416,8 @@ final class DocumentVersionService
     private function notifyCreatorApproved(DocumentVersion $version): void
     {
         $creator = $version->creator;
-        
-        if (!$creator) {
+
+        if (! $creator) {
             return;
         }
 
@@ -413,7 +425,7 @@ final class DocumentVersionService
         $message .= "Document: *{$version->document->title}*\n";
         $message .= "Version: {$version->version_number}\n";
         $message .= "\nThe document version has been approved and is now active.\n";
-        $message .= "\nView document: " . route('documents.show', $version->document);
+        $message .= "\nView document: ".route('documents.show', $version->document);
 
         $this->sendNotificationToUser($creator, $message, 'Document Version Approved');
     }
@@ -424,8 +436,8 @@ final class DocumentVersionService
     private function notifyCreatorRejected(DocumentVersion $version, string $notes): void
     {
         $creator = $version->creator;
-        
-        if (!$creator) {
+
+        if (! $creator) {
             return;
         }
 
@@ -434,7 +446,7 @@ final class DocumentVersionService
         $message .= "Version: {$version->version_number}\n";
         $message .= "Reason: {$notes}\n";
         $message .= "\nPlease review and resubmit after making corrections.\n";
-        $message .= "\nView document: " . route('documents.show', $version->document);
+        $message .= "\nView document: ".route('documents.show', $version->document);
 
         $this->sendNotificationToUser($creator, $message, 'Document Version Rejected');
     }
@@ -446,19 +458,19 @@ final class DocumentVersionService
     {
         // Check if user has mobile phone number
         if (empty($user->mobilephone_no)) {
-            Log::warning("User has no mobile phone number for WhatsApp notification", [
+            Log::warning('User has no mobile phone number for WhatsApp notification', [
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'notification_type' => $notificationType,
             ]);
-            
+
             // Send failure notification via Pushover
             $this->pushoverService->sendWhatsAppFailureNotification(
                 $notificationType,
-                $user->name . ' (No Phone)',
+                $user->name.' (No Phone)',
                 $message
             );
-            
+
             return false;
         }
 
@@ -468,9 +480,9 @@ final class DocumentVersionService
         // Try to send via WhatsApp
         $whatsAppSuccess = $this->whatsAppService->sendMessage($chatId, $message);
 
-        if (!$whatsAppSuccess) {
+        if (! $whatsAppSuccess) {
             // WhatsApp failed, send notification via Pushover
-            Log::warning("WhatsApp notification failed, sending Pushover fallback", [
+            Log::warning('WhatsApp notification failed, sending Pushover fallback', [
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'chat_id' => $chatId,
@@ -479,7 +491,7 @@ final class DocumentVersionService
 
             $this->pushoverService->sendWhatsAppFailureNotification(
                 $notificationType,
-                $user->name . ' (' . $user->mobilephone_no . ')',
+                $user->name.' ('.$user->mobilephone_no.')',
                 $message
             );
 
